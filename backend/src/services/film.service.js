@@ -11,7 +11,8 @@ export class FilmService {
       user_id,
       sortBy = 'created_at',
       sortOrder = 'desc',
-      requesting_user_id
+      requesting_user_id,
+      is_banner_active
     } = options;
 
     const query = Film.query()
@@ -54,6 +55,11 @@ export class FilmService {
           builder.where('judul', 'like', term)
                  .orWhere('sinopsis', 'like', term);
         });
+      }
+
+      // 5. Banner Filter
+      if (is_banner_active !== undefined) {
+        q.where('is_banner_active', is_banner_active);
       }
     };
 
@@ -133,8 +139,8 @@ export class FilmService {
     return Film.query().deleteById(id);
   }
 
-  async updateStatus(id, status) {
-    return Film.query().patchAndFetchById(id, { status });
+  async updateStatus(id, status, extra = {}) {
+    return Film.query().patchAndFetchById(id, { status, ...extra });
   }
 
   async getByCreator(userId, options = {}) {

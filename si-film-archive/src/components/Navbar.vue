@@ -197,6 +197,13 @@ const handleLogout = async () => {
             <DropdownMenuSeparator class="-mx-1 my-1 h-px bg-stone-200" />
             
             <DropdownMenuItem as-child>
+              <router-link to="/dashboard" class="flex items-center gap-2 w-full px-3 py-2 text-sm font-body hover:bg-stone-100 cursor-pointer">
+                <LayoutDashboard class="w-4 h-4" />
+                Dashboard
+              </router-link>
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem as-child>
               <router-link to="/profile" class="flex items-center gap-2 w-full px-3 py-2 text-sm font-body hover:bg-stone-100 cursor-pointer">
                 <User class="w-4 h-4" />
                 Profile

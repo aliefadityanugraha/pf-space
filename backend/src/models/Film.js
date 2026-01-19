@@ -34,7 +34,10 @@ export class Film extends BaseModel {
         file_storyboard: { type: ['string', 'null'] },
         file_rab: { type: ['string', 'null'] },
         crew: { type: ['object', 'array', 'null'] },
-        status: { type: 'string', enum: ['pending', 'published', 'rejected'] }
+        status: { type: 'string', enum: ['pending', 'published', 'rejected'] },
+        rejection_reason: { type: ['string', 'null'] },
+        banner_url: { type: ['string', 'null'] },
+        is_banner_active: { type: ['boolean', 'integer'] }
       }
     };
   }

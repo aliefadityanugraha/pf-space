@@ -12,7 +12,7 @@ import { FileText, ShieldCheck } from 'lucide-vue-next'
 
     <main class="max-w-4xl mx-auto px-4 md:px-8 py-12 pt-25">
       <SectionHeader 
-        title="Terms of Service" 
+        title="Syarat Layanan PF Space" 
         subtitle="Syarat dan ketentuan penggunaan platform."
         :light-text="false"
       />

@@ -97,7 +97,7 @@ onUnmounted(() => {
           :light-text="false"
         />
         
-        <!-- Empty State -->
+         <!-- Empty State -->
         <div v-if="latestFilms.length === 0" class="text-center py-12">
           <Film class="w-16 h-16 mx-auto mb-4 text-stone-300" />
           <p class="text-stone-500">Belum ada film yang dipublikasi</p>

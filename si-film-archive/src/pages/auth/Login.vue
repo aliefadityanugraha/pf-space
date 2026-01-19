@@ -53,7 +53,7 @@ const handleGoogleLogin = () => {
           <Input 
             v-model="email"
             type="email"
-            placeholder="Enter your ID..."
+            placeholder="Masukkan email kamu..."
             class="pl-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
           />
         </div>
@@ -89,18 +89,18 @@ const handleGoogleLogin = () => {
             v-model="rememberMe"
             class="w-5 h-5 border-2 border-stone-600 bg-transparent rounded"
           />
-          <span class="text-sm text-stone-400 font-body">Keep me signed in</span>
+          <span class="text-sm text-stone-400 font-body">Tetap masuk di perangkat ini</span>
         </label>
         <router-link to="/auth/forgot" class="text-sm text-amber-500 font-body hover:text-amber-400">
-          Lost access code?
+          Lupa kode akses?
         </router-link>
       </div>
 
       <!-- Submit Button -->
       <Button variant="destructive" class="w-full" size="lg" :disabled="loading">
-        <span v-if="loading">Loading...</span>
+        <span v-if="loading">Memuat...</span>
         <template v-else>
-          Enter Archive
+          Masuk ke Arsip
           <LogIn class="w-5 h-5 ml-2" />
         </template>
       </Button>
@@ -119,15 +119,15 @@ const handleGoogleLogin = () => {
           <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
           <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
         </svg>
-        Continue with Google
+        Lanjut dengan Google
       </Button>
     </form>
 
     <template #footer>
-      <p class="text-stone-400 font-body mb-3">New to the repository?</p>
+      <p class="text-stone-400 font-body mb-3">Belum punya akun?</p>
       <router-link to="/auth/register">
         <Button variant="outline" class="bg-stone-900 border-stone-700 text-white hover:bg-stone-800">
-          Request Access
+          Daftar Akun
         </Button>
       </router-link>
     </template>

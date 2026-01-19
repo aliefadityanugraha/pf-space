@@ -111,7 +111,7 @@ watch([selectedFilmId, currentPage], () => {
 // Get film name
 const getFilmName = (filmId) => {
   const film = films.value.find(f => f.film_id === filmId)
-  return film?.judul || 'Unknown Film'
+  return film?.judul || 'Film tidak dikenal'
 }
 
 onMounted(async () => {
@@ -127,17 +127,17 @@ onMounted(async () => {
     <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <a href="/" class="text-brand-teal hover:underline">Home</a>
+        <a href="/" class="text-brand-teal hover:underline">Beranda</a>
         <span class="text-stone-400">/</span>
-        <span class="text-stone-600">Administration</span>
+        <span class="text-stone-600">Administrasi</span>
         <span class="text-stone-400">/</span>
-        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Comments</Badge>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Komentar</Badge>
       </nav>
 
       <!-- Header -->
       <PageHeader 
-        title="Manage Comments" 
-        description="Moderate and manage all user comments across the platform."
+        title="Kelola Komentar" 
+        description="Moderasi dan kelola semua komentar pengguna di platform."
         :icon="MessageCircle"
         icon-color="bg-teal-500"
       />
@@ -151,7 +151,7 @@ onMounted(async () => {
               <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
               <Input 
                 v-model="searchQuery"
-                placeholder="Search comments..."
+                placeholder="Cari komentar..."
                 class="pl-10"
               />
             </div>
@@ -163,7 +163,7 @@ onMounted(async () => {
                 v-model="selectedFilmId"
                 class="w-full pl-10 pr-4 py-2 border-2 border-stone-800 bg-white focus:outline-none focus:ring-0 font-body"
               >
-                <option value="">All Films</option>
+                <option value="">Semua Film</option>
                 <option v-for="film in films" :key="film.film_id" :value="film.film_id">
                   {{ film.judul }}
                 </option>
@@ -178,7 +178,7 @@ onMounted(async () => {
               class="gap-2"
             >
               <X class="w-4 h-4" />
-              Clear Filters
+              Reset Filter
             </Button>
           </div>
         </CardContent>
@@ -187,7 +187,7 @@ onMounted(async () => {
       <!-- Loading -->
       <div v-if="loading" class="flex flex-col items-center justify-center min-h-[400px]">
         <Loader2 class="w-12 h-12 animate-spin text-brand-teal mb-4" />
-        <p class="text-stone-500 font-mono uppercase tracking-widest animate-pulse">Loading Comments...</p>
+        <p class="text-stone-500 font-mono uppercase tracking-widest animate-pulse">Memuat komentar...</p>
       </div>
 
       <!-- Comments List -->
@@ -198,7 +198,7 @@ onMounted(async () => {
             <CardContent class="p-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Total Comments</p>
+                  <p class="text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Total Komentar</p>
                   <p class="text-2xl font-bold text-stone-900">{{ pagination.total }}</p>
                 </div>
                 <MessageCircle class="w-8 h-8 text-brand-teal" />
@@ -209,7 +209,7 @@ onMounted(async () => {
             <CardContent class="p-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Showing</p>
+                  <p class="text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Ditampilkan</p>
                   <p class="text-2xl font-bold text-stone-900">{{ filteredComments.length }}</p>
                 </div>
                 <Filter class="w-8 h-8 text-brand-orange" />
@@ -220,7 +220,7 @@ onMounted(async () => {
             <CardContent class="p-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Page</p>
+                  <p class="text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Halaman</p>
                   <p class="text-2xl font-bold text-stone-900">{{ currentPage }} / {{ pagination.totalPages }}</p>
                 </div>
                 <Calendar class="w-8 h-8 text-brand-red" />
@@ -234,14 +234,20 @@ onMounted(async () => {
           <CardHeader class="bg-brand-teal/10 border-b-2 border-stone-800">
             <CardTitle class="flex items-center gap-2">
               <MessageCircle class="w-5 h-5" />
-              All Comments
+              Semua Komentar
             </CardTitle>
           </CardHeader>
           <CardContent class="p-0">
             <!-- Empty State -->
             <div v-if="filteredComments.length === 0" class="text-center py-12">
               <MessageCircle class="w-16 h-16 text-stone-300 mx-auto mb-4" />
-              <p class="text-stone-500 font-body">No comments found</p>
+              <h3 class="text-lg font-bold text-stone-700 mb-1">Belum ada komentar yang ditampilkan</h3>
+              <p class="text-stone-500 font-body mb-1">
+                Tidak ada komentar yang cocok dengan filter saat ini.
+              </p>
+              <p class="text-sm text-stone-400">
+                Coba reset filter, ubah kata kunci pencarian, atau periksa periode waktu yang berbeda.
+              </p>
             </div>
 
             <!-- Comments List -->
@@ -263,10 +269,10 @@ onMounted(async () => {
                     <div class="flex items-start justify-between gap-4 mb-2">
                       <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 flex-wrap mb-1">
-                          <span class="font-bold text-stone-900">{{ comment.user?.name || 'Unknown User' }}</span>
+                          <span class="font-bold text-stone-900">{{ comment.user?.name || 'Pengguna tidak dikenal' }}</span>
                           <Badge variant="outline" class="text-xs">
                             <User class="w-3 h-3 mr-1" />
-                            {{ comment.user?.email || 'No email' }}
+                            {{ comment.user?.email || 'Tidak ada email' }}
                           </Badge>
                         </div>
                         <div class="flex items-center gap-3 text-xs text-stone-500">
@@ -295,7 +301,7 @@ onMounted(async () => {
                           class="gap-1"
                         >
                           <Eye class="w-3 h-3" />
-                          View
+                          Lihat
                         </Button>
                         <Button 
                           variant="destructive" 
@@ -306,7 +312,7 @@ onMounted(async () => {
                         >
                           <Loader2 v-if="deleting === comment.diskusi_id" class="w-3 h-3 animate-spin" />
                           <Trash2 v-else class="w-3 h-3" />
-                          Delete
+                          Hapus
                         </Button>
                       </div>
                     </div>
@@ -321,7 +327,7 @@ onMounted(async () => {
                     <!-- Metadata -->
                     <div v-if="comment.parent_id" class="mt-2 text-xs text-stone-500 flex items-center gap-1">
                       <ChevronRight class="w-3 h-3" />
-                      <span>This is a reply to another comment</span>
+                      <span>Ini adalah balasan dari komentar lain</span>
                     </div>
                   </div>
                 </div>
@@ -333,9 +339,9 @@ onMounted(async () => {
         <!-- Pagination -->
         <div v-if="pagination.totalPages > 1" class="flex items-center justify-between mt-6">
           <div class="text-sm text-stone-600">
-            Showing {{ (currentPage - 1) * pagination.limit + 1 }} to 
-            {{ Math.min(currentPage * pagination.limit, pagination.total) }} of 
-            {{ pagination.total }} comments
+            Menampilkan {{ (currentPage - 1) * pagination.limit + 1 }} sampai 
+            {{ Math.min(currentPage * pagination.limit, pagination.total) }} dari 
+            {{ pagination.total }} komentar
           </div>
           <div class="flex gap-2">
             <Button 
@@ -344,7 +350,7 @@ onMounted(async () => {
               @click="currentPage--"
               :disabled="currentPage === 1"
             >
-              Previous
+              Sebelumnya
             </Button>
             <Button 
               variant="outline" 
@@ -352,7 +358,7 @@ onMounted(async () => {
               @click="currentPage++"
               :disabled="currentPage >= pagination.totalPages"
             >
-              Next
+              Berikutnya
             </Button>
           </div>
         </div>

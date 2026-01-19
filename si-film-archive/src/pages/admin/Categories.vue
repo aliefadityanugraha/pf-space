@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { api } from '@/lib/api'
 import AdminSidebar from '@/components/AdminSidebar.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

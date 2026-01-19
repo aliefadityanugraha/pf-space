@@ -19,14 +19,14 @@ watch(isCollapsed, (val) => {
 })
 
 const allMenuItems = [
-  { name: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
-  { name: 'Access Control', icon: Shield, path: '/admin/rbac' },
-  { name: 'Users', icon: Users, path: '/admin/users' },
-  { name: 'Categories', icon: FolderOpen, path: '/admin/categories' },
-  { name: 'Films', icon: Film, path: '/admin/films' },
-  { name: 'Uploads', icon: Upload, path: '/admin/uploads' },
-  { name: 'Reports', icon: FileText, path: '/admin/reports' },
-  { name: 'Analytics', icon: BarChart3, path: '/admin/analytics' },
+  { name: 'Dasbor', icon: LayoutDashboard, path: '/admin/dashboard' },
+  { name: 'Kontrol Akses', icon: Shield, path: '/admin/rbac' },
+  { name: 'Pengguna', icon: Users, path: '/admin/users' },
+  { name: 'Kategori', icon: FolderOpen, path: '/admin/categories' },
+  { name: 'Film', icon: Film, path: '/admin/films' },
+  { name: 'Unggahan', icon: Upload, path: '/admin/uploads' },
+  { name: 'Laporan', icon: FileText, path: '/admin/reports' },
+  { name: 'Analitik', icon: BarChart3, path: '/admin/analytics' },
   { name: 'Banner', icon: ImageIcon, path: '/admin/carousel' },
 ]
 
@@ -39,9 +39,9 @@ const menuItems = computed(() => {
 })
 
 const bottomMenuItems = [
-  { name: 'Notifications', icon: Bell, path: '/admin/notifications' },
-  { name: 'Settings', icon: Settings, path: '/admin/settings' },
-  { name: 'Help', icon: HelpCircle, path: '/admin/help' },
+  { name: 'Notifikasi', icon: Bell, path: '/admin/notifications' },
+  { name: 'Pengaturan', icon: Settings, path: '/admin/settings' },
+  { name: 'Bantuan', icon: HelpCircle, path: '/admin/help' },
 ]
 
 const visibleBottomMenuItems = computed(() => {
@@ -80,7 +80,7 @@ const isActive = (path) => route.path === path
           </div>
           <div>
             <span class="font-display text-lg leading-tight block text-stone-900">PF Space</span>
-            <span class="text-[10px] uppercase tracking-wider text-stone-500 font-body font-bold">Admin Panel</span>
+            <span class="text-[10px] uppercase tracking-wider text-stone-500 font-body font-bold">Panel Admin</span>
           </div>
         </router-link>
         <router-link to="/" v-else class="w-10 h-10 bg-brand-red border-2 border-stone-900 shadow-brutal-sm flex items-center justify-center mx-auto">

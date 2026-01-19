@@ -37,10 +37,17 @@ await fastify.register(cors, {
 await fastify.register(cookie);
 
 // File uploads
-await fastify.register(multipart);
+await fastify.register(multipart, {
+  limits: {
+    fileSize: 1024 * 1024 * 1024, // 1GB limit for video uploads
+  }
+});
 
 // Ensure uploads directory exists
 const UPLOAD_DIR = path.join(__dirname, '../uploads');
+console.log('STATIC UPLOAD DIR =', UPLOAD_DIR)
+
+
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }

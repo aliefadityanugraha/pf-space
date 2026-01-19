@@ -9,10 +9,8 @@ class ApiError extends Error {
 }
 
 async function request(endpoint, options = {}) {
-  // Use URL object for more robust URL building
   const urlObj = new URL(endpoint, BASE_URL);
   
-  // Handle query params
   if (options.params) {
     Object.entries(options.params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
@@ -28,17 +26,24 @@ async function request(endpoint, options = {}) {
     credentials: 'include',
     headers: {
       ...options.headers
-    }
+    },
   };
 
-  // Only add Content-Type: application/json if body is present and not FormData
   if (options.body && !(options.body instanceof FormData)) {
     config.headers['Content-Type'] = 'application/json';
   }
 
-  const response = await fetch(url, config);
+  let response;
+  try {
+    response = await fetch(url, config);
+  } catch {
+    throw new ApiError(
+      'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.',
+      0,
+      null
+    );
+  }
   
-  // Handle empty response (204 No Content)
   if (response.status === 204) {
     return { success: true };
   }
@@ -46,9 +51,39 @@ async function request(endpoint, options = {}) {
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
+    const status = response.status;
+    const path = urlObj.pathname || '';
+    const isAuthPath = path.startsWith('/api/auth/');
+
+    let serverMessage = null;
+    if (data && typeof data.message === 'string' && data.message) {
+      serverMessage = data.message;
+    } else if (data && typeof data.error === 'string' && data.error) {
+      serverMessage = data.error;
+    }
+
+    let message = serverMessage || 'Terjadi kesalahan. Silakan coba lagi.';
+
+    if (status === 401 && typeof window !== 'undefined' && !isAuthPath) {
+      const current =
+        window.location.pathname +
+        window.location.search +
+        window.location.hash;
+      const onLogin = window.location.pathname.startsWith('/auth/login');
+      const redirectParam =
+        current && !onLogin ? `?redirect=${encodeURIComponent(current)}` : '';
+      const target = `/auth/login${redirectParam}`;
+      if (!onLogin) {
+        window.location.href = target;
+      }
+      if (!serverMessage) {
+        message = 'Sesi Anda telah berakhir. Silakan login kembali.';
+      }
+    }
+
     throw new ApiError(
-      data?.message || 'Request failed',
-      response.status,
+      message,
+      status,
       data
     );
   }

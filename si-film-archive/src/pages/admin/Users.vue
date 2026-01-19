@@ -18,7 +18,7 @@ const sidebarCollapsed = ref(false)
     >
       <header class="bg-white border-b-2 border-stone-900 p-4 sticky top-0 z-30">
         <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-display font-bold uppercase tracking-wider">Users Management</h1>
+            <h1 class="text-2xl font-display font-bold uppercase tracking-wider">Manajemen Pengguna</h1>
         </div>
       </header>
 

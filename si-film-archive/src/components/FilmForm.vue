@@ -40,6 +40,7 @@ const form = ref({
   link_video_utama: '',
   link_trailer: '',
   gambar_poster: '',
+  banner_url: '',
   deskripsi_lengkap: '',
   file_naskah: '',
   file_storyboard: '',
@@ -77,16 +78,25 @@ const handleFileUpload = async (event, fieldName) => {
   const file = event.target.files[0]
   if (!file) return
 
-  // Validasi ukuran (max 10MB)
-  if (file.size > 10 * 1024 * 1024) {
-    emit('error', 'Ukuran file terlalu besar (maksimal 10MB)')
-    event.target.value = '' // Reset input
+  // Validasi ukuran
+  const isVideo = file.type.startsWith('video/')
+  const limit = isVideo ? 1024 * 1024 * 1024 : 10 * 1024 * 1024 // 1GB for video, 10MB for others
+
+  if (file.size > limit) {
+    emit('error', `Ukuran file terlalu besar (maksimal ${isVideo ? '1GB' : '10MB'})`)
+    event.target.value = '' 
     return
   }
 
   // Validasi tipe file jika perlu (misal poster harus gambar)
   if (fieldName === 'gambar_poster' && !file.type.startsWith('image/')) {
     emit('error', 'File harus berupa gambar')
+    event.target.value = ''
+    return
+  }
+
+  if ((fieldName === 'link_video_utama' || fieldName === 'link_trailer') && !file.type.startsWith('video/')) {
+    emit('error', 'File harus berupa video (MP4, WebM, etc)')
     event.target.value = ''
     return
   }
@@ -212,12 +222,57 @@ onMounted(() => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-bold mb-2">Link Video Utama</label>
-            <Input v-model="form.link_video_utama" placeholder="https://youtube.com/..." />
+            <label class="block text-sm font-bold mb-2">Video Utama (MP4/WebM)</label>
+            <div class="space-y-3">
+               <div v-if="form.link_video_utama" class="relative w-full bg-stone-100 border border-stone-300 rounded p-3 flex items-center gap-2">
+                  <Film class="w-5 h-5 text-stone-500 shrink-0" />
+                  <span class="text-xs text-stone-600 truncate flex-1">{{ form.link_video_utama.split('/').pop() }}</span>
+                   <button 
+                    type="button" 
+                    @click="form.link_video_utama = ''"
+                    class="text-red-500 hover:text-red-700 shrink-0"
+                  >
+                    <X class="w-4 h-4" />
+                  </button>
+               </div>
+               <div class="flex items-center gap-2">
+                <input 
+                  type="file" 
+                  accept="video/*"
+                  @change="(e) => handleFileUpload(e, 'link_video_utama')"
+                  class="block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-brand-teal file:text-white hover:file:bg-teal-700 cursor-pointer"
+                  :disabled="uploading"
+                />
+               </div>
+               <p class="text-xs text-stone-500">Format: MP4, WebM. Max 1GB.</p>
+            </div>
           </div>
+
           <div>
-            <label class="block text-sm font-bold mb-2">Link Trailer</label>
-            <Input v-model="form.link_trailer" placeholder="https://youtube.com/..." />
+            <label class="block text-sm font-bold mb-2">Video Trailer (MP4/WebM)</label>
+            <div class="space-y-3">
+               <div v-if="form.link_trailer" class="relative w-full bg-stone-100 border border-stone-300 rounded p-3 flex items-center gap-2">
+                  <Film class="w-5 h-5 text-stone-500 shrink-0" />
+                  <span class="text-xs text-stone-600 truncate flex-1">{{ form.link_trailer.split('/').pop() }}</span>
+                   <button 
+                    type="button" 
+                    @click="form.link_trailer = ''"
+                    class="text-red-500 hover:text-red-700 shrink-0"
+                  >
+                    <X class="w-4 h-4" />
+                  </button>
+               </div>
+               <div class="flex items-center gap-2">
+                <input 
+                  type="file" 
+                  accept="video/*"
+                  @change="(e) => handleFileUpload(e, 'link_trailer')"
+                  class="block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-brand-teal file:text-white hover:file:bg-teal-700 cursor-pointer"
+                  :disabled="uploading"
+                />
+               </div>
+               <p class="text-xs text-stone-500">Format: MP4, WebM. Max 1GB.</p>
+            </div>
           </div>
         </div>
       </CardContent>
@@ -259,6 +314,40 @@ onMounted(() => {
                 <Loader2 v-if="uploading" class="w-5 h-5 animate-spin text-stone-400" />
               </div>
               <p class="text-xs text-stone-500">Format: JPG, PNG. Max 10MB.</p>
+            </div>
+
+            <div class="mt-6">
+              <label class="block text-sm font-bold mb-2">Gambar Banner (Opsional)</label>
+              <div class="space-y-3">
+                <div v-if="form.banner_url" class="relative w-full h-32 bg-stone-100 border border-stone-300 rounded overflow-hidden">
+                  <img :src="form.banner_url" class="w-full h-full object-cover" />
+                  <button 
+                    type="button" 
+                    @click="form.banner_url = ''"
+                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md"
+                  >
+                    <X class="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    @change="(e) => handleFileUpload(e, 'banner_url')"
+                    class="block w-full text-sm text-stone-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:border-0 file:text-sm file:font-semibold
+                      file:bg-brand-teal file:text-white
+                      hover:file:bg-teal-700
+                      cursor-pointer"
+                    :disabled="uploading"
+                  />
+                </div>
+                <p class="text-xs text-stone-500">
+                  Format: JPG, PNG. Rekomendasi: 1920x1080px (Landscape) untuk Carousel.
+                </p>
+              </div>
             </div>
           </div>
 

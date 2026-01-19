@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { 
   Film, Search, Loader2, Eye, Check, X, Trash2, AlertTriangle, 
-  CheckCircle, XCircle, Clock, Filter, ChevronLeft, ChevronRight
+  CheckCircle, XCircle, Clock, Filter, ChevronLeft, ChevronRight, Image as ImageIcon, Sparkles
 } from 'lucide-vue-next'
 import Toast from '@/components/Toast.vue'
 import { useToast } from '@/composables/useToast'
@@ -28,6 +28,40 @@ const showConfirm = ref(false)
 const selectedFilm = ref(null)
 const confirmAction = ref({ type: '', film: null })
 const actionLoading = ref(false)
+const rejectionReason = ref('')
+
+// Banner Modal State
+const showBannerModal = ref(false)
+const bannerPreview = ref(null)
+const isBannerActive = ref(false)
+const bannerLoading = ref(false)
+
+const openBannerModal = (film) => {
+  selectedFilm.value = film
+  isBannerActive.value = Boolean(film.is_banner_active)
+  bannerPreview.value = film.banner_url || null
+  showBannerModal.value = true
+}
+
+const saveBannerSettings = async () => {
+  if (!selectedFilm.value) return
+
+  bannerLoading.value = true
+  try {
+    await api.put(`/api/films/${selectedFilm.value.film_id}`, {
+      is_banner_active: isBannerActive.value
+    })
+
+    showToast('success', 'Pengaturan banner berhasil disimpan')
+    showBannerModal.value = false
+    fetchFilms()
+  } catch (err) {
+    console.error('Failed to update banner:', err)
+    showToast('error', 'Gagal menyimpan pengaturan banner')
+  } finally {
+    bannerLoading.value = false
+  }
+}
 
 // Toast
 const { toast, showToast } = useToast()
@@ -92,6 +126,9 @@ const viewFilm = (film) => {
 // Confirm action (approve/reject/delete)
 const confirmActionDialog = (type, film) => {
   confirmAction.value = { type, film }
+  if (type === 'reject') {
+    rejectionReason.value = ''
+  }
   showConfirm.value = true
 }
 
@@ -105,7 +142,14 @@ const executeAction = async () => {
       await api.patch(`/api/films/${film.film_id}/approve`, {})
       showToast('success', `Film "${film.judul}" berhasil dipublikasi`)
     } else if (type === 'reject') {
-      await api.patch(`/api/films/${film.film_id}/reject`, {})
+      if (!rejectionReason.value.trim()) {
+        showToast('error', 'Alasan penolakan wajib diisi')
+        actionLoading.value = false
+        return
+      }
+      await api.patch(`/api/films/${film.film_id}/reject`, {
+        rejection_reason: rejectionReason.value.trim()
+      })
       showToast('success', `Film "${film.judul}" ditolak`)
     } else if (type === 'delete') {
       await api.delete(`/api/films/${film.film_id}`)
@@ -156,11 +200,11 @@ onMounted(fetchFilms)
     <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <a href="/" class="text-brand-teal hover:underline">Home</a>
+        <a href="/" class="text-brand-teal hover:underline">Beranda</a>
         <span class="text-stone-400">/</span>
-        <span class="text-stone-600">Administration</span>
+        <span class="text-stone-600">Administrasi</span>
         <span class="text-stone-400">/</span>
-        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Films</Badge>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Film</Badge>
       </nav>
 
       <!-- Header -->
@@ -168,8 +212,8 @@ onMounted(fetchFilms)
         <div class="flex items-start gap-4">
           <div class="w-1 h-20 bg-teal-500 rounded-full"></div>
           <div>
-            <h1 class="font-display text-4xl text-stone-900">Manage Films</h1>
-            <p class="text-stone-600 mt-2 max-w-xl">Kelola dan moderasi film yang diupload creator.</p>
+            <h1 class="font-display text-4xl text-stone-900">Kelola Film</h1>
+            <p class="text-stone-600 mt-2 max-w-xl">Kelola dan moderasi film yang diunggah creator.</p>
           </div>
         </div>
       </div>
@@ -223,7 +267,10 @@ onMounted(fetchFilms)
           <!-- Empty -->
           <div v-else-if="films.length === 0" class="text-center py-12 text-stone-400">
             <Film class="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p>Tidak ada film ditemukan</p>
+            <p class="mb-1">Tidak ada film yang cocok dengan filter saat ini.</p>
+            <p class="text-sm">
+              Coba ubah status, kata kunci pencarian, atau reset filter yang aktif.
+            </p>
           </div>
 
           <!-- Table -->
@@ -275,9 +322,13 @@ onMounted(fetchFilms)
               </div>
 
               <!-- Status -->
-              <div class="lg:col-span-1">
+              <div class="lg:col-span-1 flex flex-col gap-1">
                 <Badge :class="statusColors[film.status]">
                   {{ statusLabels[film.status] }}
+                </Badge>
+                <Badge v-if="film.is_banner_active" class="bg-blue-100 text-blue-800 border-blue-300 w-fit">
+                  <Sparkles class="w-3 h-3 mr-1" />
+                  Banner
                 </Badge>
               </div>
 
@@ -287,12 +338,22 @@ onMounted(fetchFilms)
                   <Eye class="w-4 h-4" />
                 </Button>
                 <Button 
+                  v-if="film.status === 'published'"
+                  variant="outline" 
+                  size="sm" 
+                  class="text-blue-600 hover:bg-blue-50"
+                  @click="openBannerModal(film)"
+                  title="Atur Banner"
+                >
+                  <ImageIcon class="w-4 h-4" />
+                </Button>
+                <Button 
                   v-if="film.status === 'pending'" 
                   variant="outline" 
                   size="sm" 
                   class="text-green-600 hover:bg-green-50"
                   @click="confirmActionDialog('approve', film)"
-                  title="Approve"
+                  title="Setujui"
                 >
                   <Check class="w-4 h-4" />
                 </Button>
@@ -302,7 +363,7 @@ onMounted(fetchFilms)
                   size="sm" 
                   class="text-red-600 hover:bg-red-50"
                   @click="confirmActionDialog('reject', film)"
-                  title="Reject"
+                  title="Tolak"
                 >
                   <X class="w-4 h-4" />
                 </Button>
@@ -417,10 +478,10 @@ onMounted(fetchFilms)
           <!-- Actions -->
           <div v-if="selectedFilm.status === 'pending'" class="flex gap-3 pt-4 border-t">
             <Button class="flex-1 gap-2 bg-green-600 hover:bg-green-700" @click="confirmActionDialog('approve', selectedFilm)">
-              <Check class="w-4 h-4" /> Approve
+              <Check class="w-4 h-4" /> Setujui
             </Button>
             <Button variant="outline" class="flex-1 gap-2 text-red-600" @click="confirmActionDialog('reject', selectedFilm)">
-              <X class="w-4 h-4" /> Reject
+              <X class="w-4 h-4" /> Tolak
             </Button>
           </div>
         </div>
@@ -438,7 +499,7 @@ onMounted(fetchFilms)
           <CheckCircle v-if="confirmAction.type === 'approve'" class="w-5 h-5 text-green-600" />
           <AlertTriangle v-else class="w-5 h-5 text-red-600" />
           <h2 class="font-bold text-lg">
-            {{ confirmAction.type === 'approve' ? 'Approve Film' : confirmAction.type === 'reject' ? 'Reject Film' : 'Hapus Film' }}
+            {{ confirmAction.type === 'approve' ? 'Setujui Film' : confirmAction.type === 'reject' ? 'Tolak Film' : 'Hapus Film' }}
           </h2>
         </div>
         <div class="p-6">
@@ -450,6 +511,17 @@ onMounted(fetchFilms)
               : `Hapus film "${confirmAction.film?.judul}"? Aksi ini tidak dapat dibatalkan.`
             }}
           </p>
+          <div v-if="confirmAction.type === 'reject'" class="mb-6">
+            <label class="block text-sm font-medium text-stone-700 mb-2">
+              Alasan penolakan untuk kreator
+            </label>
+            <textarea
+              v-model="rejectionReason"
+              rows="3"
+              class="w-full border-2 border-stone-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 resize-none"
+              placeholder="Contoh: Kualitas audio kurang jelas, mohon perbaiki mixing dan kirim ulang."
+            ></textarea>
+          </div>
           <div class="flex gap-3">
             <Button type="button" variant="outline" class="flex-1" @click="showConfirm = false" :disabled="actionLoading">
               Batal
@@ -467,7 +539,53 @@ onMounted(fetchFilms)
               <Check v-else-if="confirmAction.type === 'approve'" class="w-4 h-4" />
               <X v-else-if="confirmAction.type === 'reject'" class="w-4 h-4" />
               <Trash2 v-else class="w-4 h-4" />
-              {{ confirmAction.type === 'approve' ? 'Approve' : confirmAction.type === 'reject' ? 'Reject' : 'Hapus' }}
+              {{ confirmAction.type === 'approve' ? 'Setujui' : confirmAction.type === 'reject' ? 'Tolak' : 'Hapus' }}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Banner Modal -->
+    <div v-if="showBannerModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/50" @click="showBannerModal = false"></div>
+      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-lg">
+        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-stone-100">
+          <h2 class="font-bold text-lg">Pengaturan Banner</h2>
+          <button @click="showBannerModal = false" class="p-1 hover:bg-stone-200 rounded">
+            <X class="w-5 h-5" />
+          </button>
+        </div>
+        <div class="p-6">
+          <div class="mb-6">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" v-model="isBannerActive" class="w-4 h-4 rounded border-stone-300 text-brand-teal focus:ring-brand-teal">
+              <span class="font-bold text-stone-700">Tampilkan sebagai Banner Carousel</span>
+            </label>
+            <p class="text-xs text-stone-500 mt-1 ml-6">
+              Jika aktif, film ini akan muncul di slider halaman utama.
+            </p>
+          </div>
+
+          <div class="mb-6">
+            <label class="block text-sm font-bold text-stone-700 mb-2">
+              Preview Banner
+            </label>
+            <div v-if="bannerPreview" class="relative aspect-video bg-stone-100 mb-2 rounded overflow-hidden border border-stone-200">
+                <img :src="bannerPreview" class="w-full h-full object-cover">
+            </div>
+            <div v-else class="p-8 border-2 border-dashed border-stone-300 rounded text-center bg-stone-50">
+                <ImageIcon class="w-12 h-12 mx-auto text-stone-300 mb-2" />
+                <p class="text-stone-500 font-bold">Creator belum mengupload gambar banner.</p>
+                <p class="text-xs text-stone-400 mt-1">Jika diaktifkan, sistem akan menggunakan gambar poster sebagai fallback.</p>
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3">
+            <Button variant="outline" @click="showBannerModal = false">Batal</Button>
+            <Button @click="saveBannerSettings" :disabled="bannerLoading">
+              <Loader2 v-if="bannerLoading" class="w-4 h-4 animate-spin mr-2" />
+              Simpan
             </Button>
           </div>
         </div>

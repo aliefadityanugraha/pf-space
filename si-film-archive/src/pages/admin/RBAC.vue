@@ -49,7 +49,7 @@ async function fetchData() {
     users.value = usersRes.data || []
   } catch (err) {
     console.error('Failed to fetch RBAC data:', err)
-    error.value = err.message || 'Failed to load data'
+    error.value = err.message || 'Gagal memuat data'
   } finally {
     loading.value = false
   }
@@ -109,11 +109,11 @@ async function saveUserRole(userId) {
     
     // Show success message
     const newRoleName = roles.value.find(r => r.role_id === parseInt(selectedRoleId.value))?.name
-    showToast('success', `User role updated to ${newRoleName || 'new role'}`)
+    showToast('success', `Peran pengguna diperbarui menjadi ${newRoleName || 'role baru'}`)
 
   } catch (err) {
     console.error('Failed to update role:', err)
-    showToast('error', err.message || 'Failed to update role')
+    showToast('error', err.message || 'Gagal memperbarui peran')
   } finally {
     updatingUserId.value = null
   }
@@ -151,19 +151,19 @@ onMounted(() => {
     <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <a href="/" class="text-brand-teal hover:underline">Home</a>
+        <a href="/" class="text-brand-teal hover:underline">Beranda</a>
         <span class="text-stone-400">/</span>
-        <a href="/admin/dashboard" class="text-brand-teal hover:underline">Administration</a>
+        <a href="/admin/dashboard" class="text-brand-teal hover:underline">Administrasi</a>
         <span class="text-stone-400">/</span>
         <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">
-          Access Control
+          Kontrol Akses
         </Badge>
       </nav>
 
       <!-- Header -->
       <PageHeader 
-        title="Role-Based Access Control" 
-        description="Manage user roles and permissions for the PF Space system."
+        title="Pengaturan Hak Akses" 
+        description="Kelola role dan izin pengguna untuk sistem PF Space."
         :icon="Shield"
         icon-color="bg-amber-500"
       >
@@ -186,14 +186,14 @@ onMounted(() => {
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-20">
         <Loader2 class="w-8 h-8 animate-spin text-brand-teal" />
-        <span class="ml-3 text-stone-600">Loading data...</span>
+        <span class="ml-3 text-stone-600">Memuat data...</span>
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="bg-red-50 border-2 border-red-300 p-6 text-center">
-        <p class="text-red-800 font-bold mb-2">Error Loading Data</p>
+        <p class="text-red-800 font-bold mb-2">Gagal Memuat Data</p>
         <p class="text-red-600 text-sm mb-4">{{ error }}</p>
-        <Button @click="fetchData" variant="outline">Try Again</Button>
+        <Button @click="fetchData" variant="outline">Coba Lagi</Button>
       </div>
 
       <template v-else>
@@ -201,7 +201,7 @@ onMounted(() => {
         <section class="mb-8">
           <h2 class="text-lg font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
             <Shield class="w-5 h-5" />
-            Available Roles
+            Daftar Role
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             <Card v-for="role in roles" :key="role.role_id" class="hover:shadow-brutal transition-shadow">
@@ -214,10 +214,10 @@ onMounted(() => {
                     ID: {{ role.role_id }}
                   </span>
                 </div>
-                <p class="text-xs text-stone-600 mb-3">{{ role.description || 'No description' }}</p>
+                <p class="text-xs text-stone-600 mb-3">{{ role.description || 'Tidak ada deskripsi' }}</p>
                 <div class="flex items-center gap-1 text-xs text-stone-500">
                   <Users class="w-3 h-3" />
-                  {{ getRoleUserCount(role.role_id) }} users
+                  {{ getRoleUserCount(role.role_id) }} pengguna
                 </div>
               </CardContent>
             </Card>
@@ -231,13 +231,13 @@ onMounted(() => {
               <div class="flex items-center gap-3">
                 <Users class="w-5 h-5" />
                 <CardTitle class="text-lg font-bold uppercase">
-                  User Management ({{ users.length }} users)
+                  Manajemen Pengguna ({{ users.length }} pengguna)
                 </CardTitle>
               </div>
               <div class="flex flex-col sm:flex-row gap-3">
                 <div class="relative">
                   <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-                  <Input v-model="searchQuery" placeholder="Search users..." class="pl-10 w-full sm:w-64" />
+                  <Input v-model="searchQuery" placeholder="Cari pengguna..." class="pl-10 w-full sm:w-64" />
                 </div>
               </div>
             </div>
@@ -245,10 +245,10 @@ onMounted(() => {
           <CardContent class="p-0">
             <!-- Table Header -->
             <div class="hidden lg:grid grid-cols-12 gap-4 px-6 py-3 bg-lime-50 border-b-2 border-stone-800 text-xs font-bold uppercase tracking-wider">
-              <div class="col-span-4">User</div>
+              <div class="col-span-4">Pengguna</div>
               <div class="col-span-2">Role</div>
-              <div class="col-span-3">Joined</div>
-              <div class="col-span-3 text-right">Actions</div>
+              <div class="col-span-3">Bergabung</div>
+              <div class="col-span-3 text-right">Aksi</div>
             </div>
             
             <!-- Users List -->

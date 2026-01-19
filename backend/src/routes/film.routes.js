@@ -10,6 +10,9 @@ export default async function filmRoutes(fastify) {
   // Public: Get latest films
   fastify.get('/latest', filmController.getLatest.bind(filmController));
 
+  // Public: Get banner films
+  fastify.get('/banners', filmController.getBanners.bind(filmController));
+
   // Admin: Get pending films for approval
   fastify.get('/pending', {
     preHandler: requireModerator

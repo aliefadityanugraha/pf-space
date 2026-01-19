@@ -5,7 +5,7 @@ import { deleteFile } from '../lib/upload.js';
 export class FilmController {
   // Public: Get all published films (or all films for admin)
   async getAll(request, reply) {
-    const { page, limit, category_id, search, sortBy, sortOrder, status } = request.query;
+    const { page, limit, category_id, search, sortBy, sortOrder, status, is_banner_active } = request.query;
 
     // Admin and Moderator can filter by any status, public only sees published
     let filterStatus = 'published';
@@ -24,7 +24,8 @@ export class FilmController {
         sortBy: sortBy || 'films.created_at',
         sortOrder: sortOrder || 'desc',
         status: filterStatus,
-        requesting_user_id: request.user?.id
+        requesting_user_id: request.user?.id,
+        is_banner_active: is_banner_active === 'true' ? true : (is_banner_active === 'false' ? false : undefined)
       };
 
       const result = await filmService.getAll(options);
@@ -76,6 +77,30 @@ export class FilmController {
     });
   }
 
+  // Public: Get banner films
+  async getBanners(request, reply) {
+    try {
+      const result = await filmService.getAll({
+        status: 'published',
+        is_banner_active: true,
+        limit: 10,
+        sortBy: 'updated_at', // Latest updated first? or created_at
+        sortOrder: 'desc'
+      });
+
+      return reply.send({
+        success: true,
+        data: result.films
+      });
+    } catch (err) {
+      console.error('Get banners error:', err);
+      return reply.status(500).send({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
   // Public: Get latest films
   async getLatest(request, reply) {
     const limit = request.query.limit || 10;
@@ -101,7 +126,8 @@ export class FilmController {
       file_naskah,
       file_storyboard,
       file_rab,
-      crew
+      crew,
+      banner_url
     } = request.body;
 
     if (!judul) {
@@ -120,6 +146,7 @@ export class FilmController {
       link_video_utama,
       link_trailer,
       gambar_poster,
+      banner_url,
       deskripsi_lengkap,
       file_naskah,
       file_storyboard,
@@ -167,7 +194,9 @@ export class FilmController {
       file_naskah,
       file_storyboard,
       file_rab,
-      crew
+      crew,
+      banner_url,
+      is_banner_active
     } = request.body;
 
     const updateData = {};
@@ -183,10 +212,22 @@ export class FilmController {
     if (file_storyboard !== undefined) updateData.file_storyboard = file_storyboard;
     if (file_rab !== undefined) updateData.file_rab = file_rab;
     if (crew !== undefined) updateData.crew = crew;
+    if (banner_url !== undefined) updateData.banner_url = banner_url;
+
+    // Admin only fields
+    if (request.user.role_id === ROLES.ADMIN) {
+      if (is_banner_active !== undefined) {
+        // Handle boolean/string/integer input from FormData
+        updateData.is_banner_active = String(is_banner_active) === 'true' || String(is_banner_active) === '1';
+      }
+    }
 
     // Delete old files if they are being updated
     if (gambar_poster && film.gambar_poster && gambar_poster !== film.gambar_poster) {
       await deleteFile(film.gambar_poster);
+    }
+    if (banner_url && film.banner_url && banner_url !== film.banner_url) {
+      await deleteFile(film.banner_url);
     }
     if (file_naskah && film.file_naskah && file_naskah !== film.file_naskah) {
       await deleteFile(film.file_naskah);
@@ -199,8 +240,10 @@ export class FilmController {
     }
 
     // Reset to pending if creator updates (needs re-approval)
-    if (request.user.role_id !== ROLES.ADMIN && film.status === 'published') {
+    if (request.user.role_id !== ROLES.ADMIN && (film.status === 'published' || film.status === 'rejected')) {
       updateData.status = 'pending';
+      updateData.rejection_reason = null; // Clear rejection reason
+      console.log(`Film ${id} status reset to pending due to creator update`);
     }
 
     const updated = await filmService.update(id, updateData);
@@ -234,6 +277,7 @@ export class FilmController {
 
     // Delete associated files
     if (film.gambar_poster) await deleteFile(film.gambar_poster);
+    if (film.banner_url) await deleteFile(film.banner_url);
     if (film.file_naskah) await deleteFile(film.file_naskah);
     if (film.file_storyboard) await deleteFile(film.file_storyboard);
     if (film.file_rab) await deleteFile(film.file_rab);
@@ -286,7 +330,7 @@ export class FilmController {
       });
     }
 
-    const updated = await filmService.updateStatus(id, 'published');
+    const updated = await filmService.updateStatus(id, 'published', { rejection_reason: null });
 
     return reply.send({
       success: true,
@@ -298,6 +342,7 @@ export class FilmController {
   // Admin: Reject film
   async reject(request, reply) {
     const { id } = request.params;
+    const { rejection_reason } = request.body || {};
     const film = await filmService.getById(id);
 
     if (!film) {
@@ -307,7 +352,9 @@ export class FilmController {
       });
     }
 
-    const updated = await filmService.updateStatus(id, 'rejected');
+    const updated = await filmService.updateStatus(id, 'rejected', {
+      rejection_reason: rejection_reason || null
+    });
 
     return reply.send({
       success: true,

@@ -41,12 +41,14 @@ const {
 
 onMounted(async () => {
   try {
-    const res = await api.get('/api/carousel/public')
+    const res = await api.get('/api/films/banners')
     if (res.data && res.data.length > 0) {
       // Map API data to component format
       slides.value = res.data.map(item => ({
-        ...item,
-        image: item.image_url // Map image_url to image
+        title: item.judul,
+        summary: item.category?.nama_kategori || 'Featured Film',
+        quote: item.sinopsis,
+        image: item.banner_url || item.gambar_poster
       }))
     }
   } catch (err) {

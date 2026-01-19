@@ -41,6 +41,7 @@ const fetchFilm = async () => {
       link_video_utama: film.link_video_utama || '',
       link_trailer: film.link_trailer || '',
       gambar_poster: film.gambar_poster || '',
+      banner_url: film.banner_url || '',
       deskripsi_lengkap: film.deskripsi_lengkap || '',
       file_naskah: film.file_naskah || '',
       file_storyboard: film.file_storyboard || '',
@@ -151,12 +152,30 @@ onMounted(() => {
       </div>
 
       <template v-else>
-        <!-- Warning for published films -->
-        <div v-if="originalStatus === 'published'" class="mb-6 p-4 bg-yellow-50 border-2 border-yellow-300 flex items-start gap-3">
+        <div v-if="originalStatus === 'published' || originalStatus === 'rejected'" class="mb-6 p-4 bg-yellow-50 border-2 border-yellow-300 flex items-start gap-3">
           <AlertTriangle class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
           <div>
             <p class="font-bold text-yellow-800">Perhatian</p>
-            <p class="text-sm text-yellow-700">Film ini sudah dipublikasi. Jika kamu menyimpan perubahan, status akan berubah menjadi "Menunggu Review" dan film tidak akan tampil di beranda sampai disetujui kembali.</p>
+            <p class="text-sm text-yellow-700">
+              Film ini sudah {{ originalStatus === 'published' ? 'dipublikasi' : 'ditolak' }}. 
+              Jika kamu menyimpan perubahan, status akan berubah menjadi "Menunggu Review" dan film tidak akan tampil di beranda sampai disetujui kembali.
+            </p>
+          </div>
+        </div>
+
+        <div class="mb-6 p-4 bg-stone-50 border-2 border-stone-300 rounded-lg flex gap-3">
+          <div class="mt-1">
+            <AlertTriangle class="w-5 h-5 text-amber-600" />
+          </div>
+          <div>
+            <p class="font-semibold text-stone-900 mb-2">Panduan kurasi saat merevisi film</p>
+            <ul class="list-disc pl-5 text-sm text-stone-700 space-y-1">
+              <li>Perbaiki catatan penolakan admin terkait audio, visual, atau durasi bila ada.</li>
+              <li>Pastikan link video utama dan trailer masih aktif dan dapat diputar tanpa batasan.</li>
+              <li>Perbarui sinopsis, tahun produksi, dan data kru jika terjadi perubahan signifikan.</li>
+              <li>Gunakan poster yang jelas, tidak blur, dan merepresentasikan tema film.</li>
+              <li>Pastikan seluruh materi tidak melanggar hak cipta dan etika kampus.</li>
+            </ul>
           </div>
         </div>
 

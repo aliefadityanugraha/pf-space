@@ -87,13 +87,13 @@ const getRankBadgeClass = (index) => {
         <div class="text-center mb-12">
           <div class="inline-flex items-center gap-2 bg-brand-red border-2 border-stone-900 shadow-brutal px-4 py-1 mb-4">
             <Trophy class="w-5 h-5 text-white" />
-            <span class="font-body text-white text-sm font-bold uppercase tracking-widest">Community Choice</span>
+            <span class="font-body text-white text-sm font-bold uppercase tracking-widest">Pilihan Komunitas</span>
           </div>
           <h1 class="font-heading text-5xl md:text-7xl text-stone-900 tracking-wide mb-4">
-            VOTE FOR CLASSICS
+            PILIH KARYA FAVORITMU
           </h1>
           <p class="font-body text-stone-600 text-lg max-w-2xl mx-auto">
-            Help us curate the ultimate collection. Vote for the films that deserve to be preserved and celebrated.
+            Bantu kami mengkurasi arsip terbaik. Beri suara untuk film yang layak diarsipkan dan dirayakan.
           </p>
         </div>
 
@@ -104,7 +104,7 @@ const getRankBadgeClass = (index) => {
         <template v-else>
           <!-- Top 3 Podium -->
           <div v-if="topThree.length > 0" class="mb-16">
-            <h2 class="font-display text-2xl text-stone-900 mb-6 text-center">Current Leaders</h2>
+            <h2 class="font-display text-2xl text-stone-900 mb-6 text-center">Peringkat Sementara</h2>
             <div class="flex flex-col md:flex-row items-end justify-center gap-4 md:gap-6">
               <!-- 2nd Place -->
               <div v-if="topThree[1]" class="order-2 md:order-1 w-full md:w-56">
@@ -186,9 +186,9 @@ const getRankBadgeClass = (index) => {
                 v-model="sortBy"
                 class="bg-white border-2 border-stone-900 px-3 py-2 font-body text-sm font-bold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-brand-teal"
               >
-                <option value="votes">Most Votes</option>
-                <option value="year">Oldest First</option>
-                <option value="title">A-Z</option>
+                <option value="votes">Suara Terbanyak</option>
+                <option value="year">Terlama Lebih Dulu</option>
+                <option value="title">Judul A-Z</option>
               </select>
             </div>
           </div>
@@ -218,7 +218,7 @@ const getRankBadgeClass = (index) => {
                   <div class="flex items-center gap-2">
                     <TrendingUp class="w-4 h-4 text-brand-teal" />
                     <span class="font-body font-bold text-stone-900">{{ film.votes.toLocaleString() }}</span>
-                    <span class="font-body text-xs text-stone-500">votes</span>
+                    <span class="font-body text-xs text-stone-500">suara</span>
                   </div>
                   
                   <Button
@@ -234,15 +234,28 @@ const getRankBadgeClass = (index) => {
                   >
                     <Loader2 v-if="votingId === film.id" class="w-4 h-4 mr-1 animate-spin" />
                     <ChevronUp v-else class="w-4 h-4 mr-1" />
-                    {{ film.hasVoted ? 'Voted' : 'Vote' }}
+                    {{ film.hasVoted ? 'Sudah Vote' : 'Vote' }}
                   </Button>
                 </div>
               </template>
             </FilmCard>
           </div>
           
-          <div v-else class="text-center py-12 border-2 border-stone-900 border-dashed">
-            <p class="font-body text-stone-500">No films found in this category.</p>
+          <div v-else class="text-center py-12 border-2 border-stone-900 border-dashed bg-white/40">
+            <Film class="w-12 h-12 text-stone-300 mx-auto mb-4" />
+            <h3 class="font-body text-lg font-bold text-stone-800 mb-2">
+              Belum ada film di kategori ini
+            </h3>
+            <p class="font-body text-stone-500 mb-4">
+              Coba pilih kategori lain atau lihat semua film yang bisa kamu vote.
+            </p>
+            <Button
+              variant="outline"
+              class="border-2 border-stone-900 shadow-brutal-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
+              @click="selectedCategory = 'all'"
+            >
+              Lihat Semua Film
+            </Button>
           </div>
         </template>
 
@@ -250,13 +263,13 @@ const getRankBadgeClass = (index) => {
         <div class="mt-16 bg-stone-900 border-2 border-stone-900 p-8 md:p-12 text-center">
           <Film class="w-12 h-12 text-brand-orange mx-auto mb-4" />
           <h2 class="font-heading text-3xl md:text-4xl text-white tracking-wide mb-4">
-            DON'T SEE YOUR FAVORITE?
+            BELUM ADA FILM FAVORITMU?
           </h2>
           <p class="font-body text-stone-400 mb-6 max-w-lg mx-auto">
-            Suggest a film to be added to our voting collection. Help us expand the archive.
+            Ajukan film untuk ditambahkan ke koleksi voting dan bantu memperkaya arsip.
           </p>
           <Button class="bg-brand-orange text-stone-900 border-2 border-white shadow-brutal-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all px-6 py-3 h-auto">
-            <span class="font-body font-bold uppercase tracking-wide">Suggest a Film</span>
+            <span class="font-body font-bold uppercase tracking-wide">Ajukan Film</span>
           </Button>
         </div>
 

@@ -14,18 +14,6 @@ import Collections from '../pages/Collections.vue'
 import Login from '../pages/auth/Login.vue'
 import Register from '../pages/auth/Register.vue'
 import Forgot from '../pages/auth/Forgot.vue'
-import DashboardAdmin from '../pages/admin/DashboardAdmin.vue'
-import RBAC from '../pages/admin/RBAC.vue'
-import Categories from '../pages/admin/Categories.vue'
-import Films from '../pages/admin/Films.vue'
-import Users from '../pages/admin/Users.vue'
-import Uploads from '../pages/admin/Uploads.vue'
-import Reports from '../pages/admin/Reports.vue'
-import Analytics from '../pages/admin/Analytics.vue'
-import Notifications from '../pages/admin/Notifications.vue'
-import SettingsPage from '../pages/admin/Settings.vue'
-import Help from '../pages/admin/Help.vue'
-import CarouselManager from '../pages/admin/CarouselManager.vue'
 import NotFound from '../pages/NotFound.vue'
 import Voting from '../pages/Voting.vue'
 import Watch from '../pages/Watch.vue'
@@ -136,73 +124,73 @@ const routes = [
   {
     path: '/admin/dashboard',
     name: 'AdminDashboard',
-    component: DashboardAdmin,
+    component: () => import('../pages/admin/DashboardAdmin.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/admin/rbac',
     name: 'RBAC',
-    component: RBAC,
+    component: () => import('../pages/admin/RBAC.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/admin/categories',
     name: 'AdminCategories',
-    component: Categories,
+    component: () => import('../pages/admin/Categories.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/admin/users',
     name: 'AdminUsers',
-    component: Users,
+    component: () => import('../pages/admin/Users.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/admin/films',
     name: 'AdminFilms',
-    component: Films,
+    component: () => import('../pages/admin/Films.vue'),
     meta: { requiresAuth: true, requiresModerator: true }
   },
   {
     path: '/admin/uploads',
     name: 'AdminUploads',
-    component: Uploads,
+    component: () => import('../pages/admin/Uploads.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/admin/reports',
     name: 'AdminReports',
-    component: Reports,
+    component: () => import('../pages/admin/Reports.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/admin/analytics',
     name: 'AdminAnalytics',
-    component: Analytics,
+    component: () => import('../pages/admin/Analytics.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/admin/notifications',
     name: 'AdminNotifications',
-    component: Notifications,
+    component: () => import('../pages/admin/Notifications.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/admin/settings',
     name: 'AdminSettings',
-    component: SettingsPage,
+    component: () => import('../pages/admin/Settings.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/admin/help',
     name: 'AdminHelp',
-    component: Help,
+    component: () => import('../pages/admin/Help.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/admin/carousel',
     name: 'AdminCarousel',
-    component: CarouselManager,
+    component: () => import('../pages/admin/CarouselManager.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {

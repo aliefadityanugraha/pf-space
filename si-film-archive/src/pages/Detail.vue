@@ -563,7 +563,15 @@ onUnmounted(() => {
               </div>
               <div v-else-if="comments.length === 0" class="text-center py-12 border-2 border-stone-200 bg-stone-50/50">
                 <MessageCircle class="w-12 h-12 text-stone-300 mx-auto mb-3" />
-                <p class="text-stone-400 font-body italic">Belum ada diskusi untuk karya ini. Jadilah yang pertama!</p>
+                <p class="text-stone-400 font-body italic">
+                  Belum ada diskusi untuk karya ini. Jadilah yang pertama!
+                </p>
+                <p v-if="isLoggedIn" class="text-stone-500 font-body mt-3">
+                  Tulis komentar pertamamu melalui formulir di atas.
+                </p>
+                <p v-else class="text-stone-500 font-body mt-3">
+                  Login terlebih dahulu untuk mulai berdiskusi.
+                </p>
               </div>
               <div v-else class="space-y-2">
                 <CommentItem 
