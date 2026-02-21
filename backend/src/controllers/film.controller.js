@@ -1,50 +1,61 @@
+/**
+ * src/controllers/film.controller.js
+ * 
+ * Controller for managing films, including listing, creation, 
+ * editing, deletion, and approval workflows.
+ */
+
 import { filmService } from '../services/index.js';
-import { ROLES } from '../models/index.js';
-import { deleteFile } from '../lib/upload.js';
+import { ApiResponse } from '../lib/response.js';
+import { ROLES, FILM_STATUS } from '../config/constants.js';
+import { NotFoundError, AuthorizationError } from '../lib/errors.js';
+import { sanitizeRichText, sanitizePlainText } from '../lib/sanitize.js';
 
 export class FilmController {
-  // Public: Get all published films (or all films for admin)
+  /**
+   * Public: Fetch a paginated list of published films with various filters
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async getAll(request, reply) {
     const { page, limit, category_id, search, sortBy, sortOrder, status, is_banner_active } = request.query;
 
     // Admin and Moderator can filter by any status, public only sees published
-    let filterStatus = 'published';
+    let filterStatus = FILM_STATUS.PUBLISHED;
     if (request.user && (request.user.role_id === ROLES.ADMIN || request.user.role_id === ROLES.MODERATOR)) {
       if (status) {
         filterStatus = status === 'all' ? null : status;
       }
     }
 
-    try {
-      const options = {
-        page: page ? parseInt(page) : 1,
-        limit: limit ? parseInt(limit) : 10,
-        category_id,
-        search: search || null,
-        sortBy: sortBy || 'films.created_at',
-        sortOrder: sortOrder || 'desc',
-        status: filterStatus,
-        requesting_user_id: request.user?.id,
-        is_banner_active: is_banner_active === 'true' ? true : (is_banner_active === 'false' ? false : undefined)
-      };
+    const options = {
+      page: page ? parseInt(page) : 1,
+      limit: limit ? parseInt(limit) : 10,
+      category_id,
+      search: search || null,
+      sortBy: sortBy || 'films.created_at',
+      sortOrder: sortOrder || 'desc',
+      status: filterStatus,
+      requesting_user_id: request.user?.id,
+      is_banner_active: is_banner_active === 'true' ? true : (is_banner_active === 'false' ? false : undefined)
+    };
 
-      const result = await filmService.getAll(options);
+    const result = await filmService.getAll(options);
 
-      return reply.send({
-        success: true,
-        data: result.films,
-        pagination: result.pagination
-      });
-    } catch (err) {
-      console.error('Film search error:', err);
-      return reply.status(500).send({
-        success: false,
-        message: 'Internal server error during search'
-      });
-    }
+    return ApiResponse.success(
+      reply, 
+      result.films, 
+      'Films retrieved successfully', 
+      200, 
+      result.pagination
+    );
   }
 
-  // Public: Get single film by ID or slug
+  /**
+   * Public: Fetch a single film by its ID or slug
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async getById(request, reply) {
     const { id } = request.params;
     
@@ -55,312 +66,236 @@ export class FilmController {
       : await filmService.getBySlug(id);
 
     if (!film) {
-      return reply.status(404).send({
-        success: false,
-        message: 'Film not found'
-      });
+      throw new NotFoundError('Film not found');
     }
 
     // Only show published films to public, or own films to creator
-    if (film.status !== 'published') {
+    if (film.status !== FILM_STATUS.PUBLISHED) {
       if (!request.user || (request.user.id !== film.user_id && request.user.role_id !== ROLES.ADMIN)) {
-        return reply.status(404).send({
-          success: false,
-          message: 'Film not found'
-        });
+        throw new NotFoundError('Film not found');
       }
     }
 
-    return reply.send({
-      success: true,
-      data: film
-    });
+    return ApiResponse.success(reply, film);
   }
 
-  // Public: Get banner films
-  async getBanners(request, reply) {
-    try {
-      const result = await filmService.getAll({
-        status: 'published',
-        is_banner_active: true,
-        limit: 10,
-        sortBy: 'updated_at', // Latest updated first? or created_at
-        sortOrder: 'desc'
-      });
-
-      return reply.send({
-        success: true,
-        data: result.films
-      });
-    } catch (err) {
-      console.error('Get banners error:', err);
-      return reply.status(500).send({
-        success: false,
-        message: 'Internal server error'
-      });
+  /**
+   * Public: Fetch related films based on the current film's category
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getRelated(request, reply) {
+    const { id } = request.params;
+    const { limit } = request.query;
+    
+    // Check if id is numeric or slug. If slug, resolve to ID first
+    let filmId = id;
+    if (!/^\d+$/.test(id)) {
+      const film = await filmService.getBySlug(id);
+      if (!film) throw new NotFoundError('Film not found');
+      filmId = film.film_id;
     }
+
+    const related = await filmService.getRelated(filmId, limit ? parseInt(limit) : 4);
+    
+    return ApiResponse.success(reply, related);
   }
 
-  // Public: Get latest films
+  /**
+   * Public: Fetch films designated for the homepage banner
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getBanners(request, reply) {
+    const result = await filmService.getAll({
+      status: FILM_STATUS.PUBLISHED,
+      is_banner_active: true,
+      limit: 10,
+      sortBy: 'updated_at',
+      sortOrder: 'desc'
+    });
+
+    return ApiResponse.success(reply, result.films);
+  }
+
+  /**
+   * Public: Fetch most recently published films
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async getLatest(request, reply) {
     const limit = request.query.limit || 10;
     const films = await filmService.getLatest(limit);
-
-    return reply.send({
-      success: true,
-      data: films
-    });
+    return ApiResponse.success(reply, films);
   }
 
-  // Creator: Create new film
-  async create(request, reply) {
-    const {
-      category_id,
-      judul,
-      sinopsis,
-      tahun_karya,
-      link_video_utama,
-      link_trailer,
-      gambar_poster,
-      deskripsi_lengkap,
-      file_naskah,
-      file_storyboard,
-      file_rab,
-      crew,
-      banner_url
-    } = request.body;
-
-    if (!judul) {
-      return reply.status(400).send({
-        success: false,
-        message: 'judul is required'
-      });
+  /**
+   * Public: Increment the view counter for a film
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async incrementViews(request, reply) {
+    const { id } = request.params;
+    
+    // Check if id is numeric or slug. If slug, resolve to ID first
+    let filmId = id;
+    if (!/^\d+$/.test(id)) {
+      const film = await filmService.getBySlug(id);
+      if (!film) throw new NotFoundError('Film not found');
+      filmId = film.film_id;
     }
 
-    const film = await filmService.create({
-      user_id: request.user.id,
-      category_id,
-      judul,
-      sinopsis,
-      tahun_karya,
-      link_video_utama,
-      link_trailer,
-      gambar_poster,
-      banner_url,
-      deskripsi_lengkap,
-      file_naskah,
-      file_storyboard,
-      file_rab,
-      crew: crew || null,
-      status: 'pending'
-    });
-
-    return reply.status(201).send({
-      success: true,
-      message: 'Film created successfully. Waiting for admin approval.',
-      data: film
-    });
+    await filmService.incrementViews(filmId);
+    return ApiResponse.success(reply, { success: true });
   }
 
-  // Creator: Update own film
+  /**
+   * Protected: Create a new film entry (Creator/Admin)
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async create(request, reply) {
+    const data = { ...request.body };
+
+    // Sanitize user-generated content
+    if (data.deskripsi_lengkap) data.deskripsi_lengkap = sanitizeRichText(data.deskripsi_lengkap);
+    if (data.sinopsis) data.sinopsis = sanitizePlainText(data.sinopsis);
+
+    const film = await filmService.create({
+      ...data,
+      user_id: request.user.id,
+      status: FILM_STATUS.PENDING
+    });
+
+    return ApiResponse.success(reply, film, 'Film created successfully. Waiting for admin approval.', 201);
+  }
+
+  /**
+   * Creator: Update an existing film entry (Ownership verified)
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async update(request, reply) {
     const { id } = request.params;
     const film = await filmService.getById(id);
 
     if (!film) {
-      return reply.status(404).send({
-        success: false,
-        message: 'Film not found'
-      });
+      throw new NotFoundError('Film not found');
     }
 
     // Only creator or admin can update
     if (film.user_id !== request.user.id && request.user.role_id !== ROLES.ADMIN) {
-      return reply.status(403).send({
-        success: false,
-        message: 'You can only update your own films'
-      });
+      throw new AuthorizationError('You can only update your own films');
     }
 
-    const {
-      category_id,
-      judul,
-      sinopsis,
-      tahun_karya,
-      link_video_utama,
-      link_trailer,
-      gambar_poster,
-      deskripsi_lengkap,
-      file_naskah,
-      file_storyboard,
-      file_rab,
-      crew,
-      banner_url,
-      is_banner_active
-    } = request.body;
+    const updateData = { ...request.body };
 
-    const updateData = {};
-    if (category_id !== undefined) updateData.category_id = category_id;
-    if (judul !== undefined) updateData.judul = judul;
-    if (sinopsis !== undefined) updateData.sinopsis = sinopsis;
-    if (tahun_karya !== undefined) updateData.tahun_karya = tahun_karya;
-    if (link_video_utama !== undefined) updateData.link_video_utama = link_video_utama;
-    if (link_trailer !== undefined) updateData.link_trailer = link_trailer;
-    if (gambar_poster !== undefined) updateData.gambar_poster = gambar_poster;
-    if (deskripsi_lengkap !== undefined) updateData.deskripsi_lengkap = deskripsi_lengkap;
-    if (file_naskah !== undefined) updateData.file_naskah = file_naskah;
-    if (file_storyboard !== undefined) updateData.file_storyboard = file_storyboard;
-    if (file_rab !== undefined) updateData.file_rab = file_rab;
-    if (crew !== undefined) updateData.crew = crew;
-    if (banner_url !== undefined) updateData.banner_url = banner_url;
-
-    // Admin only fields
-    if (request.user.role_id === ROLES.ADMIN) {
-      if (is_banner_active !== undefined) {
-        // Handle boolean/string/integer input from FormData
-        updateData.is_banner_active = String(is_banner_active) === 'true' || String(is_banner_active) === '1';
-      }
-    }
-
-    // Delete old files if they are being updated
-    if (gambar_poster && film.gambar_poster && gambar_poster !== film.gambar_poster) {
-      await deleteFile(film.gambar_poster);
-    }
-    if (banner_url && film.banner_url && banner_url !== film.banner_url) {
-      await deleteFile(film.banner_url);
-    }
-    if (file_naskah && film.file_naskah && file_naskah !== film.file_naskah) {
-      await deleteFile(film.file_naskah);
-    }
-    if (file_storyboard && film.file_storyboard && file_storyboard !== film.file_storyboard) {
-      await deleteFile(film.file_storyboard);
-    }
-    if (file_rab && film.file_rab && file_rab !== film.file_rab) {
-      await deleteFile(film.file_rab);
-    }
+    // Sanitize user-generated content
+    if (updateData.deskripsi_lengkap) updateData.deskripsi_lengkap = sanitizeRichText(updateData.deskripsi_lengkap);
+    if (updateData.sinopsis) updateData.sinopsis = sanitizePlainText(updateData.sinopsis);
 
     // Reset to pending if creator updates (needs re-approval)
-    if (request.user.role_id !== ROLES.ADMIN && (film.status === 'published' || film.status === 'rejected')) {
-      updateData.status = 'pending';
-      updateData.rejection_reason = null; // Clear rejection reason
-      console.log(`Film ${id} status reset to pending due to creator update`);
+    if (request.user.role_id !== ROLES.ADMIN && (film.status === FILM_STATUS.PUBLISHED || film.status === FILM_STATUS.REJECTED)) {
+      updateData.status = FILM_STATUS.PENDING;
+      updateData.rejection_reason = null;
     }
 
     const updated = await filmService.update(id, updateData);
-
-    return reply.send({
-      success: true,
-      message: 'Film updated successfully',
-      data: updated
-    });
+    return ApiResponse.success(reply, updated, 'Film updated successfully');
   }
 
-  // Creator: Delete own film
+  /**
+   * Creator: Delete an existing film entry (Ownership verified)
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async delete(request, reply) {
     const { id } = request.params;
     const film = await filmService.getById(id);
 
     if (!film) {
-      return reply.status(404).send({
-        success: false,
-        message: 'Film not found'
-      });
+      throw new NotFoundError('Film not found');
     }
 
     // Only creator or admin can delete
     if (film.user_id !== request.user.id && request.user.role_id !== ROLES.ADMIN) {
-      return reply.status(403).send({
-        success: false,
-        message: 'You can only delete your own films'
-      });
+      throw new AuthorizationError('You can only delete your own films');
     }
 
-    // Delete associated files
-    if (film.gambar_poster) await deleteFile(film.gambar_poster);
-    if (film.banner_url) await deleteFile(film.banner_url);
-    if (film.file_naskah) await deleteFile(film.file_naskah);
-    if (film.file_storyboard) await deleteFile(film.file_storyboard);
-    if (film.file_rab) await deleteFile(film.file_rab);
-
     await filmService.delete(id);
-
-    return reply.send({
-      success: true,
-      message: 'Film deleted successfully'
-    });
+    return ApiResponse.success(reply, null, 'Film deleted successfully');
   }
 
-  // Creator: Get my films
+  /**
+   * Creator: Fetch all films uploaded by the current user
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async getMyFilms(request, reply) {
     const { page, limit, status } = request.query;
 
     const result = await filmService.getAll({
-      page,
-      limit,
+      page: page ? parseInt(page) : 1,
+      limit: limit ? parseInt(limit) : 10,
       user_id: request.user.id,
       status: status || null
     });
 
-    return reply.send({
-      success: true,
-      data: result.films,
-      pagination: result.pagination
-    });
+    return ApiResponse.success(
+      reply, 
+      result.films, 
+      'My films retrieved successfully', 
+      200, 
+      result.pagination
+    );
   }
 
-  // Admin: Get pending films
+  /**
+   * Admin: Fetch a list of films waiting for approval
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async getPending(request, reply) {
     const films = await filmService.getPending();
-
-    return reply.send({
-      success: true,
-      data: films
-    });
+    return ApiResponse.success(reply, films);
   }
 
-  // Admin: Approve film
+  /**
+   * Admin: Approve and publish a pending film
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async approve(request, reply) {
     const { id } = request.params;
     const film = await filmService.getById(id);
 
     if (!film) {
-      return reply.status(404).send({
-        success: false,
-        message: 'Film not found'
-      });
+      throw new NotFoundError('Film not found');
     }
 
-    const updated = await filmService.updateStatus(id, 'published', { rejection_reason: null });
-
-    return reply.send({
-      success: true,
-      message: 'Film approved and published',
-      data: updated
-    });
+    const updated = await filmService.updateStatus(id, FILM_STATUS.PUBLISHED, { rejection_reason: null });
+    return ApiResponse.success(reply, updated, 'Film approved and published');
   }
 
-  // Admin: Reject film
+  /**
+   * Admin: Reject a pending film with a reason
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async reject(request, reply) {
     const { id } = request.params;
-    const { rejection_reason } = request.body || {};
+    
     const film = await filmService.getById(id);
 
     if (!film) {
-      return reply.status(404).send({
-        success: false,
-        message: 'Film not found'
-      });
+      throw new NotFoundError('Film not found');
     }
 
-    const updated = await filmService.updateStatus(id, 'rejected', {
-      rejection_reason: rejection_reason || null
+    const updated = await filmService.updateStatus(id, FILM_STATUS.REJECTED, {
+      rejection_reason: request.body.rejection_reason
     });
 
-    return reply.send({
-      success: true,
-      message: 'Film rejected',
-      data: updated
-    });
+    return ApiResponse.success(reply, updated, 'Film rejected');
   }
 }
 

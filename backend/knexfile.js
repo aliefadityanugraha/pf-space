@@ -1,3 +1,10 @@
+/**
+ * knexfile.js
+ * 
+ * Database configuration for Knex.js, managing connection settings
+ * for development and production environments.
+ */
+
 import 'dotenv/config';
 
 export default {
@@ -15,6 +22,14 @@ export default {
     },
     seeds: {
       directory: './src/database/seeds'
+    },
+    pool: {
+      min: 2,
+      max: 10,
+      // Release idle connections after 30 seconds
+      idleTimeoutMillis: 30000,
+      // Timeout if a connection can't be acquired within 10 seconds
+      acquireTimeoutMillis: 10000
     }
   },
   production: {

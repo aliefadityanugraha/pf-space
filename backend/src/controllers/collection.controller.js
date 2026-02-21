@@ -1,17 +1,25 @@
+/**
+ * src/controllers/collection.controller.js
+ * 
+ * Controller for managing user film collections (bookmarks/watchlist).
+ */
+
 import { collectionService, filmService } from '../services/index.js';
+import { ApiResponse } from '../lib/response.js';
 
 export class CollectionController {
-  // User: Toggle collection
+  /**
+   * Add or remove a film from the user's personal collection
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async toggleCollection(request, reply) {
     const { filmId } = request.params;
 
     // Check film exists and is published
     const film = await filmService.getById(filmId);
     if (!film || film.status !== 'published') {
-      return reply.status(404).send({
-        success: false,
-        message: 'Film not found'
-      });
+      return ApiResponse.notFound(reply, 'Film not found');
     }
 
     const isInCollection = await collectionService.isInCollection(filmId, request.user.id);
@@ -22,16 +30,16 @@ export class CollectionController {
       await collectionService.add(filmId, request.user.id);
     }
 
-    return reply.send({
-      success: true,
-      message: isInCollection ? 'Film removed from collection' : 'Film added to collection',
-      data: { 
-        is_in_collection: !isInCollection
-      }
-    });
+    return ApiResponse.success(reply, { 
+      is_in_collection: !isInCollection
+    }, isInCollection ? 'Film removed from collection' : 'Film added to collection');
   }
 
-  // User: Get collection status for a film
+  /**
+   * Check if a specific film is in the current user's collection
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async getStatus(request, reply) {
     const { filmId } = request.params;
     
@@ -40,22 +48,31 @@ export class CollectionController {
       isInCollection = await collectionService.isInCollection(filmId, request.user.id);
     }
 
-    return reply.send({
-      success: true,
-      data: { 
-        is_in_collection: isInCollection
-      }
+    return ApiResponse.success(reply, { 
+      is_in_collection: isInCollection
     });
   }
 
-  // User: Get my collections
+  /**
+   * Fetch a paginated list of all films in the user's personal collection
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
   async getMyCollections(request, reply) {
-    const collections = await collectionService.getUserCollections(request.user.id);
-
-    return reply.send({
-      success: true,
-      data: collections
+    const { page, limit } = request.query;
+    
+    const result = await collectionService.getUserCollections(request.user.id, {
+      page: page ? parseInt(page) : 1,
+      limit: limit ? parseInt(limit) : 10
     });
+
+    return ApiResponse.success(
+      reply, 
+      result.collections, 
+      'Collections retrieved successfully', 
+      200, 
+      result.pagination
+    );
   }
 }
 

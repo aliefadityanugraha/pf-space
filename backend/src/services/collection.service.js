@@ -1,6 +1,18 @@
-import { Collection, Film } from '../models/index.js';
+/**
+ * src/services/collection.service.js
+ * 
+ * Service for managing user film collections (bookmarks/watchlist).
+ */
+
+import { Collection, Film, BaseModel } from '../models/index.js';
 
 export class CollectionService {
+  /**
+   * Add a film to user's collection
+   * @param {number} filmId - Film ID
+   * @param {string} userId - User ID
+   * @returns {Promise<{alreadyInCollection: boolean}>}
+   */
   async add(filmId, userId) {
     const filmIdInt = parseInt(filmId);
     
@@ -20,6 +32,12 @@ export class CollectionService {
     return { alreadyInCollection: false };
   }
 
+  /**
+   * Remove a film from user's collection
+   * @param {number} filmId - Film ID
+   * @param {string} userId - User ID
+   * @returns {Promise<boolean>} True if removed
+   */
   async remove(filmId, userId) {
     const filmIdInt = parseInt(filmId);
     const deleted = await Collection.query()
@@ -29,6 +47,12 @@ export class CollectionService {
     return deleted > 0;
   }
 
+  /**
+   * Check if a film exists in a user's collection
+   * @param {number} filmId - Film ID
+   * @param {string} userId - User ID
+   * @returns {Promise<boolean>}
+   */
   async isInCollection(filmId, userId) {
     if (!userId) return false;
     const filmIdInt = parseInt(filmId);
@@ -37,16 +61,38 @@ export class CollectionService {
     return !!item;
   }
 
-  async getUserCollections(userId) {
-    return Collection.query()
+  /**
+   * Get a paginated list of all films in a user's collection
+   * @param {string} userId - User ID
+   * @param {object} options - Pagination options
+   * @returns {Promise<{collections: Collection[], pagination: object}>}
+   */
+  async getUserCollections(userId, options = {}) {
+    const { page = 1, limit = 10 } = options;
+    const offset = (page - 1) * limit;
+
+    const query = Collection.query()
       .where('user_id', userId)
       .withGraphFetched('film.[creator(selectBasic), category]')
-      .modifiers({
-        selectBasic(builder) {
-          builder.select('id', 'name', 'image');
-        }
-      })
+      .modifiers(BaseModel.defaultModifiers)
       .orderBy('created_at', 'desc');
+
+    const [collections, countResult] = await Promise.all([
+      query.limit(limit).offset(offset),
+      Collection.query().where('user_id', userId).count('film_id as total').first()
+    ]);
+
+    const total = parseInt(countResult?.total || 0);
+
+    return {
+      collections,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
   }
 }
 

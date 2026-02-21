@@ -1,3 +1,10 @@
+/**
+ * src/models/User.js
+ * 
+ * Model for the 'users' table. Represents application users and 
+ * their associated roles.
+ */
+
 import { BaseModel } from './BaseModel.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,10 +13,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export class User extends BaseModel {
+  /**
+   * @returns {string} Table name
+   */
   static get tableName() {
     return 'users';
   }
 
+  /**
+   * JSON schema for validation
+   * @returns {object} JSON schema definition
+   */
   static get jsonSchema() {
     return {
       type: 'object',
@@ -27,6 +41,9 @@ export class User extends BaseModel {
     };
   }
 
+  /**
+   * Hook: Auto-set createdAt and updatedAt before insert
+   */
   $beforeInsert() {
     const now = new Date();
     this.createdAt = now;
@@ -36,10 +53,17 @@ export class User extends BaseModel {
     }
   }
 
+  /**
+   * Hook: Auto-update updatedAt before update
+   */
   $beforeUpdate() {
     this.updatedAt = new Date();
   }
 
+  /**
+   * Define model relationships (role, films, discussions, votes, chatHistory)
+   * @returns {object} Relation mappings
+   */
   static get relationMappings() {
     return {
       role: {

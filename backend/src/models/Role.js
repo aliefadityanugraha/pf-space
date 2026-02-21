@@ -1,3 +1,9 @@
+/**
+ * src/models/Role.js
+ * 
+ * Model for the 'roles' table.
+ */
+
 import { BaseModel } from './BaseModel.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,14 +12,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export class Role extends BaseModel {
+  /**
+   * @returns {string} Table name
+   */
   static get tableName() {
     return 'roles';
   }
 
+  /**
+   * @returns {string} Primary key column name
+   */
   static get idColumn() {
     return 'role_id';
   }
 
+  /**
+   * JSON schema for validation
+   * @returns {object} JSON schema definition
+   */
   static get jsonSchema() {
     return {
       type: 'object',
@@ -26,6 +42,10 @@ export class Role extends BaseModel {
     };
   }
 
+  /**
+   * Define model relationships (users)
+   * @returns {object} Relation mappings
+   */
   static get relationMappings() {
     return {
       users: {
@@ -40,17 +60,13 @@ export class Role extends BaseModel {
   }
 }
 
-// Role constants
-export const ROLES = {
-  USER: 1,
-  CREATOR: 2,
-  MODERATOR: 3,
-  ADMIN: 4
-};
+import { ROLES } from '../config/constants.js';
+
+export { ROLES };
 
 export const ROLE_NAMES = {
-  1: 'user',
-  2: 'creator',
-  3: 'moderator',
-  4: 'admin'
+  [ROLES.USER]: 'user',
+  [ROLES.CREATOR]: 'creator',
+  [ROLES.MODERATOR]: 'moderator',
+  [ROLES.ADMIN]: 'admin'
 };

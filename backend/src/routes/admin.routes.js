@@ -1,8 +1,19 @@
-import { AdminController } from '../controllers/admin.controller.js';
-import { requireAdmin } from '../middlewares/auth.middleware.js';
+/**
+ * src/routes/admin.routes.js
+ * 
+ * Routes for administrative dashboard and system statistics.
+ */
 
-const adminController = new AdminController();
+import { adminController } from '../controllers/index.js';
+import { requireAdmin } from '../middlewares/index.js';
 
-export default async function adminRoutes(fastify, options) {
-  fastify.get('/stats', { preHandler: [requireAdmin] }, adminController.getDashboardStats);
+/**
+ * Register administrative routes
+ * @param {import('fastify').FastifyInstance} fastify - Fastify instance
+ */
+export default async function adminRoutes(fastify) {
+  // Get dashboard statistics (requires admin role)
+  fastify.get('/stats', {
+    preHandler: requireAdmin
+  }, adminController.getDashboardStats.bind(adminController));
 }

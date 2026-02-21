@@ -1,10 +1,11 @@
 # CineArchive
 
-Platform kearsipan film mahasiswa untuk apresiasi, dokumentasi, dan pembelajaran karya sinematik. Aplikasi ini menggunakan arsitektur Monorepo yang terdiri dari Frontend (Vue 3) dan Backend (Fastify).
+Platform kearsipan film siswa untuk apresiasi, dokumentasi, dan pembelajaran karya sinematik. Aplikasi ini menggunakan arsitektur Monorepo yang terdiri dari Frontend (Vue 3) dan Backend (Fastify).
 
 ## Tech Stack
 
 ### Frontend (`si-film-archive/`)
+
 - **Framework:** Vue 3 (Composition API `<script setup>`)
 - **Build Tool:** Vite
 - **Styling:** Tailwind CSS v4 (Custom Brutal Design System)
@@ -16,6 +17,7 @@ Platform kearsipan film mahasiswa untuk apresiasi, dokumentasi, dan pembelajaran
 - **SEO:** Unhead
 
 ### Backend (`backend/`)
+
 - **Framework:** Fastify
 - **Language:** JavaScript (Node.js)
 - **Database:** MySQL
@@ -53,6 +55,8 @@ Platform kearsipan film mahasiswa untuk apresiasi, dokumentasi, dan pembelajaran
   - **Streaming**: Dukungan dual source (Embed YouTube & Direct MP4/WebM Upload).
   - **Catalog**: Pencarian, filter kategori, dan status film.
   - **Detail Page**: Informasi lengkap, sinopsis, dan diskusi.
+- **Resumable Upload**: Upload file besar dengan Tus.io protocol yang dapat dilanjutkan jika koneksi terputus.
+- **Draft System**: Auto-save form data ke localStorage untuk mencegah kehilangan data saat upload.
 - **Dynamic Banner System**: Banner halaman depan diambil langsung dari film unggulan (Curated/Banner Active status).
 - **Learning Assets**: Akses ke aset pembelajaran seperti Naskah Film, Storyboard, dan RAB (PDF Viewer).
 - **Discussion System**: Komentar dan balasan (threaded comments) pada setiap film.
@@ -113,6 +117,7 @@ Aplikasi akan berjalan di `http://localhost:5173`.
 ## Design System
 
 **Neo-Brutalist Style:**
+
 - **Border:** Tebal dan hitam (`border-2 border-black` / `border-stone-800`).
 - **Shadow:** Hard shadow tanpa blur (`shadow-brutal`).
 - **Radius:** Siku tajam atau rounded minimal.
@@ -128,5 +133,24 @@ Aplikasi akan berjalan di `http://localhost:5173`.
 - [x] **Frontend UI**: Terimplementasi (Vue 3 + Brutal Design).
 - [x] **Authentication**: Terimplementasi (Better Auth).
 - [x] **Media Handling**: Upload & Streaming (YouTube/Local) berfungsi.
+- [x] **Resumable Upload**: Tus.io protocol untuk upload yang dapat dilanjutkan.
+- [x] **Draft System**: Auto-save form data untuk mencegah kehilangan data.
 - [x] **Database**: Migrations & Seeding ready.
-- [ ] **Testing**: Unit & E2E Testing.
+- [x] **Voting System**: Trending films berdasarkan periode.
+- [x] **Collections**: Fitur bookmark/simpan film.
+- [ ] **Testing**: Unit & E2E Testing (In Progress).
+- [ ] **CI/CD**: Automated deployment pipeline.
+
+## 📚 Documentation
+
+Dokumentasi lengkap tersedia di folder [`docs/`](./docs/):
+
+| Dokumen                                          | Deskripsi                              |
+| ------------------------------------------------ | -------------------------------------- |
+| [Project Structure](./docs/PROJECT_STRUCTURE.md) | Struktur folder dan arsitektur project |
+| [API Reference](./docs/API_REFERENCE.md)         | Dokumentasi lengkap API endpoints      |
+| [Database Schema](./docs/DATABASE.md)            | Schema database dan relasi             |
+| [API Standards](./docs/API_STANDARDS.md)         | Standar format response API            |
+| [Upload System](./docs/UPLOAD_SYSTEM.md)         | Sistem upload resumable & draft        |
+| [Development Guide](./docs/DEVELOPMENT.md)       | Panduan setup dan development          |
+| [Roadmap](./docs/ROADMAP.md)                     | Daftar fitur yang akan dikembangkan    |

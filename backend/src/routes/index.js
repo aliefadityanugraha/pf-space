@@ -1,3 +1,9 @@
+/**
+ * src/routes/index.js
+ * 
+ * Central router entry point. Registers all feature-specific route groups.
+ */
+
 import authRoutes from './auth.routes.js';
 import categoryRoutes from './category.routes.js';
 import filmRoutes from './film.routes.js';
@@ -6,37 +12,53 @@ import discussionRoutes from './discussion.routes.js';
 import chatRoutes from './chat.routes.js';
 import collectionRoutes from './collection.routes.js';
 import adminRoutes from './admin.routes.js';
-import uploadRoutes from './upload.routes.js';
+import userRoutes from './user.routes.js';
+import notificationRoutes from './notification.routes.js';
+import { communityRoutes } from './community.routes.js';
+import learningMaterialRoutes from './learningMaterial.routes.js';
 
+/**
+ * Register all application routes with their respective prefixes
+ * @param {import('fastify').FastifyInstance} fastify - Fastify instance
+ */
 export default async function routes(fastify) {
-  // Auth routes
+  // Auth and profile management
   await fastify.register(authRoutes, { prefix: '/auth' });
 
-  // Upload routes
-  await fastify.register(uploadRoutes, { prefix: '/upload' });
+  // Public user profiles
+  await fastify.register(userRoutes, { prefix: '/users' });
 
-  // Category routes
+  // User notifications
+  await fastify.register(notificationRoutes, { prefix: '/notifications' });
+
+  // Movie categories
   await fastify.register(categoryRoutes, { prefix: '/categories' });
 
-  // Film routes
+  // Core film management
   await fastify.register(filmRoutes, { prefix: '/films' });
 
-  // Vote routes
+  // Likes and voting
   await fastify.register(voteRoutes, { prefix: '/votes' });
 
-  // Discussion routes
+  // Film comments and discussions
   await fastify.register(discussionRoutes, { prefix: '/discussions' });
 
-  // AI Chat routes
+  // Community-wide discussion board
+  await fastify.register(communityRoutes, { prefix: '/community' });
+
+  // AI assistant chat
   await fastify.register(chatRoutes, { prefix: '/chat' });
 
-  // Collection routes
+  // Personal watchlists/bookmarks
   await fastify.register(collectionRoutes, { prefix: '/collections' });
 
-  // Admin routes
+  // Learning materials (Materi)
+  await fastify.register(learningMaterialRoutes, { prefix: '/learning-materials' });
+
+  // System administration
   await fastify.register(adminRoutes, { prefix: '/admin' });
 
-  // Health check
+  // Basic API health status
   fastify.get('/health', async () => {
     return { 
       success: true,

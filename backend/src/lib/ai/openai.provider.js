@@ -1,6 +1,18 @@
+/**
+ * src/lib/ai/openai.provider.js
+ *
+ * AI provider implementation for OpenAI API (GPT models).
+ * @extends BaseAIProvider
+ */
+
 import { BaseAIProvider } from './base.provider.js';
 
 export class OpenAIProvider extends BaseAIProvider {
+  /**
+   * @param {object} config - Provider configuration
+   * @param {string} [config.apiKey] - OpenAI API key
+   * @param {string} [config.model] - Model name
+   */
   constructor(config = {}) {
     super(config);
     this.apiKey = config.apiKey || process.env.OPENAI_API_KEY;
@@ -8,11 +20,25 @@ export class OpenAIProvider extends BaseAIProvider {
     this.baseUrl = 'https://api.openai.com/v1';
   }
 
+  /**
+   * Send chat messages to OpenAI and get a response
+   * @param {Array<{role: string, content: string}>} messages - Chat messages
+   * @param {object} options - Chat options
+   * @param {number} [options.temperature=0.7] - Response randomness
+   * @param {number} [options.maxTokens=1024] - Maximum output tokens
+   * @param {string} [options.context=''] - Additional context for system prompt
+   * @returns {Promise<{content: string, usage: object, model: string}>}
+   */
   async chat(messages, options = {}) {
-    const { temperature = 0.7, maxTokens = 1024 } = options;
+    const { temperature = 0.7, maxTokens = 1024, context = '' } = options;
+
+    let systemPrompt = this.getSystemPrompt();
+    if (context) {
+      systemPrompt += `\n\n${context}`;
+    }
 
     const allMessages = [
-      { role: 'system', content: this.getSystemPrompt() },
+      { role: 'system', content: systemPrompt },
       ...messages
     ];
 

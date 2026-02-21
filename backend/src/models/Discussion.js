@@ -1,3 +1,10 @@
+/**
+ * src/models/Discussion.js
+ * 
+ * Model for the 'discussions' table. Represents comments and 
+ * replies linked to films and users.
+ */
+
 import { Model } from 'objection';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,18 +13,31 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export class Discussion extends Model {
+  /**
+   * @returns {string} Table name
+   */
   static get tableName() {
     return 'discussions';
   }
 
+  /**
+   * @returns {string} Primary key column name
+   */
   static get idColumn() {
     return 'diskusi_id';
   }
 
+  /**
+   * Hook: Auto-set created_at before insert
+   */
   $beforeInsert() {
     this.created_at = new Date();
   }
 
+  /**
+   * JSON schema for validation
+   * @returns {object} JSON schema definition
+   */
   static get jsonSchema() {
     return {
       type: 'object',
@@ -32,6 +52,10 @@ export class Discussion extends Model {
     };
   }
 
+  /**
+   * Define model relationships (user, film, parent, replies)
+   * @returns {object} Relation mappings
+   */
   static get relationMappings() {
     return {
       user: {

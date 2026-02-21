@@ -1,3 +1,10 @@
+/**
+ * src/lib/auth.js
+ * 
+ * Authentication configuration using Better-Auth.
+ * Sets up database adapters, session models, and social providers.
+ */
+
 import { betterAuth } from 'better-auth';
 import { Kysely, MysqlDialect } from 'kysely';
 import { createPool } from 'mysql2';
@@ -10,7 +17,7 @@ const db = new Kysely({
       port: process.env.DB_PORT || 3306,
       user: process.env.DB_USER || 'root',
       password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'si_film_archive'
+      database: process.env.DB_NAME || 'film'
     })
   })
 });
@@ -57,8 +64,14 @@ export const auth = betterAuth({
   advanced: {
     generateId: () => crypto.randomUUID(),
     crossSubDomainCookies: {
-      enabled: false
+      enabled: true
     }
   },
-  trustedOrigins: ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000']
+  trustedOrigins: [
+    'http://localhost:3000', 
+    'http://localhost:5173', 
+    'http://127.0.0.1:3000',
+    process.env.FRONTEND_URL,
+    process.env.BETTER_AUTH_URL
+  ].filter(Boolean)
 });

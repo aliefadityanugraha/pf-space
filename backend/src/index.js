@@ -1,192 +1,135 @@
+/**
+ * src/index.js
+ * 
+ * Main entry point for the Fastify server. Configures plugins, 
+ * database initialization, static file serving, and API routes.
+ */
+
 import 'dotenv/config';
+import { validateEnv } from './config/env.js';
+
+// Validate environment variables before anything else
+validateEnv();
+
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
 import multipart from '@fastify/multipart';
-import fastifyStatic from '@fastify/static';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+import helmet from '@fastify/helmet';
+import rateLimit from '@fastify/rate-limit';
+import compress from '@fastify/compress';
 import { initDatabase } from './database/index.js';
 import { auth } from './lib/auth.js';
 import routes from './routes/index.js';
+import tusRoutes from './routes/tus.routes.js';
+import staticRoutes from './routes/static.routes.js';
+import fastifyStatic from '@fastify/static';
+import { UPLOAD_DIR } from './lib/upload.js';
 import { seoMiddleware } from './middlewares/seo.middleware.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { globalErrorHandler } from './middlewares/errorHandler.js';
 
 const fastify = Fastify({
   logger: true
+});
+
+// Prevent crash from internal Node.js/Undici stream issues
+process.on('uncaughtException', (err) => {
+  if (err.code === 'ERR_INVALID_STATE') {
+    // This is a known issue in Node 23+ where streams might close twice
+    // during complex socket operations. We log it and continue.
+    fastify.log.warn({ err }, 'Caught and ignored ERR_INVALID_STATE (ReadableStream already closed)');
+    return;
+  }
+  fastify.log.error(err, 'Uncaught Exception');
+  process.exit(1);
 });
 
 // SEO Hook for bots
 fastify.addHook('onRequest', seoMiddleware);
 
 // Register plugins
+await fastify.register(helmet, {
+  // Allow cross-origin access to static files (uploads)
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  // Allow iframe embedding
+  frameguard: false,
+  // Disable CSP for simplicity in dev (or configure it properly if needed)
+  contentSecurityPolicy: false,
+});
+
+await fastify.register(compress);
+
+await fastify.register(rateLimit, {
+  max: 100,
+  timeWindow: '1 minute'
+});
+
+// Parse allowed CORS origins from env
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : [process.env.FRONTEND_URL || 'http://localhost:5173'];
+
 await fastify.register(cors, {
-  origin: [
-    'http://localhost:5173', 
-    'http://127.0.0.1:5173', 
-    'http://localhost:3000',
-    'http://103.127.96.155',
-    process.env.FRONTEND_URL
-  ].filter(Boolean),
-  credentials: true
+  origin: (origin, cb) => {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin) return cb(null, true);
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    // Reject unknown origins
+    cb(new Error('Not allowed by CORS'), false);
+  },
+  credentials: true,
+  exposedHeaders: [
+    'Tus-Resumable', 'Upload-Length', 'Upload-Offset', 'Upload-Metadata', 
+    'Location', 'Content-Type', 'Content-Length', 'Tus-Version', 
+    'Tus-Extension', 'Tus-Max-Size', 'X-Request-ID'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+  allowedHeaders: [
+    'Tus-Resumable', 'Upload-Length', 'Upload-Offset', 'Upload-Metadata', 
+    'Content-Type', 'Content-Length', 'Authorization', 'X-Requested-With', 
+    'Accept', 'Tus-Version', 'X-HTTP-Method-Override'
+  ]
 });
 
 await fastify.register(cookie);
 
-// File uploads
+// Multipart (only for avatar uploads in auth)
 await fastify.register(multipart, {
+  addToBody: true,
   limits: {
-    fileSize: 1024 * 1024 * 1024, // 1GB limit for video uploads
+    fileSize: 10 * 1024 * 1024, // 10MB (avatar only, tus handles large files)
   }
 });
 
-// Ensure uploads directory exists
-const UPLOAD_DIR = path.join(__dirname, '../uploads');
-console.log('STATIC UPLOAD DIR =', UPLOAD_DIR)
-
-
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
-
-// Static files
-await fastify.register(fastifyStatic, {
-  root: UPLOAD_DIR,
-  prefix: '/uploads/',
+// Tus fix: Fastify 415 error for application/offset+octet-stream
+fastify.addContentTypeParser('application/offset+octet-stream', (request, payload, done) => {
+  done(null);
 });
 
 // Initialize database
 await initDatabase();
 
-// Manual Google OAuth redirect - using proper Better Auth flow
-fastify.get('/api/auth/google', async (request, reply) => {
-  // Build the request to Better Auth
-  const baseURL = process.env.BETTER_AUTH_URL || 'http://localhost:3000';
-  const url = new URL('/api/auth/sign-in/social', baseURL);
-  
-  const headers = new Headers();
-  headers.set('Content-Type', 'application/json');
-  headers.set('Origin', baseURL);
-  // Copy cookies for state management
-  if (request.headers.cookie) {
-    headers.set('cookie', request.headers.cookie);
-  }
-
-  const req = new Request(url.toString(), {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      provider: 'google',
-      callbackURL: process.env.FRONTEND_URL || 'http://localhost:5173'
-    })
-  });
-
-  try {
-    const response = await auth.handler(req);
-    
-    // Copy cookies from response (important for state!)
-    for (const [key, value] of response.headers.entries()) {
-      if (key.toLowerCase() === 'set-cookie') {
-        reply.header(key, value);
-      }
-    }
-    
-    const data = await response.json();
-    
-    // Redirect to Google OAuth URL
-    if (data.url) {
-      return reply.redirect(data.url);
-    }
-    
-    return reply.status(400).send({ error: 'No redirect URL' });
-  } catch (err) {
-    console.error('Google OAuth error:', err);
-    return reply.status(500).send({ error: 'OAuth failed' });
-  }
+// Static file serving (decorator only, routes handled in static.routes.js)
+await fastify.register(fastifyStatic, {
+  root: UPLOAD_DIR,
+  decorateReply: true
 });
 
-// Simple test route
-fastify.get('/api/auth/test', async (request, reply) => {
-  return { ok: true, message: 'Auth route works!' };
-});
+await fastify.register(staticRoutes);
 
-// Manual logout endpoint - clear session cookie
-fastify.post('/api/auth/logout', async (request, reply) => {
-  // Clear all session cookies - use array for multiple set-cookie headers
-  reply
-    .header('set-cookie', [
-      'better-auth.session_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly',
-      'better-auth.session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly'
-    ]);
-  return { success: true, message: 'Logged out' };
-});
-
-// Better Auth handler - manual implementation
-fastify.all('/api/auth/*', async (request, reply) => {
-  const url = new URL(request.url, `http://${request.headers.host}`);
-  
-  console.log('Auth request path:', url.pathname);
-  
-  // Build headers
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(request.headers)) {
-    if (value && typeof value === 'string') {
-      headers.set(key, value);
-    }
-  }
-
-  // Create request
-  const req = new Request(url.toString(), {
-    method: request.method,
-    headers,
-    body: ['GET', 'HEAD'].includes(request.method) ? undefined : JSON.stringify(request.body)
-  });
-
-  try {
-    const response = await auth.handler(req);
-    
-    console.log('Auth response:', response.status, url.pathname);
-    
-    // Copy status
-    reply.status(response.status);
-    
-    // Copy headers - handle set-cookie specially
-    for (const [key, value] of response.headers.entries()) {
-      if (key.toLowerCase() === 'set-cookie') {
-        // Get all set-cookie headers
-        const cookies = response.headers.getSetCookie ? response.headers.getSetCookie() : [value];
-        cookies.forEach(cookie => reply.header('set-cookie', cookie));
-      } else {
-        reply.header(key, value);
-      }
-    }
-    
-    // Send body
-    const text = await response.text();
-    return reply.send(text);
-  } catch (err) {
-    console.error('Auth handler error:', err);
-    return reply.status(500).send({ error: 'Auth handler failed', details: err.message });
-  }
-});
+// Register Tus routes (resumable uploads)
+await fastify.register(tusRoutes, { prefix: '/api/files' });
 
 // Register API routes
 await fastify.register(routes, { prefix: '/api' });
 
-// Global error handler
-fastify.setErrorHandler((error, request, reply) => {
-  fastify.log.error(error);
-  
-  reply.status(error.statusCode || 500).send({
-    success: false,
-    message: error.message || 'Internal Server Error'
-  });
-});
+fastify.setErrorHandler(globalErrorHandler);
 
-// Start server
+/**
+ * Start the application server
+ * @returns {Promise<void>}
+ */
 const start = async () => {
   try {
     const port = process.env.PORT || 3000;
@@ -199,5 +142,27 @@ const start = async () => {
     process.exit(1);
   }
 };
+
+/**
+ * Graceful shutdown — close server and database connections cleanly
+ * @param {string} signal - OS signal received (SIGTERM, SIGINT)
+ */
+const shutdown = async (signal) => {
+  console.log(`\n${signal} received. Shutting down gracefully...`);
+  try {
+    await fastify.close();
+    console.log('✅ Server closed');
+
+    const { knex } = await import('./database/index.js');
+    await knex.destroy();
+    console.log('✅ Database connections closed');
+  } catch (err) {
+    console.error('Error during shutdown:', err);
+  }
+  process.exit(0);
+};
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
 
 start();
