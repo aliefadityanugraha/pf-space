@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, onUnmounted } from 'vue'
 import { api } from '@/lib/api'
+import { assetUrl } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -76,12 +77,15 @@ watch(() => props.initialData, (newData) => {
     Object.keys(form.value).forEach(key => {
       if (newData[key] !== undefined && newData[key] !== null) {
         // Handle crew specifically if needed, otherwise direct assignment works for most
-        if (key === 'crew' && Array.isArray(newData[key])) {
-             if (newData[key].length > 0) {
-                form.value.crew = JSON.parse(JSON.stringify(newData[key]))
-             } else {
-                 form.value.crew = [{ jabatan: '', anggota: [''] }]
-             }
+        if (key === 'crew') {
+          if (Array.isArray(newData[key]) && newData[key].length > 0) {
+            form.value.crew = JSON.parse(JSON.stringify(newData[key]))
+          } else if (!props.isEdit) {
+            // Keep default crew for new entries if not provided
+          } else {
+            // For edit mode, if crew is empty from server, ensure at least one empty row
+            form.value.crew = [{ jabatan: '', anggota: [''] }]
+          }
         } else {
           form.value[key] = newData[key]
         }
@@ -109,6 +113,7 @@ const uploadFileTus = (file, onProgress, fieldName) => {
         filename: file.name,
         filetype: file.type || 'application/octet-stream'
       },
+      storeFingerprintForResuming: false,
       onError: (error) => {
         reject(error)
       },
@@ -118,14 +123,20 @@ const uploadFileTus = (file, onProgress, fieldName) => {
       },
       onSuccess: () => {
         try {
-          // Backend returns paths like: .../api/files/videos/uuid.mp4
-          // Extract everything after /api/files/ to get "videos/uuid.mp4"
-          const relativePath = upload.url.split('/api/files/')[1]
-          
-          if (relativePath) {
-            resolve(`/uploads/${relativePath}`)
+          const id = upload.url.split('/api/files/')[1]
+          if (id && id.includes('/')) {
+            resolve(`/uploads/${id}`)
           } else {
-            resolve(upload.url)
+            let subfolder = 'documents'
+            if (file?.type?.startsWith('video/')) subfolder = 'videos'
+            else if (file?.type === 'application/pdf') subfolder = 'documents'
+            else if (file?.type?.startsWith('image/')) subfolder = 'images'
+            else {
+              if (fieldName === 'gambar_poster' || fieldName === 'banner_url') subfolder = 'images'
+              else if (['file_naskah', 'file_storyboard', 'file_rab'].includes(fieldName)) subfolder = 'documents'
+              else subfolder = 'videos'
+            }
+            resolve(id ? `/uploads/${subfolder}/${id}` : upload.url)
           }
         } catch (e) {
           resolve(upload.url)
@@ -133,15 +144,11 @@ const uploadFileTus = (file, onProgress, fieldName) => {
       }
     })
 
-    // Check if there are any previous uploads to continue
-    upload.findPreviousUploads().then(function (previousUploads) {
-      if (previousUploads.length) {
-        upload.resumeFromPreviousUpload(previousUploads[0])
-      }
-      upload.start()
-    })
+    upload.start()
   })
 }
+
+
 
 const handleFileUpload = async (event, fieldName) => {
   const file = event.target.files[0]
@@ -271,8 +278,10 @@ const restoreDraft = () => {
   if (draft) {
     Object.keys(form.value).forEach(key => {
       if (draft[key] !== undefined && draft[key] !== null) {
-        if (key === 'crew' && Array.isArray(draft[key])) {
-          form.value.crew = JSON.parse(JSON.stringify(draft[key]))
+        if (key === 'crew') {
+          if (Array.isArray(draft[key])) {
+            form.value.crew = JSON.parse(JSON.stringify(draft[key]))
+          }
         } else {
           form.value[key] = draft[key]
         }
@@ -533,7 +542,7 @@ onUnmounted(() => {
             <label class="block text-sm font-bold mb-2">Gambar Poster</label>
             <div class="space-y-3">
               <div v-if="form.gambar_poster" class="relative w-40 h-60 bg-stone-100 border border-stone-300 rounded overflow-hidden">
-                <img :src="form.gambar_poster" class="w-full h-full object-cover" />
+                <img :src="assetUrl(form.gambar_poster)" class="w-full h-full object-cover" />
                 <button 
                   type="button" 
                   @click="form.gambar_poster = ''"
@@ -565,7 +574,7 @@ onUnmounted(() => {
               <label class="block text-sm font-bold mb-2">Gambar Banner (Opsional)</label>
               <div class="space-y-3">
                 <div v-if="form.banner_url" class="relative w-full h-32 bg-stone-100 border border-stone-300 rounded overflow-hidden">
-                  <img :src="form.banner_url" class="w-full h-full object-cover" />
+                  <img :src="assetUrl(form.banner_url)" class="w-full h-full object-cover" />
                   <button 
                     type="button" 
                     @click="form.banner_url = ''"

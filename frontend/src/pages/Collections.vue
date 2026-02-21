@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '@/lib/api'
+import { assetUrl } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -22,13 +23,23 @@ useHead({
 const router = useRouter()
 const collections = ref([])
 const loading = ref(true)
-const { toast, showToast } = useToast()
+const { showToast } = useToast()
+
+
 
 const fetchCollections = async () => {
   loading.value = true
   try {
     const res = await api.get('/api/collections')
-    collections.value = res.data || []
+    const arr = Array.isArray(res.data) ? res.data : []
+    collections.value = arr.map(it => {
+      const film = it.film || {}
+      if (film.gambar_poster) {
+        film.gambar_poster = assetUrl(film.gambar_poster)
+      }
+      it.film = film
+      return it
+    })
   } catch (err) {
     console.error('Failed to fetch collections:', err)
     showToast('Gagal memuat koleksi', 'error')
@@ -50,13 +61,14 @@ const removeFromCollection = async (filmId) => {
 onMounted(fetchCollections)
 </script>
 
-<template>
+<template >
   <PageLayout>
-    <div class="mb-10">
+  <div class="max-w-7xl mx-auto px-4 md:px-8 pb-16">
+    <div class="mb-8 md:mb-10 py-6 md:py-0">
         <div class="flex items-center gap-3 mb-2">
-          <h1 class="text-3xl md:text-5xl font-display font-bold text-stone-900">Simpanan Saya</h1>
+          <h1 class="text-2xl md:text-5xl font-display font-bold text-stone-900">Simpanan Saya</h1>
         </div>
-        <p class="text-stone-500 font-body max-w-2xl">
+        <p class="text-xs md:text-sm text-stone-500 font-body max-w-2xl px-1">
           Kumpulan karya favorit yang telah Anda simpan untuk ditonton kembali atau dipelajari aset pembelajarannya.
         </p>
       </div>
@@ -82,45 +94,44 @@ onMounted(fetchCollections)
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
             />
             <div v-else class="w-full h-full flex items-center justify-center">
-              <Film class="w-12 h-12 text-stone-400" />
+              <Film class="w-10 h-10 md:w-12 md:h-12 text-stone-400" />
             </div>
-            
             <!-- Category Badge -->
-            <div class="absolute top-3 left-3">
-              <Badge class="bg-brand-red text-white border-2 border-black shadow-brutal-xs">
+            <div class="absolute top-2 left-2 md:top-3 md:left-3">
+              <Badge class="bg-brand-red text-white border-2 border-black shadow-brutal-xs text-[9px] md:text-xs">
                 {{ item.film?.category?.nama_kategori }}
               </Badge>
             </div>
           </div>
 
           <!-- Body -->
-          <div class="p-5">
+          <div class="p-4 md:p-5">
             <div class="flex justify-between items-start gap-2 mb-2">
-              <h3 class="text-xl font-display font-bold text-stone-900 line-clamp-1 group-hover:text-brand-red transition-colors">
+              <h3 class="text-lg md:text-xl font-display font-bold text-stone-900 line-clamp-1 group-hover:text-brand-red transition-colors">
                 {{ item.film?.judul }}
               </h3>
-              <span class="text-xs font-mono font-bold text-stone-400">{{ item.film?.tahun_karya }}</span>
+              <span class="text-[10px] md:text-xs font-mono font-bold text-stone-400">{{ item.film?.tahun_karya }}</span>
             </div>
             
-            <p class="text-sm text-stone-500 font-body line-clamp-2 mb-6">
+            <p class="text-[11px] md:text-sm text-stone-500 font-body line-clamp-2 mb-4 md:mb-6">
               {{ item.film?.sinopsis || 'Tidak ada deskripsi.' }}
             </p>
 
             <!-- Actions -->
             <div class="flex items-center gap-2">
               <Button 
-                class="flex-1 gap-2 shadow-brutal-xs" 
+                class="flex-1 gap-2 shadow-brutal-xs h-9 md:h-10 text-xs md:text-sm font-bold" 
                 @click="router.push(`/archive/${item.film?.slug}`)"
               >
-                <Eye class="w-4 h-4" /> Tonton
+                <Eye class="w-3.5 h-3.5 md:w-4 md:h-4" /> Tonton
               </Button>
               <Button 
                 variant="outline" 
                 size="icon" 
-                class="border-2 border-stone-200 hover:border-brand-red hover:text-brand-red transition-all"
+                class="w-9 h-9 md:w-10 md:h-10 border-2 border-stone-200 hover:border-brand-red hover:text-brand-red transition-all"
                 @click="removeFromCollection(item.film_id)"
               >
-                <BookmarkX class="w-5 h-5" />
+                <BookmarkX class="w-4 h-4 md:w-5 md:h-5" />
               </Button>
             </div>
           </div>
@@ -142,5 +153,6 @@ onMounted(fetchCollections)
         <Search class="w-5 h-5" />
       </template>
     </EmptyState>
+  </div>
   </PageLayout>
 </template>

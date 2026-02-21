@@ -17,3 +17,5 @@ export { Notification } from './Notification.js';
 export { CommunityDiscussion } from './CommunityDiscussion.js';
 export { CommunityReply } from './CommunityReply.js';
 export { LearningMaterial } from './LearningMaterial.js';
+export { Setting } from './Setting.js';
+export { default as Evaluation } from './Evaluation.js';

@@ -212,15 +212,7 @@
     variant="danger"
     :loading="confirmLoading"
     @confirm="handleClearConfirm"
-  />
-
-  <Toast 
-    :show="toast.show" 
-    :type="toast.type" 
-    :message="toast.message" 
-    @close="toast.show = false" 
-  />
-</template>
+  /></template>
 
 <script setup>
 import { ref, nextTick, onMounted, watch } from 'vue'
@@ -228,10 +220,10 @@ import { api } from '@/lib/api'
 import { useAuth } from '@/composables/useAuth'
 import { useToast } from '@/composables/useToast'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import Toast from '@/components/Toast.vue'
+
 
 const { isLoggedIn } = useAuth()
-const { toast, showToast } = useToast()
+const { showToast } = useToast()
 
 const isOpen = ref(false)
 const showConfirm = ref(false)
@@ -319,7 +311,7 @@ const handleClearConfirm = async () => {
     }
     
     messages.value = []
-    showToast('Riwayat chat berhasil dihapus', 'success')
+    showToast('Riwayat chat berhasil dihapus')
     showConfirm.value = false
   } catch (err) {
     console.error('Failed to clear history:', err)

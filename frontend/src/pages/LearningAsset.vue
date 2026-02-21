@@ -2,8 +2,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '@/lib/api'
-import Navbar from '@/components/Navbar.vue'
-import Footer from '@/components/Footer.vue'
+import { assetUrl } from '@/lib/format'
+import PageLayout from '@/components/PageLayout.vue'
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Printer, Download, ArrowLeft, FileText, Loader2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 
@@ -23,7 +23,7 @@ const assetConfig = {
   'naskah-film': {
     field: 'file_naskah',
     title: 'Naskah',
-    type: 'Script'
+    type: 'Naskah'
   },
   'storyboard': {
     field: 'file_storyboard',
@@ -32,16 +32,18 @@ const assetConfig = {
   },
   'rab': {
     field: 'file_rab',
-    title: 'RAB (Budget)',
-    type: 'Document'
+    title: 'RAB (Anggaran)',
+    type: 'Dokumen'
   }
 }
 
 const currentAssetConfig = computed(() => assetConfig[assetSlug.value] || null)
 
-const assetUrl = computed(() => {
+const assetUrlComputed = computed(() => {
   if (!film.value || !currentAssetConfig.value) return null
-  return film.value[currentAssetConfig.value.field]
+  const raw = film.value[currentAssetConfig.value.field]
+  if (!raw) return null
+  return assetUrl(raw)
 })
 
 const fetchFilm = async () => {
@@ -81,8 +83,8 @@ const goBack = () => {
 }
 
 const downloadAsset = () => {
-  if (assetUrl.value) {
-    window.open(assetUrl.value, '_blank')
+    if (assetUrlComputed.value) {
+    window.open(assetUrlComputed.value, '_blank')
   }
 }
 
@@ -113,10 +115,8 @@ watch(() => route.params, () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F2EEE3]">
-    <Navbar />
-    
-    <main class="max-w-7xl mx-auto px-4 md:px-8 pt-24 pb-12">
+  <PageLayout>
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
       <!-- Loading State -->
       <div v-if="loading" class="flex flex-col items-center justify-center min-h-[50vh]">
         <Loader2 class="w-10 h-10 animate-spin text-stone-400 mb-4" />
@@ -133,16 +133,16 @@ watch(() => route.params, () => {
 
       <template v-else>
         <!-- Breadcrumb -->
-        <nav class="flex items-center gap-2 text-sm mb-6 flex-wrap">
+        <nav class="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm mb-6 flex-wrap">
           <template v-for="(crumb, index) in breadcrumbs" :key="index">
             <router-link 
               v-if="!crumb.active" 
               :to="crumb.path"
-              class="font-bold uppercase tracking-wide text-stone-400 hover:text-stone-600 transition-colors"
+              class="font-bold uppercase tracking-wide text-stone-400 hover:text-stone-600 transition-colors whitespace-nowrap"
             >
               {{ crumb.label }}
             </router-link>
-            <span v-else class="font-bold uppercase tracking-wide text-stone-800 border-b-2 border-orange-400 pb-0.5">
+            <span v-else class="font-bold uppercase tracking-wide text-stone-800 border-b-2 border-orange-400 pb-0.5 whitespace-nowrap">
               {{ crumb.label }}
             </span>
             <span v-if="index < breadcrumbs.length - 1" class="text-stone-300">/</span>
@@ -150,28 +150,28 @@ watch(() => route.params, () => {
         </nav>
 
         <!-- Toolbar -->
-        <div class="bg-stone-200 rounded-xl border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(43,38,38,1)] p-4 mb-6">
-          <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="bg-stone-200 rounded-xl border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(43,38,38,1)] p-3 md:p-4 mb-6 transition-all">
+          <div class="flex flex-wrap items-center justify-between gap-3 md:gap-4">
             <!-- Back Button & Title -->
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2.5 md:gap-4">
               <Button 
                 variant="ghost" 
                 @click="goBack"
-                class="flex items-center gap-2 hover:bg-stone-300"
+                class="flex items-center gap-1.5 md:gap-2 hover:bg-stone-300 h-9 md:h-10 px-2 md:px-4"
               >
-                <ArrowLeft class="w-5 h-5" />
-                <span class="font-bold hidden sm:inline">Kembali</span>
+                <ArrowLeft class="w-4 h-4 md:w-5 md:h-5" />
+                <span class="font-bold text-xs md:text-sm">Kembali</span>
               </Button>
               
               <div class="hidden sm:block w-px h-8 bg-stone-300" />
               
-              <div class="flex items-center gap-3">
-                <div class="w-11 h-10 bg-stone-100 rounded-lg border border-stone-300 flex items-center justify-center">
-                  <FileText class="w-5 h-5 text-teal-600" />
+              <div class="flex items-center gap-2 md:gap-3">
+                <div class="w-9 h-8 md:w-11 md:h-10 bg-stone-100 rounded-lg border border-stone-300 flex items-center justify-center">
+                  <FileText class="w-4 h-4 md:w-5 md:h-5 text-teal-600" />
                 </div>
-                <div>
-                  <h1 class="text-lg md:text-xl font-serif text-stone-800 leading-tight">{{ currentAssetConfig?.title }}</h1>
-                  <p class="text-xs font-mono uppercase text-stone-600">{{ currentAssetConfig?.type }} • PDF</p>
+                <div class="min-w-0">
+                  <h1 class="text-sm md:text-xl font-serif text-stone-800 leading-tight truncate max-w-[150px] md:max-w-none">{{ currentAssetConfig?.title }}</h1>
+                  <p class="text-[9px] md:text-xs font-mono uppercase text-stone-600">{{ currentAssetConfig?.type }} • PDF</p>
                 </div>
               </div>
             </div>
@@ -202,8 +202,8 @@ watch(() => route.params, () => {
         <!-- Document Viewer (PDF Iframe) -->
         <div class="bg-stone-700 rounded-xl border-2 border-stone-800 shadow-inner overflow-hidden min-h-[600px] lg:min-h-[800px] relative">
           <iframe 
-            v-if="assetUrl"
-            :src="assetUrl + '#toolbar=0'"
+            v-if="assetUrlComputed"
+            :src="assetUrlComputed + '#toolbar=0'"
             class="w-full h-full absolute inset-0 bg-white"
             frameborder="0"
           ></iframe>
@@ -212,8 +212,6 @@ watch(() => route.params, () => {
           </div>
         </div>
       </template>
-    </main>
-
-    <Footer />
-  </div>
+    </div>
+  </PageLayout>
 </template>

@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import Toast from '@/components/Toast.vue'
 import { useToast } from '@/composables/useToast'
 import { 
   MessageCircle, 
@@ -23,8 +22,7 @@ import {
   AlertTriangle,
   User as UserIcon
 } from 'lucide-vue-next'
-import { formatDistanceToNow } from 'date-fns'
-import { id as idLocale } from 'date-fns/locale'
+import { timeAgo, assetUrl } from '@/lib/format'
 
 const sidebarCollapsed = ref(false)
 
@@ -47,7 +45,7 @@ const formData = ref({
 })
 
 // Toast state
-const { toast, showToast } = useToast()
+const { showToast } = useToast()
 
 // Confirm dialog state
 const showConfirm = ref(false)
@@ -61,7 +59,7 @@ const fetchDiscussions = async () => {
     discussions.value = res.data || []
   } catch (error) {
     console.error('Failed to fetch discussions:', error)
-    showToast('error', 'Gagal memuat diskusi')
+    showToast('Gagal memuat diskusi', 'error')
   } finally {
     loading.value = false
   }
@@ -95,7 +93,7 @@ const closeForm = () => {
 
 const saveDiscussion = async () => {
   if (!formData.value.title.trim()) {
-    showToast('error', 'Judul diskusi harus diisi')
+    showToast('Judul diskusi harus diisi', 'error')
     return
   }
 
@@ -104,18 +102,18 @@ const saveDiscussion = async () => {
     if (editingId.value) {
       // Update
       await api.put(`/api/community/${editingId.value}`, formData.value)
-      showToast('success', 'Diskusi berhasil diperbarui')
+      showToast('Diskusi berhasil diperbarui')
     } else {
       // Create
       await api.post('/api/community', formData.value)
-      showToast('success', 'Diskusi berhasil dibuat')
+      showToast('Diskusi berhasil dibuat')
     }
     
     await fetchDiscussions()
     closeForm()
   } catch (error) {
     console.error('Failed to save discussion:', error)
-    showToast('error', 'Gagal menyimpan diskusi')
+    showToast('Gagal menyimpan diskusi', 'error')
   } finally {
     saving.value = false
   }
@@ -126,11 +124,11 @@ const toggleDiscussion = async (discussionId, isActive) => {
     await api.patch(`/api/community/${discussionId}/toggle`, {
       is_active: !isActive
     })
-    showToast('success', `Diskusi berhasil ${!isActive ? 'diaktifkan' : 'dinonaktifkan'}`)
+    showToast(`Diskusi berhasil ${!isActive ? 'diaktifkan' : 'dinonaktifkan'}`)
     await fetchDiscussions()
   } catch (error) {
     console.error('Failed to toggle discussion:', error)
-    showToast('error', 'Gagal mengubah status diskusi')
+    showToast('Gagal mengubah status diskusi', 'error')
   }
 }
 
@@ -149,11 +147,11 @@ const executeDelete = async () => {
   deleting.value = true
   try {
     await api.delete(`/api/community/${discussionToDelete.value.discussion_id}`)
-    showToast('success', 'Diskusi berhasil dihapus')
+    showToast('Diskusi berhasil dihapus')
     await fetchDiscussions()
   } catch (error) {
     console.error('Failed to delete discussion:', error)
-    showToast('error', 'Gagal menghapus diskusi')
+    showToast('Gagal menghapus diskusi', 'error')
   } finally {
     deleting.value = false
     showConfirm.value = false
@@ -163,7 +161,7 @@ const executeDelete = async () => {
 
 const formatTime = (date) => {
   try {
-    return formatDistanceToNow(new Date(date), { addSuffix: true, locale: idLocale })
+    return timeAgo(date)
   } catch {
     return 'baru saja'
   }
@@ -179,7 +177,7 @@ const viewReplies = async (discussion) => {
     replies.value = res.data || []
   } catch (error) {
     console.error('Failed to fetch replies:', error)
-    showToast('error', 'Gagal memuat balasan')
+    showToast('Gagal memuat balasan', 'error')
     replies.value = []
   } finally {
     loadingReplies.value = false
@@ -197,7 +195,7 @@ const deleteReplyFromModal = async (replyId) => {
 
   try {
     await api.delete(`/api/community/replies/${replyId}/moderate`)
-    showToast('success', 'Balasan berhasil dihapus')
+    showToast('Balasan berhasil dihapus')
     replies.value = replies.value.filter(r => r.reply_id !== replyId)
     
     // Update reply count in the list
@@ -207,7 +205,7 @@ const deleteReplyFromModal = async (replyId) => {
     }
   } catch (error) {
     console.error('Failed to delete reply:', error)
-    showToast('error', 'Gagal menghapus balasan')
+    showToast('Gagal menghapus balasan', 'error')
   }
 }
 
@@ -220,14 +218,14 @@ onMounted(() => {
   <div class="min-h-screen bg-stone-100">
     <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
     
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
+    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <a href="/" class="text-brand-teal hover:underline">Home</a>
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
         <span class="text-stone-400">/</span>
-        <span class="text-stone-600">Administration</span>
+        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
         <span class="text-stone-400">/</span>
-        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Community</Badge>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Komunitas</Badge>
       </nav>
 
       <!-- Header -->
@@ -411,14 +409,6 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Toast Notification -->
-    <Toast 
-      :show="toast.show" 
-      :type="toast.type" 
-      :message="toast.message" 
-      @close="toast.show = false" 
-    />
-
     <!-- Replies Modal -->
     <div v-if="showRepliesModal" class="fixed inset-0 z-50 flex items-center justify-center">
       <div class="absolute inset-0 bg-black/50" @click="closeRepliesModal"></div>
@@ -456,7 +446,7 @@ onMounted(() => {
               <div class="w-10 h-10 bg-brand-teal border-2 border-black shadow-brutal-sm flex items-center justify-center flex-shrink-0 overflow-hidden">
                 <img 
                   v-if="reply.user?.image" 
-                  :src="reply.user.image" 
+                  :src="assetUrl(reply.user.image)" 
                   :alt="reply.user.name"
                   class="w-full h-full object-cover"
                   @error="(e) => e.target.style.display = 'none'"

@@ -81,7 +81,7 @@ export function useVoting() {
     }
 
     try {
-      const res = await api.post(`/api/votes/film/${filmId}`)
+      const res = await api.post(`/api/votes/${filmId}`)
       if (res.success) {
         // Update local state
         const film = films.value.find(f => f.id === filmId)

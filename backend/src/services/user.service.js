@@ -16,7 +16,7 @@ export class UserService {
   async getProfileById(userId) {
     const user = await User.query()
       .findById(userId)
-      .select('id', 'name', 'image', 'role_id', 'created_at');
+      .select('id', 'name', 'image', 'role_id', 'createdAt');
 
     if (!user) return null;
 
@@ -27,7 +27,11 @@ export class UserService {
       .orderBy('created_at', 'desc');
 
     return {
-      ...user,
+      id: user.id,
+      name: user.name,
+      image: user.image,
+      role_id: user.role_id,
+      created_at: user.createdAt,
       films
     };
   }

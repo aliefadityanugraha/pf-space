@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '@/lib/api'
+import { assetUrl } from '@/lib/format'
 import Navbar from '@/components/Navbar.vue'
 import HeroSection from '@/components/HeroSection.vue'
 import SectionHeader from '@/components/SectionHeader.vue'
@@ -18,6 +19,8 @@ import EmptyState from '@/components/EmptyState.vue'
 import TrendingCardSkeleton from '@/components/TrendingCardSkeleton.vue'
 import CategoryCardSkeleton from '@/components/CategoryCardSkeleton.vue'
 import CommunityDiscussion from '@/components/CommunityDiscussion.vue'
+
+
 
 useHead({
   title: 'PF Space - Eksplorasi Arsip Karya Siswa',
@@ -100,7 +103,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F2EEE3]">
+  <div class="min-h-screen bg-brand-cream">
     <Navbar :light-title="isLightTitle" />
     <HeroSection ref="heroRef" />
 
@@ -152,14 +155,14 @@ onUnmounted(() => {
           >
             <div class="flex gap-4 p-4">
               <!-- Rank -->
-              <div class="flex-shrink-0 w-10 h-10 bg-brand-red text-white font-bold flex items-center justify-center border-2 border-black shadow-sm">
+              <div class="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-brand-red text-white text-sm md:text-base font-bold flex items-center justify-center border-2 border-black shadow-sm">
                 {{ index + 1 }}
               </div>
               <!-- Poster -->
-              <div class="w-16 h-24 bg-stone-200 flex-shrink-0 overflow-hidden border-2 border-black shadow-sm">
+              <div class="w-12 h-20 md:w-16 md:h-24 bg-stone-200 flex-shrink-0 overflow-hidden border-2 border-black shadow-sm">
                 <img 
                   v-if="film.gambar_poster" 
-                  :src="film.gambar_poster" 
+                  :src="assetUrl(film.gambar_poster)" 
                   :alt="film.judul"
                   class="w-full h-full object-cover"
                 />
@@ -169,8 +172,8 @@ onUnmounted(() => {
               </div>
               <!-- Info -->
               <div class="flex-1 min-w-0">
-                <h3 class="font-bold line-clamp-1 mb-1">{{ film.judul }}</h3>
-                <div class="text-sm text-stone-500 mb-2 z-10 relative">
+                <h3 class="font-bold text-sm md:text-base line-clamp-1 mb-0.5 md:mb-1">{{ film.judul }}</h3>
+                <div class="text-[10px] md:text-sm text-stone-500 mb-1.5 md:mb-2 z-10 relative">
                   <router-link 
                     v-if="film.creator?.id"
                     :to="`/p/${film.creator.id}`"
@@ -181,13 +184,10 @@ onUnmounted(() => {
                   </router-link>
                   <span v-else>{{ film.creator?.name || 'Tanpa Nama' }}</span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <Badge variant="secondary" class="gap-1">
-                    <TrendingUp class="w-3 h-3" />
-                    {{ film.vote_count }} votes
-                  </Badge>
-                  <Badge v-if="film.category" variant="outline">
-                    {{ film.category.nama_kategori }}
+                <div class="flex items-center gap-1.5 md:gap-2">
+                  <Badge variant="secondary" class="gap-1 h-5 md:h-6 text-[9px] md:text-xs">
+                    <TrendingUp class="w-2.5 h-2.5 md:w-3 md:h-3" />
+                    {{ film.vote_count }} <span class="hidden sm:inline">apresiasi</span>
                   </Badge>
                 </div>
               </div>
@@ -198,7 +198,7 @@ onUnmounted(() => {
         <!-- View All Button -->
         <div class="text-center mt-8">
           <Button variant="outline" @click="router.push('/trending')" class="gap-2 border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]">
-            Lihat Semua Trending
+            Lihat Semua Populer
             <ArrowRight class="w-4 h-4" />
           </Button>
         </div>
@@ -225,12 +225,12 @@ onUnmounted(() => {
           :key="category.category_id"
           class="cursor-pointer bg-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
         >
-          <CardContent class="p-4 text-center">
-            <div class="w-12 h-12 mx-auto mb-3 bg-brand-teal/10 rounded-full flex items-center justify-center border-2 border-black shadow-sm">
-              <Film class="w-6 h-6 text-brand-teal" />
+          <CardContent class="p-3 md:p-4 text-center">
+            <div class="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-brand-teal/10 rounded-full flex items-center justify-center border-2 border-black shadow-sm">
+              <Film class="w-5 h-5 md:w-6 md:h-6 text-brand-teal" />
             </div>
-            <h3 class="font-bold text-sm mb-1">{{ category.nama_kategori }}</h3>
-            <p class="text-xs text-stone-500">{{ category.film_count || 0 }} karya</p>
+            <h3 class="font-bold text-[11px] md:text-sm mb-0.5 md:mb-1">{{ category.nama_kategori }}</h3>
+            <p class="text-[10px] text-stone-500">{{ category.film_count || 0 }} karya</p>
           </CardContent>
         </Card>
       </div>
@@ -239,19 +239,21 @@ onUnmounted(() => {
     <!-- CTA Section -->
     <section class="max-w-7xl mx-auto px-4 md:px-8 py-16">
       <Card class="bg-gradient-to-r from-brand-teal to-teal-600 text-white border-2 border-black shadow-brutal">
-        <CardContent class="p-8 md:p-12 text-center">
-          <h2 class="text-3xl md:text-4xl font-display mb-4 text-white">Punya Karya?</h2>
-          <p class="text-lg opacity-90 mb-6 max-w-2xl mx-auto text-white">
+        <CardContent class="p-6 md:p-12 text-center">
+          <h2 class="text-2xl md:text-4xl font-display mb-3 md:mb-4 text-white">Punya Karya?</h2>
+          <p class="text-sm md:text-lg opacity-90 mb-6 max-w-2xl mx-auto text-white">
             Upload karyamu dan bagikan ke komunitas. Dapatkan feedback dan vote dari penonton.
           </p>
-          <Button 
-            size="lg" 
-            class="bg-white text-brand-teal hover:bg-stone-100 gap-2 shadow-brutal-sm border-2 border-black"
-            @click="router.push('/upload')"
-          >
-            <Film class="w-5 h-5" />
-            Upload Karya Sekarang
-          </Button>
+          <div class="flex justify-center">
+            <Button 
+              size="sm" 
+              class="bg-white text-brand-teal hover:bg-stone-100 gap-2 shadow-brutal-sm border-2 border-black md:h-12 md:px-8 md:text-base font-bold"
+              @click="router.push('/upload')"
+            >
+              <Film class="w-4 h-4 md:w-5 md:h-5" />
+              Upload Karya
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </section>

@@ -20,7 +20,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F2EEE3] flex flex-col items-center justify-center px-4 py-12">
+  <div class="min-h-screen bg-brand-cream flex flex-col items-center justify-center px-4 py-12">
     <!-- Auth Card -->
     <Card :class="cn('w-full max-w-md bg-stone-800 border-stone-700 shadow-2xl overflow-hidden', className)">
       <!-- Red accent bar -->

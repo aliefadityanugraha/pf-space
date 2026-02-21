@@ -5,7 +5,7 @@
  */
 
 import { voteController } from '../controllers/index.js';
-import { authenticate, requireAdmin } from '../middlewares/index.js';
+import { authenticate, requireAdmin, optionalAuth } from '../middlewares/index.js';
 
 /**
  * Register vote and engagement routes
@@ -21,7 +21,9 @@ export default async function voteRoutes(fastify) {
   }, voteController.getMyVotes.bind(voteController));
 
   // Public: Get current like status and count for a specific film
-  fastify.get('/:filmId', voteController.getVoteCount.bind(voteController));
+  fastify.get('/:filmId', {
+    preHandler: optionalAuth
+  }, voteController.getVoteCount.bind(voteController));
 
   // User: Add a like to a film
   fastify.post('/:filmId', {

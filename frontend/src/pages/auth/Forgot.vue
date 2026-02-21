@@ -31,7 +31,7 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F2EEE3] flex flex-col items-center justify-center px-4 py-12">
+  <div class="min-h-screen bg-brand-cream flex flex-col items-center justify-center px-4 py-12">
     <AuthCard 
       title="PF Space" 
       subtitle="Reset Access Code"

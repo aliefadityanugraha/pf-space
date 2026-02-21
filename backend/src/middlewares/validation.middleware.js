@@ -10,7 +10,8 @@ export const validateRequest = (schema, source = 'body') => async (request, repl
   const result = schema.safeParse(data);
 
   if (!result.success) {
-    const errors = result.error.errors.map(err => ({
+    const rawErrors = Array.isArray(result.error?.errors) ? result.error.errors : [];
+    const errors = rawErrors.map(err => ({
       field: err.path.join('.'),
       message: err.message
     }));

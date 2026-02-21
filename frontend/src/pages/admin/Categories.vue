@@ -10,7 +10,6 @@ import { Badge } from '@/components/ui/badge'
 import { 
   Plus, Pencil, Trash2, Loader2, FolderOpen, X, Save, AlertTriangle, CheckCircle, XCircle
 } from 'lucide-vue-next'
-import Toast from '@/components/Toast.vue'
 import { useToast } from '@/composables/useToast'
 
 const sidebarCollapsed = ref(false)
@@ -30,7 +29,7 @@ const showConfirm = ref(false)
 const confirmData = ref({ title: '', message: '', onConfirm: null })
 
 // Toast/Alert state
-const { toast, showToast } = useToast()
+const { showToast } = useToast()
 
 // Show confirm dialog
 const showConfirmDialog = (title, message) => {
@@ -61,7 +60,7 @@ const fetchCategories = async () => {
     categories.value = res.data
   } catch (err) {
     console.error('Failed to fetch categories:', err)
-    showToast('error', 'Gagal memuat kategori')
+    showToast('Gagal memuat kategori', 'error')
   } finally {
     loading.value = false
   }
@@ -97,10 +96,10 @@ const saveCategory = async () => {
   try {
     if (editingCategory.value) {
       await api.put(`/api/categories/${editingCategory.value.category_id}`, formData.value)
-      showToast('success', 'Kategori berhasil diperbarui')
+      showToast('Kategori berhasil diperbarui')
     } else {
       await api.post('/api/categories', formData.value)
-      showToast('success', 'Kategori berhasil ditambahkan')
+      showToast('Kategori berhasil ditambahkan')
     }
     closeModal()
     await fetchCategories()
@@ -129,10 +128,10 @@ const executeDelete = async () => {
   deleting.value = true
   try {
     await api.delete(`/api/categories/${categoryToDelete.value.category_id}`)
-    showToast('success', 'Kategori berhasil dihapus')
+    showToast('Kategori berhasil dihapus')
     await fetchCategories()
   } catch (err) {
-    showToast('error', err.message || 'Gagal menghapus kategori')
+    showToast(err.message || 'Gagal menghapus kategori', 'error')
   } finally {
     deleting.value = false
     showConfirm.value = false
@@ -147,19 +146,19 @@ onMounted(fetchCategories)
   <div class="min-h-screen bg-stone-100">
     <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
     
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
+    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <a href="/" class="text-brand-teal hover:underline">Home</a>
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
         <span class="text-stone-400">/</span>
-        <span class="text-stone-600">Administration</span>
+        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
         <span class="text-stone-400">/</span>
-        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Categories</Badge>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Kategori</Badge>
       </nav>
 
       <!-- Header -->
       <PageHeader 
-        title="Manage Categories" 
+        title="Kelola Kategori" 
         description="Kelola kategori Karya untuk mengorganisir arsip."
         :icon="FolderOpen"
         icon-color="bg-teal-500"
@@ -184,7 +183,7 @@ onMounted(fetchCategories)
           <!-- Loading -->
           <div v-if="loading" class="flex items-center justify-center py-12">
             <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
-            <p class="text-stone-500 font-mono uppercase tracking-widest animate-pulse">Memuat Categories...</p>
+            <p class="text-stone-500 font-mono uppercase tracking-widest animate-pulse">Memuat Kategori...</p>
           </div>
 
           <!-- Empty -->
@@ -287,13 +286,6 @@ onMounted(fetchCategories)
       </div>
     </div>
 
-    <!-- Toast Notification -->
-    <Toast 
-      :show="toast.show" 
-      :type="toast.type" 
-      :message="toast.message" 
-      @close="toast.show = false" 
-    />
-  </div>
+    <!-- Toast Notification --></div>
 </template>
 

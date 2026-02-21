@@ -38,9 +38,9 @@ defineProps({
         >
           <component :is="icon" class="w-6 h-6 text-white" />
         </div>
-        <h1 class="text-3xl md:text-5xl font-display font-bold text-stone-900">{{ title }}</h1>
+        <h1 class="text-2xl md:text-4xl font-display font-bold text-stone-900 leading-tight">{{ title }}</h1>
       </div>
-      <p v-if="description" class="text-stone-500 font-body max-w-2xl text-lg">
+      <p v-if="description" class="text-stone-500 font-body max-w-2xl text-sm md:text-base">
         {{ description }}
       </p>
       <slot name="extra"></slot>

@@ -66,50 +66,60 @@ const canDelete = computed(() => {
 </script>
 
 <template>
-  <div class="comment-item relative" :class="depth > 0 ? 'mt-4 ml-6 md:ml-10' : 'mt-6 border-b-2 border-stone-200 pb-6 last:border-0'">
+  <div class="comment-item relative group" :class="depth > 0 ? 'mt-3 ml-6 md:ml-10' : 'mt-2 border-b-2 border-stone-50 pb-3 last:border-0 last:pb-0'">
     <!-- Reply Line for nested items -->
-    <div v-if="depth > 0" class="absolute -left-6 md:-left-10 top-0 bottom-0 border-l-2 border-stone-300">
-      <div class="absolute top-5 left-0 w-4 md:w-8 border-t-2 border-stone-300"></div>
+    <div v-if="depth > 0" class="absolute -left-6 md:-left-10 top-0 bottom-0 border-l-2 border-stone-200">
+      <div class="absolute top-5 left-0 w-4 md:w-8 border-t-2 border-stone-200"></div>
     </div>
 
-    <div class="flex gap-3">
+    <div class="flex gap-3 md:gap-4">
       <!-- Avatar -->
       <div 
-        class="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-stone-800 shadow-brutal-sm flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0"
-        :class="depth % 2 === 0 ? 'bg-brand-orange' : 'bg-brand-teal text-white'"
+        class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-slate-900 shadow-brutal-xs flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0 overflow-hidden bg-stone-100 relative"
       >
-        {{ comment.user?.name?.charAt(0) || 'U' }}
+        <img 
+          v-if="comment.user?.image" 
+          :src="comment.user.image" 
+          :alt="comment.user.name"
+          class="w-full h-full object-cover"
+        />
+        <div 
+          v-else 
+          class="w-full h-full flex items-center justify-center"
+          :class="depth % 2 === 0 ? 'bg-brand-orange text-stone-900' : 'bg-brand-teal text-white'"
+        >
+          {{ comment.user?.name?.charAt(0) || 'U' }}
+        </div>
       </div>
 
       <div class="flex-1 min-w-0">
         <!-- Header -->
         <div class="flex items-center flex-wrap gap-2 mb-1">
-          <span class="font-bold text-sm text-stone-900 capitalize">{{ comment.user?.name || 'Unknown User' }}</span>
-          <span class="text-[10px] md:text-xs text-stone-500 font-mono">{{ formatDate(comment.created_at, true) }}</span>
-          <Badge v-if="depth > 0" variant="outline" class="text-[8px] h-4 py-0 bg-stone-100 italic">Level {{ depth }}</Badge>
+          <span class="font-display font-bold text-[13px] md:text-sm text-stone-900 capitalize tracking-tight">{{ comment.user?.name || 'Pengguna tidak dikenal' }}</span>
+          <span class="text-[9px] md:text-xs text-stone-400 font-mono font-medium">{{ formatDate(comment.created_at, true) }}</span>
         </div>
 
         <!-- Body -->
-        <p class="text-sm text-stone-700 leading-relaxed whitespace-pre-wrap mb-3">{{ comment.isi_pesan }}</p>
+        <p class="text-[12px] md:text-[14px] text-stone-700 leading-normal md:leading-relaxed whitespace-pre-wrap mb-2 font-body">{{ comment.isi_pesan }}</p>
 
         <!-- Actions -->
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-5">
           <button 
             v-if="isLoggedIn && depth < maxDepth"
             @click="isReplyOpen = !isReplyOpen"
-            class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-stone-500 hover:text-brand-teal transition-colors"
+            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-brand-teal transition-colors"
           >
-            <CornerDownRight class="w-3.5 h-3.5" />
-            {{ isReplyOpen ? 'Batal' : 'Balas' }}
+            <CornerDownRight class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+            <span>{{ isReplyOpen ? 'Batal' : 'Balas' }}</span>
           </button>
           
           <button 
             v-if="canDelete"
             @click="emit('delete', comment.diskusi_id)"
-            class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-stone-500 hover:text-brand-red transition-colors"
+            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-brand-red transition-colors"
           >
-            <Trash2 class="w-3.5 h-3.5" />
-            Hapus
+            <Trash2 class="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
+            <span>Hapus</span>
           </button>
         </div>
 
@@ -119,15 +129,21 @@ const canDelete = computed(() => {
           enter-from-class="opacity-0 -translate-y-2"
           enter-to-class="opacity-100 translate-y-0"
         >
-          <div v-if="isReplyOpen" class="mt-4 p-4 bg-stone-100 border-l-4 border-brand-teal shadow-brutal-sm">
+          <div v-if="isReplyOpen" class="mt-4 p-3 md:p-4 bg-white border-2 border-slate-900 shadow-brutal-xs md:shadow-brutal relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 md:w-1.5 h-full bg-brand-teal"></div>
             <textarea 
               v-model="replyText"
               rows="2"
               placeholder="Tulis balasan..."
-              class="w-full p-2 border-2 border-stone-800 bg-white text-sm resize-none focus:ring-0 focus:outline-none mb-2 font-body"
+              class="w-full p-2 md:p-3 border-2 border-slate-900 bg-stone-50 text-xs md:text-sm resize-none focus:bg-white focus:ring-0 focus:outline-none mb-2 font-body transition-colors"
             ></textarea>
             <div class="flex justify-end">
-              <Button size="sm" class="shadow-brutal-xs" @click="handleReplySubmit" :disabled="!replyText.trim() || isSubmittingReply">
+              <Button 
+                size="sm" 
+                class="bg-brand-teal hover:bg-brand-teal/90 text-white rounded-none border-2 border-slate-900 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all font-bold uppercase tracking-wider h-8 md:h-9" 
+                @click="handleReplySubmit" 
+                :disabled="!replyText.trim() || isSubmittingReply"
+              >
                 <Loader2 v-if="isSubmittingReply" class="w-3 h-3 animate-spin mr-2" />
                 <Send v-else class="w-3 h-3 mr-2" />
                 Kirim Balasan

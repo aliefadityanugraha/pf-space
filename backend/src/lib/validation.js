@@ -38,14 +38,31 @@ export const updateProfileSchema = z.object({
 
 // --- FILM SCHEMAS ---
 
+const isUrl = (v) => {
+  try {
+    const u = new URL(v);
+    return !!u.protocol && !!u.host;
+  } catch {
+    return false;
+  }
+};
+
+const uploadOrUrl = z
+  .string()
+  .trim()
+  .refine(
+    (v) => v === '' || isUrl(v) || v.startsWith('/uploads/'),
+    'Invalid URL or upload path'
+  );
+
 export const filmCreateSchema = z.object({
   category_id: z.coerce.number().int().positive().optional(),
   judul: z.string().min(1, 'Judul is required').max(255),
   sinopsis: z.string().max(2000).optional(),
   tahun_karya: z.coerce.number().int().min(1900).max(2100).optional(),
-  link_video_utama: z.string().url('Invalid video URL').optional().or(z.literal('')),
-  link_trailer: z.string().url('Invalid trailer URL').optional().or(z.literal('')),
-  link_bts: z.string().url('Invalid BTS URL').optional().or(z.literal('')),
+  link_video_utama: uploadOrUrl.optional().or(z.literal('')),
+  link_trailer: uploadOrUrl.optional().or(z.literal('')),
+  link_bts: uploadOrUrl.optional().or(z.literal('')),
   gambar_poster: z.string().optional(),
   banner_url: z.string().optional(),
   deskripsi_lengkap: z.string().optional(),

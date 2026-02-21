@@ -16,6 +16,11 @@ const routes = [
     component: () => import('../pages/About.vue')
   },
   {
+    path: '/changelog',
+    name: 'Changelog',
+    component: () => import('../pages/Changelog.vue')
+  },
+  {
     path: '/contact',
     name: 'Contact',
     component: () => import('../pages/Contact.vue')
@@ -104,6 +109,12 @@ const routes = [
     component: () => import('../pages/Terms.vue')
   },
   {
+    path: '/guidelines',
+    name: 'Guidelines',
+    component: () => import('../pages/Pedoman.vue'),
+    alias: ['/pedoman']
+  },
+  {
     path: '/auth/login',
     name: 'Login',
     component: Login,
@@ -119,6 +130,12 @@ const routes = [
     path: '/auth/forgot',
     name: 'Forgot',
     component: () => import('../pages/auth/Forgot.vue'),
+    meta: { guestOnly: true }
+  },
+  {
+    path: '/auth/reset-password',
+    name: 'ResetPassword',
+    component: () => import('../pages/auth/ResetPassword.vue'),
     meta: { guestOnly: true }
   },
   {
@@ -140,33 +157,15 @@ const routes = [
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
-    path: '/admin/users',
-    name: 'AdminUsers',
-    component: () => import('../pages/admin/Users.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
     path: '/admin/archives',
     name: 'AdminArchives',
     component: () => import('../pages/admin/Archives.vue'),
     meta: { requiresAuth: true, requiresModerator: true }
   },
   {
-    path: '/admin/uploads',
-    name: 'AdminUploads',
-    component: () => import('../pages/admin/Uploads.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
     path: '/admin/reports',
     name: 'AdminReports',
     component: () => import('../pages/admin/Reports.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/admin/analytics',
-    name: 'AdminAnalytics',
-    component: () => import('../pages/admin/Analytics.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
@@ -194,9 +193,9 @@ const routes = [
     meta: { requiresAuth: true, requiresModerator: true }
   },
   {
-    path: '/admin/materi',
+    path: '/manage-materi',
     name: 'AdminMateri',
-    component: () => import('../pages/admin/MaterialManager.vue'),
+    component: () => import('../pages/MaterialManager.vue'),
     meta: { requiresAuth: true, requiresModerator: true }
   },
   {
@@ -204,6 +203,12 @@ const routes = [
     name: 'AdminHelp',
     component: () => import('../pages/admin/Help.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: '/admin/comments',
+    name: 'AdminComments',
+    component: () => import('../pages/admin/Comments.vue'),
+    meta: { requiresAuth: true, requiresModerator: true }
   },
   {
     path: '/:pathMatch(.*)*',

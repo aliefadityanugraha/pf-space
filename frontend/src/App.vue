@@ -1,9 +1,13 @@
 <script setup>
 import { ref, onMounted, onErrorCaptured } from 'vue'
 import { useAuth } from '@/composables/useAuth'
+import { useToast } from '@/composables/useToast'
 import SidebarChat from './components/SidebarChat.vue'
+import AnnouncementModal from './components/AnnouncementModal.vue'
+import Toast from './components/Toast.vue'
 
 const { init, initialized } = useAuth()
+const { toast } = useToast()
 
 // Global error boundary
 const hasError = ref(false)
@@ -48,6 +52,7 @@ onMounted(() => {
   <template v-else-if="initialized">
     <router-view />
     <SidebarChat />
+    <AnnouncementModal />
     
     <!-- Global Pattern Overlay -->
     <div 
@@ -63,6 +68,9 @@ onMounted(() => {
   <div v-else class="min-h-screen flex items-center justify-center">
     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
   </div>
+
+  <!-- Global Toast (singleton) -->
+  <Toast :show="toast.show" :type="toast.type" :message="toast.message" @close="toast.show = false" />
 </template>
 
 <style>

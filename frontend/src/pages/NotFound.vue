@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F2EEE3] flex flex-col items-center justify-center px-4 py-12">
+  <div class="min-h-screen bg-brand-cream flex flex-col items-center justify-center px-4 py-12">
     <!-- Film Reel Decoration -->
     <div class="relative mb-8">
       <div class="w-32 h-32 bg-stone-900 border-4 border-stone-900 shadow-brutal-lg flex items-center justify-center">

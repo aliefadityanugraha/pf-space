@@ -16,4 +16,5 @@ export * from './user.service.js';
 export * from './notification.service.js';
 export * from './community.service.js';
 export * from './learningMaterial.service.js';
+export * from './evaluation.service.js';
 

@@ -82,29 +82,29 @@ onMounted(() => {
   <div class="min-h-screen bg-stone-100">
     <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
     
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
+    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
       <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <a href="/" class="text-brand-teal hover:underline">Home</a>
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
         <span class="text-stone-400">/</span>
-        <span class="text-stone-600">Administration</span>
+        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
         <span class="text-stone-400">/</span>
         <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Dashboard</Badge>
       </nav>
 
       <PageHeader 
-        title="System Overview" 
-        description="Monitor system statistics, pending tasks, and recent activities."
+        title="Ikhtisar Sistem" 
+        description="Monitor statistik sistem, tugas tertunda, dan aktivitas terbaru."
         :icon="LayoutDashboard"
         icon-color="bg-amber-500"
       >
         <template #actions>
           <Button variant="outline" class="gap-2">
             <Upload class="w-4 h-4" />
-            Quick Upload
+            Upload Cepat
           </Button>
           <Button variant="outline" class="gap-2">
             <FileDown class="w-4 h-4" />
-            Report
+            Laporan
           </Button>
         </template>
       </PageHeader>
@@ -126,7 +126,7 @@ onMounted(() => {
             <div class="flex items-center gap-2 mt-2">
               <TrendingUp v-if="stat.changeType === 'positive'" class="w-4 h-4 text-green-600" />
               <span :class="stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'" class="text-sm font-medium">{{ stat.change }}</span>
-              <span class="text-xs text-stone-500">vs last month</span>
+              <span class="text-xs text-stone-500">vs bulan lalu</span>
             </div>
           </CardContent>
         </Card>
@@ -137,15 +137,15 @@ onMounted(() => {
           <CardHeader class="bg-orange-50 border-b-2 border-stone-800">
             <div class="flex items-center gap-3">
               <ListChecks class="w-5 h-5" />
-              <CardTitle class="text-lg font-bold uppercase">Active Tasks</CardTitle>
+              <CardTitle class="text-lg font-bold uppercase">Tugas Aktif</CardTitle>
             </div>
           </CardHeader>
           <CardContent class="p-0">
             <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-lime-50 border-b-2 border-stone-800 text-xs font-bold uppercase tracking-wider">
-              <div class="col-span-4">Task Name</div>
-              <div class="col-span-4">Subject</div>
+              <div class="col-span-4">Nama Tugas</div>
+              <div class="col-span-4">Subjek</div>
               <div class="col-span-2">Status</div>
-              <div class="col-span-2 text-right">Action</div>
+              <div class="col-span-2 text-right">Aksi</div>
             </div>
             <div v-for="task in tasks" :key="task.id" class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 hover:bg-stone-50">
               <div class="md:col-span-4 flex items-center gap-3">
@@ -175,9 +175,9 @@ onMounted(() => {
         <Card>
           <CardHeader class="bg-stone-50 border-b-2 border-stone-800">
             <div class="flex items-center justify-between">
-              <CardTitle class="text-lg font-bold uppercase">Recent Activity</CardTitle>
+              <CardTitle class="text-lg font-bold uppercase">Aktivitas Terbaru</CardTitle>
               <Button variant="ghost" size="sm" class="text-xs uppercase gap-1">
-                View All
+                Lihat Semua
                 <ChevronRight class="w-4 h-4" />
               </Button>
             </div>

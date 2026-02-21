@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { Card, CardContent } from '@/components/ui/card'
 import { Film, Play } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
+import { assetUrl } from '@/lib/format'
 
 const props = defineProps({
   archive: {
@@ -44,6 +45,8 @@ const props = defineProps({
   }
 })
 
+
+
 const aspectClass = computed(() => {
   if (props.aspectRatio) return props.aspectRatio
   return props.variant === 'portrait' ? 'aspect-[3/4]' : 'aspect-video'
@@ -52,6 +55,8 @@ const aspectClass = computed(() => {
 const displayImage = computed(() => {
   return props.imageSrc || props.archive?.gambar_poster || props.archive?.image
 })
+
+const imageSrc = computed(() => assetUrl(displayImage.value))
 
 const displayTitle = computed(() => {
   return props.title || props.archive?.judul || props.archive?.title
@@ -76,8 +81,8 @@ const displaySubtitle = computed(() => {
     <!-- Image Section -->
     <div :class="[aspectClass, 'bg-stone-200 relative overflow-hidden border-b-2 border-black']">
       <img 
-        v-if="displayImage" 
-        :src="displayImage" 
+        v-if="imageSrc" 
+        :src="imageSrc" 
         :alt="displayTitle"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
       />
@@ -95,10 +100,10 @@ const displaySubtitle = computed(() => {
     </div>
 
     <!-- Content Section -->
-    <CardContent :class="cn('p-4', contentClass)">
+    <CardContent :class="cn('p-3 md:p-4', contentClass)">
       <slot name="content">
-        <h3 class="font-bold text-base text-stone-900 line-clamp-1 mb-1">{{ displayTitle }}</h3>
-        <p v-if="displaySubtitle" class="text-xs text-stone-500 mb-1 flex items-center gap-1 z-10 relative">
+        <h3 class="font-bold text-sm md:text-base text-stone-900 line-clamp-1 mb-1">{{ displayTitle }}</h3>
+        <p v-if="displaySubtitle" class="text-[10px] md:text-xs text-stone-500 mb-1 flex items-center gap-1 z-10 relative">
           <slot name="subtitle-icon"></slot>
           <router-link 
             v-if="archive?.creator?.id && displaySubtitle === archive.creator.name"

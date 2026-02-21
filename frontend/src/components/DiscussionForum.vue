@@ -15,10 +15,10 @@ defineProps({
     <div class="flex items-center justify-between pb-4 border-b border-stone-100 mb-6">
       <div class="flex items-center gap-2">
         <div class="w-3 h-3 bg-amber-400 rounded-full border border-stone-800"></div>
-        <h3 class="text-xl md:text-2xl font-display font-semibold text-stone-800">Discussion Forum</h3>
+        <h3 class="text-xl md:text-2xl font-display font-semibold text-stone-800">Forum Diskusi</h3>
       </div>
       <Badge variant="outline" class="bg-stone-100">
-        {{ commentCount }} Comments
+        {{ commentCount }} Komentar
       </Badge>
     </div>
 
@@ -29,13 +29,13 @@ defineProps({
       </div>
       <div class="flex-1">
         <textarea 
-          placeholder="Share your thoughts about this film..."
+          placeholder="Bagikan pemikiranmu tentang film ini..."
           class="w-full p-4 bg-stone-50 border-2 border-stone-200 text-base font-body text-stone-800 placeholder:text-stone-400 resize-none focus:outline-none focus:border-stone-400"
           rows="3"
         ></textarea>
         <div class="flex justify-end mt-3">
           <Button variant="destructive">
-            Post Comment
+            Kirim Komentar
           </Button>
         </div>
       </div>
@@ -48,7 +48,7 @@ defineProps({
       <!-- Empty state if no comments -->
       <div v-if="!$slots.default" class="text-center py-8">
         <MessageCircle class="w-12 h-12 text-stone-300 mx-auto mb-3" />
-        <p class="text-stone-500 font-body">No comments yet. Be the first to share your thoughts!</p>
+        <p class="text-stone-500 font-body">Belum ada komentar. Jadilah yang pertama memberikan pendapat!</p>
       </div>
     </div>
   </Card>

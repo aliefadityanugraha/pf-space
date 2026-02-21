@@ -157,6 +157,22 @@ export class FilmController {
   async create(request, reply) {
     const data = { ...request.body };
 
+    // Normalize crew to a clean JSON structure or null
+    if (Array.isArray(data.crew)) {
+      data.crew = data.crew
+        .filter(c => c && typeof c === 'object')
+        .map(c => ({
+          jabatan: typeof c.jabatan === 'string' ? c.jabatan.trim() : '',
+          anggota: Array.isArray(c.anggota)
+            ? c.anggota.filter(a => typeof a === 'string' && a.trim()).map(a => a.trim())
+            : []
+        }))
+        .filter(c => c.jabatan);
+      if (data.crew.length === 0) data.crew = null;
+    } else if (data.crew !== null && data.crew !== undefined) {
+      data.crew = null;
+    }
+
     // Sanitize user-generated content
     if (data.deskripsi_lengkap) data.deskripsi_lengkap = sanitizeRichText(data.deskripsi_lengkap);
     if (data.sinopsis) data.sinopsis = sanitizePlainText(data.sinopsis);
@@ -189,6 +205,24 @@ export class FilmController {
     }
 
     const updateData = { ...request.body };
+
+    // Normalize crew on update as well
+    if ('crew' in updateData) {
+      if (Array.isArray(updateData.crew)) {
+        updateData.crew = updateData.crew
+          .filter(c => c && typeof c === 'object')
+          .map(c => ({
+            jabatan: typeof c.jabatan === 'string' ? c.jabatan.trim() : '',
+            anggota: Array.isArray(c.anggota)
+              ? c.anggota.filter(a => typeof a === 'string' && a.trim()).map(a => a.trim())
+              : []
+          }))
+          .filter(c => c.jabatan);
+        if (updateData.crew.length === 0) updateData.crew = null;
+      } else if (updateData.crew !== null && updateData.crew !== undefined) {
+        updateData.crew = null;
+      }
+    }
 
     // Sanitize user-generated content
     if (updateData.deskripsi_lengkap) updateData.deskripsi_lengkap = sanitizeRichText(updateData.deskripsi_lengkap);

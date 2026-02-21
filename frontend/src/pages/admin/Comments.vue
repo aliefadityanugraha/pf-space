@@ -12,7 +12,6 @@ import {
   MessageCircle, Trash2, Search, Filter, Loader2, 
   Eye, ChevronRight, Film, User, Calendar, X
 } from 'lucide-vue-next'
-import Toast from '@/components/Toast.vue'
 import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
@@ -36,7 +35,7 @@ const selectedFilmId = ref('')
 const currentPage = ref(1)
 
 // Toast
-const { toast, showToast } = useToast()
+const { showToast } = useToast()
 
 // Fetch films for filter
 const fetchFilms = async () => {
@@ -122,14 +121,14 @@ onMounted(async () => {
 <template>
   <div class="min-h-screen bg-stone-100">
     <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
-    <Toast v-bind="toast" @close="toast.show = false" />
+
     
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
+    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <a href="/" class="text-brand-teal hover:underline">Beranda</a>
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
         <span class="text-stone-400">/</span>
-        <span class="text-stone-600">Administrasi</span>
+        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
         <span class="text-stone-400">/</span>
         <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Komentar</Badge>
       </nav>

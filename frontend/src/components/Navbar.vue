@@ -7,6 +7,7 @@ import NotificationDropdown from './NotificationDropdown.vue'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { assetUrl } from '@/lib/format'
 import { 
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,7 +17,7 @@ import {
   DropdownMenuLabel
 } from '@/components/ui/dropdown-menu'
 
-defineProps({
+const props = defineProps({
   lightTitle: {
     type: Boolean,
     default: false
@@ -58,7 +59,8 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 bg-transparent backdrop-blur-sm border-b-2 border-stone-300/50">
+  <nav 
+    class="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 transition-all duration-500 border-white/20 border-b-2 backdrop-blur-md">
     <div class="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
       <!-- Logo -->
       <router-link to="/" class="flex items-center gap-2 md:gap-3">
@@ -66,22 +68,27 @@ const handleLogout = async () => {
         <span class="font-display text-lg md:text-xl font-bold" :class="lightTitle ? 'text-white' : 'text-stone-900'">|</span> -->
         <img src="/logo-perfilman.png" alt="Perfilman" class="w-8 h-8 md:w-10 md:h-10 object-contain" />
         <span 
-          class="text-lg md:text-2xl font-bold font-display block md:block transition-colors duration-300"
-          :class="lightTitle ? 'text-white' : 'text-[#000]'"
+          class="text-base md:text-xl font-bold font-display block md:block transition-colors duration-500"
+          :class="lightTitle ? 'text-white' : 'text-black'"
         >PF Space</span>
       </router-link>
 
       <!-- Search Bar -->
       <div class="hidden md:block flex-1 max-w-md mx-4 md:mx-8 relative group">
         <div class="relative z-50">
-          <Search v-if="!isSearching" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 z-10" />
+          <Search v-if="!isSearching" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors z-10" :class="lightTitle ? 'text-white/70' : 'text-black/50'" />
           <Loader2 v-else class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-teal animate-spin z-10" />
           
           <Input 
             v-model="searchQuery"
             type="text" 
             placeholder="Cari di arsip…"
-            class="h-11 pl-12 pr-36 bg-orange-100 border-2 border-black shadow-brutal focus-visible:ring-0 focus:border-black"
+            class="h-11 pl-12 pr-36 border-2 shadow-brutal focus-visible:ring-0 transition-all duration-300"
+            :class="[
+              lightTitle 
+                ? 'bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:bg-white/20 focus:border-white/40' 
+                : 'bg-orange-100 border-black text-stone-900 focus:border-black'
+            ]"
             @focus="showResults = searchQuery.length > 0"
           />
 
@@ -125,7 +132,7 @@ const handleLogout = async () => {
                   class="w-full flex items-center gap-4 p-3 hover:bg-orange-50 transition-colors border-b last:border-0 border-stone-100 text-left group/item"
                 >
                   <div class="w-12 h-16 bg-stone-200 flex-shrink-0 border border-stone-800 overflow-hidden">
-                    <img v-if="res.gambar_poster" :src="res.gambar_poster" class="w-full h-full object-cover group-hover/item:scale-110 transition-transform" />
+                    <img v-if="res.gambar_poster" :src="assetUrl(res.gambar_poster)" class="w-full h-full object-cover group-hover/item:scale-110 transition-transform" />
                     <Film v-else class="w-full h-full p-3 text-stone-400" />
                   </div>
                   <div class="flex-1 min-w-0">
@@ -164,7 +171,7 @@ const handleLogout = async () => {
       <div class="flex items-center gap-1.5">
         <router-link to="/materi">
           <Button 
-            class="bg-brand-orange text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-8 px-3 text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-2"
+            class="bg-brand-orange text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2"
           >
             <BookOpen class="w-3 h-3 md:w-4 md:h-4 text-stone-900" />
             <span class="hidden sm:inline">Materi</span>
@@ -173,23 +180,23 @@ const handleLogout = async () => {
          <!-- About Button -->
         <router-link to="/about">
           <Button 
-            class="bg-teal-900 text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-8 px-3 text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-2"
+            class="bg-teal-900 text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2"
           >
             <Info class="w-3 h-3 md:w-4 md:h-4" />
-            <span class="hidden sm:inline">About Us</span>
+            <span class="hidden sm:inline">Tentang Kami</span>
           </Button>
         </router-link>
 
         <!-- Auth Buttons (Not Logged In) -->
-        <div v-if="!isLoggedIn" class="flex items-center gap-1.5 md:gap-2">
+        <div v-if="!isLoggedIn" class="flex items-center gap-1 md:gap-2">
           <router-link to="/auth/login">
-            <Button class="bg-white text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-8 px-4 text-xs md:h-10 md:px-6 md:text-sm">
-              Login
+            <Button class="bg-white text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-3 text-[10px] sm:h-8 sm:px-4 sm:text-xs md:h-10 md:px-6 md:text-sm">
+              Masuk
             </Button>
           </router-link>
           <router-link to="/auth/register">
-            <Button class="bg-brand-red text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-8 px-4 text-xs md:h-10 md:px-6 md:text-sm">
-              Register
+            <Button class="bg-brand-red text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-3 text-[10px] sm:h-8 sm:px-4 sm:text-xs md:h-10 md:px-6 md:text-sm">
+              Daftar
             </Button>
           </router-link>
         </div>
@@ -206,18 +213,18 @@ const handleLogout = async () => {
               >
                 <img 
                   v-if="user?.image" 
-                  :src="user.image" 
+                  :src="assetUrl(user.image)" 
                   :alt="user.name" 
                   class="w-full h-full object-cover"
                   @error="(e) => e.target.style.display = 'none'"
                 />
-                <User v-else class="w-4 h-4 md:w-5 md:h-5 text-slate-700" />
+                <User v-else class="w-4 h-4 md:w-5 md:h-5 transition-colors" :class="lightTitle ? 'text-white/80' : 'text-black'" />
               </button>
             </DropdownMenuTrigger>
             
             <DropdownMenuContent align="end" class="w-56">
                 <DropdownMenuLabel>
-                  <div class="font-semibold">{{ user?.name || 'User' }}</div>
+                  <div class="font-semibold">{{ user?.name || 'Pengguna' }}</div>
                   <div class="text-xs text-stone-500">{{ user?.email }}</div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -225,7 +232,7 @@ const handleLogout = async () => {
                 <DropdownMenuItem as-child>
                   <router-link to="/profile" class="flex items-center gap-2 cursor-pointer">
                     <User class="w-4 h-4" />
-                    <span>Profile</span>
+                    <span>Profil</span>
                   </router-link>
                 </DropdownMenuItem>
 
@@ -243,6 +250,13 @@ const handleLogout = async () => {
                   </router-link>
                 </DropdownMenuItem>
                 
+                <DropdownMenuItem v-if="isAdmin || isModerator" as-child>
+                  <router-link to="/manage-materi" class="flex items-center gap-2 cursor-pointer">
+                    <Upload class="w-4 h-4" />
+                    <span>Upload Materi</span>
+                  </router-link>
+                </DropdownMenuItem>
+
                 <DropdownMenuItem v-if="isAdmin" as-child>
                   <router-link to="/admin/dashboard" class="flex items-center gap-2 cursor-pointer">
                     <LayoutDashboard class="w-4 h-4" />
@@ -254,7 +268,7 @@ const handleLogout = async () => {
                 
                 <DropdownMenuItem @click="handleLogout" class="text-red-600 focus:text-red-600 cursor-pointer flex items-center gap-2 font-bold">
                   <LogOut class="w-4 h-4" />
-                  <span>Logout</span>
+                  <span>Keluar</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
           </DropdownMenu>

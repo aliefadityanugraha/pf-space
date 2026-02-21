@@ -52,8 +52,8 @@ const handleGoogleLogin = () => {
 
 <template>
   <AuthCard
-    title="Join Archive"
-    subtitle="Create your curator profile"
+    title="Gabung PF Space"
+    subtitle="Buat profil kuratormu"
   >
     <!-- Form -->
     <form @submit.prevent="handleSubmit" class="space-y-5">
@@ -64,10 +64,10 @@ const handleGoogleLogin = () => {
 
       <!-- Full Name -->
       <div>
-        <label class="block text-white font-body mb-2">Full Name</label>
+        <label class="block text-white font-body mb-2">Nama Lengkap</label>
         <div class="relative">
           <User class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
-          <Input v-model="fullName" type="text" placeholder="Enter your full name..."
+          <Input v-model="fullName" type="text" placeholder="Masukkan nama lengkap..."
             class="pl-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500" />
         </div>
       </div>
@@ -77,17 +77,17 @@ const handleGoogleLogin = () => {
         <label class="block text-white font-body mb-2">Email</label>
         <div class="relative">
           <Mail class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
-          <Input v-model="email" type="email" placeholder="Enter your email..."
+          <Input v-model="email" type="email" placeholder="Masukkan email..."
             class="pl-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500" />
         </div>
       </div>
 
       <!-- Password -->
       <div>
-        <label class="block text-white font-body mb-2">Password</label>
+        <label class="block text-white font-body mb-2">Kata Sandi</label>
         <div class="relative">
           <Lock class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
-          <Input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="Create a password..."
+          <Input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="Buat kata sandi..."
             class="pl-12 pr-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500" />
           <button type="button" @click="showPassword = !showPassword"
             class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-300">
@@ -99,11 +99,11 @@ const handleGoogleLogin = () => {
 
       <!-- Confirm Password -->
       <div>
-        <label class="block text-white font-body mb-2">Confirm Password</label>
+        <label class="block text-white font-body mb-2">Konfirmasi Kata Sandi</label>
         <div class="relative">
           <Lock class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
           <Input v-model="confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" 
-            placeholder="Confirm your password..."
+            placeholder="Konfirmasi kata sandi..."
             class="pl-12 pr-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500" />
           <button type="button" @click="showConfirmPassword = !showConfirmPassword"
             class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-300">
@@ -118,18 +118,18 @@ const handleGoogleLogin = () => {
         <input type="checkbox" v-model="agreeTerms"
           class="w-5 h-5 mt-0.5 border-2 border-stone-600 bg-transparent rounded" />
         <span class="text-sm text-stone-400 font-body">
-          I agree to the 
-          <router-link to="/terms" class="text-amber-500 hover:text-amber-400">Terms</router-link> 
-          and 
-          <router-link to="/privacy" class="text-amber-500 hover:text-amber-400">Privacy Policy</router-link>
+          Saya setuju dengan 
+          <router-link to="/terms" class="text-amber-500 hover:text-amber-400">Syarat & Ketentuan</router-link> 
+          dan 
+          <router-link to="/privacy" class="text-amber-500 hover:text-amber-400">Kebijakan Privasi</router-link>
         </span>
       </label>
 
       <!-- Submit Button -->
       <Button variant="destructive" class="w-full" size="lg" :disabled="loading">
-        <span v-if="loading">Loading...</span>
+        <span v-if="loading">Memuat...</span>
         <template v-else>
-          Request Access
+          Daftar Sekarang
           <UserPlus class="w-5 h-5 ml-2" />
         </template>
       </Button>
@@ -148,15 +148,15 @@ const handleGoogleLogin = () => {
           <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
           <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
         </svg>
-        Continue with Google
+        Lanjut dengan Google
       </Button>
     </form>
 
     <template #footer>
-      <p class="text-stone-400 font-body mb-3">Already have access?</p>
+      <p class="text-stone-400 font-body mb-3">Sudah punya akun?</p>
       <router-link to="/auth/login">
         <Button variant="outline" class="bg-stone-900 border-stone-700 text-white hover:bg-stone-800">
-          Enter Archive
+          Masuk
         </Button>
       </router-link>
     </template>

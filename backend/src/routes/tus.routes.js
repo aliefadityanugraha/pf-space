@@ -23,18 +23,34 @@ export default async function tusRoutes(fastify) {
   fastify.addHook('onRequest', async (request, reply) => {
     const requestOrigin = request.headers.origin;
     const origin = allowedOrigins.includes(requestOrigin) ? requestOrigin : allowedOrigins[0];
+    try {
+      const keys = Object.keys(request.headers || {});
+      console.log('[TusRoute] onRequest method=%s url=%s origin=%s headers=%o', request.method, request.url, requestOrigin || '(none)', keys);
+    } catch {}
     
-    reply.header('Access-Control-Allow-Origin', origin);
-    reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD');
-    reply.header('Access-Control-Allow-Headers', 'Tus-Resumable, Upload-Length, Upload-Offset, Upload-Metadata, Content-Type, Content-Length, Authorization, Tus-Version, X-HTTP-Method-Override, X-Requested-With');
-    reply.header('Access-Control-Expose-Headers', 'Tus-Resumable, Upload-Length, Upload-Offset, Upload-Metadata, Location, Tus-Version, Tus-Extension, Tus-Max-Size');
-    reply.header('Access-Control-Allow-Credentials', 'true');
+    reply.raw.setHeader('Access-Control-Allow-Origin', origin);
+    reply.raw.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD');
+    reply.raw.setHeader('Access-Control-Allow-Headers', 'Tus-Resumable, Upload-Length, Upload-Offset, Upload-Metadata, Content-Type, Content-Length, Authorization, Tus-Version, X-HTTP-Method-Override, X-Requested-With');
+    reply.raw.setHeader('Access-Control-Expose-Headers', 'Tus-Resumable, Upload-Length, Upload-Offset, Upload-Metadata, Location, Tus-Version, Tus-Extension, Tus-Max-Size');
+    reply.raw.setHeader('Access-Control-Allow-Credentials', 'true');
 
     // Handle Preflight (OPTIONS) immediately
     if (request.method === 'OPTIONS') {
-      reply.code(204).send();
+      reply.raw.statusCode = 204;
+      reply.raw.end();
       return;
     }
+  });
+
+  fastify.addHook('onSend', async (request, reply, payload) => {
+    const requestOrigin = request.headers.origin;
+    const origin = allowedOrigins.includes(requestOrigin) ? requestOrigin : allowedOrigins[0];
+    reply.raw.setHeader('Access-Control-Allow-Origin', origin);
+    reply.raw.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD');
+    reply.raw.setHeader('Access-Control-Allow-Headers', 'Tus-Resumable, Upload-Length, Upload-Offset, Upload-Metadata, Content-Type, Content-Length, Authorization, Tus-Version, X-HTTP-Method-Override, X-Requested-With');
+    reply.raw.setHeader('Access-Control-Expose-Headers', 'Tus-Resumable, Upload-Length, Upload-Offset, Upload-Metadata, Location, Tus-Version, Tus-Extension, Tus-Max-Size');
+    reply.raw.setHeader('Access-Control-Allow-Credentials', 'true');
+    return payload;
   });
 
   /**
@@ -42,6 +58,16 @@ export default async function tusRoutes(fastify) {
    */
   fastify.all('/*', async (request, reply) => {
     try {
+      const requestOrigin = request.headers.origin;
+      const origin = allowedOrigins.includes(requestOrigin) ? requestOrigin : allowedOrigins[0];
+      try {
+        console.log('[TusRoute] handler method=%s url=%s origin=%s', request.method, request.url, requestOrigin || '(none)');
+      } catch {}
+      reply.raw.setHeader('Access-Control-Allow-Origin', origin);
+      reply.raw.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD');
+      reply.raw.setHeader('Access-Control-Allow-Headers', 'Tus-Resumable, Upload-Length, Upload-Offset, Upload-Metadata, Content-Type, Content-Length, Authorization, Tus-Version, X-HTTP-Method-Override, X-Requested-With');
+      reply.raw.setHeader('Access-Control-Expose-Headers', 'Tus-Resumable, Upload-Length, Upload-Offset, Upload-Metadata, Location, Tus-Version, Tus-Extension, Tus-Max-Size');
+      reply.raw.setHeader('Access-Control-Allow-Credentials', 'true');
       return await tusServer.handle(request.raw, reply.raw);
     } catch (error) {
       request.log.error('Tus error:', error);

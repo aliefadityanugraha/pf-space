@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { api } from '@/lib/api'
-import Navbar from '@/components/Navbar.vue'
-import Footer from '@/components/Footer.vue'
+import { assetUrl } from '@/lib/format'
+import PageLayout from '@/components/PageLayout.vue'
 import SectionHeader from '@/components/SectionHeader.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -63,19 +63,15 @@ const getYoutubeEmbedUrl = (url) => {
 
 const getFullUrl = (path) => {
   if (!path) return ''
-  if (path.startsWith('http')) return path
-  const base = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-  return `${base}${path.startsWith('/') ? '' : '/'}${path}`
+  return assetUrl(path)
 }
 
 onMounted(fetchData)
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F2EEE3]">
-    <Navbar />
-    
-    <main class="max-w-7xl mx-auto px-4 md:px-8 py-12 pt-28">
+  <PageLayout>
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
       <SectionHeader 
         title="Materi Pembelajaran" 
         subtitle="Akses berbagai materi pendukung pembelajaran produksi film dan sistem informasi."
@@ -83,45 +79,46 @@ onMounted(fetchData)
       />
 
       <!-- Filters -->
-      <div class="mb-10 flex flex-col md:flex-row gap-4">
+      <div class="mb-6 md:mb-10 flex flex-col md:flex-row gap-3 md:gap-4">
         <div class="relative flex-1">
-          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400" />
           <input 
             v-model="searchQuery"
             type="text" 
             placeholder="Cari materi..."
-            class="w-full pl-10 pr-4 py-2 bg-white border-2 border-black shadow-brutal-sm focus:outline-none focus:ring-0"
+            class="w-full pl-9 pr-4 py-2 bg-white border-2 border-black shadow-brutal-xs md:shadow-brutal-sm focus:outline-none focus:ring-0 text-sm h-10 md:h-11"
           />
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           <Button 
             variant="outline"
-            :class="[selectedType === 'all' ? 'bg-brand-teal text-white' : 'bg-white text-black', 'border-2 border-black shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]']"
+            :class="[selectedType === 'all' ? 'bg-brand-teal text-white shadow-none translate-x-[1px] translate-y-[1px]' : 'bg-white text-black', 'border-2 border-black shadow-brutal-xs text-[10px] md:text-sm h-10 px-3 whitespace-nowrap']"
             @click="selectedType = 'all'"
           >
             Semua
           </Button>
           <Button 
             variant="outline"
-            :class="[selectedType === 'pdf' ? 'bg-brand-red text-white' : 'bg-white text-black', 'border-2 border-black shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]']"
+            :class="[selectedType === 'pdf' ? 'bg-brand-red text-white shadow-none translate-x-[1px] translate-y-[1px]' : 'bg-white text-black', 'border-2 border-black shadow-brutal-xs text-[10px] md:text-sm h-10 px-3 whitespace-nowrap']"
             @click="selectedType = 'pdf'"
           >
-            <FileText class="w-4 h-4 mr-2" />
+            <FileText class="w-3.5 h-3.5 mr-1.5" />
             PDF
           </Button>
           <Button 
             variant="outline"
-            :class="[selectedType === 'video' ? 'bg-[#FF0000] text-white' : 'bg-white text-black', 'border-2 border-black shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]']"
+            :class="[selectedType === 'video' ? 'bg-[#FF0000] text-white shadow-none translate-x-[1px] translate-y-[1px]' : 'bg-white text-black', 'border-2 border-black shadow-brutal-xs text-[10px] md:text-sm h-10 px-3 whitespace-nowrap']"
             @click="selectedType = 'video'"
           >
-            <Youtube class="w-4 h-4 mr-2" />
+            <Youtube class="w-3.5 h-3.5 mr-1.5" />
             Video
           </Button>
         </div>
       </div>
 
-      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <Card v-for="i in 6" :key="i" class="h-64 animate-pulse bg-white border-2 border-black shadow-brutal" />
+      <!-- MATERIALS LIST -->
+      <div v-if="loading" class="space-y-4">
+        <div v-for="i in 5" :key="i" class="h-24 animate-pulse bg-white border-2 border-black shadow-brutal-sm" />
       </div>
 
       <div v-else-if="filteredMaterials.length === 0">
@@ -131,102 +128,101 @@ onMounted(fetchData)
         />
       </div>
 
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <Card 
+      <div v-else class="space-y-4 md:space-y-6">
+        <div 
           v-for="material in filteredMaterials" 
           :key="material.materi_id"
-          class="bg-white border-2 border-black shadow-brutal overflow-hidden flex flex-col h-full hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-all"
+          class="bg-white border-2 border-black shadow-brutal-sm overflow-hidden flex flex-col md:flex-row hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group"
         >
-          <!-- Thumbnail / Icon Header -->
-          <div class="aspect-video bg-stone-100 border-b-2 border-black relative group overflow-hidden">
+          <!-- Small Thumbnail / Type Icon -->
+          <div class="w-full md:w-56 lg:w-72 aspect-video md:aspect-auto bg-stone-100 border-b-2 md:border-b-0 md:border-r-2 border-black flex-shrink-0 relative overflow-hidden">
             <template v-if="material.tipe === 'video'">
-              <iframe 
-                v-if="material.video_url"
-                :src="getYoutubeEmbedUrl(material.video_url)" 
-                class="w-full h-full"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              ></iframe>
-              <div v-else class="w-full h-full flex flex-col items-center justify-center text-[#FF0000]">
-                <Youtube class="w-16 h-16" />
-                <span class="mt-2 font-bold">VIDEO</span>
+              <div v-if="material.video_url" class="w-full h-full relative group/vid">
+                <img :src="`https://img.youtube.com/vi/${getYoutubeEmbedUrl(material.video_url).split('/').pop()}/mqdefault.jpg`" class="w-full h-full object-cover" />
+                <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-100 group-hover/vid:bg-black/20 transition-all">
+                  <div class="w-10 h-10 bg-white border-2 border-black shadow-brutal-xs flex items-center justify-center">
+                    <Play class="w-5 h-5 text-[#FF0000] fill-[#FF0000]" />
+                  </div>
+                </div>
               </div>
-              <div class="absolute top-2 right-2">
-                <Badge class="bg-[#FF0000] text-white border-black border">VIDEO</Badge>
+              <div v-else class="w-full h-full flex flex-col items-center justify-center text-[#FF0000]">
+                <Youtube class="w-10 h-10" />
+              </div>
+              <div class="absolute top-2 left-2">
+                <Badge class="bg-[#FF0000] text-white border-black border text-[9px]">VIDEO</Badge>
               </div>
             </template>
             <template v-else>
               <div class="w-full h-full flex flex-col items-center justify-center text-brand-red p-4">
-                <FileText class="w-16 h-16 mb-2" />
-                <span class="font-bold text-center uppercase text-[10px] tracking-widest opacity-50">
-                  {{ material.file_path?.includes('.') ? material.file_path.split('.').pop() : 'PDF' }}
-                </span>
+                <FileText class="w-10 h-10 mb-1" />
+                <span class="font-black uppercase text-[10px] tracking-widest opacity-50 text-center">LEARNING DOCUMENT</span>
               </div>
-              <div class="absolute top-2 right-2">
-                <Badge class="bg-brand-red text-white border-black border">PDF</Badge>
+              <div class="absolute top-2 left-2">
+                <Badge class="bg-brand-red text-white border-black border text-[9px]">PDF</Badge>
               </div>
-              <a 
-                :href="getFullUrl(material.file_path)" 
-                target="_blank"
-                class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100"
-              >
-                <div class="bg-white p-3 border-2 border-black shadow-brutal-xs">
-                  <Play class="w-6 h-6 text-black fill-black" />
-                </div>
-              </a>
             </template>
           </div>
 
-          <CardHeader class="flex-1">
-            <CardTitle class="text-xl font-bold leading-tight">{{ material.judul }}</CardTitle>
-            <CardDescription class="mt-2 line-clamp-3 text-stone-600">
-              {{ material.deskripsi || 'Tidak ada deskripsi.' }}
-            </CardDescription>
-          </CardHeader>
-
-          <CardFooter class="border-t-2 border-black p-4 bg-stone-50 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full border border-black bg-brand-teal overflow-hidden flex-shrink-0">
-                <img v-if="material.creator?.image" :src="material.creator.image" class="w-full h-full object-cover" />
-                <div v-else class="w-full h-full flex items-center justify-center text-white text-[10px] font-bold">
-                  {{ material.creator?.name?.[0]?.toUpperCase() || 'A' }}
+          <!-- Content Info -->
+          <div class="flex-1 p-4 md:p-6 flex flex-col justify-center">
+            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+              <div class="flex-1">
+                <h3 class="text-base md:text-xl font-display font-black text-stone-900 group-hover:text-brand-teal transition-colors">
+                  {{ material.judul }}
+                </h3>
+                <p class="mt-2 text-[11px] md:text-sm text-stone-500 font-medium line-clamp-2 leading-relaxed">
+                  {{ material.deskripsi || 'Tidak ada deskripsi tersedia untuk materi ini.' }}
+                </p>
+                
+                <!-- Meta Info -->
+                <div class="mt-4 flex flex-wrap items-center gap-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full border border-black bg-stone-200 overflow-hidden flex-shrink-0 shadow-[1px_1px_0px_#000]">
+                      <img v-if="material.creator?.image" :src="material.creator.image" class="w-full h-full object-cover" />
+                      <div v-else class="w-full h-full flex items-center justify-center text-stone-600 text-[8px] font-black">
+                        {{ material.creator?.name?.[0]?.toUpperCase() || 'A' }}
+                      </div>
+                    </div>
+                    <span class="text-[10px] font-black text-stone-600 uppercase tracking-wider">{{ material.creator?.name || 'Admin' }}</span>
+                  </div>
+                  <div class="h-1 w-1 rounded-full bg-stone-300 hidden md:block"></div>
+                  <span class="text-[10px] font-bold text-stone-400 uppercase">
+                    {{ material.created_at ? new Date(material.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Baru' }}
+                  </span>
                 </div>
               </div>
-              <span class="text-xs font-medium text-stone-700">{{ material.creator?.name || 'Admin' }}</span>
+
+              <!-- Action Button -->
+              <div class="flex-shrink-0 flex items-center">
+                <Button 
+                  v-if="material.tipe === 'pdf'"
+                  variant="outline"
+                  class="w-full md:w-auto border-2 border-black bg-white shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] h-10 md:h-12 px-6 text-xs md:text-sm font-black uppercase tracking-wider flex items-center gap-2 group/btn"
+                  as="a"
+                  :href="getFullUrl(material.file_path)"
+                  target="_blank"
+                >
+                  <Download class="w-4 h-4 text-brand-red group-hover/btn:scale-110 transition-transform" />
+                  Unduh Materi
+                </Button>
+                <Button 
+                  v-else
+                  variant="outline"
+                  class="w-full md:w-auto border-2 border-black bg-white shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] h-10 md:h-12 px-6 text-xs md:text-sm font-black uppercase tracking-wider flex items-center gap-2 group/btn"
+                  as="a"
+                  :href="material.video_url"
+                  target="_blank"
+                >
+                  <ExternalLink class="w-4 h-4 text-[#FF0000] group-hover/btn:scale-110 transition-transform" />
+                  Buka Video
+                </Button>
+              </div>
             </div>
-
-            <Button 
-              v-if="material.tipe === 'pdf'"
-              size="sm"
-              variant="outline"
-              class="border-2 border-black shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] h-8 px-3"
-              as="a"
-              :href="getFullUrl(material.file_path)"
-              target="_blank"
-            >
-              <Download class="w-4 h-4 mr-2" />
-              Download
-            </Button>
-            <Button 
-              v-else
-              size="sm"
-              variant="outline"
-              class="border-2 border-black shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] h-8 px-3"
-              as="a"
-              :href="material.video_url"
-              target="_blank"
-            >
-              <ExternalLink class="w-4 h-4 mr-2" />
-              Buka YT
-            </Button>
-          </CardFooter>
-        </Card>
+          </div>
+        </div>
       </div>
-    </main>
-
-    <Footer />
-  </div>
+    </div>
+  </PageLayout>
 </template>
 
 <style scoped>

@@ -1,151 +1,91 @@
 <script setup>
-import { ref } from 'vue'
-import Navbar from '@/components/Navbar.vue'
-import Footer from '@/components/Footer.vue'
+import PageLayout from '@/components/PageLayout.vue'
 import SectionHeader from '@/components/SectionHeader.vue'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Mail, MapPin, Phone, Send, Loader2 } from 'lucide-vue-next'
-import Toast from '@/components/Toast.vue'
-import { useToast } from '@/composables/useToast'
+import { Mail, Instagram, Globe } from 'lucide-vue-next'
+import { useHead } from '@unhead/vue'
 
-const form = ref({
-  name: '',
-  email: '',
-  subject: '',
-  message: ''
+useHead({ 
+  title: 'Kontak Kami - PF Space',
+  meta: [
+    { name: 'description', content: 'Hubungi tim PF Space untuk pertanyaan, saran, atau kolaborasi.' }
+  ]
 })
-
-const loading = ref(false)
-const { toast, showToast } = useToast()
-
-const submitForm = async () => {
-  loading.value = true
-  
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  
-  console.log('Form submitted:', form.value)
-  showToast('success', 'Pesan Anda telah terkirim!')
-  
-  form.value = { name: '', email: '', subject: '', message: '' }
-  loading.value = false
-}
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-[#F2EEE3]">
-    <Navbar />
-
-    <main class="max-w-7xl mx-auto px-4 md:px-8 py-12 pt-25">
+  <PageLayout>
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
       <SectionHeader 
         title="Hubungi Kami" 
-        subtitle="Punya pertanyaan atau saran? Kami siap mendengar."
+        subtitle="Punya pertanyaan atau ingin berkolaborasi? Kami siap membantu."
         :light-text="false"
+        class="mb-6 md:mb-10"
       />
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-        <!-- Contact Info -->
-        <div class="lg:col-span-1 space-y-6">
-          <Card class="bg-stone-900 text-white border-2 border-black shadow-brutal">
-            <CardContent class="p-6 md:p-8 space-y-8">
-              <div>
-                <h3 class="text-xl font-display font-bold mb-4 text-brand-red">Informasi Kontak</h3>
-                <p class="text-stone-300 leading-relaxed">
-                  Hubungi kami untuk kerjasama, pertanyaan seputar arsip, atau bantuan teknis.
-                </p>
+      <div class="mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 md:mb-16">
+        <!-- Contact Methods -->
+        <div class="space-y-4 md:space-y-6">
+          <Card class="border-2 border-black shadow-brutal hover:translate-x-[1px] md:hover:translate-x-[2px] hover:translate-y-[1px] md:hover:translate-y-[2px] hover:shadow-brutal-sm transition-all bg-white">
+            <CardContent class="p-4 md:p-6 flex items-start gap-3 md:gap-4 font-body">
+              <div class="w-10 h-10 md:w-12 md:h-12 bg-brand-teal/10 border-2 border-black flex items-center justify-center shrink-0">
+                <Mail class="w-5 h-5 md:w-6 md:h-6 text-brand-teal" />
               </div>
+              <div class="min-w-0">
+                <h3 class="font-display font-bold text-base md:text-lg mb-0.5 md:mb-1">Email</h3>
+                <p class="text-xs md:text-sm text-stone-600 mb-1.5 md:mb-2 leading-relaxed">Untuk pertanyaan umum dan dukungan teknis.</p>
+                <a href="mailto:pfspace.id@gmail.com" class="text-brand-teal font-bold hover:underline text-xs md:text-sm break-all">pfspace.id@gmail.com</a>
+              </div>
+            </CardContent>
+          </Card>
 
-              <div class="space-y-6">
-                <div class="flex items-start gap-4">
-                  <div class="p-3 bg-white/10 rounded-lg">
-                    <Mail class="w-6 h-6 text-brand-yellow" />
-                  </div>
-                  <div>
-                    <h4 class="font-bold mb-1">Email</h4>
-                    <p class="text-stone-300 text-sm">hello@pfspace.id</p>
-                    <p class="text-stone-300 text-sm">support@pfspace.id</p>
-                  </div>
-                </div>
-
-                <div class="flex items-start gap-4">
-                  <div class="p-3 bg-white/10 rounded-lg">
-                    <MapPin class="w-6 h-6 text-brand-teal" />
-                  </div>
-                  <div>
-                    <h4 class="font-bold mb-1">Lokasi</h4>
-                    <p class="text-stone-300 text-sm">
-                      Gedung Film, Lt. 3<br>
-                      Jl. Sinema Raya No. 123<br>
-                      Jakarta Selatan, 12345
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex items-start gap-4">
-                  <div class="p-3 bg-white/10 rounded-lg">
-                    <Phone class="w-6 h-6 text-brand-orange" />
-                  </div>
-                  <div>
-                    <h4 class="font-bold mb-1">Telepon</h4>
-                    <p class="text-stone-300 text-sm">+62 21 5555 0123</p>
-                  </div>
-                </div>
+          <Card class="border-2 border-black shadow-brutal hover:translate-x-[1px] md:hover:translate-x-[2px] hover:translate-y-[1px] md:hover:translate-y-[2px] hover:shadow-brutal-sm transition-all bg-white">
+            <CardContent class="p-4 md:p-6 flex items-start gap-3 md:gap-4 font-body">
+              <div class="w-10 h-10 md:w-12 md:h-12 bg-brand-orange/10 border-2 border-black flex items-center justify-center shrink-0">
+                <Instagram class="w-5 h-5 md:w-6 md:h-6 text-brand-orange" />
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-display font-bold text-base md:text-lg mb-0.5 md:mb-1">Media Sosial</h3>
+                <p class="text-xs md:text-sm text-stone-600 mb-1.5 md:mb-2 leading-relaxed">Ikuti kami untuk update terbaru.</p>
+                <a href="https://instagram.com/pfspace.id" target="_blank" class="text-brand-orange font-bold hover:underline text-xs md:text-sm">@pfspace.id</a>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <!-- Contact Form -->
-        <div class="lg:col-span-2">
-          <Card class="bg-white border-2 border-black shadow-brutal h-full">
-            <CardContent class="p-6 md:p-8">
-              <h3 class="text-2xl font-display font-bold mb-6 text-stone-900">Kirim Pesan</h3>
-              
-              <form @submit.prevent="submitForm" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div class="space-y-2">
-                    <label class="text-sm font-bold text-stone-700">Nama Lengkap</label>
-                    <Input v-model="form.name" placeholder="Nama Anda" required class="bg-stone-50" />
-                  </div>
-                  <div class="space-y-2">
-                    <label class="text-sm font-bold text-stone-700">Email</label>
-                    <Input v-model="form.email" type="email" placeholder="email@contoh.com" required class="bg-stone-50" />
-                  </div>
-                </div>
-
-                <div class="space-y-2">
-                  <label class="text-sm font-bold text-stone-700">Subjek</label>
-                  <Input v-model="form.subject" placeholder="Perihal pesan Anda" required class="bg-stone-50" />
-                </div>
-
-                <div class="space-y-2">
-                  <label class="text-sm font-bold text-stone-700">Pesan</label>
-                  <textarea 
-                    v-model="form.message" 
-                    rows="6"
-                    class="w-full p-3 bg-stone-50 border border-stone-300 rounded focus:outline-none focus:ring-2 focus:ring-black resize-none"
-                    placeholder="Tulis pesan Anda di sini..."
-                    required
-                  ></textarea>
-                </div>
-
-                <div class="flex justify-end">
-                  <Button type="submit" size="lg" class="w-full md:w-auto gap-2" :disabled="loading">
-                    <Loader2 v-if="loading" class="w-5 h-5 animate-spin" />
-                    <Send v-else class="w-5 h-5" />
-                    Kirim Pesan
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
+        <!-- Location/Info -->
+        <Card class="border-2 border-black shadow-brutal bg-white h-full">
+          <CardContent class="p-5 md:p-8 flex flex-col h-full font-body">
+            <div class="flex items-center gap-2.5 md:gap-3 mb-4 md:mb-6">
+              <Globe class="w-6 h-6 md:w-8 md:h-8 text-stone-400" />
+              <h3 class="text-xl md:text-2xl font-display font-bold uppercase tracking-tight">Lokasi Kami</h3>
+            </div>
+            
+            <p class="text-[13px] md:text-base text-stone-600 leading-relaxed mb-6">
+              PF Space diinisiasi oleh mahasiswa Universitas Dian Nuswantoro melalui program PKM-PM, bermitra dengan SMKN Ngasem Kediri dalam upaya pelestarian karya kreatif siswa.
+            </p>
+            
+            <div class="mt-auto space-y-3 md:space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 border-b border-dashed border-stone-200 pb-2">
+                <div class="font-bold text-stone-900 w-full sm:w-32 shrink-0 text-[10px] md:text-sm uppercase tracking-wider">Lembaga</div>
+                <div class="text-stone-600 text-xs md:text-sm">Universitas Dian Nuswantoro</div>
+              </div>
+              <div class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 border-b border-dashed border-stone-200 pb-2">
+                <div class="font-bold text-stone-900 w-full sm:w-32 shrink-0 text-[10px] md:text-sm uppercase tracking-wider">Mitra</div>
+                <div class="text-stone-600 text-xs md:text-sm">SMKN Ngasem Kediri</div>
+              </div>
+              <div class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3">
+                <div class="font-bold text-stone-900 w-full sm:w-32 shrink-0 text-[10px] md:text-sm uppercase tracking-wider">Respon</div>
+                <div class="text-stone-600 text-xs md:text-sm">1-2 Hari Kerja</div>
+              </div>
+            </div>
+            
+            <div class="mt-8 md:mt-10 p-3 md:p-4 bg-stone-50 border-2 border-dashed border-stone-300 text-center italic text-stone-500 text-[10px] md:text-sm">
+              "Hubungi kami untuk kolaborasi atau bantuan teknis terkait pengarsipan film."
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </main>
-
-    <Footer />
-    <Toast v-bind="toast" @close="toast.show = false" />
-  </div>
+    </div>
+  </PageLayout>
 </template>

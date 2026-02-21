@@ -16,6 +16,8 @@ import userRoutes from './user.routes.js';
 import notificationRoutes from './notification.routes.js';
 import { communityRoutes } from './community.routes.js';
 import learningMaterialRoutes from './learningMaterial.routes.js';
+import settingRoutes from './setting.routes.js';
+import evaluationRoutes from './evaluation.routes.js';
 
 /**
  * Register all application routes with their respective prefixes
@@ -54,6 +56,12 @@ export default async function routes(fastify) {
 
   // Learning materials (Materi)
   await fastify.register(learningMaterialRoutes, { prefix: '/learning-materials' });
+
+  // System settings
+  await fastify.register(settingRoutes, { prefix: '/settings' });
+
+  // Film evaluations
+  await fastify.register(evaluationRoutes, { prefix: '/evaluations' });
 
   // System administration
   await fastify.register(adminRoutes, { prefix: '/admin' });

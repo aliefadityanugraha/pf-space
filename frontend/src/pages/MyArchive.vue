@@ -13,7 +13,6 @@ import {
   Film, Plus, Pencil, Trash2, Eye, Clock, CheckCircle, XCircle,
   X, Search, ArrowRight
 } from 'lucide-vue-next'
-import Toast from '@/components/Toast.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import ArchiveSkeleton from '@/components/ArchiveSkeleton.vue'
@@ -45,7 +44,7 @@ const filmToDelete = ref(null)
 const deleting = ref(false)
 const showRejectionModal = ref(false)
 const selectedRejectionFilm = ref(null)
-const { toast, showToast } = useToast()
+const { showToast } = useToast()
 
 const openRejectionModal = (film) => {
   selectedRejectionFilm.value = film
@@ -81,7 +80,7 @@ const fetchFilms = async () => {
     }
   } catch (err) {
     console.error('Failed to fetch films:', err)
-    showToast('error', 'Gagal memuat data film')
+    showToast('Gagal memuat data film', 'error')
   } finally {
     loading.value = false
   }
@@ -118,7 +117,7 @@ const fetchStatusSummary = async () => {
     statusSummary.value = nextSummary
   } catch (err) {
     console.error('Failed to fetch film status summary:', err)
-    showToast('error', 'Gagal memuat ringkasan status film')
+    showToast('Gagal memuat ringkasan status film', 'error')
   } finally {
     summaryLoading.value = false
   }
@@ -134,11 +133,11 @@ const executeDelete = async () => {
   deleting.value = true
   try {
     await api.delete(`/api/films/${filmToDelete.value.film_id}`)
-    showToast('success', 'Film berhasil dihapus')
+    showToast('Film berhasil dihapus')
     showConfirm.value = false
     await fetchFilms()
   } catch (err) {
-    showToast('error', err.message || 'Gagal menghapus film')
+    showToast(err.message || 'Gagal menghapus film', 'error')
   } finally {
     deleting.value = false
     filmToDelete.value = null
@@ -364,12 +363,5 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- Toast -->
-    <Toast 
-      :show="toast.show" 
-      :type="toast.type" 
-      :message="toast.message" 
-      @close="toast.show = false" 
-    />
   </PageLayout>
 </template>

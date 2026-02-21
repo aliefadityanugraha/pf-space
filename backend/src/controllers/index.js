@@ -16,4 +16,5 @@ export * from './notification.controller.js';
 export * from './community.controller.js';
 export * from './admin.controller.js';
 export * from './learningMaterial.controller.js';
+export * from './evaluation.controller.js';
 

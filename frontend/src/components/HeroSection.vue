@@ -6,8 +6,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useCarousel } from '@/composables/useCarousel'
 import { api } from '@/lib/api'
+import { assetUrl } from '@/lib/format'
 
 const router = useRouter()
+
+
 
 const staticSlides = [
   {
@@ -53,8 +56,8 @@ onMounted(async () => {
       slides.value = res.data.map(item => ({
         title: item.judul,
         summary: item.category?.nama_kategori || 'Karya Unggulan',
-        quote: item.sinopsis,
-        image: item.banner_url || item.gambar_poster,
+        quote: item.sinopsis || '',
+        image: assetUrl(item.banner_url || item.gambar_poster),
         slug: item.slug
       }))
     }
@@ -100,7 +103,7 @@ const handleVote = () => {
 
     <!-- Layer 2: Static Gradient Overlay (Z-10) -->
     <!-- Moved outside Transition to prevent shifting/flickering during slide changes -->
-    <div class="absolute bottom-0 left-0 right-0 h-[400px] z-10 bg-linear-to-t from-[#F2EEE3] via-transparent to-transparent pointer-events-none"></div> 
+    <div class="absolute bottom-0 left-0 right-0 h-[400px] z-10 bg-linear-to-t from-brand-cream via-transparent to-transparent pointer-events-none"></div> 
     
     <!-- Layer 3: Content (Z-20) -->
     <div class="absolute inset-0 z-20 pointer-events-none">
@@ -120,7 +123,7 @@ const handleVote = () => {
               </div> -->
 
               <!-- Title -->
-              <h1 class="hero-title text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-display font-black text-white mb-4 md:mb-6 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] leading-none">
+              <h1 class="hero-title text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-display font-black text-white mb-4 md:mb-6 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] leading-none">
                 {{ slides[activeIndex].title }}
               </h1>
 
@@ -128,7 +131,7 @@ const handleVote = () => {
               <div class="hero-card bg-white border-2 border-black shadow-brutal p-2 md:p-4 mb-5 md:mb-5 transform -rotate-1 transition-transform hover:rotate-0 max-w-2xl">
                 <div class="flex gap-4">
                   <div class="w-1 bg-brand-red flex-shrink-0"></div>
-                  <p class="text-sm sm:text-base md:text-xl font-medium text-stone-900 leading-relaxed font-serif">
+                  <p class="text-xs sm:text-base md:text-xl font-medium text-stone-900 leading-relaxed font-serif line-clamp-3 md:line-clamp-none">
                     "{{ slides[activeIndex].quote }}"
                   </p>
                 </div>
@@ -145,10 +148,10 @@ const handleVote = () => {
                 </Button>
                 <Button 
                   @click="handleVote"
-                  class="bg-[#F2EEE3] text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] h-9 md:h-12 px-3 md:px-8 text-xs sm:text-sm md:text-lg font-bold uppercase rounded-none transition-all"
+                  class="bg-brand-cream text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] h-9 md:h-12 px-3 md:px-8 text-xs sm:text-sm md:text-lg font-bold uppercase rounded-none transition-all"
                 >
                   <Heart class="w-5 h-5 mr-2" />
-                  Trending
+                  Populer
                 </Button>
               </div>
             </div>
@@ -161,13 +164,13 @@ const handleVote = () => {
     <div class="absolute bottom-10 right-4 md:right-8 z-30 flex gap-4">
       <button 
         @click="prevSlide(); resetTimer();"
-        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-[#F2EEE3] hover:bg-brand-red hover:text-white transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
+        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-brand-cream hover:bg-brand-red hover:text-white transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
       >
         <ChevronLeft class="w-6 h-6 md:w-8 md:h-8" />
       </button>
       <button 
         @click="nextSlide(); resetTimer();"
-        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-[#F2EEE3] hover:bg-brand-red hover:text-white transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
+        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-brand-cream hover:bg-brand-red hover:text-white transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
       >
         <ChevronRight class="w-6 h-6 md:w-8 md:h-8" />
       </button>

@@ -4,8 +4,7 @@ import { useRouter } from 'vue-router'
 import { Bell, Check, Loader2 } from 'lucide-vue-next'
 import { useNotifications } from '@/composables/useNotifications'
 import { useAuth } from '@/composables/useAuth'
-import { formatDistanceToNow } from 'date-fns'
-import { id } from 'date-fns/locale'
+import { timeAgo } from '@/lib/format'
 import {
   DropdownMenuRoot,
   DropdownMenuTrigger,
@@ -62,7 +61,7 @@ const handleNotificationClick = async (notification) => {
 }
 
 const formatTime = (date) => {
-  return formatDistanceToNow(new Date(date), { addSuffix: true, locale: id })
+  return timeAgo(date)
 }
 </script>
 

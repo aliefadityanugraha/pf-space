@@ -20,7 +20,7 @@ export default async function staticRoutes(fastify) {
    */
   fastify.get('/uploads/*', async (request, reply) => {
     const filePath = request.params['*'];
-    const absolutePath = path.join(UPLOAD_DIR, filePath);
+    let absolutePath = path.join(UPLOAD_DIR, filePath);
 
     // Security check to prevent path traversal
     if (!absolutePath.startsWith(UPLOAD_DIR)) {
@@ -28,8 +28,22 @@ export default async function staticRoutes(fastify) {
     }
 
     if (!fs.existsSync(absolutePath)) {
-      console.log(`[Static] 404 - File not found: ${absolutePath}`);
-      return ApiResponse.notFound(reply, 'File not found');
+      // Fallback: try to locate by filename in known subfolders (videos, images, documents, avatars) and root
+      const filenameOnly = path.basename(filePath);
+      const candidates = [
+        path.join(UPLOAD_DIR, filenameOnly), // root (race condition right after upload)
+        ...['videos', 'images', 'documents', 'avatars']
+          .map(sub => path.join(UPLOAD_DIR, sub, filenameOnly))
+      ];
+      
+      const found = candidates.find(p => fs.existsSync(p));
+      if (found) {
+        absolutePath = found;
+        console.log(`[Static] Fallback resolved: ${filePath} -> ${found}`);
+      } else {
+        console.log(`[Static] 404 - File not found: ${absolutePath}`);
+        return ApiResponse.notFound(reply, 'File not found');
+      }
     }
     console.log(`[Static] Serving: ${absolutePath}`);
 
@@ -61,7 +75,26 @@ export default async function staticRoutes(fastify) {
       return reply.send(fs.createReadStream(absolutePath));
     }
 
-    // 3. Fallback: Use Fastify's native file sender
+    // 3. Image Handling: Ensure correct content-type even if extension missing
+    if (
+      ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif'].includes(ext) ||
+      (!ext && (filePath.startsWith('images/') || filePath.startsWith('avatars/')))
+    ) {
+      const mimeMap = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.webp': 'image/webp',
+        '.gif': 'image/gif',
+        '.avif': 'image/avif'
+      };
+      const contentType = mimeMap[ext] || 'image/jpeg';
+      reply.header('Content-Type', contentType);
+      reply.header('Content-Disposition', 'inline');
+      return reply.send(fs.createReadStream(absolutePath));
+    }
+
+    // 4. Fallback: Use Fastify's native file sender
     return reply.sendFile(filePath);
   });
 }

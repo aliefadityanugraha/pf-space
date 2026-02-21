@@ -1,21 +1,24 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { api } from '@/lib/api'
-import AdminSidebar from '@/components/SidebarAdmin.vue'
-import PageHeader from '@/components/PageHeader.vue'
+import { API_BASE } from '@/lib/format'
+import PageLayout from '@/components/PageLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { 
   Plus, Pencil, Trash2, Loader2, BookOpen, X, Save, AlertTriangle, 
-  FileText, Youtube, CheckCircle, ExternalLink, Power, Upload
+  FileText, Youtube, CheckCircle, ExternalLink, Power, Upload, ArrowLeft
 } from 'lucide-vue-next'
-import Toast from '@/components/Toast.vue'
 import { useToast } from '@/composables/useToast'
 import * as tus from 'tus-js-client'
+import { useHead } from '@unhead/vue'
 
-const sidebarCollapsed = ref(false)
+useHead({
+  title: 'Kelola Materi - PF Space'
+})
+
 const materials = ref([])
 const loading = ref(true)
 const saving = ref(false)
@@ -37,7 +40,7 @@ const formData = ref({
 const formError = ref('')
 
 // Toast/Alert state
-const { toast, showToast } = useToast()
+const { showToast } = useToast()
 
 // Fetch materials
 const fetchMaterials = async () => {
@@ -47,7 +50,7 @@ const fetchMaterials = async () => {
     materials.value = res.data
   } catch (err) {
     console.error('Failed to fetch materials:', err)
-    showToast('error', 'Gagal memuat materi')
+    showToast('Gagal memuat materi', 'error')
   } finally {
     loading.value = false
   }
@@ -56,8 +59,7 @@ const fetchMaterials = async () => {
 // Tus Upload
 const uploadFileTus = (file, onProgress) => {
   return new Promise((resolve, reject) => {
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-    const endpoint = `${baseUrl}/api/files/` 
+    const endpoint = `${API_BASE}/api/files/` 
 
     const upload = new tus.Upload(file, {
       endpoint: endpoint,
@@ -80,17 +82,14 @@ const uploadFileTus = (file, onProgress) => {
         try {
           // Get the filename from the tus URL (e.g., "uuid.pdf")
           const fileId = upload.url.split('/api/files/')[1]
-          if (fileId) {
-            // Determine subfolder based on file type (matches backend getSubfolderForType)
+          if (fileId && fileId.includes('/')) resolve(`/uploads/${fileId}`)
+          else if (fileId) {
             const type = file.type || ''
             let subfolder = 'documents'
             if (type.startsWith('video/')) subfolder = 'videos'
             else if (type.startsWith('image/')) subfolder = 'images'
-            
             resolve(`/uploads/${subfolder}/${fileId}`)
-          } else {
-            resolve(upload.url)
-          }
+          } else resolve(upload.url)
         } catch (e) {
           resolve(upload.url)
         }
@@ -107,13 +106,13 @@ const handleFileUpload = async (event) => {
   if (!file) return
 
   if (file.type !== 'application/pdf') {
-    showToast('error', 'Hanya file PDF yang diizinkan')
+    showToast('Hanya file PDF yang diizinkan', 'error')
     event.target.value = ''
     return
   }
 
   if (file.size > 20 * 1024 * 1024) {
-    showToast('error', 'Ukuran file maksimal 20MB')
+    showToast('Ukuran file maksimal 20MB', 'error')
     event.target.value = ''
     return
   }
@@ -125,10 +124,10 @@ const handleFileUpload = async (event) => {
       uploadProgress.value = percent
     })
     formData.value.file_path = url
-    showToast('success', 'File berhasil diupload')
+    showToast('File berhasil diupload')
   } catch (err) {
     console.error('Upload failed:', err)
-    showToast('error', 'Gagal mengupload file')
+    showToast('Gagal mengupload file', 'error')
   } finally {
     uploading.value = false
   }
@@ -190,10 +189,10 @@ const saveMaterial = async () => {
   try {
     if (editingMaterial.value) {
       await api.put(`/api/learning-materials/${editingMaterial.value.materi_id}`, formData.value)
-      showToast('success', 'Materi berhasil diperbarui')
+      showToast('Materi berhasil diperbarui')
     } else {
       await api.post('/api/learning-materials', formData.value)
-      showToast('success', 'Materi berhasil ditambahkan')
+      showToast('Materi berhasil ditambahkan')
     }
     closeModal()
     await fetchMaterials()
@@ -218,10 +217,10 @@ const executeDelete = async () => {
   deleting.value = true
   try {
     await api.delete(`/api/learning-materials/${materialToDelete.value.materi_id}`)
-    showToast('success', 'Materi berhasil dihapus')
+    showToast('Materi berhasil dihapus')
     await fetchMaterials()
   } catch (err) {
-    showToast('error', 'Gagal menghapus materi')
+    showToast('Gagal menghapus materi', 'error')
   } finally {
     deleting.value = false
     showConfirm.value = false
@@ -232,10 +231,10 @@ const executeDelete = async () => {
 const toggleStatus = async (material) => {
   try {
     await api.patch(`/api/learning-materials/${material.materi_id}/toggle`)
-    showToast('success', 'Status materi diperbarui')
+    showToast('Status materi diperbarui')
     await fetchMaterials()
   } catch (err) {
-    showToast('error', 'Gagal merubah status')
+    showToast('Gagal merubah status', 'error')
   }
 }
 
@@ -243,31 +242,48 @@ onMounted(fetchMaterials)
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-100">
-    <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
-    
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
+  <PageLayout>
+    <div class="w-full max-w-7xl mx-auto px-4 md:px-8">
       <!-- Header -->
-      <PageHeader 
-        title="Manage Materi" 
-        description="Kelola materi pembelajaran untuk publik (PDF & Video)."
-        :icon="BookOpen"
-        icon-color="bg-brand-red"
-      >
-        <template #actions>
-          <Button @click="openModal()" class="gap-2 border-2 border-black shadow-brutal-sm">
-            <Plus class="w-4 h-4" />
-            Tambah Materi
-          </Button>
-        </template>
-      </PageHeader>
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-brand-red border-2 border-black shadow-brutal-sm">
+            <BookOpen class="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-display font-bold text-stone-900 leading-none">Kelola Materi</h1>
+            <p class="text-stone-500 mt-2">Kelola materi pembelajaran untuk publik (PDF & Video).</p>
+          </div>
+        </div>
+        
+        <Button @click="openModal()" class="gap-2 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+          <Plus class="w-4 h-4" />
+          Tambah Materi
+        </Button>
+      </div>
+
+      <!-- Info Box mirip CreateArchive -->
+      <div class="mb-8 p-4 bg-stone-50 border-2 border-black shadow-brutal-sm flex gap-3">
+        <div class="mt-1 shrink-0">
+          <AlertTriangle class="w-5 h-5 text-brand-orange" />
+        </div>
+        <div class="min-w-0">
+          <p class="font-bold text-stone-900 mb-1 uppercase tracking-tight text-sm">Panduan Pengelolaan Materi</p>
+          <ul class="list-disc pl-5 text-xs text-stone-700 space-y-1 font-medium">
+            <li>Materi PDF harus memiliki ukuran maksimal 20MB.</li>
+            <li>Pastikan judul materi deskriptif dan mudah dicari oleh siswa.</li>
+            <li>Video harus menggunakan link YouTube yang valid (Full atau Shortened).</li>
+            <li>Gunakan status "Aktif" untuk menampilkan materi di halaman publik secara instan.</li>
+          </ul>
+        </div>
+      </div>
 
       <!-- Table View -->
-      <Card class="border-2 border-black shadow-brutal">
-        <CardHeader class="border-b-2 border-black bg-stone-50">
-          <CardTitle class="text-lg font-bold uppercase tracking-tight">Daftar Materi</CardTitle>
+      <Card class="border-2 border-black shadow-brutal rounded-none overflow-hidden">
+        <CardHeader class="border-b-2 border-black bg-stone-100 p-4">
+          <CardTitle class="text-sm font-bold uppercase tracking-widest text-stone-900">Daftar Materi Pembelajaran</CardTitle>
         </CardHeader>
-        <CardContent class="p-0 overflow-x-auto">
+        <CardContent class="p-0 overflow-x-auto bg-white">
           <div v-if="loading" class="flex flex-col items-center justify-center py-12">
             <Loader2 class="w-8 h-8 animate-spin text-brand-teal mb-2" />
             <span class="font-mono text-xs uppercase tracking-widest text-stone-500">Memuat data...</span>
@@ -340,7 +356,7 @@ onMounted(fetchMaterials)
           </template>
         </CardContent>
       </Card>
-    </main>
+    </div>
 
     <!-- Create/Edit Modal -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -429,7 +445,7 @@ onMounted(fetchMaterials)
                     <template v-if="uploading">
                       <div class="space-y-2">
                         <div class="flex justify-between text-[10px] font-bold">
-                          <span>UPLOADING...</span>
+                          <span>MENGUNGGAH...</span>
                           <span>{{ uploadProgress }}%</span>
                         </div>
                         <div class="w-full h-2 bg-stone-100 border border-black relative">
@@ -488,13 +504,7 @@ onMounted(fetchMaterials)
     </div>
 
     <!-- Toast Notification -->
-    <Toast 
-      :show="toast.show" 
-      :type="toast.type" 
-      :message="toast.message" 
-      @close="toast.show = false" 
-    />
-  </div>
+  </PageLayout>
 </template>
 
 <style scoped>

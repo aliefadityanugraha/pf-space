@@ -4,7 +4,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { api } from '@/lib/api'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
-import Toast from '@/components/Toast.vue'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, AlertTriangle, Loader2 } from 'lucide-vue-next'
 import { useToast } from '@/composables/useToast'
@@ -20,7 +19,7 @@ const originalStatus = ref('')
 const filmId = ref(null)
 const initialData = ref(null)
 
-const { showToast, toast } = useToast()
+const { showToast } = useToast()
 const { loading: saving, error: formError, submitFilm } = useFilmForm()
 
 // Fetch film data by slug
@@ -53,7 +52,7 @@ const fetchFilm = async () => {
     }
     
   } catch (err) {
-    showToast('error', 'Gagal memuat data karya')
+    showToast('Gagal memuat data karya', 'error')
     router.push('/my-archive')
   } finally {
     loading.value = false
@@ -73,7 +72,7 @@ const handleCancel = () => {
 }
 
 const handleError = (message) => {
-    showToast('error', message)
+    showToast(message, 'error')
 }
 
 onMounted(() => {
@@ -82,7 +81,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-[#F2EEE3]">
+  <div class="min-h-screen flex flex-col bg-brand-cream">
     <Navbar />
 
     <main class="w-full max-w-7xl mx-auto px-4 md:px-8 pt-28 pb-16">
@@ -147,13 +146,5 @@ onMounted(() => {
     </main>
 
     <Footer />
-
-    <!-- Toast -->
-    <Toast 
-      :show="toast.show" 
-      :type="toast.type" 
-      :message="toast.message" 
-      @close="toast.show = false" 
-    />
   </div>
 </template>

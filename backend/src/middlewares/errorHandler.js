@@ -29,7 +29,8 @@ export const globalErrorHandler = (error, request, reply) => {
 
   // 2. Handle Zod Validation Errors (if they bubble up)
   if (error instanceof ZodError) {
-    const details = error.errors.map(err => ({
+    const issues = Array.isArray(error.errors) ? error.errors : [];
+    const details = issues.map(err => ({
       field: err.path.join('.'),
       message: err.message
     }));

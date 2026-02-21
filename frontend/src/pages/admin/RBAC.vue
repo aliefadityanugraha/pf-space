@@ -10,8 +10,8 @@ import {
   Search, Shield, Users, UserX, 
   Edit, Check, X, Loader2, RefreshCw, ChevronDown, Filter
 } from 'lucide-vue-next'
-import Toast from '@/components/Toast.vue'
 import { useToast } from '@/composables/useToast'
+import { assetUrl } from '@/lib/format'
 
 const searchQuery = ref('')
 const sidebarCollapsed = ref(false)
@@ -24,7 +24,7 @@ const error = ref(null)
 const updatingUserId = ref(null)
 const editingUserId = ref(null)
 const selectedRoleId = ref(null)
-const { toast, showToast } = useToast()
+const { showToast } = useToast()
 
 // Role color mapping based on role name
 const roleColors = {
@@ -109,11 +109,11 @@ async function saveUserRole(userId) {
     
     // Show success message
     const newRoleName = roles.value.find(r => r.role_id === parseInt(selectedRoleId.value))?.name
-    showToast('success', `Peran pengguna diperbarui menjadi ${newRoleName || 'role baru'}`)
+    showToast(`Peran pengguna diperbarui menjadi ${newRoleName || 'role baru'}`)
 
   } catch (err) {
     console.error('Failed to update role:', err)
-    showToast('error', err.message || 'Gagal memperbarui peran')
+    showToast(err.message || 'Gagal memperbarui peran', 'error')
   } finally {
     updatingUserId.value = null
   }
@@ -148,12 +148,12 @@ onMounted(() => {
   <div class="min-h-screen bg-stone-100">
     <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
     
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
+    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <a href="/" class="text-brand-teal hover:underline">Beranda</a>
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
         <span class="text-stone-400">/</span>
-        <a href="/admin/dashboard" class="text-brand-teal hover:underline">Administrasi</a>
+        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
         <span class="text-stone-400">/</span>
         <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">
           Kontrol Akses
@@ -175,15 +175,7 @@ onMounted(() => {
         </template>
       </PageHeader>
 
-      <!-- Toast Component -->
-      <Toast 
-        :show="toast.show" 
-        :type="toast.type" 
-        :message="toast.message" 
-        @close="toast.show = false" 
-      />
-
-      <!-- Loading State -->
+      <!-- Toast Component --><!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-20">
         <Loader2 class="w-8 h-8 animate-spin text-brand-teal" />
         <span class="ml-3 text-stone-600">Memuat data...</span>
@@ -259,8 +251,8 @@ onMounted(() => {
             >
               <!-- User Info -->
               <div class="lg:col-span-4 flex items-center gap-3">
-                <div class="w-10 h-10 bg-stone-200 border-2 border-stone-800 shadow-brutal-sm flex items-center justify-center text-sm font-bold">
-                  <img v-if="user.image" :src="user.image" :alt="user.name" class="w-full h-full object-cover" />
+                <div class="w-10 h-10 bg-stone-200 border-2 border-stone-800 shadow-brutal-sm flex items-center justify-center text-sm font-bold overflow-hidden">
+                  <img v-if="user.image" :src="assetUrl(user.image)" :alt="user.name" class="w-full h-full object-cover" />
                   <span v-else>{{ getAvatarInitials(user.name) }}</span>
                 </div>
                 <div>
@@ -310,7 +302,7 @@ onMounted(() => {
                     class="gap-1 text-xs"
                   >
                     <Edit class="w-3 h-3" />
-                    Change Role
+                    Ubah Role
                   </Button>
                 </template>
                 
@@ -324,7 +316,7 @@ onMounted(() => {
                   >
                     <Loader2 v-if="updatingUserId === user.id" class="w-3 h-3 animate-spin" />
                     <Check v-else class="w-3 h-3" />
-                    Save
+                    Simpan
                   </Button>
                   <Button 
                     @click="cancelEditRole"
@@ -334,7 +326,7 @@ onMounted(() => {
                     class="gap-1 text-xs"
                   >
                     <X class="w-3 h-3" />
-                    Cancel
+                    Batal
                   </Button>
                 </template>
               </div>
@@ -343,7 +335,7 @@ onMounted(() => {
             <!-- Empty State -->
             <div v-if="filteredUsers.length === 0" class="px-6 py-12 text-center">
               <UserX class="w-12 h-12 text-stone-300 mx-auto mb-4" />
-              <p class="text-stone-500">No users found matching your search.</p>
+              <p class="text-stone-500">Tidak ada pengguna yang cocok dengan pencarianmu.</p>
             </div>
           </CardContent>
         </Card>

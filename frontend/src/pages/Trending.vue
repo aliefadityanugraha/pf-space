@@ -4,19 +4,19 @@ import { ThumbsUp, Trophy, Film, TrendingUp, Clock, Filter, ChevronUp, Loader2 }
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import ArchiveCard from '@/components/ArchiveCard.vue'
-import Toast from '@/components/Toast.vue'
 import PageLayout from '@/components/PageLayout.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import { useVoting } from '@/composables/useVoting'
 import { useToast } from '@/composables/useToast'
+import { assetUrl } from '@/lib/format'
 
 const { films, categories, isLoading, fetchFilms, voteFilm } = useVoting()
 
 const selectedCategory = ref('all')
 const sortBy = ref('votes')
 const votingId = ref(null)
-const { toast, showToast } = useToast()
+const { showToast } = useToast()
 
 onMounted(() => {
   fetchFilms()
@@ -51,7 +51,7 @@ const vote = async (film) => {
     votingId.value = null
     
     if (result.success) {
-      showToast('Terima kasih atas voting Anda!', 'success')
+      showToast('Terima kasih atas voting Anda!')
     } else {
       if (result.error === 'unauthorized') {
         showToast('Silakan login untuk memberikan voting', 'error')
@@ -72,25 +72,20 @@ const getRankBadgeClass = (index) => {
 
 <template>
   <PageLayout>
-    <Toast 
-      v-if="toast.show" 
-      :message="toast.message" 
-      :type="toast.type" 
-      @close="toast.show = false" 
-    />
+
     
     <div class="max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-16">
         
         <!-- Header -->
-        <div class="text-center mb-12">
-          <div class="inline-flex items-center gap-2 bg-brand-red border-2 border-stone-900 shadow-brutal px-4 py-1 mb-4">
-            <Trophy class="w-5 h-5 text-white" />
-            <span class="font-body text-white text-sm font-bold uppercase tracking-widest">Pilihan Komunitas</span>
+        <div class="text-center mb-8 md:mb-12">
+          <div class="inline-flex items-center gap-2 bg-brand-red border-2 border-stone-900 shadow-brutal px-3 py-1 md:px-4 md:py-1 mb-3 md:mb-4">
+            <Trophy class="w-4 h-4 md:w-5 md:h-5 text-white" />
+            <span class="font-body text-white text-[10px] md:text-sm font-bold uppercase tracking-widest">Pilihan Komunitas</span>
           </div>
-          <h1 class="font-heading text-5xl md:text-7xl text-stone-900 tracking-wide mb-4">
+          <h1 class="font-heading text-3xl md:text-7xl text-stone-900 tracking-wide mb-3 md:mb-4">
             PILIH KARYA FAVORITMU
           </h1>
-          <p class="font-body text-stone-600 text-lg max-w-2xl mx-auto">
+          <p class="font-body text-stone-600 text-sm md:text-lg max-w-2xl mx-auto px-4 md:px-0">
             Bantu kami mengkurasi arsip terbaik. Beri suara untuk karya yang layak diarsipkan dan dirayakan.
           </p>
         </div>
@@ -103,53 +98,53 @@ const getRankBadgeClass = (index) => {
             <h2 class="font-display text-2xl text-stone-900 mb-6 text-center">Peringkat Sementara</h2>
             <div class="flex flex-col md:flex-row items-end justify-center gap-4 md:gap-6">
               <!-- 2nd Place -->
-              <div v-if="topThree[1]" class="order-2 md:order-1 w-full md:w-56">
-                <div class="bg-white border-2 border-stone-900 shadow-brutal p-4 text-center">
-                  <div class="w-12 h-12 bg-stone-400 border-2 border-stone-900 mx-auto mb-3 flex items-center justify-center">
-                    <span class="font-heading text-2xl text-stone-900">2</span>
+              <div v-if="topThree[1]" class="order-2 md:order-1 w-full md:w-56 max-w-[280px] md:max-w-none">
+                <div class="bg-white border-2 border-stone-900 shadow-brutal p-3 md:p-4 text-center">
+                  <div class="w-10 h-10 md:w-12 md:h-12 bg-stone-400 border-2 border-stone-900 mx-auto mb-2 md:mb-3 flex items-center justify-center">
+                    <span class="font-heading text-xl md:text-2xl text-stone-900">2</span>
                   </div>
-                  <img :src="topThree[1].image" :alt="topThree[1].title" class="w-full aspect-[2/3] object-cover border-2 border-stone-900 mb-3" />
-                  <h3 class="font-display text-lg text-stone-900 truncate">{{ topThree[1].title }}</h3>
-                  <p class="font-body text-sm text-stone-500">{{ topThree[1].year }}</p>
-                  <div class="flex items-center justify-center gap-1 mt-2">
-                    <ThumbsUp class="w-4 h-4 text-brand-teal" />
-                    <span class="font-body font-bold text-stone-900">{{ topThree[1].votes.toLocaleString() }}</span>
+                  <img :src="assetUrl(topThree[1].image)" :alt="topThree[1].title" class="w-full aspect-[2/3] object-cover border-2 border-stone-900 mb-2 md:mb-3" />
+                  <h3 class="font-display text-base md:text-lg text-stone-900 truncate">{{ topThree[1].title }}</h3>
+                  <p class="font-body text-xs md:text-sm text-stone-500">{{ topThree[1].year }}</p>
+                  <div class="flex items-center justify-center gap-1 mt-1.5 md:mt-2">
+                    <ThumbsUp class="w-3.5 h-3.5 md:w-4 md:h-4 text-brand-teal" />
+                    <span class="font-body font-bold text-sm md:text-stone-900">{{ topThree[1].votes.toLocaleString() }}</span>
                   </div>
                 </div>
               </div>
               
               <!-- 1st Place -->
-              <div v-if="topThree[0]" class="order-1 md:order-2 w-full md:w-64">
-                <div class="bg-white border-2 border-stone-900 shadow-brutal-lg p-4 text-center relative">
-                  <div class="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <div class="w-14 h-14 bg-yellow-400 border-2 border-stone-900 shadow-brutal-sm flex items-center justify-center">
-                      <Trophy class="w-7 h-7 text-stone-900" />
+              <div v-if="topThree[0]" class="order-1 md:order-2 w-full md:w-64 max-w-[320px] md:max-w-none">
+                <div class="bg-white border-2 border-stone-900 shadow-brutal-lg p-3 md:p-4 text-center relative">
+                  <div class="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2">
+                    <div class="w-10 h-10 md:w-14 md:h-14 bg-yellow-400 border-2 border-stone-900 shadow-brutal-xs md:shadow-brutal-sm flex items-center justify-center">
+                      <Trophy class="w-5 h-5 md:w-7 md:h-7 text-stone-900" />
                     </div>
                   </div>
-                  <div class="pt-8">
-                    <img :src="topThree[0].image" :alt="topThree[0].title" class="w-full aspect-[2/3] object-cover border-2 border-stone-900 mb-3" />
-                    <h3 class="font-display text-xl text-stone-900 truncate">{{ topThree[0].title }}</h3>
-                    <p class="font-body text-sm text-stone-500">{{ topThree[0].year }}</p>
-                    <div class="flex items-center justify-center gap-1 mt-2">
-                      <ThumbsUp class="w-5 h-5 text-brand-teal" />
-                      <span class="font-body font-bold text-lg text-stone-900">{{ topThree[0].votes.toLocaleString() }}</span>
+                  <div class="pt-6 md:pt-8">
+                    <img :src="assetUrl(topThree[0].image)" :alt="topThree[0].title" class="w-full aspect-[2/3] object-cover border-2 border-stone-900 mb-2 md:mb-3" />
+                    <h3 class="font-display text-lg md:text-xl text-stone-900 truncate">{{ topThree[0].title }}</h3>
+                    <p class="font-body text-xs md:text-sm text-stone-500">{{ topThree[0].year }}</p>
+                    <div class="flex items-center justify-center gap-1 mt-1.5 md:mt-2">
+                      <ThumbsUp class="w-4 h-4 md:w-5 md:h-5 text-brand-teal" />
+                      <span class="font-body font-bold text-base md:text-lg text-stone-900">{{ topThree[0].votes.toLocaleString() }}</span>
                     </div>
                   </div>
                 </div>
               </div>
               
               <!-- 3rd Place -->
-              <div v-if="topThree[2]" class="order-3 w-full md:w-52">
-                <div class="bg-white border-2 border-stone-900 shadow-brutal p-4 text-center">
-                  <div class="w-12 h-12 bg-amber-600 border-2 border-stone-900 mx-auto mb-3 flex items-center justify-center">
-                    <span class="font-heading text-2xl text-white">3</span>
+              <div v-if="topThree[2]" class="order-3 w-full md:w-52 max-w-[260px] md:max-w-none">
+                <div class="bg-white border-2 border-stone-900 shadow-brutal p-3 md:p-4 text-center">
+                  <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-600 border-2 border-stone-900 mx-auto mb-2 md:mb-3 flex items-center justify-center">
+                    <span class="font-heading text-xl md:text-2xl text-white">3</span>
                   </div>
-                  <img :src="topThree[2].image" :alt="topThree[2].title" class="w-full aspect-[2/3] object-cover border-2 border-stone-900 mb-3" />
-                  <h3 class="font-display text-lg text-stone-900 truncate">{{ topThree[2].title }}</h3>
-                  <p class="font-body text-sm text-stone-500">{{ topThree[2].year }}</p>
-                  <div class="flex items-center justify-center gap-1 mt-2">
-                    <ThumbsUp class="w-4 h-4 text-brand-teal" />
-                    <span class="font-body font-bold text-stone-900">{{ topThree[2].votes.toLocaleString() }}</span>
+                  <img :src="assetUrl(topThree[2].image)" :alt="topThree[2].title" class="w-full aspect-[2/3] object-cover border-2 border-stone-900 mb-2 md:mb-3" />
+                  <h3 class="font-display text-base md:text-lg text-stone-900 truncate">{{ topThree[2].title }}</h3>
+                  <p class="font-body text-xs md:text-sm text-stone-500">{{ topThree[2].year }}</p>
+                  <div class="flex items-center justify-center gap-1 mt-1.5 md:mt-2">
+                    <ThumbsUp class="w-3.5 h-3.5 md:w-4 md:h-4 text-brand-teal" />
+                    <span class="font-body font-bold text-sm md:text-stone-900">{{ topThree[2].votes.toLocaleString() }}</span>
                   </div>
                 </div>
               </div>
@@ -214,7 +209,7 @@ const getRankBadgeClass = (index) => {
                   <div class="flex items-center gap-2">
                     <TrendingUp class="w-4 h-4 text-brand-teal" />
                     <span class="font-body font-bold text-stone-900">{{ film.votes.toLocaleString() }}</span>
-                    <span class="font-body text-xs text-stone-500">suara</span>
+                    <span class="font-body text-xs text-stone-500">apresiasi</span>
                   </div>
                   
                   <Button
@@ -230,7 +225,7 @@ const getRankBadgeClass = (index) => {
                   >
                     <Loader2 v-if="votingId === film.id" class="w-4 h-4 mr-1 animate-spin" />
                     <ChevronUp v-else class="w-4 h-4 mr-1" />
-                    {{ film.hasVoted ? 'Sudah Vote' : 'Vote' }}
+                    {{ film.hasVoted ? 'Sudah Diapresiasi' : 'Beri Apresiasi' }}
                   </Button>
                 </div>
               </template>
@@ -249,15 +244,15 @@ const getRankBadgeClass = (index) => {
         </template>
 
         <!-- Call to Action -->
-        <div class="mt-16 bg-stone-900 border-2 border-stone-900 p-8 md:p-12 text-center">
-          <Film class="w-12 h-12 text-brand-orange mx-auto mb-4" />
-          <h2 class="font-heading text-3xl md:text-4xl text-white tracking-wide mb-4">
+        <div class="mt-12 md:mt-16 bg-stone-900 border-2 border-stone-900 p-6 md:p-12 text-center shadow-brutal-sm">
+          <Film class="w-10 h-10 md:w-12 md:h-12 text-brand-orange mx-auto mb-4" />
+          <h2 class="font-heading text-xl md:text-4xl text-white tracking-wide mb-3 md:mb-4">
             BELUM ADA KARYA FAVORITMU?
           </h2>
-          <p class="font-body text-stone-400 mb-6 max-w-lg mx-auto">
+          <p class="font-body text-[11px] md:text-base text-stone-400 mb-6 max-w-lg mx-auto">
             Ajukan karya untuk ditambahkan ke koleksi trending dan bantu memperkaya arsip.
           </p>
-          <Button class="bg-brand-orange text-stone-900 border-2 border-white shadow-brutal-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all px-6 py-3 h-auto">
+          <Button class="bg-brand-orange text-stone-900 border-2 border-white shadow-brutal-white hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all px-6 py-2 md:py-3 h-9 md:h-auto text-xs md:text-base">
             <span class="font-body font-bold uppercase tracking-wide">Ajukan Karya</span>
           </Button>
         </div>

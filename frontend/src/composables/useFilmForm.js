@@ -16,24 +16,29 @@ export function useFilmForm() {
     // Basic validation
     if (!formData.judul?.trim()) {
       error.value = 'Judul film wajib diisi'
-      showToast('error', error.value)
+      showToast(error.value, 'error')
       return false
     }
     if (!formData.category_id) {
       error.value = 'Kategori wajib dipilih'
-      showToast('error', error.value)
+      showToast(error.value, 'error')
       return false
     }
 
     loading.value = true
     try {
       // Clean crew data
-      const cleanCrew = formData.crew
-        ?.filter(c => c.jabatan && c.jabatan.trim())
+      // Clean crew data - ensure crew is an array before processing
+      const crewData = Array.isArray(formData.crew) ? formData.crew : [];
+      
+      const cleanCrew = crewData
+        .filter(c => c && typeof c === 'object' && c.jabatan && typeof c.jabatan === 'string' && c.jabatan.trim())
         .map(c => ({
           jabatan: c.jabatan.trim(),
-          anggota: c.anggota.filter(a => a && a.trim())
-        })) || []
+          anggota: Array.isArray(c.anggota) 
+            ? c.anggota.filter(a => a && typeof a === 'string' && a.trim()) 
+            : []
+        }))
 
       const payload = {
         ...formData,
@@ -45,21 +50,21 @@ export function useFilmForm() {
       if (filmId) {
         // Update
         await api.put(`/api/films/${filmId}`, payload)
-        showToast('success', customSuccessMessage || 'Film berhasil diperbarui!')
+        showToast(customSuccessMessage || 'Film berhasil diperbarui!')
       } else {
         // Create
         await api.post('/api/films', payload)
-        showToast('success', customSuccessMessage || 'Film berhasil disubmit! Menunggu review admin.')
+        showToast(customSuccessMessage || 'Film berhasil disubmit! Menunggu review admin.')
       }
       
       setTimeout(() => {
-        router.push('/my-films')
+        router.push({ name: 'MyArchive' })
       }, 1500)
       
       return true
     } catch (err) {
       error.value = err.message || 'Gagal menyimpan film'
-      showToast('error', error.value)
+      showToast(error.value, 'error')
       return false
     } finally {
       loading.value = false

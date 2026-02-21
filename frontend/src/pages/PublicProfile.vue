@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api } from '@/lib/api'
+import { assetUrl } from '@/lib/format'
 import PageLayout from '@/components/PageLayout.vue'
 import ArchiveCard from '@/components/ArchiveCard.vue'
 import { Card, CardContent } from '@/components/ui/card'
@@ -14,17 +15,23 @@ const user = ref(null)
 const films = ref([])
 const error = ref(null)
 
+useHead({
+  title: () => user.value ? `${user.value.name} - Profil Kontributor` : 'Profil Kontributor'
+})
+
 const fetchProfile = async () => {
   loading.value = true
   error.value = null
   try {
     const res = await api.get(`/api/users/${route.params.id}`)
-    user.value = res.data
-    films.value = res.data.films || []
-    
-    useHead({
-      title: `${user.value.name} - Profil Kontributor`
-    })
+    const u = res.data || {}
+    u.image = assetUrl(u.image)
+    user.value = u
+    const userFilms = Array.isArray(res.data?.films) ? res.data.films : []
+    films.value = userFilms.map(f => ({
+      ...f,
+      gambar_poster: assetUrl(f.gambar_poster),
+    }))
   } catch (err) {
     console.error('Failed to fetch profile:', err)
     error.value = 'Pengguna tidak ditemukan atau terjadi kesalahan'

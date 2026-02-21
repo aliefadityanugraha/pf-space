@@ -10,9 +10,9 @@ import {
   Vote, Trash2, AlertTriangle, Loader2, CheckCircle2, TrendingUp, X, Film as FilmIcon, RefreshCw
 } from 'lucide-vue-next'
 import { useToast } from '@/composables/useToast'
-import Toast from '@/components/Toast.vue'
+import { assetUrl } from '@/lib/format'
 
-const { toast, showToast } = useToast()
+const { showToast } = useToast()
 const sidebarCollapsed = ref(false)
 const loading = ref(false)
 const trendingKaryas = ref([])
@@ -48,7 +48,7 @@ const resetVotes = async () => {
     const response = await api.delete('/api/votes/reset')
     // Check various success indicators based on common API patterns
     if (response?.success || response?.message?.toLowerCase().includes('success')) {
-      showToast('Semua voting telah direset.', 'success')
+      showToast('Semua voting telah direset.')
       showResetConfirm.value = false
       await fetchTrending() // Refresh list
     } else {
@@ -72,9 +72,11 @@ onMounted(() => {
   <div class="min-h-screen bg-stone-100">
     <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
     
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-16' : 'ml-64']">
+    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
       <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <router-link to="/admin" class="text-brand-teal hover:underline">Administrasi</router-link>
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+        <span class="text-stone-400">/</span>
+        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
         <span class="text-stone-400">/</span>
         <Badge variant="outline" class="bg-blue-100 text-blue-700 border-blue-300">Manajer Trending</Badge>
       </nav>
@@ -133,7 +135,7 @@ onMounted(() => {
                 </div>
                 
                 <div class="w-10 h-14 bg-stone-200 border border-stone-800 flex-shrink-0 overflow-hidden">
-                  <img v-if="karya.gambar_poster" :src="karya.gambar_poster" class="w-full h-full object-cover" />
+                  <img v-if="karya.gambar_poster" :src="assetUrl(karya.gambar_poster)" class="w-full h-full object-cover" />
                   <FilmIcon v-else class="w-full h-full p-2 text-stone-400" />
                 </div>
 
@@ -235,13 +237,6 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Toast Notification -->
-    <Toast 
-      :show="toast.show" 
-      :type="toast.type" 
-      :message="toast.message" 
-      @close="toast.show = false" 
-    />
-  </div>
+    <!-- Toast Notification --></div>
 </template>
 

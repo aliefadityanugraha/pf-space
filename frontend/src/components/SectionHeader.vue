@@ -18,12 +18,12 @@ defineEmits(['prev', 'next'])
       <div class="w-3 h-8 bg-brand-teal mt-1"></div>
       <div>
         <h2 
-          class="text-2xl md:text-3xl font-display font-semibold"
+          class="text-lg md:text-3xl font-display font-semibold"
           :class="lightText ? 'text-stone-200' : 'text-slate-900'"
         >
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="text-sm font-body font-medium text-slate-600 mt-1">
+        <p v-if="subtitle" class="text-xs md:text-sm font-body font-medium text-slate-600 mt-1">
           {{ subtitle }}
         </p>
       </div>

@@ -5,10 +5,9 @@ import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, AlertTriangle } from 'lucide-vue-next'
-import Toast from '@/components/Toast.vue'
 import { useToast } from '@/composables/useToast'
 import { useFilmForm } from '@/composables/useFilmForm'
-import FilmForm from '@/components/FilmForm.vue'
+import ArchiveUploadForm from '@/components/ArchiveUploadForm.vue'
 import { useHead } from '@unhead/vue'
 
 useHead({
@@ -16,24 +15,24 @@ useHead({
 })
 
 const router = useRouter()
-const { toast, showToast } = useToast()
-const { loading, error: formError, submitFilm } = useFilmForm()
+const { showToast } = useToast()
+const { loading: localLoading, error: formError, submitFilm } = useFilmForm()
 
 const handleSubmit = async (formData) => {
   await submitFilm(formData)
 }
 
 const handleCancel = () => {
-  router.push('/my-films')
+  router.push({ name: 'MyArchive' })
 }
 
 const handleError = (message) => {
-    showToast('error', message)
+    showToast(message, 'error')
 }
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-[#F2EEE3]">
+  <div class="min-h-screen flex flex-col bg-brand-cream">
     <Navbar />
 
     <main class="w-full max-w-7xl mx-auto px-4 md:px-8 pt-28 pb-16">
@@ -69,8 +68,8 @@ const handleError = (message) => {
         </div>
       </div>
 
-      <FilmForm 
-        :loading="loading" 
+      <ArchiveUploadForm 
+        :loading="localLoading" 
         @submit="handleSubmit" 
         @cancel="handleCancel"
         @error="handleError"
@@ -78,13 +77,5 @@ const handleError = (message) => {
     </main>
 
     <Footer />
-
-    <!-- Toast -->
-    <Toast 
-      :show="toast.show" 
-      :type="toast.type" 
-      :message="toast.message" 
-      @close="toast.show = false" 
-    />
   </div>
 </template>

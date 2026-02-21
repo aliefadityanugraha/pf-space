@@ -25,7 +25,7 @@ const synopsis = `In a remote mountain village rapidly emptying of its youth, a 
     <!-- Background -->
     <div class="absolute inset-0">
       <img src="/banner.jpg" alt="Film background" class="w-full h-full object-cover" />
-      <div class="absolute inset-0 bg-gradient-to-t from-[#F2EEE3] via-transparent/50 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-brand-cream via-transparent/50 to-transparent"></div>
     </div>
 
     <!-- Content -->

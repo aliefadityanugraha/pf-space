@@ -1,29 +1,37 @@
 <script setup>
 import { ref } from 'vue'
 import AdminSidebar from '@/components/SidebarAdmin.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import { HelpCircle } from 'lucide-vue-next'
+import { Badge } from '@/components/ui/badge'
 
 const sidebarCollapsed = ref(false)
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F2EEE3] font-body flex">
-    <AdminSidebar :collapsed="sidebarCollapsed" @update:collapsed="sidebarCollapsed = $event" />
+  <div class="min-h-screen bg-stone-100">
+    <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
     
-    <main 
-      :class="[
-        'flex-1 transition-all duration-300 flex flex-col min-h-screen',
-        sidebarCollapsed ? 'ml-16' : 'ml-64'
-      ]"
-    >
-      <header class="bg-white border-b-2 border-stone-900 p-4 sticky top-0 z-30">
-        <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-display font-bold uppercase tracking-wider">Help & Support</h1>
-        </div>
-      </header>
+    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+        <span class="text-stone-400">/</span>
+        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+        <span class="text-stone-400">/</span>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Bantuan</Badge>
+      </nav>
 
-      <div class="p-4 md:p-8 flex-1 flex flex-col items-center justify-center text-center text-stone-500">
-        <div class="w-20 h-20 bg-white border-2 border-stone-900 shadow-brutal mb-6 flex items-center justify-center rounded-none">
+      <!-- Header -->
+      <PageHeader 
+        title="Bantuan & Dukungan" 
+        description="Panduan dan pusat bantuan untuk administrator sistem."
+        :icon="HelpCircle"
+        icon-color="bg-teal-500"
+      />
+
+      <div class="mt-20 flex flex-col items-center justify-center text-center text-stone-500">
+        <div class="w-20 h-20 bg-white border-2 border-black shadow-brutal mb-6 flex items-center justify-center">
           <HelpCircle class="w-10 h-10 text-stone-900" />
         </div>
         <h2 class="text-2xl font-display font-bold text-stone-900 uppercase tracking-wide mb-2">Segera Hadir</h2>
