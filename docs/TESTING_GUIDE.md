@@ -1,6 +1,6 @@
 # 🧪 Testing Guide
 
-Panduan lengkap untuk testing CineArchive project.
+Panduan lengkap untuk testing PF Space project.
 
 ## 📋 Table of Contents
 
@@ -62,36 +62,37 @@ pnpm test useFilmDraft
 
 ```javascript
 // frontend/src/composables/__tests__/useFilmDraft.test.js
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { useFilmDraft } from '../useFilmDraft'
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { useFilmDraft } from "../useFilmDraft";
 
-describe('useFilmDraft', () => {
+describe("useFilmDraft", () => {
   beforeEach(() => {
     // Setup before each test
-    localStorage.clear()
-  })
+    localStorage.clear();
+  });
 
   afterEach(() => {
     // Cleanup after each test
-    localStorage.clear()
-  })
+    localStorage.clear();
+  });
 
-  it('should save draft to localStorage', () => {
-    const { saveDraft } = useFilmDraft()
-    const formData = { judul: 'Test Film' }
-    
-    saveDraft(formData)
-    
-    const saved = localStorage.getItem('film_draft')
-    expect(saved).toBeTruthy()
-    expect(JSON.parse(saved)).toEqual(formData)
-  })
-})
+  it("should save draft to localStorage", () => {
+    const { saveDraft } = useFilmDraft();
+    const formData = { judul: "Test Film" };
+
+    saveDraft(formData);
+
+    const saved = localStorage.getItem("film_draft");
+    expect(saved).toBeTruthy();
+    expect(JSON.parse(saved)).toEqual(formData);
+  });
+});
 ```
 
 #### Writing Good Tests
 
 **DO**:
+
 - ✅ Test one thing per test
 - ✅ Use descriptive test names
 - ✅ Setup and cleanup properly
@@ -99,6 +100,7 @@ describe('useFilmDraft', () => {
 - ✅ Mock external dependencies
 
 **DON'T**:
+
 - ❌ Test implementation details
 - ❌ Write flaky tests
 - ❌ Ignore failing tests
@@ -130,35 +132,35 @@ npm test -- film.controller.test.js
 
 ```javascript
 // backend/tests/unit/film.controller.test.js
-import { describe, it, expect, beforeEach } from 'vitest'
-import { FilmController } from '../../src/controllers/film.controller.js'
+import { describe, it, expect, beforeEach } from "vitest";
+import { FilmController } from "../../src/controllers/film.controller.js";
 
-describe('FilmController', () => {
-  let controller
-  
+describe("FilmController", () => {
+  let controller;
+
   beforeEach(() => {
-    controller = new FilmController()
-  })
+    controller = new FilmController();
+  });
 
-  it('should create film successfully', async () => {
+  it("should create film successfully", async () => {
     const mockRequest = {
       body: {
-        judul: 'Test Film',
-        category_id: 1
+        judul: "Test Film",
+        category_id: 1,
       },
-      user: { id: 'user123' }
-    }
-    
+      user: { id: "user123" },
+    };
+
     const mockReply = {
       status: jest.fn().mockReturnThis(),
-      send: jest.fn()
-    }
-    
-    await controller.createFilm(mockRequest, mockReply)
-    
-    expect(mockReply.status).toHaveBeenCalledWith(201)
-  })
-})
+      send: jest.fn(),
+    };
+
+    await controller.createFilm(mockRequest, mockReply);
+
+    expect(mockReply.status).toHaveBeenCalledWith(201);
+  });
+});
 ```
 
 ## 🔗 Integration Tests
@@ -186,35 +188,35 @@ npm run test:integration -- auth
 
 ```javascript
 // backend/tests/integration/auth.test.js
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import { build } from '../../src/app.js'
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { build } from "../../src/app.js";
 
-describe('Auth Integration', () => {
-  let app
-  
+describe("Auth Integration", () => {
+  let app;
+
   beforeAll(async () => {
-    app = await build()
-  })
-  
-  afterAll(async () => {
-    await app.close()
-  })
+    app = await build();
+  });
 
-  it('should register new user', async () => {
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it("should register new user", async () => {
     const response = await app.inject({
-      method: 'POST',
-      url: '/api/auth/sign-up/email',
+      method: "POST",
+      url: "/api/auth/sign-up/email",
       payload: {
-        email: 'test@example.com',
-        password: 'password123',
-        name: 'Test User'
-      }
-    })
-    
-    expect(response.statusCode).toBe(201)
-    expect(response.json()).toHaveProperty('user')
-  })
-})
+        email: "test@example.com",
+        password: "password123",
+        name: "Test User",
+      },
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect(response.json()).toHaveProperty("user");
+  });
+});
 ```
 
 ## 🌐 E2E Tests
@@ -244,42 +246,42 @@ pnpm test:e2e upload.spec.js
 
 ```javascript
 // frontend/tests/e2e/upload.spec.js
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test.describe('Film Upload', () => {
+test.describe("Film Upload", () => {
   test.beforeEach(async ({ page }) => {
     // Login
-    await page.goto('http://localhost:5173/login')
-    await page.fill('[name="email"]', 'creator@example.com')
-    await page.fill('[name="password"]', 'password123')
-    await page.click('button[type="submit"]')
-    await page.waitForURL('http://localhost:5173/')
-  })
+    await page.goto("http://localhost:5173/login");
+    await page.fill('[name="email"]', "creator@example.com");
+    await page.fill('[name="password"]', "password123");
+    await page.click('button[type="submit"]');
+    await page.waitForURL("http://localhost:5173/");
+  });
 
-  test('should upload film with draft recovery', async ({ page }) => {
+  test("should upload film with draft recovery", async ({ page }) => {
     // Navigate to upload page
-    await page.goto('http://localhost:5173/upload')
-    
+    await page.goto("http://localhost:5173/upload");
+
     // Fill form
-    await page.fill('[name="judul"]', 'Test Film E2E')
-    await page.fill('[name="sinopsis"]', 'Test sinopsis')
-    
+    await page.fill('[name="judul"]', "Test Film E2E");
+    await page.fill('[name="sinopsis"]', "Test sinopsis");
+
     // Wait for auto-save
-    await page.waitForTimeout(3500)
-    
+    await page.waitForTimeout(3500);
+
     // Refresh page
-    await page.reload()
-    
+    await page.reload();
+
     // Check draft banner appears
-    await expect(page.locator('text=Draft Ditemukan')).toBeVisible()
-    
+    await expect(page.locator("text=Draft Ditemukan")).toBeVisible();
+
     // Restore draft
-    await page.click('text=Pulihkan Draft')
-    
+    await page.click("text=Pulihkan Draft");
+
     // Verify form filled
-    await expect(page.locator('[name="judul"]')).toHaveValue('Test Film E2E')
-  })
-})
+    await expect(page.locator('[name="judul"]')).toHaveValue("Test Film E2E");
+  });
+});
 ```
 
 ## 🖱️ Manual Testing
@@ -289,6 +291,7 @@ test.describe('Film Upload', () => {
 #### Test Case 1: Auto-save Draft
 
 **Steps**:
+
 1. Login sebagai creator
 2. Navigate ke `/upload`
 3. Isi form:
@@ -298,18 +301,21 @@ test.describe('Film Upload', () => {
 5. Check localStorage: `film_draft` harus ada
 
 **Expected**:
+
 - ✅ Draft tersimpan di localStorage
 - ✅ Indicator "Draft tersimpan" muncul
 
 #### Test Case 2: Restore Draft
 
 **Steps**:
+
 1. Lanjutkan dari Test Case 1
 2. Refresh browser (F5)
 3. Banner "Draft Ditemukan" muncul
 4. Klik "Pulihkan Draft"
 
 **Expected**:
+
 - ✅ Banner muncul dengan timestamp
 - ✅ Form terisi dengan data draft
 - ✅ Banner hilang setelah restore
@@ -317,11 +323,13 @@ test.describe('Film Upload', () => {
 #### Test Case 3: Discard Draft
 
 **Steps**:
+
 1. Lanjutkan dari Test Case 1
 2. Refresh browser
 3. Klik "Abaikan" di banner
 
 **Expected**:
+
 - ✅ Banner hilang
 - ✅ Form kosong
 - ✅ localStorage cleared
@@ -329,12 +337,14 @@ test.describe('Film Upload', () => {
 #### Test Case 4: Submit Clear Draft
 
 **Steps**:
+
 1. Isi form lengkap
 2. Upload file
 3. Submit form
 4. Check localStorage
 
 **Expected**:
+
 - ✅ Form submitted successfully
 - ✅ Draft cleared dari localStorage
 - ✅ Redirect ke halaman lain
@@ -344,6 +354,7 @@ test.describe('Film Upload', () => {
 #### Test Case 5: Resume After Network Failure
 
 **Steps**:
+
 1. Login sebagai creator
 2. Navigate ke `/upload`
 3. Pilih video file besar (>100MB)
@@ -353,6 +364,7 @@ test.describe('Film Upload', () => {
 7. Nyalakan WiFi
 
 **Expected**:
+
 - ✅ Upload pause saat WiFi mati
 - ✅ Upload resume otomatis saat WiFi nyala
 - ✅ Progress continue dari 50%
@@ -361,12 +373,14 @@ test.describe('Film Upload', () => {
 #### Test Case 6: Resume After Browser Refresh
 
 **Steps**:
+
 1. Mulai upload video besar
 2. Saat progress 30%, refresh browser
 3. Pilih file yang sama lagi
 4. Mulai upload
 
 **Expected**:
+
 - ✅ Tus client detect previous upload
 - ✅ Upload resume dari 30%
 - ✅ Upload selesai
@@ -374,6 +388,7 @@ test.describe('Film Upload', () => {
 ### Cross-browser Testing
 
 Test di browser:
+
 - [ ] Chrome/Edge (Chromium)
 - [ ] Firefox
 - [ ] Safari (if available)
@@ -381,6 +396,7 @@ Test di browser:
 ### Mobile Testing
 
 Test di device:
+
 - [ ] Android Chrome
 - [ ] iOS Safari
 - [ ] Responsive design
@@ -410,7 +426,7 @@ artillery run backend/tests/load/upload-load.yml
 ```yaml
 # backend/tests/load/api-load.yml
 config:
-  target: 'http://localhost:3000'
+  target: "http://localhost:3000"
   phases:
     - duration: 60
       arrivalRate: 10
@@ -437,6 +453,7 @@ lighthouse http://localhost:5173 --view
 ```
 
 **Target Scores**:
+
 - Performance: 90+
 - Accessibility: 95+
 - Best Practices: 90+
@@ -448,22 +465,22 @@ lighthouse http://localhost:5173 --view
 
 ```javascript
 // Add debugger
-it('should save draft', () => {
-  debugger // Browser will pause here
-  const { saveDraft } = useFilmDraft()
-  saveDraft({ judul: 'Test' })
-})
+it("should save draft", () => {
+  debugger; // Browser will pause here
+  const { saveDraft } = useFilmDraft();
+  saveDraft({ judul: "Test" });
+});
 ```
 
 ### Backend Debug
 
 ```javascript
 // Add console.log
-it('should create film', async () => {
-  console.log('Request:', mockRequest)
-  await controller.createFilm(mockRequest, mockReply)
-  console.log('Response:', mockReply.send.mock.calls)
-})
+it("should create film", async () => {
+  console.log("Request:", mockRequest);
+  await controller.createFilm(mockRequest, mockReply);
+  console.log("Response:", mockReply.send.mock.calls);
+});
 ```
 
 ### E2E Debug
@@ -515,6 +532,7 @@ jobs:
 ## ✅ Testing Checklist
 
 Before merging PR:
+
 - [ ] All unit tests pass
 - [ ] Integration tests pass
 - [ ] E2E critical paths tested
@@ -537,6 +555,7 @@ Before merging PR:
 **Cause**: Race conditions, timing issues
 
 **Solution**:
+
 - Use `waitFor` for async operations
 - Increase timeout for slow operations
 - Mock time-dependent functions
@@ -546,14 +565,15 @@ Before merging PR:
 **Cause**: Tests running in Node environment
 
 **Solution**:
+
 ```javascript
 // Mock localStorage
 global.localStorage = {
   getItem: jest.fn(),
   setItem: jest.fn(),
   removeItem: jest.fn(),
-  clear: jest.fn()
-}
+  clear: jest.fn(),
+};
 ```
 
 ### Database Connection Issues
@@ -561,6 +581,7 @@ global.localStorage = {
 **Cause**: Test database not setup
 
 **Solution**:
+
 ```bash
 # Create test database
 mysql -u root -p -e "CREATE DATABASE si_film_archive_test"

@@ -177,7 +177,47 @@ Fitur bookmark film untuk user.
 
 ---
 
-### H. Tabel Chat_History
+### H. Tabel Film_Evaluations
+
+Penyimpanan feedback kurator/moderator untuk karya film.
+
+| Field                    | Tipe             | Keterangan                   |
+| ------------------------ | ---------------- | ---------------------------- |
+| `id`                     | Integer (PK)     | Auto Increment               |
+| `film_id`                | Integer (FK)     | Referensi ke `films.film_id` |
+| `moderator_id`           | Varchar(36) (FK) | ID Moderator yang menilai    |
+| `script_score`           | Integer          | Skor naskah (1-10)           |
+| `script_comment`         | Text             | Komentar naskah              |
+| `cinematography_score`   | Integer          | Skor sinematografi (1-10)    |
+| `cinematography_comment` | Text             | Komentar sinematografi       |
+| `editing_score`          | Integer          | Skor editing (1-10)          |
+| `editing_comment`        | Text             | Komentar editing             |
+| `production_score`       | Integer          | Skor produksi/dokumen (1-10) |
+| `production_comment`     | Text             | Komentar produksi            |
+| `overall_feedback`       | Text             | Kesimpulan kurator           |
+| `created_at`             | Timestamp        | Waktu publikasi              |
+| `updated_at`             | Timestamp        | Waktu update terakhir        |
+
+---
+
+### I. Tabel Notifications
+
+Sistem notifikasi dalam aplikasi.
+
+| Field        | Tipe             | Keterangan                           |
+| ------------ | ---------------- | ------------------------------------ |
+| `id`         | Integer (PK)     | Auto Increment                       |
+| `user_id`    | Varchar(36) (FK) | ID penerima notifikasi               |
+| `type`       | Varchar(50)      | Tipe: `EVALUATION_POSTED`, `COMMENT` |
+| `title`      | Varchar(255)     | Judul notifikasi                     |
+| `message`    | Text             | Isi pesan                            |
+| `data`       | JSON             | Metadata (link, payload, dsb)        |
+| `read`       | Boolean          | Status dibaca                        |
+| `created_at` | Timestamp        | Waktu notifikasi                     |
+
+---
+
+### J. Tabel Chat_History
 
 Riwayat percakapan dengan AI.
 
@@ -191,7 +231,7 @@ Riwayat percakapan dengan AI.
 
 ---
 
-### I. Tabel Better Auth (Auto-generated)
+### K. Tabel Better Auth (Auto-generated)
 
 Tabel yang di-generate oleh Better Auth:
 
@@ -205,19 +245,17 @@ Tabel yang di-generate oleh Better Auth:
 
 ## 🔗 Relasi Antar Tabel
 
-| Relasi                      | Deskripsi                                         |
-| --------------------------- | ------------------------------------------------- |
-| `Roles → Users`             | One-to-Many (1 role memiliki banyak user)         |
-| `Users → Films`             | One-to-Many (1 creator mengupload banyak film)    |
-| `Categories → Films`        | One-to-Many (1 kategori menaungi banyak film)     |
-| `Users → Discussions`       | One-to-Many (1 user menulis banyak komentar)      |
-| `Films → Discussions`       | One-to-Many (1 film memiliki banyak komentar)     |
-| `Discussions → Discussions` | Self-referencing (reply to comment)               |
-| `Users → Votes`             | One-to-Many (1 user vote banyak film)             |
-| `Films → Votes`             | One-to-Many (1 film mendapat banyak vote)         |
-| `Users → Collections`       | One-to-Many (1 user menyimpan banyak film)        |
-| `Films → Collections`       | One-to-Many (1 film disimpan banyak user)         |
-| `Users → Chat_History`      | One-to-Many (1 user memiliki banyak riwayat chat) |
+| Relasi                     | Deskripsi                            |
+| -------------------------- | ------------------------------------ |
+| `Roles → Users`            | One-to-Many                          |
+| `Users → Films`            | One-to-Many (Creator)                |
+| `Films → Film_Evaluations` | One-to-One / Many (Feedback kurator) |
+| `Users → Notifications`    | One-to-Many (Penerima notifikasi)    |
+| `Categories → Films`       | One-to-Many                          |
+| `Users → Discussions`      | One-to-Many                          |
+| `Films → Discussions`      | One-to-Many                          |
+| `Users → Votes`            | One-to-Many                          |
+| `Users → Collections`      | One-to-Many                          |
 
 ---
 
@@ -225,16 +263,13 @@ Tabel yang di-generate oleh Better Auth:
 
 Lokasi: `backend/src/database/migrations/`
 
-| File                                    | Deskripsi          |
-| --------------------------------------- | ------------------ |
-| `20241220_create_roles_table.js`        | Tabel roles        |
-| `20241220_create_users_table.js`        | Tabel users        |
-| `20241220_create_categories_table.js`   | Tabel categories   |
-| `20241220_create_films_table.js`        | Tabel films        |
-| `20241220_create_discussions_table.js`  | Tabel discussions  |
-| `20241220_create_votes_table.js`        | Tabel votes        |
-| `20241220_create_chat_history_table.js` | Tabel chat_history |
-| `20251231_create_collections_table.js`  | Tabel collections  |
+| File                                     | Deskripsi                 |
+| ---------------------------------------- | ------------------------- |
+| `...` (Legacy migrations)                | Core tables               |
+| `20251231_create_collections_table.js`   | Bookmark system           |
+| `20260129161137_create_notifications.js` | Notifications system      |
+| `20260221114500_create_settings.js`      | Global settings           |
+| `20260221160941_create_evaluations.js`   | Film Evaluations feedback |
 
 ### Menjalankan Migration
 

@@ -1,10 +1,11 @@
 # Changelog
 
-All notable changes to CineArchive project will be documented in this file.
+All notable changes to PF Space project will be documented in this file.
 
 ## [Unreleased]
 
 ### Added
+
 - **Draft System**: Auto-save form data ke localStorage untuk mencegah kehilangan data
   - Composable `useFilmDraft` untuk mengelola draft
   - Auto-save setiap 3 detik saat form diisi
@@ -34,6 +35,7 @@ All notable changes to CineArchive project will be documented in this file.
   - Coverage untuk save, load, clear, dan expire draft
 
 ### Changed
+
 - **FilmForm Component**: Enhanced dengan draft management
   - Integrasi dengan `useFilmDraft` composable
   - Draft banner notification
@@ -41,22 +43,24 @@ All notable changes to CineArchive project will be documented in this file.
   - Clear draft setelah submit berhasil
 
 ### Removed
+
 - **Unused Components**: Cleanup frontend components
   - Removed `DashboardHero.vue` (tidak digunakan)
   - Removed `DashboardSection.vue` (tidak digunakan)
   - Removed `CuratedFilmCard.vue` (tidak digunakan)
   - Removed `UserProfileCard.vue` (tidak digunakan)
-  
 - **Unused Functions**: Cleanup utility functions
   - Removed `formatYear()` dari `lib/format.js` (tidak digunakan)
 
 ### Fixed
+
 - Upload flow yang lebih robust dengan error handling
 - Validasi file type dan size sebelum upload
 - Memory leak prevention dengan cleanup di onUnmounted
 - Template structure di FilmForm.vue (missing/invalid closing tags)
 
 ### Optimized
+
 - Removed unnecessary console.log dari upload progress
 - Simplified progress callback untuk non-video files
 - Reduced bundle size dengan menghapus unused code (~175 lines)
@@ -64,6 +68,7 @@ All notable changes to CineArchive project will be documented in this file.
 ## [1.0.0] - 2024-12-30
 
 ### Initial Release
+
 - Backend API dengan Fastify
 - Frontend dengan Vue 3
 - Authentication dengan Better Auth

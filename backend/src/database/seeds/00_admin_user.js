@@ -18,9 +18,9 @@ async function hashPassword(password) {
 }
 
 export async function seed(knex) {
-  const email = 'admin@cinearchive.com';
+  const email = 'admin@pfspace.com';
   const password = 'admin123';
-  const name = 'Admin CineArchive';
+  const name = 'Admin PF Space';
   const role_id = 4; // admin role
 
   const hashedPassword = await hashPassword(password);

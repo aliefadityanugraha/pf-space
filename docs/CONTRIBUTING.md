@@ -1,30 +1,32 @@
-
 g! 🚀in Happy codroject ini.i untuk prart sangat bebusi Andantri
 
 Ko Thank You!rs
 
 ## 🙏il maintaine)
+
 - Ema (jika adascord servere
 - Join Dipen an issuakan:
 - Oanyaan, silika ada pertstions?
 
 J Ques/)
 
-## 💬](./doconcumentatiDoect 
+## 💬](./doconcumentatiDoect
+
 - [Projs.io/)(https://tul]s.io Protoco [Tuev/)
--.difyttps://fastmentation](h Docuify [Fast
--ejs.org/)s://vu(httpmentation]3 Docus
+  -.difyttps://fastmentation](h Docuify [Fast
+  -ejs.org/)s://vu(httpmentation]3 Docus
 
 - [Vue rce 📚 Resou
 
 ##errorso console e
+
 - [ ] Nve di mobilnsiRespo
-- [ ]  berfungsionm validatis
+- [ ] berfungsionm validatis
 - [ ] Forutuksi terpneetelah koe upload s[ ] Resumkerja
 - -save be Draft auto ]gsi
-- [unrffile bead  ] Uplo
+- [unrffile bead ] Uplo
 - [Checklist
-ting  Tes## Manual``
+  ting Tes## Manual``
 
 #npm test
 `nd
@@ -34,47 +36,52 @@ ests
 ```ntend Tro`
 
 ### Fnpm test
-``
-backend
-cd sh`ba
-``
+
+``backend
+cd sh`ba``
 tskend Tes
 
 ### Bac Testing## 🧪pproved
 
 lah amerge seteakan r ntaine5. Mai
-mentsiew comddress revainers
-4. Amaintew dari  revi. Requesto pass
-3 checks t for CI
-2. Waitvelop`h `de PR ke brancmitss
+mentsiew comddress revainers 4. Amaintew dari revi. Requesto pass
+3 checks t for CI 2. Waitvelop`h `de PR ke brancmitss
 
 1. Subceiew Pro### Rev``
 
 nd)
 ` fronte (ifle browsersipted on mult- [ ] Tesole errors
 ] No consed
+
 - [ ation updat ] Documenteted
 - [compl-review elfnes
 - [ ] S guidelistylews project e follot
 - [ ] Codecklis
+
 ## Chs here
- screenshotcable)
+
+screenshotcable)
 Addpplits (if a Screenshohanges
 
 ##st these cw to te
 Hosting
+
 ## Teon update
+
 entati[ ] Docume
+
 - ing chang] Breakre
-- [  New featu- [ ]] Bug fix
-[ ange
--  Type of Chs
+- [ New featu- [ ]] Bug fix
+  [ ange
+- Type of Chs
 
 ##angeion of chscriptdeion
 Brief riptn
+
 ## Descrkdow
+
 ```ma
- TemplateiptionDescr## PR 
+ TemplateiptionDescr## PR
 #
 ntation`stem documead sy Update uplo
 - `[Docs]very bug` draft recox] Resolve`[Fi
@@ -82,20 +89,20 @@ ntation`stem documead sy Update uplo
 - `[Fe
 Examples:
 ```
+
 escriptionype] Brief d`
 [Tormat
 
 ``e F### PR Titles
 
-an fix issuun linter dggal
-4. Rg tertinle.log yan conson tidak ada
-3. Pastikaenyeluruha secara mAndan ubahperlu
-2. Test ion jika pertatdocumenpdate . U
+an fix issuun linter dggal 4. Rg tertinle.log yan conson tidak ada 3. Pastikaenyeluruha secara mAndan ubahperlu 2. Test ion jika pertatdocumenpdate . U
 
-1ittingubmBefore S## 
+1ittingubmBefore S##
 
 #rocessll Request P
+
 ## 🔍 Pu`
+
 xes #456
 ``Fih logic.
 
@@ -105,7 +112,7 @@ Fixe
 imeout issun tioe sesslv): resoauth
 fix(
 
-```bash
+````bash
 ```ses #123nds
 
 Cloecoy 3 s data everve formAuto-sa- ilmForm
@@ -122,11 +129,11 @@ fe`bmples
 - `teste refactorifactor`: Codc)
 - `rermatting, ets (foangee style che`: Codstylchanges
 - `cumentation - `docs`: Dofix
-`: Bug 
+`: Bug
 - `fix featureat`: Newes
 
 - `fe## Typr>
-```
+````
 
 #footebody>
 
@@ -135,11 +142,12 @@ fe`bmples
 <>): <supe>(<scopety
 <```Format
 
- Message ### Commitines
+Message ### Commitines
 
- Guidelmmit 📦 Co
+Guidelmmit 📦 Co
 ##>
-```
+
+````
 late-->
 </template   <!-- Template>
 t>
@@ -149,7 +157,7 @@ t>
 Lifecyc. .}
 
 // 7) => {..it = (ubmnst handleSMethods
-co. 
+co.
 // 6.})
 > {..ed(() =computa = teredDatfilst onmputed
 c 5. Colse)
@@ -175,7 +183,7 @@ impor. Importup>
 ##```
 }
 (err))og console.lerr =>.catch(ata) res.d.then(res =>/api/films')et('eturn api.g) => {
-  rync (Films = asfetchst 
+  rync (Films = asfetchst
 con// ❌ Bad
 
 }rror
@@ -206,13 +214,15 @@ iablarMeaningful ve
 
 -Scri
 ### Javadards
-anCoding St 📝 
+anCoding St 📝
 ##ur
-```
+````
+
 e/nama-fitturfeaeckout -b it chvelop
 gin deigor
 git pull op develcheckoutash
-git 
+git
+
 ```b
 ncheature Bra Feating aCrs
 
@@ -235,29 +245,31 @@ nv.exam
    cdsh`ba``:
    ru)al baermind (tup frontenet
 4. S
-   ```
+```
+
 pm run devseed
-   n npm run e
-   migrat
-   npm runbase Andai dataas konfigur.env dengan# Edit nv
-   xample .ev.e cp .en  ll
- insta   npm backend
+n npm run e
+migrat
+npm runbase Andai dataas konfigur.env dengan# Edit nv
+xample .ev.e cp .en ll
+insta npm backend
 sh
-   cdba ```
-  kend:Setup bac. 
+cdba ```
+kend:Setup bac.
 3
-   ```
+
+````
 lm-archived si-fiit
-   clm-archive.g/si-fiUR_USERNAMEthub.com/YOe https://giclongit       ```bash
- Anda:
+clm-archive.g/si-fiUR_USERNAMEthub.com/YOe https://giclongit       ```bash
+Anda:
 e forkry
 2. Clonreposito
 1. Fork ent
 nmnt Enviro Developme### Setup
 - Git
 
- frontend) pnpm (untuk>= 8.0
--SQL 
+frontend) pnpm (untuk>= 8.0
+-SQL
 - My.js >= 18.x- Nodeisites
 
 ## Prerequrted
@@ -268,8 +280,8 @@ ifminatkri atau disiveoffenshasa yang baHindari ck
 - edbaif fen konstruktnt darovemea impFokus padin
 - ibutor laontrti kn menghormaonal daprofesi- Bersikap Conduct
 
-Code of 📜 
-## 
+Code of 📜
+##
 ocess)t-presrequull-s](#pest Proces[Pull Requdelines)
 - uis](#commit-gneliCommit Guidedards)
 - [tanoding-ss](#cndardng Sta[Codikflow)
@@ -277,8 +289,9 @@ ocess)t-presrequull-s](#pest Proces[Pull Requdelines)
 - [Detting-started](#g[Getting Sta- ct)
 duf-cont](#code-ode of Conduc- [Cots
 
- of Conten📋 Tablet.
+of Conten📋 Tablet.
 
-## ada projeckontribusi pn untuk berrisi pandua bekumen inichive! DoCineAri pada ribusuk berkontat Anda unth atas minerima kasihive
+## ada projeckontribusi pn untuk berrisi pandua bekumen inichive! PF Space pada ribusuk berkontat Anda unth atas minerima kasihive
 
-Tto CineArcontributing # 🤝 C
+Tto  PF Space contributing # 🤝 C
+````

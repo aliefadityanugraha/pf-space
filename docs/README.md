@@ -1,26 +1,24 @@
-# 📚 SI Film Archive Documentation
+# 📚 PF Space Documentation
 
-Dokumentasi lengkap untuk project SI Film Archive (CineArchive).
+Dokumentasi teknis untuk pengembangan dan pengelolaan PF Space.
 
-## 📂 Struktur Dokumentasi
+## 📂 Core Documentation
 
-| File                                         | Deskripsi                                      |
-| -------------------------------------------- | ---------------------------------------------- |
-| [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) | Struktur folder dan arsitektur project         |
-| [API_REFERENCE.md](./API_REFERENCE.md)       | Dokumentasi lengkap semua API endpoints        |
-| [DATABASE.md](./DATABASE.md)                 | Schema database dan relasi antar tabel         |
-| [API_STANDARDS.md](./API_STANDARDS.md)       | Standar format response API                    |
-| [UPLOAD_SYSTEM.md](./UPLOAD_SYSTEM.md)       | Sistem upload resumable & draft management     |
-| [TESTING_GUIDE.md](./TESTING_GUIDE.md)       | Panduan testing (unit, integration, E2E)       |
-| [DEVELOPMENT.md](./DEVELOPMENT.md)           | Panduan untuk developer (setup, testing)       |
-| [ROADMAP.md](./ROADMAP.md)                   | Daftar fitur yang akan dikembangkan            |
+| File                                   | Deskripsi                                                  |
+| -------------------------------------- | ---------------------------------------------------------- |
+| [DEVELOPMENT.md](./DEVELOPMENT.md)     | Panduan setup, alur kerja, dan standarisasi kode.          |
+| [API_REFERENCE.md](./API_REFERENCE.md) | Daftar lengkap endpoint API dan parameter.                 |
+| [DATABASE.md](./DATABASE.md)           | Schema database, relasi antar tabel, dan daftar migration. |
+| [UPLOAD_SYSTEM.md](./UPLOAD_SYSTEM.md) | Penjelasan sistem upload (Tus.io) dan mekanisme draft.     |
+| [TESTING_GUIDE.md](./TESTING_GUIDE.md) | Panduan menjalankan pengujian (Unit & E2E).                |
+| [ROADMAP.md](./ROADMAP.md)             | Status pengembangan dan rencana fitur mendatang.           |
 
-## 🚀 Quick Links
+## 🛠️ Project Guidelines
 
-- **Backend API**: Lihat [API_REFERENCE.md](./API_REFERENCE.md)
-- **Database Schema**: Lihat [DATABASE.md](./DATABASE.md)
-- **Setup Project**: Lihat [../README.md](../README.md#getting-started)
+- **Commit Message**: Ikuti standar [Conventional Commits](https://www.conventionalcommits.org/).
+- **API Response**: Format harus mengikuti [API_STANDARDS.md](./API_STANDARDS.md).
+- **Contributing**: Lihat [CONTRIBUTING.md](./CONTRIBUTING.md) bagi pengembang baru.
 
-## 📖 Main Documentation
+---
 
-Untuk overview project dan cara setup, lihat [README.md utama](../README.md).
+Untuk panduan instalasi cepat, silakan merujuk ke [README.md utama](../README.md).

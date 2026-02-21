@@ -15,6 +15,9 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
 - [x] **Discussion System** - Nested comments (Adjacency List)
 - [x] **AI Chat** - Integrasi dengan Groq/OpenAI/Gemini
 - [x] **Collections** - Fitur bookmark/simpan film
+- [x] **Film Evaluation** - Penilaian kurator & feedback mendetail
+- [x] **Study Mode Refactor** - Split screen document viewer
+- [x] **Learning Materials List** - Improved UX for resources
 
 ---
 
@@ -23,12 +26,10 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
 ### 1. Alur & Fitur untuk Kreator
 
 - [ ] **Dashboard kreator yang "hidup"**
-
   - `DashboardUser.vue` masih dummy; belum terhubung ke data film/vote/komentar asli
   - Target: ringkasan performa film (views/vote/komentar per film, status review terbaru)
 
 - [ ] **Alasan penolakan film**
-
   - Status sudah ada (`pending`/`published`/`rejected`), tapi belum ada field "alasan ditolak" yang tampil ke kreator
   - Penting supaya kreator tahu apa yang perlu diperbaiki
 
@@ -41,17 +42,14 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
 ### 2. Pengalaman Pengguna Umum
 
 - [ ] **Profil pengguna & pengaturan akun**
-
   - Halaman "Profil saya" untuk ganti nama, foto, preferensi
   - User sudah ada di backend, tapi di frontend belum diekspos
 
 - [ ] **Notifikasi yang lebih jelas**
-
   - Pusat notifikasi di navbar atau halaman khusus
   - Contoh: "Film X disetujui", "Film Y ditolak", "Ada balasan di komentar Anda"
 
 - [ ] **Pencarian & filter lanjutan di katalog**
-
   - Sudah ada: live search, filter kategori
   - Ditambah: filter tahun, durasi, status arsip, tag tema
 
@@ -64,12 +62,10 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
 ### 3. Admin & Moderasi
 
 - [ ] **Pelaporan konten oleh user**
-
   - Mekanisme "Laporkan komentar/film ini" dari sisi user
   - Admin mendapat queue laporan
 
 - [ ] **Audit log / riwayat tindakan admin**
-
   - Catatan kapan film di-approve/reject oleh admin mana
   - Penting untuk jejak kurasi
 
@@ -82,7 +78,6 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
 ### 4. AI Chat & Fitur Pintar
 
 - [ ] **Integrasi AI Chat yang lebih dalam konteks**
-
   - CTA kontekstual: tombol "Diskusikan film ini dengan AI" di halaman film
   - Mode "asisten kurasi": bantu admin memilih film untuk diarsipkan
 
@@ -95,18 +90,15 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
 ### 5. Aspek Teknis & Kualitas Kode
 
 - [ ] **Testing**
-
   - Unit test untuk: `useVoting`, `useToast`, `useAuth`
   - Integration test untuk alur upload/edit film
   - E2E testing
 
 - [ ] **CI/CD**
-
   - Setup GitHub Actions / GitLab CI
   - Pipeline: lint, build frontend, migration, test backend
 
 - [ ] **Validasi & error handling global**
-
   - Interceptor API di `api.js` untuk:
     - Auto-handle 401 (redirect ke login)
     - Pesan error fallback yang konsisten

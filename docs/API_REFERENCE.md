@@ -1,6 +1,6 @@
-# SI Film Archive - Backend API
+# PF Space - Backend API
 
-Backend API untuk aplikasi SI Film Archive - platform arsip film karya siswa.
+Backend API untuk aplikasi PF Space - platform arsip film karya siswa.
 
 ## Tech Stack
 
@@ -84,12 +84,12 @@ GROQ_API_KEY=your-groq-api-key
 
 ## Role System
 
-| role_id | name | Deskripsi |
-|---------|------|-----------|
-| 1 | user | Default - bisa vote dan comment |
-| 2 | creator | Bisa upload dan manage film sendiri |
-| 3 | moderator | Bisa moderasi komentar |
-| 4 | admin | Full access ke semua fitur |
+| role_id | name      | Deskripsi                           |
+| ------- | --------- | ----------------------------------- |
+| 1       | user      | Default - bisa vote dan comment     |
+| 2       | creator   | Bisa upload dan manage film sendiri |
+| 3       | moderator | Bisa moderasi komentar              |
+| 4       | admin     | Full access ke semua fitur          |
 
 ### Set Admin Pertama
 
@@ -111,6 +111,7 @@ GET /api/health
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -138,6 +139,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "redirect": false,
@@ -190,6 +192,7 @@ Cookie: better-auth.session_token=xxx
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -244,6 +247,7 @@ GET /api/categories
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -284,6 +288,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -327,6 +332,7 @@ GET /api/films?page=1&limit=10&category_id=1&search=pendek&sortBy=created_at&sor
 ```
 
 Query Parameters:
+
 - `page` - Halaman (default: 1)
 - `limit` - Jumlah per halaman (default: 10)
 - `category_id` - Filter by kategori
@@ -335,6 +341,7 @@ Query Parameters:
 - `sortOrder` - asc/desc (default: desc)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -380,6 +387,7 @@ GET /api/films/:id
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -449,6 +457,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -489,6 +498,7 @@ Cookie: better-auth.session_token=xxx
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -519,10 +529,12 @@ GET /api/votes/trending?period=week&limit=10
 ```
 
 Query Parameters:
+
 - `period` - `week`, `month`, atau `all` (default: week)
 - `limit` - Jumlah film (default: 10)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -546,6 +558,7 @@ Cookie: better-auth.session_token=xxx (optional - untuk has_voted)
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -567,6 +580,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -586,6 +600,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -621,6 +636,7 @@ GET /api/discussions/film/:filmId?page=1&limit=20
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -664,6 +680,7 @@ GET /api/discussions/film/:filmId/count
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -739,6 +756,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -767,6 +785,73 @@ Cookie: better-auth.session_token=xxx
 
 ---
 
+## Evaluasi & Penilaian
+
+### Get Evaluasi Film
+
+Melihat penilaian kurator untuk film tertentu.
+
+```
+GET /api/evaluations/film/:filmId
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "script_score": 9,
+    "script_comment": "Bagus...",
+    "cinematography_score": 8,
+    "overall_feedback": "..."
+  }
+}
+```
+
+### Post/Upsert Evaluasi (Moderator/Admin)
+
+```
+POST /api/evaluations/film/:filmId
+Content-Type: application/json
+
+{
+  "script_score": 9,
+  "script_comment": "Naskah sangat solid.",
+  "cinematography_score": 8,
+  "cinematography_comment": "Visual menarik.",
+  "editing_score": 7,
+  "editing_comment": "Pace perlu diperbaiki.",
+  "production_score": 9,
+  "production_comment": "RAB sangat detail.",
+  "overall_feedback": "Karya luar biasa."
+}
+```
+
+---
+
+## Notifikasi
+
+### Get Notifikasi User
+
+```
+GET /api/notifications
+```
+
+### Mark as Read
+
+```
+PATCH /api/notifications/:id/read
+```
+
+### Mark All as Read
+
+```
+PATCH /api/notifications/read-all
+```
+
+---
+
 ## Error Responses
 
 ```json
@@ -777,6 +862,7 @@ Cookie: better-auth.session_token=xxx
 ```
 
 HTTP Status Codes:
+
 - `400` - Bad Request (validation error)
 - `401` - Unauthorized (not logged in)
 - `403` - Forbidden (insufficient permissions)
@@ -785,186 +871,10 @@ HTTP Status Codes:
 
 ---
 
-## Testing
+## Scripts & Database
 
-### Run Full API Test
+Untuk panduan pengembangan, testing, dan schema database lebih detail, silakan merujuk ke:
 
-```bash
-cd backend
-powershell -ExecutionPolicy Bypass -File tests/test-full.ps1
-```
-
-### Test Output Example
-
-```
-========================================
-SI Film Archive - Full API Test
-========================================
-
-=== LOGIN ===
-Logged in as: Test User (role_id: 4)
-
-=== CREATE FILM 1 ===
-Created: Film Pendek Pertama (film_id: 8)
-
-=== CREATE FILM 2 ===
-Created: Dokumenter Kampus (film_id: 9)
-
-=== GET PENDING FILMS ===
-Pending films: 2
-  - Film Pendek Pertama (id: 8)
-  - Dokumenter Kampus (id: 9)
-
-=== APPROVE FILM 1 ===
-Approved: Film Pendek Pertama -> published
-
-=== APPROVE FILM 2 ===
-Approved: Dokumenter Kampus -> published
-
-=== GET PUBLISHED FILMS ===
-Published films: 9
-
-=== VOTE FILM ===
-Vote recorded successfully - vote_count: 1
-
-=== GET VOTE COUNT ===
-Film 8 - votes: 1, has_voted: True
-
-=== TOGGLE VOTE ===
-Vote removed - voted: False, count: 0
-
-=== GET TRENDING ===
-Trending films:
-  - Dokumenter Kampus (votes: 0)
-  - Film Pendek Pertama (votes: 0)
-
-=== POST COMMENT ===
-Comment: 'Film yang sangat bagus! Suka banget.' (id: 5)
-
-=== POST COMMENT 2 ===
-Comment: 'Ceritanya menarik!'
-
-=== REPLY TO COMMENT ===
-Reply: 'Setuju banget!' (parent: 5)
-
-=== NESTED REPLY ===
-Nested reply: 'Iya bener!'
-
-=== GET COMMENTS (Nested Tree) ===
-Root comments: 2
-  - Film yang sangat bagus! Suka banget. [replies: 2]
-    - Setuju banget!
-      - Iya bener!
-  - Ceritanya menarik! [replies: 0]
-
-=== GET COMMENT COUNT ===
-Total comments: 4
-
-=== UPDATE COMMENT ===
-Updated: 'Film yang sangat bagus! (edited)'
-
-=== GET ALL COMMENTS (Flat) ===
-All comments: 8
-
-========================================
-TEST COMPLETE!
-========================================
-```
-
----
-
-## Scripts
-
-| Command | Deskripsi |
-|---------|-----------|
-| `npm run dev` | Development server dengan nodemon |
-| `npm start` | Production server |
-| `npm run migrate` | Jalankan migrations |
-| `npm run migrate:rollback` | Rollback migration terakhir |
-| `npm run seed` | Jalankan seeds (kategori default) |
-
-### Utility Scripts
-
-```bash
-# Set user sebagai admin
-node scripts/make-admin.js email@example.com
-
-# List semua users
-node scripts/list-users.js
-```
-
----
-
-## Database Schema
-
-### Tables
-
-| Table | Deskripsi |
-|-------|-----------|
-| `roles` | Daftar role (user, creator, moderator, admin) |
-| `users` | Data user dengan role_id |
-| `sessions` | Session management (Better Auth) |
-| `accounts` | OAuth accounts (Better Auth) |
-| `verifications` | Email verification tokens |
-| `categories` | Kategori film |
-| `films` | Data film/karya |
-| `discussions` | Komentar dan diskusi (Adjacency List) |
-| `votes` | Vote/like untuk trending |
-| `chat_history` | Riwayat chat AI |
-
-### Relationships
-
-```
-roles (1) ──────< users (many)
-users (1) ──────< films (many)
-users (1) ──────< discussions (many)
-users (1) ──────< votes (many)
-users (1) ──────< chat_history (many)
-categories (1) ─< films (many)
-films (1) ──────< discussions (many)
-films (1) ──────< votes (many)
-discussions (1) < discussions (many) [self-referencing for replies]
-```
-
----
-
-## Setup Google OAuth
-
-1. Buka [Google Cloud Console](https://console.cloud.google.com/)
-2. Buat project baru
-3. Enable Google+ API
-4. Setup OAuth consent screen
-5. Buat OAuth credentials (Web application)
-6. Set redirect URI: `http://localhost:3000/api/auth/callback/google`
-7. Copy Client ID & Secret ke `.env`
-
----
-
-## Setup AI Provider
-
-### Groq (Recommended - Free)
-
-1. Daftar di [console.groq.com](https://console.groq.com)
-2. Buat API key
-3. Update `.env`:
-```env
-AI_PROVIDER=groq
-GROQ_API_KEY=gsk_xxxxx
-GROQ_MODEL=llama-3.3-70b-versatile
-```
-
-### OpenAI
-
-```env
-AI_PROVIDER=openai
-OPENAI_API_KEY=sk-xxxxx
-OPENAI_MODEL=gpt-4o-mini
-```
-
-### Google Gemini
-
-```env
-AI_PROVIDER=gemini
-GEMINI_API_KEY=xxxxx
-GEMINI_MODEL=gemini-1.5-flash
-```
+- [DEVELOPMENT.md](./DEVELOPMENT.md)
+- [TESTING_GUIDE.md](./TESTING_GUIDE.md)
+- [DATABASE.md](./DATABASE.md)
