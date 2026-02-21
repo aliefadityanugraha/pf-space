@@ -13,6 +13,7 @@ import {
 } from 'lucide-vue-next'
 import { useHead } from '@unhead/vue'
 import VideoPlayer from '@/components/VideoPlayer.vue'
+import ErrorBoundary from '@/components/ErrorBoundary.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -72,15 +73,12 @@ const fetchFilm = async () => {
     else if (f.file_rab && f.file_rab !== assetUrl(null)) activeTab.value = 'rab'
     else if (isStaff.value || isOwner.value) activeTab.value = 'evaluation'
 
-    // Fetch Evaluation if Staff or Owner
-    if (isStaff.value || isOwner.value) {
-      const evalRes = await api.get(`/api/evaluations/${f.film_id}`)
-      if (evalRes.data) {
-        evaluation.value = evalRes.data
-        // Fill form if staff
-        if (isStaff.value) {
-          Object.assign(evalForm, evalRes.data)
-        }
+    // Load evaluation from film object (Eager Loading)
+    if (f.evaluation) {
+      evaluation.value = f.evaluation
+      // Fill form if staff
+      if (isStaff.value) {
+        Object.assign(evalForm, f.evaluation)
       }
     }
   } catch (err) {
@@ -205,10 +203,6 @@ useHead({
           </button>
         </div>
       </nav>
-
-      <div class="p-6 border-t border-white/10 text-[10px] uppercase font-black tracking-widest text-stone-600 flex items-center gap-2">
-        <Film class="w-3 h-3 text-brand-teal" /> <span>PF Space Archive</span>
-      </div>
     </aside>
 
     <!-- 3. MAIN CONTENT -->
@@ -216,17 +210,19 @@ useHead({
       
       <!-- Video Player Section -->
       <section class="w-full bg-black flex flex-col border-b border-black lg:border-b-2 relative shrink-0 overflow-hidden z-20 min-h-[30vh] lg:h-[50vh]">
-        <VideoPlayer
-          v-if="film.link_video_utama"
-          :src="film.link_video_utama"
-          :title="film.judul || 'Video'"
-          :poster="film.gambar_poster || null"
-          :storageKey="film?.film_id ? `study-${film.film_id}` : (film?.slug ? `study-${film.slug}` : '')"
-        />
-        <div v-else class="w-full h-full flex flex-col items-center justify-center bg-stone-900 text-stone-600 gap-4">
-          <MonitorPlay class="w-16 h-16 opacity-10" />
-          <span class="text-xs uppercase font-black tracking-widest">Video tidak tersedia</span>
-        </div>
+        <ErrorBoundary name="Pemutar Video">
+          <VideoPlayer
+            v-if="film.link_video_utama"
+            :src="film.link_video_utama"
+            :title="film.judul || 'Video'"
+            :poster="film.gambar_poster || null"
+            :storageKey="film?.film_id ? `study-${film.film_id}` : (film?.slug ? `study-${film.slug}` : '')"
+          />
+          <div v-else class="w-full h-full flex flex-col items-center justify-center bg-stone-900 text-stone-600 gap-4">
+            <MonitorPlay class="w-16 h-16 opacity-10" />
+            <span class="text-xs uppercase font-black tracking-widest">Video tidak tersedia</span>
+          </div>
+        </ErrorBoundary>
       </section>
 
       <!-- Viewer Section -->
@@ -271,6 +267,21 @@ useHead({
 
             <!-- IF STAFF: EDIT MODE -->
             <div v-if="isStaff" class="space-y-6">
+              <!-- Added metadata for Staff view at TOP -->
+              <div v-if="evaluation" class="flex flex-col md:flex-row items-center justify-between p-4 bg-orange-50 border-2 border-stone-200 gap-4 mb-6">
+                <div class="flex items-center gap-3">
+                  <img v-if="evaluation.moderator?.image" :src="assetUrl(evaluation.moderator.image)" class="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                  <div class="flex flex-col">
+                    <span class="text-[10px] font-black uppercase text-stone-900 leading-none mb-1">Kurator Terakhir:</span>
+                    <span class="text-xs font-bold text-orange-600 uppercase tracking-widest">{{ evaluation.moderator?.name || 'Moderator' }}</span>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-[9px] font-black uppercase text-stone-400 mb-1">Terakhir Diperbarui:</span>
+                  <span class="text-[10px] font-bold text-stone-600">{{ new Date(evaluation.updated_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }} WIB</span>
+                </div>
+              </div>
+
               <div class="bg-blue-50 border-2 border-blue-200 p-4 rounded-xl flex items-start gap-3">
                 <AlertCircle class="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                 <p class="text-xs text-blue-700 font-medium leading-relaxed">
@@ -308,7 +319,7 @@ useHead({
                 ></textarea>
               </div>
 
-              <div class="flex justify-end pt-4 pb-12">
+              <div class="flex justify-end pt-4">
                 <Button 
                   @click="saveEvaluation" 
                   :disabled="saving"
@@ -322,7 +333,7 @@ useHead({
             </div>
 
             <!-- IF OWNER: VIEW MODE -->
-            <div v-else-if="isOwner" class="space-y-6">
+            <ErrorBoundary name="Detail Evaluasi" v-else-if="isOwner">
               <div v-if="!evaluation" class="bg-white border-2 border-dashed border-stone-300 p-12 text-center rounded-2xl">
                 <div class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Loader2 class="w-8 h-8 text-stone-300 animate-spin" />
@@ -332,6 +343,21 @@ useHead({
               </div>
 
               <div v-else class="space-y-8">
+                <!-- Added metadata for Owner view at TOP -->
+                <div class="flex flex-col md:flex-row items-center justify-between p-4 bg-white border-2 border-black gap-4 shadow-brutal-sm">
+                  <div class="flex items-center gap-3">
+                    <img v-if="evaluation.moderator?.image" :src="assetUrl(evaluation.moderator.image)" class="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                    <div class="flex flex-col">
+                      <span class="text-[10px] font-black uppercase text-stone-900 leading-none mb-1">Kurator Penilai:</span>
+                      <span class="text-xs font-bold text-brand-teal uppercase tracking-widest">{{ evaluation.moderator?.name || 'Moderator' }}</span>
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-end">
+                    <span class="text-[9px] font-black uppercase text-stone-400 mb-1">Waktu Penilaian:</span>
+                    <span class="text-[10px] font-bold text-stone-600">{{ new Date(evaluation.updated_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }} WIB</span>
+                  </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                    <div v-for="item in criteria" :key="item.id" class="bg-white border-2 border-black p-6 relative overflow-hidden">
                      <div class="absolute top-0 right-0 p-2 bg-stone-100 border-l-2 border-b-2 border-black font-black text-xl text-brand-teal">
@@ -354,16 +380,8 @@ useHead({
                     {{ evaluation.overall_feedback || 'Belum ada umpan balik keseluruhan.' }}
                   </p>
                 </div>
-                
-                <div class="flex items-center justify-between p-4 bg-white border-2 border-black">
-                  <div class="flex items-center gap-3">
-                    <img v-if="evaluation.moderator?.image" :src="assetUrl(evaluation.moderator.image)" class="w-8 h-8 rounded-full border border-black" />
-                    <span class="text-[10px] font-black uppercase text-stone-900">Dinilai oleh: {{ evaluation.moderator?.name || 'Moderator' }}</span>
-                  </div>
-                  <span class="text-[9px] font-bold text-stone-400 uppercase">PF Space Quality Assurance System</span>
-                </div>
               </div>
-            </div>
+            </ErrorBoundary>
           </div>
         </div>
 

@@ -18,6 +18,7 @@ import LoadingState from '@/components/LoadingState.vue'
 import ArchiveSkeleton from '@/components/ArchiveSkeleton.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import Pagination from '@/components/Pagination.vue'
+import ErrorBoundary from '@/components/ErrorBoundary.vue'
 import { useToast } from '@/composables/useToast'
 import { useHead } from '@unhead/vue'
 
@@ -179,34 +180,36 @@ onMounted(async () => {
         </template>
       </PageHeader>
 
-      <Card class="mb-6">
-        <CardContent class="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Status Pengajuan Karya</p>
-            <p class="text-sm text-stone-500">
-              Ringkasan semua karya yang kamu upload berdasarkan status review.
-            </p>
-          </div>
-          <div class="flex flex-wrap gap-2 items-center">
-            <Badge variant="outline" class="bg-stone-900 text-white border-stone-900">
-              <span class="font-bold mr-1">{{ summaryLoading ? '…' : statusSummary.all }}</span>
-              Total
-            </Badge>
-            <Badge :class="statusColors.pending">
-              <span class="font-bold mr-1">{{ summaryLoading ? '…' : statusSummary.pending }}</span>
-              Menunggu
-            </Badge>
-            <Badge :class="statusColors.published">
-              <span class="font-bold mr-1">{{ summaryLoading ? '…' : statusSummary.published }}</span>
-              Dipublikasi
-            </Badge>
-            <Badge :class="statusColors.rejected">
-              <span class="font-bold mr-1">{{ summaryLoading ? '…' : statusSummary.rejected }}</span>
-              Ditolak
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
+      <ErrorBoundary name="Ringkasan Status">
+        <Card class="mb-6">
+          <CardContent class="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Status Pengajuan Karya</p>
+              <p class="text-sm text-stone-500">
+                Ringkasan semua karya yang kamu upload berdasarkan status review.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2 items-center">
+              <Badge variant="outline" class="bg-stone-900 text-white border-stone-900">
+                <span class="font-bold mr-1">{{ summaryLoading ? '…' : statusSummary.all }}</span>
+                Total
+              </Badge>
+              <Badge :class="statusColors.pending">
+                <span class="font-bold mr-1">{{ summaryLoading ? '…' : statusSummary.pending }}</span>
+                Menunggu
+              </Badge>
+              <Badge :class="statusColors.published">
+                <span class="font-bold mr-1">{{ summaryLoading ? '…' : statusSummary.published }}</span>
+                Dipublikasi
+              </Badge>
+              <Badge :class="statusColors.rejected">
+                <span class="font-bold mr-1">{{ summaryLoading ? '…' : statusSummary.rejected }}</span>
+                Ditolak
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      </ErrorBoundary>
 
       <!-- Status Filter -->
       <div class="flex gap-2 mb-6 flex-wrap">
@@ -246,72 +249,74 @@ onMounted(async () => {
       </EmptyState>
 
       <!-- Films Grid -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ArchiveCard 
-          v-for="item in films" 
-          :key="item.film_id" 
-          :archive="item"
-          variant="landscape"
-          :show-play-overlay="false"
-        >
-          <template #overlay>
-            <!-- Status Badge -->
-            <Badge :class="['absolute top-2 right-2', statusColors[item.status]]">
-              {{ statusLabels[item.status] }}
-            </Badge>
-          </template>
+      <ErrorBoundary name="Daftar Karya">
+        <div v-if="films.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ArchiveCard 
+            v-for="item in films" 
+            :key="item.film_id" 
+            :archive="item"
+            variant="landscape"
+            :show-play-overlay="false"
+          >
+            <template #overlay>
+              <!-- Status Badge -->
+              <Badge :class="['absolute top-2 right-2', statusColors[item.status]]">
+                {{ statusLabels[item.status] }}
+              </Badge>
+            </template>
 
-          <template #extra-content>
-            <p class="text-xs text-stone-400 mb-4">{{ item.tahun_karya || '-' }}</p>
+            <template #extra-content>
+              <p class="text-xs text-stone-400 mb-4">{{ item.tahun_karya || '-' }}</p>
 
-            <div v-if="item.status === 'rejected'" class="p-2 bg-red-50 border border-red-200 text-red-600 text-xs mb-4 rounded">
-              <p class="font-semibold mb-1">Karya ditolak admin.</p>
-              <div v-if="item.rejection_reason">
-                <p class="line-clamp-2">
-                  Alasan: {{ item.rejection_reason }}
+              <div v-if="item.status === 'rejected'" class="p-2 bg-red-50 border border-red-200 text-red-600 text-xs mb-4 rounded">
+                <p class="font-semibold mb-1">Karya ditolak admin.</p>
+                <div v-if="item.rejection_reason">
+                  <p class="line-clamp-2">
+                    Alasan: {{ item.rejection_reason }}
+                  </p>
+                  <button 
+                    v-if="item.rejection_reason.length > 60"
+                    @click.stop="openRejectionModal(item)"
+                    class="text-red-800 font-bold underline mt-1 hover:text-red-950"
+                  >
+                    Lihat Alasan Lengkap
+                  </button>
+                </div>
+                <p v-else>
+                  Silakan periksa kembali kualitas konten, format file, dan kelengkapan data lalu submit ulang.
                 </p>
-                <button 
-                  v-if="item.rejection_reason.length > 60"
-                  @click.stop="openRejectionModal(item)"
-                  class="text-red-800 font-bold underline mt-1 hover:text-red-950"
-                >
-                  Lihat Alasan Lengkap
-                </button>
               </div>
-              <p v-else>
-                Silakan periksa kembali kualitas konten, format file, dan kelengkapan data lalu submit ulang.
-              </p>
-            </div>
-          </template>
+            </template>
 
-          <template #actions>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              class="flex-1 gap-1"
-              @click="router.push(`/archive/${item.slug}`)"
-            >
-              <Eye class="w-4 h-4" /> Lihat
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              class="flex-1 gap-1"
-              @click="router.push(`/edit-archive/${item.slug}`)"
-            >
-              <Pencil class="w-4 h-4" /> Edit
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              class="text-red-600 hover:bg-red-50"
-              @click="confirmDelete(item)"
-            >
-              <Trash2 class="w-4 h-4" />
-            </Button>
-          </template>
-        </ArchiveCard>
-      </div>
+            <template #actions>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                class="flex-1 gap-1"
+                @click="router.push(`/archive/${item.slug}`)"
+              >
+                <Eye class="w-4 h-4" /> Lihat
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                class="flex-1 gap-1"
+                @click="router.push(`/edit-archive/${item.slug}`)"
+              >
+                <Pencil class="w-4 h-4" /> Edit
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                class="text-red-600 hover:bg-red-50"
+                @click="confirmDelete(item)"
+              >
+                <Trash2 class="w-4 h-4" />
+              </Button>
+            </template>
+          </ArchiveCard>
+        </div>
+      </ErrorBoundary>
 
       <!-- Pagination -->
       <Pagination 

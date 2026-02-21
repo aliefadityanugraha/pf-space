@@ -1,12 +1,6 @@
-/**
- * src/routes/category.routes.js
- * 
- * Routes for managing film categories.
- */
-
 import { categoryController } from '../controllers/index.js';
-import { requireAdmin, validateRequest } from '../middlewares/index.js';
-import { categorySchema } from '../lib/validation.js';
+import { requireAdmin } from '../middlewares/index.js';
+import { categorySchema } from '../schemas/category.schema.js';
 
 /**
  * Register film category routes
@@ -24,12 +18,14 @@ export default async function categoryRoutes(fastify) {
 
   // Admin: Create new category
   fastify.post('/', {
-    preHandler: [requireAdmin, validateRequest(categorySchema)]
+    preHandler: [requireAdmin],
+    schema: categorySchema
   }, categoryController.create.bind(categoryController));
 
   // Admin: Update category
   fastify.put('/:id', {
-    preHandler: [requireAdmin, validateRequest(categorySchema)]
+    preHandler: [requireAdmin],
+    schema: categorySchema
   }, categoryController.update.bind(categoryController));
 
   // Admin: Delete category

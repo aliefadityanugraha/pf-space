@@ -19,6 +19,7 @@ import EmptyState from '@/components/EmptyState.vue'
 import TrendingCardSkeleton from '@/components/TrendingCardSkeleton.vue'
 import CategoryCardSkeleton from '@/components/CategoryCardSkeleton.vue'
 import CommunityDiscussion from '@/components/CommunityDiscussion.vue'
+import ErrorBoundary from '@/components/ErrorBoundary.vue'
 
 
 
@@ -105,7 +106,9 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen bg-brand-cream">
     <Navbar :light-title="isLightTitle" />
-    <HeroSection ref="heroRef" />
+    <ErrorBoundary name="Hero Section">
+      <HeroSection ref="heroRef" />
+    </ErrorBoundary>
 
     <!-- Global Loading removed in favor of section-based skeletons -->
 
@@ -117,22 +120,26 @@ onUnmounted(() => {
         :light-text="false"
       />
       
-      <!-- Archive Carousel -->
-      <div v-if="!loading && latestFilms.length === 0" class="w-full">
-        <EmptyState 
-          title="Belum ada karya yang dipublikasi"
-          description="Silahkan unggah karya pertamamu."
-        />
-      </div>
-      <div v-else class="w-full">
-        <ArchiveCarousel 
-          :items="latestFilms" 
-          :loading="loading" 
-        />
-      </div>
+      <ErrorBoundary name="Karya Terbaru">
+        <!-- Archive Carousel -->
+        <div v-if="!loading && latestFilms.length === 0" class="w-full">
+          <EmptyState 
+            title="Belum ada karya yang dipublikasi"
+            description="Silahkan unggah karya pertamamu."
+          />
+        </div>
+        <div v-else class="w-full">
+          <ArchiveCarousel 
+            :items="latestFilms" 
+            :loading="loading" 
+          />
+        </div>
+      </ErrorBoundary>
     </section>
 
-    <TrendingBanner />
+    <ErrorBoundary name="Promo Section">
+      <TrendingBanner />
+    </ErrorBoundary>
 
     <!-- Trending Section -->
     <section v-if="loading || trendingFilms.length > 0" class="w-full py-12">
@@ -143,57 +150,59 @@ onUnmounted(() => {
           :light-text="false"
         />
         
-        <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <TrendingCardSkeleton v-for="i in 3" :key="i" />
-        </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card 
-            v-for="(film, index) in trendingFilms" 
-            :key="film.film_id"
-            class="overflow-hidden cursor-pointer bg-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            @click="goToDetail(film.slug)"
-          >
-            <div class="flex gap-4 p-4">
-              <!-- Rank -->
-              <div class="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-brand-red text-white text-sm md:text-base font-bold flex items-center justify-center border-2 border-black shadow-sm">
-                {{ index + 1 }}
-              </div>
-              <!-- Poster -->
-              <div class="w-12 h-20 md:w-16 md:h-24 bg-stone-200 flex-shrink-0 overflow-hidden border-2 border-black shadow-sm">
-                <img 
-                  v-if="film.gambar_poster" 
-                  :src="assetUrl(film.gambar_poster)" 
-                  :alt="film.judul"
-                  class="w-full h-full object-cover"
-                />
-                <div v-else class="w-full h-full flex items-center justify-center">
-                  <Film class="w-6 h-6 text-stone-400" />
+        <ErrorBoundary name="Trending Cards" :inline="true">
+          <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TrendingCardSkeleton v-for="i in 3" :key="i" />
+          </div>
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card 
+              v-for="(film, index) in trendingFilms" 
+              :key="film.film_id"
+              class="overflow-hidden cursor-pointer bg-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              @click="goToDetail(film.slug)"
+            >
+              <div class="flex gap-4 p-4">
+                <!-- Rank -->
+                <div class="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-brand-red text-white text-sm md:text-base font-bold flex items-center justify-center border-2 border-black shadow-sm">
+                  {{ index + 1 }}
+                </div>
+                <!-- Poster -->
+                <div class="w-12 h-20 md:w-16 md:h-24 bg-stone-200 flex-shrink-0 overflow-hidden border-2 border-black shadow-sm">
+                  <img 
+                    v-if="film.gambar_poster" 
+                    :src="assetUrl(film.gambar_poster)" 
+                    :alt="film.judul"
+                    class="w-full h-full object-cover"
+                  />
+                  <div v-else class="w-full h-full flex items-center justify-center">
+                    <Film class="w-6 h-6 text-stone-400" />
+                  </div>
+                </div>
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-bold text-sm md:text-base line-clamp-1 mb-0.5 md:mb-1">{{ film.judul }}</h3>
+                  <div class="text-[10px] md:text-sm text-stone-500 mb-1.5 md:mb-2 z-10 relative">
+                    <router-link 
+                      v-if="film.creator?.id"
+                      :to="`/p/${film.creator.id}`"
+                      class="hover:text-brand-teal hover:underline"
+                      @click.stop
+                    >
+                      {{ film.creator?.name || 'Tanpa Nama' }}
+                    </router-link>
+                    <span v-else>{{ film.creator?.name || 'Tanpa Nama' }}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 md:gap-2">
+                    <Badge variant="secondary" class="gap-1 h-5 md:h-6 text-[9px] md:text-xs">
+                      <TrendingUp class="w-2.5 h-2.5 md:w-3 md:h-3" />
+                      {{ film.vote_count }} <span class="hidden sm:inline">apresiasi</span>
+                    </Badge>
+                  </div>
                 </div>
               </div>
-              <!-- Info -->
-              <div class="flex-1 min-w-0">
-                <h3 class="font-bold text-sm md:text-base line-clamp-1 mb-0.5 md:mb-1">{{ film.judul }}</h3>
-                <div class="text-[10px] md:text-sm text-stone-500 mb-1.5 md:mb-2 z-10 relative">
-                  <router-link 
-                    v-if="film.creator?.id"
-                    :to="`/p/${film.creator.id}`"
-                    class="hover:text-brand-teal hover:underline"
-                    @click.stop
-                  >
-                    {{ film.creator?.name || 'Tanpa Nama' }}
-                  </router-link>
-                  <span v-else>{{ film.creator?.name || 'Tanpa Nama' }}</span>
-                </div>
-                <div class="flex items-center gap-1.5 md:gap-2">
-                  <Badge variant="secondary" class="gap-1 h-5 md:h-6 text-[9px] md:text-xs">
-                    <TrendingUp class="w-2.5 h-2.5 md:w-3 md:h-3" />
-                    {{ film.vote_count }} <span class="hidden sm:inline">apresiasi</span>
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
+            </Card>
+          </div>
+        </ErrorBoundary>
 
         <!-- View All Button -->
         <div class="text-center mt-8">
@@ -206,7 +215,9 @@ onUnmounted(() => {
     </section>
 
     <!-- Community Discussion Section -->
-    <CommunityDiscussion />
+    <ErrorBoundary name="Diskusi Komunitas">
+      <CommunityDiscussion />
+    </ErrorBoundary>
 
     <!-- Categories Section -->
     <section v-if="loading || categories.length > 0" class="max-w-7xl mx-auto px-4 md:px-8 py-12">
@@ -216,24 +227,26 @@ onUnmounted(() => {
         :light-text="false"
       />
       
-      <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <CategoryCardSkeleton v-for="i in 6" :key="i" />
-      </div>
-      <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <Card 
-          v-for="category in categories" 
-          :key="category.category_id"
-          class="cursor-pointer bg-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-        >
-          <CardContent class="p-3 md:p-4 text-center">
-            <div class="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-brand-teal/10 rounded-full flex items-center justify-center border-2 border-black shadow-sm">
-              <Film class="w-5 h-5 md:w-6 md:h-6 text-brand-teal" />
-            </div>
-            <h3 class="font-bold text-[11px] md:text-sm mb-0.5 md:mb-1">{{ category.nama_kategori }}</h3>
-            <p class="text-[10px] text-stone-500">{{ category.film_count || 0 }} karya</p>
-          </CardContent>
-        </Card>
-      </div>
+      <ErrorBoundary name="Kategori">
+        <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <CategoryCardSkeleton v-for="i in 6" :key="i" />
+        </div>
+        <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <Card 
+            v-for="category in categories" 
+            :key="category.category_id"
+            class="cursor-pointer bg-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          >
+            <CardContent class="p-3 md:p-4 text-center">
+              <div class="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-brand-teal/10 rounded-full flex items-center justify-center border-2 border-black shadow-sm">
+                <Film class="w-5 h-5 md:w-6 md:h-6 text-brand-teal" />
+              </div>
+              <h3 class="font-bold text-[11px] md:text-sm mb-0.5 md:mb-1">{{ category.nama_kategori }}</h3>
+              <p class="text-[10px] text-stone-500">{{ category.film_count || 0 }} karya</p>
+            </CardContent>
+          </Card>
+        </div>
+      </ErrorBoundary>
     </section>
 
     <!-- CTA Section -->

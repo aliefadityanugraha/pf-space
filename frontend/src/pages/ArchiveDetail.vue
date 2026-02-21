@@ -10,6 +10,7 @@ import { useHead } from "@unhead/vue";
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import { Loader2 } from "lucide-vue-next";
+import ErrorBoundary from "@/components/ErrorBoundary.vue";
 
 // Sub-components (extracted from this file)
 import DetailVideoSection from "@/components/detail/DetailVideoSection.vue";
@@ -247,10 +248,15 @@ const submitComment = async (data = null) => {
   }
 };
 
+const deletingCommentIds = ref(new Set());
+
 const deleteComment = async (id) => {
+  if (deletingCommentIds.value.has(id)) return;
+  
   if (!confirm("Hapus komentar ini? Semua balasan juga akan terhapus."))
     return;
 
+  deletingCommentIds.value.add(id);
   try {
     await api.delete(`/api/discussions/${id}`);
     await fetchComments();
@@ -258,6 +264,8 @@ const deleteComment = async (id) => {
   } catch (err) {
     console.error("Failed to delete comment:", err);
     showToast("Gagal menghapus komentar", "error");
+  } finally {
+    deletingCommentIds.value.delete(id);
   }
 };
 
@@ -273,13 +281,16 @@ const totalCommentCount = computed(() => {
   return count;
 });
 
-// ─── Learning Assets ────────────────────────────────────
-const hasLearningAssets = computed(
-  () =>
+// ─── Study Mode Access ──────────────────────────────────
+const canAccessStudy = computed(() => {
+  const hasAssets = !!(
     film.value?.file_naskah ||
     film.value?.file_storyboard ||
-    film.value?.file_rab,
-);
+    film.value?.file_rab
+  );
+  // Allow if has assets OR if user is staff/owner (to see/give evaluations)
+  return hasAssets || isAdmin.value || isModerator.value || (user.value && user.value.id === film.value?.user_id);
+});
 
 // ─── Parsed description sections ────────────────────────
 const parsedSections = computed(() => {
@@ -426,56 +437,90 @@ onUnmounted(() => {
     </div>
 
     <template v-else-if="film">
+      <!-- Moderation Status Banner -->
+      <div v-if="film.status !== 'published' && isLoggedIn" class="w-full bg-stone-900 border-b border-white/10 py-3 px-4 md:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+             <div :class="['w-2 h-2 rounded-full animate-pulse', film.status === 'pending' ? 'bg-amber-500' : 'bg-red-500']"></div>
+             <div>
+                <p class="text-[10px] md:text-xs font-black uppercase tracking-widest" :class="film.status === 'pending' ? 'text-amber-500' : 'text-red-500'">
+                   Status: {{ film.status === 'pending' ? 'Menunggu Kurasi' : 'Karya Perlu Perbaikan' }}
+                </p>
+                <p v-if="film.status === 'rejected' && film.rejection_reason" class="text-xs text-stone-400 mt-1 italic font-medium">
+                  Catatan curator: "{{ film.rejection_reason }}"
+                </p>
+                <p v-else-if="film.status === 'pending'" class="text-[9px] md:text-xs text-stone-500 mt-0.5">
+                  Karya Anda sedang dalam antrean review oleh moderator. Hanya Anda yang dapat melihat halaman ini.
+                </p>
+             </div>
+          </div>
+          <div class="flex gap-2">
+            <Button v-if="user?.id === film.user_id" size="sm" variant="outline" class="h-8 text-[10px] border-white/20 text-white hover:bg-white/10" @click="router.push(`/archive/${film.slug}/edit`)">
+              Perbaiki Karya
+            </Button>
+          </div>
+        </div>
+      </div>
+
       <!-- SECTION 1: VIDEO + SIDEBAR -->
-      <DetailVideoSection
-        ref="videoSectionRef"
-        :film="film"
-        :activeVideoUrl="activeVideoUrl"
-        :activeVideoType="activeVideoType"
-        @switch-video="switchVideo"
-      >
-        <template #action-bar>
-          <DetailActionBar
-            :film="film"
-            :voteData="voteData"
-            :voting="voting"
-            :isInCollection="isInCollection"
-            :processingCollection="processingCollection"
-            :hasLearningAssets="hasLearningAssets"
-            @toggle-vote="toggleVote"
-            @toggle-collection="handleToggleCollection"
-            @share="handleShare"
-            @share-to="shareTo"
-          />
-        </template>
-      </DetailVideoSection>
+      <ErrorBoundary name="Video Player">
+        <DetailVideoSection
+          ref="videoSectionRef"
+          :film="film"
+          :activeVideoUrl="activeVideoUrl"
+          :activeVideoType="activeVideoType"
+          @switch-video="switchVideo"
+        >
+          <template #action-bar>
+            <DetailActionBar
+              :film="film"
+              :voteData="voteData"
+              :voting="voting"
+              :isInCollection="isInCollection"
+              :processingCollection="processingCollection"
+              :hasLearningAssets="canAccessStudy"
+              @toggle-vote="toggleVote"
+              @toggle-collection="handleToggleCollection"
+              @share="handleShare"
+              @share-to="shareTo"
+            />
+          </template>
+        </DetailVideoSection>
+      </ErrorBoundary>
 
       <!-- SECTION 2: DETAIL CONTENT -->
       <main class="w-full max-w-7xl mx-auto px-4 md:px-8 py-10">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           <!-- Left Column: Main Content -->
-          <DetailContent
-            :film="film"
-            :parsedSections="parsedSections"
-            :comments="comments"
-            :loadingComments="loadingComments"
-            :newComment="newComment"
-            :submittingComment="submittingComment"
-            :isLoggedIn="isLoggedIn"
-            :user="user"
-            :canModerate="canModerate"
-            :totalCommentCount="totalCommentCount"
-            @update:newComment="newComment = $event"
-            @submit-comment="submitComment"
-            @delete-comment="deleteComment"
-          />
+          <ErrorBoundary name="Konten Utama">
+            <DetailContent
+              :film="film"
+              :parsedSections="parsedSections"
+              :comments="comments"
+              :loadingComments="loadingComments"
+              :newComment="newComment"
+              :submittingComment="submittingComment"
+              :isLoggedIn="isLoggedIn"
+              :user="user"
+              :canModerate="canModerate"
+              :totalCommentCount="totalCommentCount"
+              :deletingCommentIds="deletingCommentIds"
+              @update:newComment="newComment = $event"
+              @submit-comment="submitComment"
+              @delete-comment="deleteComment"
+            />
+          </ErrorBoundary>
 
           <!-- Right Column: Sidebar -->
-          <DetailSidebar :film="film" />
+          <ErrorBoundary name="Sidebar">
+            <DetailSidebar :film="film" />
+          </ErrorBoundary>
         </div>
 
         <!-- Related Films -->
-        <DetailRelatedFilms :relatedFilms="relatedFilms" />
+        <ErrorBoundary name="Karya Terkait">
+          <DetailRelatedFilms :relatedFilms="relatedFilms" />
+        </ErrorBoundary>
       </main>
     </template>
 

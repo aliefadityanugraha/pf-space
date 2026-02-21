@@ -3,9 +3,9 @@ import { Film, Instagram, Github, Mail, Globe, Heart } from 'lucide-vue-next'
 </script>
 
 <template>
-  <footer class="bg-brand-cream border-t-4 border-black pt-10 md:pt-16 pb-6 md:pb-8 mt-auto">
+  <footer class="bg-brand-cream border-t-4 border-black/20 pt-10 md:pt-16 pb-6 md:pb-8 mt-auto">
     <div class="max-w-7xl mx-auto px-4 md:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-5 md:mb-10">
         <!-- Brand Section -->
         <div class="space-y-4 md:space-y-6">
           <div class="flex items-center gap-2">
@@ -25,11 +25,11 @@ import { Film, Instagram, Github, Mail, Globe, Heart } from 'lucide-vue-next'
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-8 md:block md:space-y-0">
+        <div class="grid grid-cols-2 gap-2 md:block md:space-y-0">
           <!-- Links: Platform -->
           <div>
-            <h4 class="font-display font-bold text-black uppercase tracking-widest text-[11px] md:text-sm mb-4 md:mb-6 pb-2 border-b-2 border-black inline-block">Platform</h4>
-            <ul class="space-y-2 md:space-y-4">
+            <h4 class="font-display font-bold text-black uppercase tracking-widest text-[11px] md:text-sm mb-2 md:mb-6 border-b-2 border-black inline-block">Platform</h4>
+            <ul class="space-y-1">
               <li>
                 <router-link to="/about" class="text-stone-600 hover:text-brand-teal font-bold transition-colors text-xs md:text-sm">Tentang Kami</router-link>
               </li>
@@ -47,8 +47,8 @@ import { Film, Instagram, Github, Mail, Globe, Heart } from 'lucide-vue-next'
 
           <!-- Links: Legal -->
           <div class="md:mt-12">
-            <h4 class="font-display font-bold text-black uppercase tracking-widest text-[11px] md:text-sm mb-4 md:mb-6 pb-2 border-b-2 border-black inline-block">Kebijakan</h4>
-            <ul class="space-y-2 md:space-y-4">
+            <h4 class="font-display font-bold text-black uppercase tracking-widest text-[11px] md:text-sm mb-2 md:mb-6 border-b-2 border-black inline-block">Kebijakan</h4>
+            <ul class="space-y-1">
               <li>
                 <router-link to="/privacy" class="text-stone-600 hover:text-brand-teal font-bold transition-colors text-xs md:text-sm">Privasi</router-link>
               </li>

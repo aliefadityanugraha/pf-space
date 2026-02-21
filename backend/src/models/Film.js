@@ -123,6 +123,14 @@ export class Film extends BaseModel {
           from: 'films.film_id',
           to: 'votes.film_id'
         }
+      },
+      evaluation: {
+        relation: BaseModel.HasOneRelation,
+        modelClass: path.join(__dirname, 'Evaluation.js'),
+        join: {
+          from: 'films.film_id',
+          to: 'film_evaluations.film_id'
+        }
       }
     };
   }

@@ -29,6 +29,10 @@ const props = defineProps({
   canModerate: {
     type: Boolean,
     default: false
+  },
+  deletingCommentIds: {
+    type: Object,
+    default: () => new Set()
   }
 })
 
@@ -116,10 +120,12 @@ const canDelete = computed(() => {
           <button 
             v-if="canDelete"
             @click="emit('delete', comment.diskusi_id)"
-            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-brand-red transition-colors"
+            :disabled="deletingCommentIds.has(comment.diskusi_id)"
+            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-brand-red transition-colors disabled:opacity-50"
           >
-            <Trash2 class="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
-            <span>Hapus</span>
+            <Loader2 v-if="deletingCommentIds.has(comment.diskusi_id)" class="w-3.5 h-3.5 animate-spin" />
+            <Trash2 v-else class="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
+            <span>{{ deletingCommentIds.has(comment.diskusi_id) ? 'Menghapus...' : 'Hapus' }}</span>
           </button>
         </div>
 
@@ -163,6 +169,7 @@ const canDelete = computed(() => {
             :is-logged-in="isLoggedIn"
             :current-user="currentUser"
             :can-moderate="canModerate"
+            :deleting-comment-ids="deletingCommentIds"
             @reply="$emit('reply', $event)"
             @delete="$emit('delete', $event)"
           />

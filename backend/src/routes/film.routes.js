@@ -1,13 +1,6 @@
-/**
- * src/routes/film.routes.js
- * 
- * Routes for film operations including listing, retrieval, 
- * creation, updates, and moderation.
- */
-
 import { filmController } from '../controllers/index.js';
-import { authenticate, requireModerator, requireCreator, optionalAuth, validateRequest, viewRateLimit } from '../middlewares/index.js';
-import { filmCreateSchema, filmUpdateSchema, rejectionSchema } from '../lib/validation.js';
+import { authenticate, requireModerator, requireCreator, optionalAuth, viewRateLimit } from '../middlewares/index.js';
+import { createFilmSchema, updateFilmSchema, rejectionSchema } from '../schemas/film.schema.js';
 
 /**
  * Register film-related routes
@@ -62,12 +55,14 @@ export default async function filmRoutes(fastify) {
 
   // Creator: Create new film
   fastify.post('/', {
-    preHandler: [requireCreator, validateRequest(filmCreateSchema)]
+    preHandler: [requireCreator],
+    schema: createFilmSchema
   }, filmController.create.bind(filmController));
 
   // Creator/Admin: Update film
   fastify.put('/:id', {
-    preHandler: [authenticate, validateRequest(filmUpdateSchema)]
+    preHandler: [authenticate],
+    schema: updateFilmSchema
   }, filmController.update.bind(filmController));
 
   // Creator/Admin: Delete film
@@ -82,6 +77,7 @@ export default async function filmRoutes(fastify) {
 
   // Admin/Moderator: Reject film
   fastify.patch('/:id/reject', {
-    preHandler: [requireModerator, validateRequest(rejectionSchema)]
+    preHandler: [requireModerator],
+    schema: rejectionSchema
   }, filmController.reject.bind(filmController));
 }

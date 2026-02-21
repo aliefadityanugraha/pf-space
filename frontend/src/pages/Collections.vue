@@ -48,13 +48,20 @@ const fetchCollections = async () => {
   }
 }
 
+const removingIds = ref(new Set())
+
 const removeFromCollection = async (filmId) => {
+  if (removingIds.value.has(filmId)) return
+  
+  removingIds.value.add(filmId)
   try {
     await api.post(`/api/collections/${filmId}/toggle`, {})
     collections.value = collections.value.filter(item => item.film_id !== filmId)
     showToast('Karya dihapus dari koleksi')
   } catch (err) {
     showToast('Gagal menghapus karya', 'error')
+  } finally {
+    removingIds.value.delete(filmId)
   }
 }
 
@@ -130,8 +137,10 @@ onMounted(fetchCollections)
                 size="icon" 
                 class="w-9 h-9 md:w-10 md:h-10 border-2 border-stone-200 hover:border-brand-red hover:text-brand-red transition-all"
                 @click="removeFromCollection(item.film_id)"
+                :disabled="removingIds.has(item.film_id)"
               >
-                <BookmarkX class="w-4 h-4 md:w-5 md:h-5" />
+                <Loader2 v-if="removingIds.has(item.film_id)" class="w-4 h-4 md:w-5 md:h-5 animate-spin" />
+                <BookmarkX v-else class="w-4 h-4 md:w-5 md:h-5" />
               </Button>
             </div>
           </div>

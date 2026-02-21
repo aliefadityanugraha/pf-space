@@ -75,7 +75,7 @@ const formatTime = (date) => {
         <Bell class="w-4 h-4 md:w-5 md:h-5 text-stone-900" />
         <span 
           v-if="unreadCount > 0" 
-          class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 border-2 border-black min-w-[20px]"
+          class="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold p-0.5 border-2 border-black min-w-[20px]"
         >
           {{ unreadCount > 99 ? '99+' : unreadCount }}
         </span>

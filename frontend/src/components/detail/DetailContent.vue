@@ -24,6 +24,7 @@ const props = defineProps({
   user: { type: Object, default: null },
   canModerate: { type: Boolean, default: false },
   totalCommentCount: { type: Number, default: 0 },
+  deletingCommentIds: { type: Object, default: () => new Set() },
 })
 
 const emit = defineEmits([
@@ -256,6 +257,7 @@ const localComment = computed({
             :is-logged-in="isLoggedIn"
             :current-user="user"
             :can-moderate="canModerate"
+            :deleting-comment-ids="deletingCommentIds"
             @reply="emit('submit-comment', $event)"
             @delete="emit('delete-comment', $event)"
           />

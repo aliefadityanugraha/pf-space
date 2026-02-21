@@ -1,11 +1,6 @@
-/**
- * src/routes/auth.routes.js
- * 
- * Routes for authentication and user profile management.
- */
-
 import { authController } from '../controllers/index.js';
-import { authenticate, requireAdmin, optionalAuth } from '../middlewares/index.js';
+import { authenticate, requireAdmin } from '../middlewares/index.js';
+import { updateProfileSchema, updateRoleSchema } from '../schemas/auth.schema.js';
 
 /**
  * Register authentication and profile routes
@@ -23,7 +18,8 @@ export default async function authRoutes(fastify) {
 
   // Update user profile
   fastify.post('/update-profile', {
-    preHandler: authenticate
+    preHandler: authenticate,
+    schema: updateProfileSchema
   }, authController.updateUser.bind(authController));
 
   // Admin: Get all users
@@ -38,7 +34,8 @@ export default async function authRoutes(fastify) {
 
   // Admin: Update user role
   fastify.patch('/users/:userId/role', {
-    preHandler: requireAdmin
+    preHandler: requireAdmin,
+    schema: updateRoleSchema
   }, authController.updateRole.bind(authController));
 
   // Social Auth: Google

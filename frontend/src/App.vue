@@ -5,6 +5,7 @@ import { useToast } from '@/composables/useToast'
 import SidebarChat from './components/SidebarChat.vue'
 import AnnouncementModal from './components/AnnouncementModal.vue'
 import Toast from './components/Toast.vue'
+import ErrorBoundary from './components/ErrorBoundary.vue'
 
 const { init, initialized } = useAuth()
 const { toast } = useToast()
@@ -50,7 +51,9 @@ onMounted(() => {
 
   <!-- Normal App -->
   <template v-else-if="initialized">
-    <router-view />
+    <ErrorBoundary name="Halaman">
+      <router-view />
+    </ErrorBoundary>
     <SidebarChat />
     <AnnouncementModal />
     
@@ -69,7 +72,6 @@ onMounted(() => {
     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
   </div>
 
-  <!-- Global Toast (singleton) -->
   <Toast :show="toast.show" :type="toast.type" :message="toast.message" @close="toast.show = false" />
 </template>
 

@@ -1,11 +1,10 @@
-/**
- * src/routes/learningMaterial.routes.js
- * 
- * Routes for learning materials.
- */
-
 import { learningMaterialController } from '../controllers/index.js';
 import { authenticate, requireModerator, optionalAuth } from '../middlewares/index.js';
+import { 
+  createMaterialSchema, 
+  updateMaterialSchema, 
+  queryMaterialSchema 
+} from '../schemas/learningMaterial.schema.js';
 
 /**
  * Register learning material routes
@@ -14,7 +13,8 @@ import { authenticate, requireModerator, optionalAuth } from '../middlewares/ind
 export default async function learningMaterialRoutes(fastify) {
   // Public: Get all materials
   fastify.get('/', {
-    preHandler: optionalAuth
+    preHandler: optionalAuth,
+    schema: queryMaterialSchema
   }, learningMaterialController.getAll.bind(learningMaterialController));
 
   // Public: Get single material
@@ -22,12 +22,14 @@ export default async function learningMaterialRoutes(fastify) {
 
   // Admin/Moderator: Create material
   fastify.post('/', {
-    preHandler: requireModerator
+    preHandler: requireModerator,
+    schema: createMaterialSchema
   }, learningMaterialController.create.bind(learningMaterialController));
 
   // Admin/Moderator: Update material
   fastify.put('/:id', {
-    preHandler: requireModerator
+    preHandler: requireModerator,
+    schema: updateMaterialSchema
   }, learningMaterialController.update.bind(learningMaterialController));
 
   // Admin/Moderator: Delete material

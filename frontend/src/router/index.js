@@ -194,8 +194,8 @@ const routes = [
   },
   {
     path: '/manage-materi',
-    name: 'AdminMateri',
-    component: () => import('../pages/MaterialManager.vue'),
+    name: 'MaterialManager',
+    component: () => import('@/pages/MaterialManager.vue'),
     meta: { requiresAuth: true, requiresModerator: true }
   },
   {

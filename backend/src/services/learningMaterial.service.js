@@ -19,13 +19,17 @@ export class LearningMaterialService {
    * Get all learning materials with pagination
    * @param {object} options - Pagination options
    */
-  async getAll({ page = 1, limit = 20, activeOnly = true }) {
+  async getAll({ page = 1, limit = 20, activeOnly = true, creator_id = null }) {
     let query = LearningMaterial.query()
       .withGraphFetched('creator')
       .orderBy('created_at', 'desc');
 
     if (activeOnly) {
       query = query.where('is_active', true);
+    }
+
+    if (creator_id) {
+      query = query.where('creator_id', creator_id);
     }
 
     const results = await query.page(page - 1, limit);

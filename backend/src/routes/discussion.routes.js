@@ -1,11 +1,6 @@
-/**
- * src/routes/discussion.routes.js
- * 
- * Routes for film comments and nested discussion threads.
- */
-
 import { discussionController } from '../controllers/index.js';
 import { authenticate, requireModerator } from '../middlewares/index.js';
+import { createCommentSchema, updateCommentSchema } from '../schemas/discussion.schema.js';
 
 /**
  * Register discussion routes
@@ -25,12 +20,14 @@ export default async function discussionRoutes(fastify) {
 
   // User: Post a new comment or reply
   fastify.post('/film/:filmId', {
-    preHandler: authenticate
+    preHandler: authenticate,
+    schema: createCommentSchema
   }, discussionController.create.bind(discussionController));
 
   // User: Edit own comment content
   fastify.put('/:id', {
-    preHandler: authenticate
+    preHandler: authenticate,
+    schema: updateCommentSchema
   }, discussionController.update.bind(discussionController));
 
   // User/Admin/Moderator: Delete a comment

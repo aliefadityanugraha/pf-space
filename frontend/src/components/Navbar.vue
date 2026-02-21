@@ -177,15 +177,15 @@ const handleLogout = async () => {
             <span class="hidden sm:inline">Materi</span>
           </Button>
         </router-link>
-         <!-- About Button -->
-        <router-link to="/about">
+        <!-- About Button -->
+        <!-- <router-link to="/about">
           <Button 
             class="bg-teal-900 text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2"
           >
             <Info class="w-3 h-3 md:w-4 md:h-4" />
             <span class="hidden sm:inline">Tentang Kami</span>
           </Button>
-        </router-link>
+        </router-link> -->
 
         <!-- Auth Buttons (Not Logged In) -->
         <div v-if="!isLoggedIn" class="flex items-center gap-1 md:gap-2">

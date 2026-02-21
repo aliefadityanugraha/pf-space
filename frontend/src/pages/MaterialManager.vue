@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { api } from '@/lib/api'
 import { API_BASE } from '@/lib/format'
 import PageLayout from '@/components/PageLayout.vue'
@@ -39,14 +39,18 @@ const formData = ref({
 })
 const formError = ref('')
 
-// Toast/Alert state
+import { useAuth } from '@/composables/useAuth'
+
+const { user, isAdmin, isModerator } = useAuth()
+const isStaff = computed(() => isAdmin.value || isModerator.value)
 const { showToast } = useToast()
 
 // Fetch materials
 const fetchMaterials = async () => {
   loading.value = true
   try {
-    const res = await api.get('/api/learning-materials')
+    const params = { owner: 'true' }
+    const res = await api.get('/api/learning-materials', { params })
     materials.value = res.data
   } catch (err) {
     console.error('Failed to fetch materials:', err)
@@ -228,13 +232,20 @@ const executeDelete = async () => {
   }
 }
 
+const togglingIds = ref(new Set())
+
 const toggleStatus = async (material) => {
+  if (togglingIds.value.has(material.materi_id)) return
+  
+  togglingIds.value.add(material.materi_id)
   try {
     await api.patch(`/api/learning-materials/${material.materi_id}/toggle`)
     showToast('Status materi diperbarui')
     await fetchMaterials()
   } catch (err) {
     showToast('Gagal merubah status', 'error')
+  } finally {
+    togglingIds.value.delete(material.materi_id)
   }
 }
 
@@ -331,11 +342,13 @@ onMounted(fetchMaterials)
                     <button 
                       @click="toggleStatus(m)"
                       class="flex items-center gap-2 group"
+                      :disabled="togglingIds.has(m.materi_id)"
                     >
-                      <div :class="[m.is_active ? 'bg-green-500' : 'bg-stone-300', 'w-10 h-5 border-2 border-black rounded-full relative transition-colors']">
+                      <div :class="[m.is_active ? 'bg-green-500' : 'bg-stone-300', 'w-10 h-5 border-2 border-black rounded-full relative transition-colors', togglingIds.has(m.materi_id) ? 'opacity-50' : '']">
                         <div :class="[m.is_active ? 'translate-x-5' : 'translate-x-0', 'absolute top-0.5 left-0.5 w-3 h-3 bg-white border border-black rounded-full transition-transform']"></div>
                       </div>
-                      <span :class="[m.is_active ? 'text-green-700 font-bold' : 'text-stone-400', 'text-[10px] uppercase tracking-tighter']">
+                      <span :class="[m.is_active ? 'text-green-700 font-bold' : 'text-stone-400', 'text-[10px] uppercase tracking-tighter flex items-center gap-1']">
+                        <Loader2 v-if="togglingIds.has(m.materi_id)" class="w-3 h-3 animate-spin" />
                         {{ m.is_active ? 'Aktif' : 'Nonaktif' }}
                       </span>
                     </button>

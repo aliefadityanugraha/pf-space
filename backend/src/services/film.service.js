@@ -122,7 +122,7 @@ export class FilmService {
   async getById(id) {
     return Film.query()
       .findById(id)
-      .withGraphFetched('[creator(selectBasic), category]')
+      .withGraphFetched('[creator(selectBasic), category, evaluation]')
       .modifiers(BaseModel.defaultModifiers);
   }
 
@@ -145,7 +145,7 @@ export class FilmService {
   async getBySlug(slug) {
     return Film.query()
       .where('slug', slug)
-      .withGraphFetched('[creator(selectBasic), category]')
+      .withGraphFetched('[creator(selectBasic), category, evaluation]')
       .modifiers(BaseModel.defaultModifiers)
       .first();
   }
