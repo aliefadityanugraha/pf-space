@@ -8,6 +8,7 @@
 import { ApiResponse } from '../lib/response.js';
 import { AppError } from '../lib/errors.js';
 import { ZodError } from 'zod';
+import fs from 'fs';
 
 /**
  * Global error handler — catches all unhandled errors and returns
@@ -17,6 +18,14 @@ import { ZodError } from 'zod';
  * @param {import('fastify').FastifyReply} reply 
  */
 export const globalErrorHandler = (error, request, reply) => {
+  // LOG TO FILE FOR DEBUGGING
+  try {
+    const log = `[${new Date().toISOString()}] GLOBAL ERROR - ${request.method} ${request.url} - ${error.stack || error}\n---\n`;
+    fs.appendFileSync('error-debug.log', log);
+  } catch (logErr) {
+    console.error('Failed to write to debug log:', logErr);
+  }
+
   // 1. Handle Trusted App Errors
   if (error instanceof AppError) {
     return ApiResponse.error(
@@ -66,6 +75,12 @@ export const globalErrorHandler = (error, request, reply) => {
   const message = process.env.NODE_ENV === 'production' 
     ? 'Internal Server Error' 
     : error.message;
+
+  // TEMPORARY LOGGING
+  import('fs').then(fs => {
+    const log = `[${new Date().toISOString()}] ${request.method} ${request.url} - ${error.stack}\n---\n`;
+    fs.appendFileSync('error-debug.log', log);
+  }).catch(() => {});
 
   return ApiResponse.error(reply, message, 500);
 };

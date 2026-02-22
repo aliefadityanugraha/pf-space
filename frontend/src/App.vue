@@ -2,6 +2,7 @@
 import { ref, onMounted, onErrorCaptured } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useToast } from '@/composables/useToast'
+import { useLoading } from '@/composables/useLoading'
 import SidebarChat from './components/SidebarChat.vue'
 import AnnouncementModal from './components/AnnouncementModal.vue'
 import Toast from './components/Toast.vue'
@@ -9,6 +10,7 @@ import ErrorBoundary from './components/ErrorBoundary.vue'
 
 const { init, initialized } = useAuth()
 const { toast } = useToast()
+const { isLoading, progress } = useLoading()
 
 // Global error boundary
 const hasError = ref(false)
@@ -51,6 +53,13 @@ onMounted(() => {
 
   <!-- Normal App -->
   <template v-else-if="initialized">
+    <!-- Global Progress Bar -->
+    <div 
+      v-if="isLoading" 
+      class="fixed top-0 left-0 right-0 h-1 z-[9999] bg-brand-teal transition-all duration-300 ease-out"
+      :style="{ width: `${progress}%` }"
+    ></div>
+
     <ErrorBoundary name="Halaman">
       <router-view />
     </ErrorBoundary>
@@ -76,5 +85,16 @@ onMounted(() => {
 </template>
 
 <style>
+/* Page Transition */
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.page-fade-enter-from,
+.page-fade-leave-to {
+  opacity: 0;
+}
+
 /* Global styles handled in style.css */
 </style>

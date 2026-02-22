@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { api } from '@/lib/api'
-import AdminSidebar from '@/components/SidebarAdmin.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,7 +11,6 @@ import {
 } from 'lucide-vue-next'
 import { useToast } from '@/composables/useToast'
 
-const sidebarCollapsed = ref(false)
 const categories = ref([])
 const loading = ref(true)
 const saving = ref(false)
@@ -143,90 +141,86 @@ onMounted(fetchCategories)
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-100">
-    <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
-    
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
-      <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
-        <span class="text-stone-400">/</span>
-        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
-        <span class="text-stone-400">/</span>
-        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Kategori</Badge>
-      </nav>
+  <div class="p-4 md:p-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
+      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <span class="text-stone-400">/</span>
+      <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+      <span class="text-stone-400">/</span>
+      <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Kategori</Badge>
+    </nav>
 
-      <!-- Header -->
-      <PageHeader 
-        title="Kelola Kategori" 
-        description="Kelola kategori Karya untuk mengorganisir arsip."
-        :icon="FolderOpen"
-        icon-color="bg-teal-500"
-      >
-        <template #actions>
-          <Button @click="openModal()" class="gap-2">
-            <Plus class="w-4 h-4" />
-            Tambah Kategori
-          </Button>
+    <!-- Header -->
+    <PageHeader 
+      title="Kelola Kategori" 
+      description="Kelola kategori Karya untuk mengorganisir arsip."
+      :icon="FolderOpen"
+      icon-color="bg-teal-500"
+    >
+      <template #actions>
+        <Button @click="openModal()" class="gap-2">
+          <Plus class="w-4 h-4" />
+          Tambah Kategori
+        </Button>
+      </template>
+    </PageHeader>
+
+    <!-- Categories Table -->
+    <Card>
+      <CardHeader class="bg-teal-50 border-b-2 border-stone-800">
+        <div class="flex items-center gap-3">
+          <FolderOpen class="w-5 h-5" />
+          <CardTitle class="text-lg font-bold uppercase">Daftar Kategori</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent class="p-0">
+        <!-- Loading -->
+        <div v-if="loading" class="flex items-center justify-center py-12">
+          <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
+          <p class="text-stone-500 font-mono uppercase tracking-widest animate-pulse">Memuat Kategori...</p>
+        </div>
+
+        <!-- Empty -->
+        <div v-else-if="categories.length === 0" class="text-center py-12 text-stone-400">
+          <FolderOpen class="w-12 h-12 mx-auto mb-2 opacity-50" />
+          <p>Belum ada kategori</p>
+        </div>
+
+        <!-- Table -->
+        <template v-else>
+          <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-lime-50 border-b-2 border-stone-800 text-xs font-bold uppercase tracking-wider">
+            <div class="col-span-4">Nama Kategori</div>
+            <div class="col-span-5">Deskripsi</div>
+            <div class="col-span-1 text-center">Karyas</div>
+            <div class="col-span-2 text-right">Aksi</div>
+          </div>
+          <div 
+            v-for="category in categories" 
+            :key="category.category_id" 
+            class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 hover:bg-stone-50"
+          >
+            <div class="md:col-span-4">
+              <span class="font-bold text-stone-900">{{ category.nama_kategori }}</span>
+            </div>
+            <div class="md:col-span-5 text-sm text-stone-600">
+              {{ category.deskripsi || '-' }}
+            </div>
+            <div class="md:col-span-1 text-center">
+              <Badge variant="secondary">{{ category.film_count || 0 }}</Badge>
+            </div>
+            <div class="md:col-span-2 flex gap-2 md:justify-end">
+              <Button variant="outline" size="sm" @click="openModal(category)">
+                <Pencil class="w-4 h-4" />
+              </Button>
+              <Button variant="outline" size="sm" class="text-red-600 hover:bg-red-50" @click="confirmDelete(category)">
+                <Trash2 class="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
         </template>
-      </PageHeader>
-
-      <!-- Categories Table -->
-      <Card>
-        <CardHeader class="bg-teal-50 border-b-2 border-stone-800">
-          <div class="flex items-center gap-3">
-            <FolderOpen class="w-5 h-5" />
-            <CardTitle class="text-lg font-bold uppercase">Daftar Kategori</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent class="p-0">
-          <!-- Loading -->
-          <div v-if="loading" class="flex items-center justify-center py-12">
-            <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
-            <p class="text-stone-500 font-mono uppercase tracking-widest animate-pulse">Memuat Kategori...</p>
-          </div>
-
-          <!-- Empty -->
-          <div v-else-if="categories.length === 0" class="text-center py-12 text-stone-400">
-            <FolderOpen class="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p>Belum ada kategori</p>
-          </div>
-
-          <!-- Table -->
-          <template v-else>
-            <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-lime-50 border-b-2 border-stone-800 text-xs font-bold uppercase tracking-wider">
-              <div class="col-span-4">Nama Kategori</div>
-              <div class="col-span-5">Deskripsi</div>
-              <div class="col-span-1 text-center">Karyas</div>
-              <div class="col-span-2 text-right">Aksi</div>
-            </div>
-            <div 
-              v-for="category in categories" 
-              :key="category.category_id" 
-              class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 hover:bg-stone-50"
-            >
-              <div class="md:col-span-4">
-                <span class="font-bold text-stone-900">{{ category.nama_kategori }}</span>
-              </div>
-              <div class="md:col-span-5 text-sm text-stone-600">
-                {{ category.deskripsi || '-' }}
-              </div>
-              <div class="md:col-span-1 text-center">
-                <Badge variant="secondary">{{ category.film_count || 0 }}</Badge>
-              </div>
-              <div class="md:col-span-2 flex gap-2 md:justify-end">
-                <Button variant="outline" size="sm" @click="openModal(category)">
-                  <Pencil class="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="sm" class="text-red-600 hover:bg-red-50" @click="confirmDelete(category)">
-                  <Trash2 class="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </template>
-        </CardContent>
-      </Card>
-    </main>
+      </CardContent>
+    </Card>
 
     <!-- Create/Edit Modal -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center">
@@ -285,7 +279,6 @@ onMounted(fetchCategories)
         </div>
       </div>
     </div>
-
-    <!-- Toast Notification --></div>
+  </div>
 </template>
 

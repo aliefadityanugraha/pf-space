@@ -43,6 +43,8 @@ export class LearningMaterial extends BaseModel {
         video_url: { type: ['string', 'null'] },
         thumbnail: { type: ['string', 'null'] },
         is_active: { type: 'boolean' },
+        is_featured: { type: 'boolean' },
+        kategori: { type: ['string', 'null'], maxLength: 100 },
         creator_id: { type: 'string', minLength: 1, maxLength: 36 }
       }
     };

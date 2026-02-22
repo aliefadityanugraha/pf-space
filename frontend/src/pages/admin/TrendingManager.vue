@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import AdminSidebar from '@/components/SidebarAdmin.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -13,7 +12,6 @@ import { useToast } from '@/composables/useToast'
 import { assetUrl } from '@/lib/format'
 
 const { showToast } = useToast()
-const sidebarCollapsed = ref(false)
 const loading = ref(false)
 const trendingKaryas = ref([])
 const loadingTrending = ref(true)
@@ -69,122 +67,118 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-100">
-    <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
-    
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
-      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
-        <span class="text-stone-400">/</span>
-        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
-        <span class="text-stone-400">/</span>
-        <Badge variant="outline" class="bg-blue-100 text-blue-700 border-blue-300">Manajer Trending</Badge>
-      </nav>
+  <div class="p-4 md:p-8">
+    <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
+      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <span class="text-stone-400">/</span>
+      <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+      <span class="text-stone-400">/</span>
+      <Badge variant="outline" class="bg-blue-100 text-blue-700 border-blue-300">Manajer Trending</Badge>
+    </nav>
 
-      <PageHeader 
-        title="Manajemen Trending" 
-        description="Kelola sistem trending dan reset status apresiasi karya."
-        :icon="Vote"
-        icon-color="bg-blue-500"
-      />
+    <PageHeader 
+      title="Manajemen Trending" 
+      description="Kelola sistem trending dan reset status apresiasi karya."
+      :icon="Vote"
+      icon-color="bg-blue-500"
+    />
 
-      <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Voting Rank Status -->
-        <Card class="border-2 border-black shadow-brutal h-fit">
-          <CardHeader class="bg-stone-50 border-b-2 border-black">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <TrendingUp class="w-5 h-5" />
-                <CardTitle>Status Peringkat Trending</CardTitle>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                class="h-8 w-8 hover:bg-stone-200"
-                @click="fetchTrending"
-                :disabled="loadingTrending"
-              >
-                <RefreshCw 
-                  class="w-4 h-4" 
-                  :class="{ 'animate-spin': loadingTrending }"
-                />
-              </Button>
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Voting Rank Status -->
+      <Card class="border-2 border-black shadow-brutal h-fit">
+        <CardHeader class="bg-stone-50 border-b-2 border-black">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <TrendingUp class="w-5 h-5" />
+              <CardTitle>Status Peringkat Trending</CardTitle>
             </div>
-            <CardDescription>
-              Top 10 karya dengan apresiasi terbanyak saat ini.
-            </CardDescription>
-          </CardHeader>
-          <CardContent class="p-0">
-            <div v-if="loadingTrending" class="p-8 flex justify-center">
-              <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
-            </div>
-            <div v-else-if="trendingKaryas.length === 0" class="p-8 text-center text-stone-500 italic">
-              Belum ada data trending.
-            </div>
-            <div v-else class="divide-y divide-stone-200">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              class="h-8 w-8 hover:bg-stone-200"
+              @click="fetchTrending"
+              :disabled="loadingTrending"
+            >
+              <RefreshCw 
+                class="w-4 h-4" 
+                :class="{ 'animate-spin': loadingTrending }"
+              />
+            </Button>
+          </div>
+          <CardDescription>
+            Top 10 karya dengan apresiasi terbanyak saat ini.
+          </CardDescription>
+        </CardHeader>
+        <CardContent class="p-0">
+          <div v-if="loadingTrending" class="p-8 flex justify-center">
+            <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
+          </div>
+          <div v-else-if="trendingKaryas.length === 0" class="p-8 text-center text-stone-500 italic">
+            Belum ada data trending.
+          </div>
+          <div v-else class="divide-y divide-stone-200">
+            <div 
+              v-for="(karya, index) in trendingKaryas" 
+              :key="karya.film_id"
+              class="flex items-center gap-4 p-4 hover:bg-stone-50 transition-colors"
+            >
               <div 
-                v-for="(karya, index) in trendingKaryas" 
-                :key="karya.film_id"
-                class="flex items-center gap-4 p-4 hover:bg-stone-50 transition-colors"
+                class="w-8 h-8 flex items-center justify-center font-bold font-mono border-2 border-black shadow-brutal-sm"
+                :class="index < 3 ? 'bg-yellow-400' : 'bg-white'"
               >
-                <div 
-                  class="w-8 h-8 flex items-center justify-center font-bold font-mono border-2 border-black shadow-brutal-sm"
-                  :class="index < 3 ? 'bg-yellow-400' : 'bg-white'"
-                >
-                  #{{ index + 1 }}
-                </div>
-                
-                <div class="w-10 h-14 bg-stone-200 border border-stone-800 flex-shrink-0 overflow-hidden">
-                  <img v-if="karya.gambar_poster" :src="assetUrl(karya.gambar_poster)" class="w-full h-full object-cover" />
-                  <FilmIcon v-else class="w-full h-full p-2 text-stone-400" />
-                </div>
-
-                <div class="flex-1 min-w-0">
-                  <h4 class="font-bold text-sm truncate">{{ karya.judul }}</h4>
-                  <p class="text-xs text-stone-500">{{ karya.category?.nama_kategori || '-' }}</p>
-                </div>
-
-                <Badge variant="secondary" class="font-mono bg-stone-800 text-white border-none">
-                  {{ karya.vote_count }} Suara
-                </Badge>
+                #{{ index + 1 }}
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <!-- Danger Zone -->
-        <Card class="border-2 border-red-200 shadow-brutal h-fit">
-          <CardHeader class="bg-red-50 border-b border-red-100">
-            <div class="flex items-center gap-2 text-red-700">
-              <AlertTriangle class="w-5 h-5" />
-              <CardTitle>Zona Bahaya</CardTitle>
-            </div>
-            <CardDescription class="text-red-600">
-              Tindakan di bawah ini bersifat destruktif dan tidak dapat dibatalkan.
-            </CardDescription>
-          </CardHeader>
-          <CardContent class="p-6">
-            <div class="flex flex-col gap-4">
-              <div>
-                <h3 class="font-bold text-stone-900 mb-1">Reset Statistik Trending</h3>
-                <p class="text-sm text-stone-500">
-                  Menghapus seluruh data apresiasi dari database. Jumlah suara pada semua karya akan kembali menjadi 0.
-                </p>
+              
+              <div class="w-10 h-14 bg-stone-200 border border-stone-800 flex-shrink-0 overflow-hidden">
+                <img v-if="karya.gambar_poster" :src="assetUrl(karya.gambar_poster)" class="w-full h-full object-cover" />
+                <FilmIcon v-else class="w-full h-full p-2 text-stone-400" />
               </div>
-              <Button 
-                variant="destructive" 
-                class="w-full sm:w-auto bg-red-600 hover:bg-red-700 border-2 border-black shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-all justify-center"
-                @click="openResetConfirm"
-                :disabled="loading"
-              >
-                <Trash2 class="w-4 h-4 mr-2" />
-                Reset Trending
-              </Button>
+
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-sm truncate">{{ karya.judul }}</h4>
+                <p class="text-xs text-stone-500">{{ karya.category?.nama_kategori || '-' }}</p>
+              </div>
+
+              <Badge variant="secondary" class="font-mono bg-stone-800 text-white border-none">
+                {{ karya.vote_count }} Suara
+              </Badge>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </main>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Danger Zone -->
+      <Card class="border-2 border-red-200 shadow-brutal h-fit">
+        <CardHeader class="bg-red-50 border-b border-red-100">
+          <div class="flex items-center gap-2 text-red-700">
+            <AlertTriangle class="w-5 h-5" />
+            <CardTitle>Zona Bahaya</CardTitle>
+          </div>
+          <CardDescription class="text-red-600">
+            Tindakan di bawah ini bersifat destruktif dan tidak dapat dibatalkan.
+          </CardDescription>
+        </CardHeader>
+        <CardContent class="p-6">
+          <div class="flex flex-col gap-4">
+            <div>
+              <h3 class="font-bold text-stone-900 mb-1">Reset Statistik Trending</h3>
+              <p class="text-sm text-stone-500">
+                Menghapus seluruh data apresiasi dari database. Jumlah suara pada semua karya akan kembali menjadi 0.
+              </p>
+            </div>
+            <Button 
+              variant="destructive" 
+              class="w-full sm:w-auto bg-red-600 hover:bg-red-700 border-2 border-black shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-all justify-center"
+              @click="openResetConfirm"
+              :disabled="loading"
+            >
+              <Trash2 class="w-4 h-4 mr-2" />
+              Reset Trending
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
 
     <!-- Reset Confirmation Modal -->
     <div v-if="showResetConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -236,7 +230,6 @@ onMounted(() => {
         </div>
       </div>
     </div>
-
-    <!-- Toast Notification --></div>
+  </div>
 </template>
 

@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { api } from '@/lib/api'
 import { assetUrl } from '@/lib/format'
-import AdminSidebar from '@/components/SidebarAdmin.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,7 +14,6 @@ import PageHeader from '@/components/PageHeader.vue'
 
 import { useToast } from '@/composables/useToast'
 
-const sidebarCollapsed = ref(false)
 const films = ref([])
 const loading = ref(true)
 const pagination = ref({ page: 1, limit: 10, total: 0, totalPages: 0 })
@@ -190,239 +188,235 @@ onMounted(fetchFilms)
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-100">
-    <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
-    
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
-      <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
-        <span class="text-stone-400">/</span>
-        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
-        <span class="text-stone-400">/</span>
-        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Arsip</Badge>
-      </nav>
+  <div class="p-4 md:p-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
+      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <span class="text-stone-400">/</span>
+      <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+      <span class="text-stone-400">/</span>
+      <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Arsip</Badge>
+    </nav>
 
-      <!-- Header -->
-      <PageHeader 
-        title="Manajemen Arsip" 
-        description="Kelola dan moderasi karya yang diunggah kreator."
-        :icon="Film"
-        icon-color="bg-teal-500"
-      />
+    <!-- Header -->
+    <PageHeader 
+      title="Manajemen Arsip" 
+      description="Kelola dan moderasi karya yang diunggah kreator."
+      :icon="Film"
+      icon-color="bg-teal-500"
+    />
 
-      <!-- Filters -->
-      <div class="flex flex-col md:flex-row gap-4 mb-6">
-        <!-- Status Filter -->
-        <div class="flex gap-2">
-          <Button 
-            v-for="status in ['all', 'pending', 'published', 'rejected']" 
-            :key="status"
-            :variant="statusFilter === status ? 'default' : 'outline'"
-            size="sm"
-            @click="changeFilter(status)"
-            class="gap-2"
-          >
-            <Clock v-if="status === 'pending'" class="w-4 h-4" />
-            <CheckCircle v-else-if="status === 'published'" class="w-4 h-4" />
-            <XCircle v-else-if="status === 'rejected'" class="w-4 h-4" />
-            <Filter v-else class="w-4 h-4" />
-            {{ status === 'all' ? 'Semua' : statusLabels[status] }}
-          </Button>
-        </div>
-
-        <!-- Search -->
-        <div class="relative flex-1 max-w-sm">
-          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-          <Input 
-            v-model="searchQuery" 
-            @input="onSearch"
-            placeholder="Cari judul..." 
-            class="pl-10"
-          />
-        </div>
+    <!-- Filters -->
+    <div class="flex flex-col md:flex-row gap-4 mb-6">
+      <!-- Status Filter -->
+      <div class="flex gap-2">
+        <Button 
+          v-for="status in ['all', 'pending', 'published', 'rejected']" 
+          :key="status"
+          :variant="statusFilter === status ? 'default' : 'outline'"
+          size="sm"
+          @click="changeFilter(status)"
+          class="gap-2"
+        >
+          <Clock v-if="status === 'pending'" class="w-4 h-4" />
+          <CheckCircle v-else-if="status === 'published'" class="w-4 h-4" />
+          <XCircle v-else-if="status === 'rejected'" class="w-4 h-4" />
+          <Filter v-else class="w-4 h-4" />
+          {{ status === 'all' ? 'Semua' : statusLabels[status] }}
+        </Button>
       </div>
 
-      <!-- Karyas Table -->
-      <Card>
-        <CardHeader class="bg-teal-50 border-b-2 border-stone-800">
-          <div class="flex items-center gap-3">
-            <Film class="w-5 h-5" />
-            <CardTitle class="text-lg font-bold uppercase">Daftar Arsip Karya</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent class="p-0">
-          <!-- Loading -->
-          <div v-if="loading" class="flex items-center justify-center py-12">
-            <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
-          </div>
+      <!-- Search -->
+      <div class="relative flex-1 max-w-sm">
+        <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+        <Input 
+          v-model="searchQuery" 
+          @input="onSearch"
+          placeholder="Cari judul..." 
+          class="pl-10"
+        />
+      </div>
+    </div>
 
-          <!-- Empty -->
-          <div v-if="films.length === 0" class="text-center py-12 text-stone-400">
-            <Film class="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p class="mb-1 font-body">Tidak ada karya yang cocok dengan filter saat ini.</p>
-            <p class="text-sm font-body">
-              Coba ubah status, kata kunci pencarian, atau reset filter yang aktif.
-            </p>
-          </div>
+    <!-- Karyas Table -->
+    <Card>
+      <CardHeader class="bg-teal-50 border-b-2 border-stone-800">
+        <div class="flex items-center gap-3">
+          <Film class="w-5 h-5" />
+          <CardTitle class="text-lg font-bold uppercase">Daftar Arsip Karya</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent class="p-0">
+        <!-- Loading -->
+        <div v-if="loading" class="flex items-center justify-center py-12">
+          <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
+        </div>
 
-          <!-- Table -->
-          <template v-else>
-            <div class="hidden lg:grid grid-cols-12 gap-4 px-6 py-3 bg-lime-50 border-b-2 border-stone-800 text-xs font-bold uppercase tracking-wider">
-              <div class="col-span-4">Karya</div>
-              <div class="col-span-2">Creator</div>
-              <div class="col-span-2">Kategori</div>
-              <div class="col-span-1">Tahun</div>
-              <div class="col-span-1">Status</div>
-              <div class="col-span-2 text-right">Aksi</div>
+        <!-- Empty -->
+        <div v-if="films.length === 0" class="text-center py-12 text-stone-400">
+          <Film class="w-12 h-12 mx-auto mb-2 opacity-50" />
+          <p class="mb-1 font-body">Tidak ada karya yang cocok dengan filter saat ini.</p>
+          <p class="text-sm font-body">
+            Coba ubah status, kata kunci pencarian, atau reset filter yang aktif.
+          </p>
+        </div>
+
+        <!-- Table -->
+        <template v-else>
+          <div class="hidden lg:grid grid-cols-12 gap-4 px-6 py-3 bg-lime-50 border-b-2 border-stone-800 text-xs font-bold uppercase tracking-wider">
+            <div class="col-span-4">Karya</div>
+            <div class="col-span-2">Creator</div>
+            <div class="col-span-2">Kategori</div>
+            <div class="col-span-1">Tahun</div>
+            <div class="col-span-1">Status</div>
+            <div class="col-span-2 text-right">Aksi</div>
+          </div>
+          
+          <div 
+            v-for="film in films" 
+            :key="film.film_id" 
+            class="grid grid-cols-1 lg:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 hover:bg-stone-50"
+          >
+            <!-- Film Info -->
+            <div class="lg:col-span-4 flex items-center gap-3">
+              <img 
+                v-if="film.gambar_poster" 
+                :src="assetUrl(film.gambar_poster)" 
+                :alt="film.judul"
+                class="w-12 h-16 object-cover border border-stone-200 rounded"
+              />
+              <div v-else class="w-12 h-16 bg-stone-200 flex items-center justify-center rounded">
+                <Film class="w-6 h-6 text-stone-400" />
+              </div>
+              <div>
+                <span class="font-bold text-stone-900 line-clamp-1">{{ film.judul }}</span>
+                <p class="text-xs text-stone-500 line-clamp-1">{{ film.sinopsis || '-' }}</p>
+              </div>
             </div>
-            
-            <div 
-              v-for="film in films" 
-              :key="film.film_id" 
-              class="grid grid-cols-1 lg:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 hover:bg-stone-50"
+
+            <!-- Creator -->
+            <div class="lg:col-span-2 text-sm text-stone-600 font-body">
+              {{ film.creator?.name || '-' }}
+            </div>
+
+            <!-- Category -->
+            <div class="lg:col-span-2">
+              <Badge variant="secondary" class="font-body">{{ film.category?.nama_kategori || '-' }}</Badge>
+            </div>
+
+            <!-- Year -->
+            <div class="lg:col-span-1 text-sm text-stone-600 font-mono">
+              {{ film.tahun_karya || '-' }}
+            </div>
+
+            <!-- Status -->
+            <div class="lg:col-span-1 flex flex-col gap-1">
+              <Badge :class="statusColors[film.status]" class="font-bold uppercase text-[9px]">
+                {{ statusLabels[film.status] }}
+              </Badge>
+              <Badge v-if="film.is_banner_active" class="bg-blue-100 text-blue-800 border-blue-300 w-fit text-[9px] font-bold uppercase">
+                <Sparkles class="w-2.5 h-2.5 mr-1" />
+                Banner
+              </Badge>
+            </div>
+
+            <!-- Actions -->
+            <div class="lg:col-span-2 flex gap-2 lg:justify-end">
+              <Button variant="outline" size="sm" @click="viewFilm(film)" title="Lihat Detail">
+                <Eye class="w-4 h-4" />
+              </Button>
+              <Button 
+                v-if="film.status === 'published'"
+                variant="outline" 
+                size="sm" 
+                class="text-blue-600 hover:bg-blue-50"
+                @click="openBannerModal(film)"
+                title="Atur Banner"
+              >
+                <ImageIcon class="w-4 h-4" />
+              </Button>
+              <Button 
+                v-if="film.status === 'pending'" 
+                variant="outline" 
+                size="sm" 
+                class="text-green-600 hover:bg-green-50"
+                @click="confirmActionDialog('approve', film)"
+                title="Setujui"
+              >
+                <Check class="w-4 h-4" />
+              </Button>
+              <Button 
+                v-if="film.status === 'pending'" 
+                variant="outline" 
+                size="sm" 
+                class="text-red-600 hover:bg-red-50"
+                @click="confirmActionDialog('reject', film)"
+                title="Tolak"
+              >
+                <X class="w-4 h-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                class="text-red-600 hover:bg-red-50"
+                @click="confirmActionDialog('delete', film)"
+                title="Hapus"
+              >
+                <Trash2 class="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </template>
+
+        <!-- Pagination -->
+        <div v-if="pagination.totalPages > 1" class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-stone-200">
+          <span class="text-sm text-stone-600">
+            Menampilkan {{ (pagination.page - 1) * pagination.limit + 1 }} - {{ Math.min(pagination.page * pagination.limit, pagination.total) }} dari {{ pagination.total }} karya
+          </span>
+          <div class="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              :disabled="pagination.page <= 1"
+              @click="changePage(pagination.page - 1)"
+              title="Sebelumnya"
             >
-              <!-- Film Info -->
-              <div class="lg:col-span-4 flex items-center gap-3">
-                <img 
-                  v-if="film.gambar_poster" 
-                  :src="assetUrl(film.gambar_poster)" 
-                  :alt="film.judul"
-                  class="w-12 h-16 object-cover border border-stone-200 rounded"
-                />
-                <div v-else class="w-12 h-16 bg-stone-200 flex items-center justify-center rounded">
-                  <Film class="w-6 h-6 text-stone-400" />
-                </div>
-                <div>
-                  <span class="font-bold text-stone-900 line-clamp-1">{{ film.judul }}</span>
-                  <p class="text-xs text-stone-500 line-clamp-1">{{ film.sinopsis || '-' }}</p>
-                </div>
-              </div>
+              <ChevronLeft class="w-4 h-4" />
+            </Button>
 
-              <!-- Creator -->
-              <div class="lg:col-span-2 text-sm text-stone-600 font-body">
-                {{ film.creator?.name || '-' }}
-              </div>
-
-              <!-- Category -->
-              <div class="lg:col-span-2">
-                <Badge variant="secondary" class="font-body">{{ film.category?.nama_kategori || '-' }}</Badge>
-              </div>
-
-              <!-- Year -->
-              <div class="lg:col-span-1 text-sm text-stone-600 font-mono">
-                {{ film.tahun_karya || '-' }}
-              </div>
-
-              <!-- Status -->
-              <div class="lg:col-span-1 flex flex-col gap-1">
-                <Badge :class="statusColors[film.status]" class="font-bold uppercase text-[9px]">
-                  {{ statusLabels[film.status] }}
-                </Badge>
-                <Badge v-if="film.is_banner_active" class="bg-blue-100 text-blue-800 border-blue-300 w-fit text-[9px] font-bold uppercase">
-                  <Sparkles class="w-2.5 h-2.5 mr-1" />
-                  Banner
-                </Badge>
-              </div>
-
-              <!-- Actions -->
-              <div class="lg:col-span-2 flex gap-2 lg:justify-end">
-                <Button variant="outline" size="sm" @click="viewFilm(film)" title="Lihat Detail">
-                  <Eye class="w-4 h-4" />
-                </Button>
-                <Button 
-                  v-if="film.status === 'published'"
-                  variant="outline" 
-                  size="sm" 
-                  class="text-blue-600 hover:bg-blue-50"
-                  @click="openBannerModal(film)"
-                  title="Atur Banner"
+            <div class="flex gap-1">
+              <template v-for="p in pagination.totalPages" :key="p">
+                <Button
+                  v-if="p === 1 || p === pagination.totalPages || (p >= pagination.page - 1 && p <= pagination.page + 1)"
+                  :variant="pagination.page === p ? 'default' : 'outline'"
+                  size="sm"
+                  class="w-8 h-8 p-0"
+                  @click="changePage(p)"
                 >
-                  <ImageIcon class="w-4 h-4" />
+                  {{ p }}
                 </Button>
-                <Button 
-                  v-if="film.status === 'pending'" 
-                  variant="outline" 
-                  size="sm" 
-                  class="text-green-600 hover:bg-green-50"
-                  @click="confirmActionDialog('approve', film)"
-                  title="Setujui"
+                <span 
+                  v-else-if="p === pagination.page - 2 || p === pagination.page + 2" 
+                  class="flex items-center justify-center w-8 h-8 text-stone-400"
                 >
-                  <Check class="w-4 h-4" />
-                </Button>
-                <Button 
-                  v-if="film.status === 'pending'" 
-                  variant="outline" 
-                  size="sm" 
-                  class="text-red-600 hover:bg-red-50"
-                  @click="confirmActionDialog('reject', film)"
-                  title="Tolak"
-                >
-                  <X class="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  class="text-red-600 hover:bg-red-50"
-                  @click="confirmActionDialog('delete', film)"
-                  title="Hapus"
-                >
-                  <Trash2 class="w-4 h-4" />
-                </Button>
-              </div>
+                  ...
+                </span>
+              </template>
             </div>
-          </template>
 
-          <!-- Pagination -->
-          <div v-if="pagination.totalPages > 1" class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-stone-200">
-            <span class="text-sm text-stone-600">
-              Menampilkan {{ (pagination.page - 1) * pagination.limit + 1 }} - {{ Math.min(pagination.page * pagination.limit, pagination.total) }} dari {{ pagination.total }} karya
-            </span>
-            <div class="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                :disabled="pagination.page <= 1"
-                @click="changePage(pagination.page - 1)"
-                title="Sebelumnya"
-              >
-                <ChevronLeft class="w-4 h-4" />
-              </Button>
-
-              <div class="flex gap-1">
-                <template v-for="p in pagination.totalPages" :key="p">
-                  <Button
-                    v-if="p === 1 || p === pagination.totalPages || (p >= pagination.page - 1 && p <= pagination.page + 1)"
-                    :variant="pagination.page === p ? 'default' : 'outline'"
-                    size="sm"
-                    class="w-8 h-8 p-0"
-                    @click="changePage(p)"
-                  >
-                    {{ p }}
-                  </Button>
-                  <span 
-                    v-else-if="p === pagination.page - 2 || p === pagination.page + 2" 
-                    class="flex items-center justify-center w-8 h-8 text-stone-400"
-                  >
-                    ...
-                  </span>
-                </template>
-              </div>
-
-              <Button 
-                variant="outline" 
-                size="sm" 
-                :disabled="pagination.page >= pagination.totalPages"
-                @click="changePage(pagination.page + 1)"
-                title="Selanjutnya"
-              >
-                <ChevronRight class="w-4 h-4" />
-              </Button>
-            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              :disabled="pagination.page >= pagination.totalPages"
+              @click="changePage(pagination.page + 1)"
+              title="Selanjutnya"
+            >
+              <ChevronRight class="w-4 h-4" />
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </main>
+        </div>
+      </CardContent>
+    </Card>
 
     <!-- Detail Modal -->
     <div v-if="showDetailModal && selectedFilm" class="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -609,9 +603,6 @@ onMounted(fetchFilms)
         </div>
       </div>
     </div>
-
-
-
   </div>
 </template>
 

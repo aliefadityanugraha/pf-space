@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import AdminSidebar from '@/components/SidebarAdmin.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,7 +10,6 @@ import {
   Flag, TrendingUp, Film, Eye, Clock, ChevronRight, Loader2
 } from 'lucide-vue-next'
 
-const sidebarCollapsed = ref(false)
 const loading = ref(true)
 
 const stats = ref([
@@ -79,45 +77,42 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-100">
-    <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
-    
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
-      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
-        <span class="text-stone-400">/</span>
-        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
-        <span class="text-stone-400">/</span>
-        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Dashboard</Badge>
-      </nav>
+  <div class="p-4 md:p-8">
+    <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
+      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <span class="text-stone-400">/</span>
+      <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+      <span class="text-stone-400">/</span>
+      <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Dashboard</Badge>
+    </nav>
 
-      <PageHeader 
-        title="Ikhtisar Sistem" 
-        description="Monitor statistik sistem, tugas tertunda, dan aktivitas terbaru."
-        :icon="LayoutDashboard"
-        icon-color="bg-amber-500"
-      >
-        <template #actions>
-          <Button variant="outline" class="gap-2">
-            <Upload class="w-4 h-4" />
-            Upload Cepat
-          </Button>
-          <Button variant="outline" class="gap-2">
-            <FileDown class="w-4 h-4" />
-            Laporan
-          </Button>
-        </template>
-      </PageHeader>
+    <PageHeader 
+      title="Ikhtisar Sistem" 
+      description="Monitor statistik sistem, tugas tertunda, dan aktivitas terbaru."
+      :icon="LayoutDashboard"
+      icon-color="bg-amber-500"
+    >
+      <template #actions>
+        <Button variant="outline" class="gap-2">
+          <Upload class="w-4 h-4" />
+          Upload Cepat
+        </Button>
+        <Button variant="outline" class="gap-2">
+          <FileDown class="w-4 h-4" />
+          Laporan
+        </Button>
+      </template>
+    </PageHeader>
 
-      <div v-if="loading" class="flex flex-col items-center justify-center min-h-[400px]">
-        <Loader2 class="w-12 h-12 animate-spin text-brand-teal mb-4" />
-        <p class="text-stone-500 font-mono uppercase tracking-widest animate-pulse">Memuat Data...</p>
-      </div>
+    <div v-if="loading" class="flex flex-col items-center justify-center min-h-[400px]">
+      <Loader2 class="w-12 h-12 animate-spin text-brand-teal mb-4" />
+      <p class="text-stone-500 font-mono uppercase tracking-widest animate-pulse">Memuat Data...</p>
+    </div>
 
-      <template v-else>
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-          <Card v-for="stat in stats" :key="stat.label">
-            <CardContent class="p-6">
+    <template v-else>
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+        <Card v-for="stat in stats" :key="stat.label">
+          <CardContent class="p-6">
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-bold uppercase tracking-wider text-stone-600 border-b-2 border-pink-700 pb-1">{{ stat.label }}</span>
               <component :is="stat.icon" class="w-5 h-5 text-stone-400" />
@@ -200,7 +195,6 @@ onMounted(() => {
         </Card>
       </div>
     </template>
-    </main>
   </div>
 </template>
 

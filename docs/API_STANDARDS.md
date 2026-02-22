@@ -120,18 +120,21 @@ Dokumen ini menjelaskan **standar best practice response JSON API** agar:
 }
 ```
 
-### Validasi Gagal
-
 ```json
 {
   "success": false,
-  "message": "Validasi gagal",
-  "errors": {
-    "email": "Email sudah digunakan",
-    "password": "Minimal 8 karakter"
-  }
+  "message": "Validation failed",
+  "errors": [
+    { "field": "judul", "message": "Required" },
+    {
+      "field": "tahun_karya",
+      "message": "Number must be greater than or equal to 1900"
+    }
+  ]
 }
 ```
+
+> 📌 **Catatan**: Sejak penerapan **Zod**, field `errors` sekarang bertipe **Array of Objects** untuk mendukung multiple error pada satu field atau struktur data nested.
 
 ### Data Tidak Ditemukan
 
@@ -242,6 +245,16 @@ export const errorResponse = (message, code = null, errors = null) => ({
 });
 
 // Usage di controller
-reply.send(successResponse(film, "Film berhasil dibuat"));
-reply.status(404).send(errorResponse("Film tidak ditemukan", "DATA_NOT_FOUND"));
+reply.send(ApiResponse.success(reply, film, "Film berhasil dibuat"));
+reply.status(404).send(ApiResponse.error(reply, "Film tidak ditemukan", 404));
+
+// Centralized Validation dengan Zod
+// Route:
+fastify.post(
+  "/films",
+  {
+    preHandler: validateRequest(createFilmSchema),
+  },
+  filmController.create,
+);
 ```

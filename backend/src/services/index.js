@@ -17,4 +17,5 @@ export * from './notification.service.js';
 export * from './community.service.js';
 export * from './learningMaterial.service.js';
 export * from './evaluation.service.js';
-
+export * from './studyNote.service.js';
+export * from './filmScene.service.js';

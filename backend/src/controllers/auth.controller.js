@@ -11,6 +11,7 @@ import { ApiResponse } from '../lib/response.js';
 import { auth } from '../lib/auth.js';
 import { updateProfileSchema } from '../lib/validation.js';
 import { NotFoundError, ValidationError } from '../lib/errors.js';
+import { recordAuditLog } from '../lib/audit.js';
 
 export class AuthController {
   /**
@@ -43,12 +44,27 @@ export class AuthController {
    */
   async updateRole(request, reply) {
     const { userId } = request.params;
+    const oldUser = await authService.getUserById(userId);
     
     const user = await authService.updateUserRole(userId, request.body.role_id);
 
     if (!user) {
       throw new NotFoundError('User not found');
     }
+
+    // Audit Log
+    await recordAuditLog({
+      userId: request.user.id,
+      action: 'UPDATE_ROLE',
+      targetType: 'user',
+      targetId: userId,
+      details: { 
+        email: user.email, 
+        old_role: oldUser?.role_id, 
+        new_role: request.body.role_id 
+      },
+      ipAddress: request.ip
+    });
 
     return ApiResponse.success(reply, user, 'Role updated successfully');
   }

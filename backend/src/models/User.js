@@ -35,6 +35,11 @@ export class User extends BaseModel {
         emailVerified: { type: 'boolean' },
         image: { type: ['string', 'null'] },
         role_id: { type: 'integer', default: 1 },
+        bio: { type: ['string', 'null'], maxLength: 1000 },
+        website: { type: ['string', 'null'], maxLength: 255 },
+        location: { type: ['string', 'null'], maxLength: 100 },
+        instagram: { type: ['string', 'null'], maxLength: 100 },
+        linkedin: { type: ['string', 'null'], maxLength: 100 },
         createdAt: { type: 'string' },
         updatedAt: { type: 'string' }
       }

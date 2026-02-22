@@ -35,7 +35,9 @@ const formData = ref({
   tipe: 'pdf', 
   file_path: '', 
   video_url: '', 
-  is_active: true 
+  is_active: true,
+  is_featured: false,
+  kategori: 'Dasar Perfilman'
 })
 const formError = ref('')
 
@@ -147,7 +149,9 @@ const openModal = (material = null) => {
       tipe: material.tipe, 
       file_path: material.file_path || '', 
       video_url: material.video_url || '',
-      is_active: material.is_active
+      is_active: material.is_active,
+      is_featured: material.is_featured || false,
+      kategori: material.kategori || 'Dasar Perfilman'
     }
   } else {
     formData.value = { 
@@ -156,7 +160,9 @@ const openModal = (material = null) => {
       tipe: 'pdf', 
       file_path: '', 
       video_url: '', 
-      is_active: true 
+      is_active: true,
+      is_featured: false,
+      kategori: 'Dasar Perfilman'
     }
   }
   formError.value = ''
@@ -210,6 +216,8 @@ const saveMaterial = async () => {
       deskripsi: formData.value.deskripsi,
       tipe: formData.value.tipe,
       is_active: formData.value.is_active,
+      is_featured: formData.value.is_featured,
+      kategori: formData.value.kategori,
       file_path: formData.value.tipe === 'pdf' ? formData.value.file_path : null,
       video_url: formData.value.tipe === 'video' ? formData.value.video_url : null
     }
@@ -348,7 +356,11 @@ onMounted(fetchMaterials)
                 <tr v-for="m in materials" :key="m.materi_id" class="hover:bg-stone-50 transition-colors">
                   <td class="px-6 py-4">
                     <div class="font-bold text-stone-900 leading-tight">{{ m.judul }}</div>
-                    <div class="text-xs text-stone-500 line-clamp-1 mt-1">{{ m.deskripsi || '-' }}</div>
+                    <div class="flex items-center gap-1.5 mt-1">
+                       <span class="text-[9px] font-black uppercase text-brand-teal">{{ m.kategori || 'Dasar Perfilman' }}</span>
+                       <span class="text-stone-300">|</span>
+                       <div class="text-[10px] text-stone-500 line-clamp-1 truncate max-w-[200px]">{{ m.deskripsi || '-' }}</div>
+                    </div>
                   </td>
                   <td class="px-6 py-4">
                     <Badge v-if="m.tipe === 'pdf'" variant="outline" class="bg-red-50 text-red-700 border-red-200 uppercase text-[10px]">
@@ -453,12 +465,31 @@ onMounted(fetchMaterials)
                   </button>
                 </div>
               </div>
-              <div class="flex items-end pb-1">
+              <div class="flex items-end pb-1 gap-4">
                 <label class="flex items-center gap-2 cursor-pointer select-none">
                   <input type="checkbox" v-model="formData.is_active" class="w-4 h-4 border-2 border-black rounded-none" />
-                  <span class="text-xs font-bold uppercase tracking-widest">Tampilkan di Publik</span>
+                  <span class="text-[10px] font-bold uppercase tracking-widest">Aktif</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer select-none">
+                  <input type="checkbox" v-model="formData.is_featured" class="w-4 h-4 border-2 border-black rounded-none" />
+                  <span class="text-[10px] font-bold uppercase tracking-widest text-brand-orange">Featured</span>
                 </label>
               </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-widest mb-1.5">Kategori Materi</label>
+              <select 
+                v-model="formData.kategori" 
+                class="w-full p-2 border-2 border-black focus:outline-none text-sm bg-white"
+              >
+                <option value="Dasar Perfilman">Dasar Perfilman</option>
+                <option value="Pra Produksi">Pra Produksi</option>
+                <option value="Produksi">Produksi</option>
+                <option value="Pasca Produksi">Pasca Produksi</option>
+                <option value="Apresiasi & Kritik">Apresiasi & Kritik</option>
+                <option value="Sistem Informasi">Sistem Informasi</option>
+              </select>
             </div>
 
             <!-- Conditional Inputs -->

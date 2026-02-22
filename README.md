@@ -22,6 +22,7 @@ Platform kearsipan film siswa untuk apresiasi, dokumentasi, dan pembelajaran kar
 - **ORM/Query Builder:** Objection.js & Knex
 - **Authentication:** Better Auth
 - **File Handling:** Tus.io (Resumable Uploads)
+- **Validation:** Zod (Centralized Schema Validation)
 - **Static Serving:** @fastify/static
 
 ## Project Structure
@@ -88,7 +89,7 @@ npm run dev
 - [x] **Study Mode**: Advanced video player with document integration.
 - [x] **Media Handling**: Tus.io resumable upload.
 - [x] **Learning Materials**: Managed as list-view for better UX.
-- [ ] **Testing**: Unit & E2E Testing (In Progress).
+- [x] **Testing**: Unit & Integration Testing (Implemented).
 
 ## 📚 Documentation
 

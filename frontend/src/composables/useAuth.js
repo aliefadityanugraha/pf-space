@@ -122,9 +122,6 @@ export function useAuth() {
       }
 
       user.value = null;
-      
-      // 4. Force hard reload to home without cache
-      window.location.replace('/');
     }
   }
 

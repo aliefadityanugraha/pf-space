@@ -2,18 +2,21 @@
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '@/lib/api'
-import { assetUrl } from '@/lib/format'
+import { assetUrl, timeAgo } from '@/lib/format'
 import { useAuth } from '@/composables/useAuth'
 import { useToast } from '@/composables/useToast'
 import { 
   ArrowLeft, FileText, ImageIcon, Film, 
   Menu, X, ExternalLink, Star, Award, 
   FileSpreadsheet, MonitorPlay, ChevronRight,
-  MessageSquare, CheckCircle2, AlertCircle, Loader2
+  MessageSquare, CheckCircle2, AlertCircle, Loader2,
+  StickyNote, Plus, PlayCircle, Trash, Pencil, Check,
+  ListVideo, Clock
 } from 'lucide-vue-next'
 import { useHead } from '@unhead/vue'
 import VideoPlayer from '@/components/VideoPlayer.vue'
 import ErrorBoundary from '@/components/ErrorBoundary.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -25,8 +28,62 @@ const film = ref(null)
 const evaluation = ref(null)
 const loading = ref(true)
 const saving = ref(false)
-const activeTab = ref('naskah') // 'naskah' | 'storyboard' | 'rab' | 'evaluation'
+const activeTab = ref('naskah') // 'naskah' | 'storyboard' | 'rab' | 'evaluation' | 'notes' | 'scenes'
 const showSidebar = ref(false)
+const videoPlayer = ref(null)
+
+// Notes State
+const notes = ref([])
+const newNote = ref('')
+const loadingNotes = ref(false)
+const addingNote = ref(false)
+
+// Scenes State
+const scenes = ref([])
+const newSceneTitle = ref('')
+const loadingScenes = ref(false)
+const savingScenes = ref(false)
+const editingSceneIndex = ref(null)
+const editSceneTitle = ref('')
+
+// Confirm Dialog State
+const confirmState = reactive({
+  show: false,
+  title: '',
+  message: '',
+  loading: false,
+  onConfirm: null
+})
+
+/**
+ * Handles the confirmation logic when the 'Confirm' button is clicked in the dialog.
+ * Executes the stored callback and manages the loading state.
+ */
+const handleConfirm = async () => {
+  if (confirmState.onConfirm) {
+    confirmState.loading = true
+    try {
+      await confirmState.onConfirm()
+    } finally {
+      confirmState.loading = false
+      confirmState.show = false
+    }
+  }
+}
+
+/**
+ * Opens the confirmation dialog with a specific title, message, and callback.
+ * 
+ * @param {string} title - The title of the dialog.
+ * @param {string} message - The message body.
+ * @param {Function} onConfirm - The function to execute on confirmation.
+ */
+const openConfirm = (title, message, onConfirm) => {
+  confirmState.title = title
+  confirmState.message = message
+  confirmState.onConfirm = onConfirm
+  confirmState.show = true
+}
 
 const isOwner = computed(() => film.value && user.value && film.value.user_id === user.value.id)
 const isStaff = computed(() => isAdmin.value || isModerator.value)
@@ -51,12 +108,17 @@ const criteria = [
   { id: 'production', label: 'Produksi & Dokumen', scoreKey: 'production_score', commentKey: 'production_comment' }
 ]
 
+/**
+ * Fetches the complete film data including associated files and evaluation.
+ * Initializes the current active tab and triggers fetching for notes and scenes.
+ */
 const fetchFilm = async () => {
   loading.value = true
   try {
     const res = await api.get(`/api/films/${filmSlug}`)
     const f = res.data || {}
-    // Convert paths to absolute URLs
+    
+    // Normalize asset URLs for consistent display
     f.link_video_utama = assetUrl(f.link_video_utama)
     f.link_trailer = assetUrl(f.link_trailer)
     f.link_bts = assetUrl(f.link_bts)
@@ -67,28 +129,230 @@ const fetchFilm = async () => {
     
     film.value = f
     
-    // Auto-select tab
+    // Determine the initial tab based on available production assets
     if (f.file_naskah && f.file_naskah !== assetUrl(null)) activeTab.value = 'naskah'
     else if (f.file_storyboard && f.file_storyboard !== assetUrl(null)) activeTab.value = 'storyboard'
     else if (f.file_rab && f.file_rab !== assetUrl(null)) activeTab.value = 'rab'
     else if (isStaff.value || isOwner.value) activeTab.value = 'evaluation'
 
-    // Load evaluation from film object (Eager Loading)
+    // Load evaluation if it was eager-loaded with the film
     if (f.evaluation) {
       evaluation.value = f.evaluation
-      // Fill form if staff
       if (isStaff.value) {
         Object.assign(evalForm, f.evaluation)
       }
     }
+    
+    // Fetch related dynamic content
+    if (f.film_id) {
+       fetchNotes(f.film_id)
+       fetchScenes(f.film_id)
+    }
   } catch (err) {
-    console.error("Failed to fetch film:", err)
+    console.error("[StudyMode] Failed to fetch film:", err)
     router.push('/')
   } finally {
     loading.value = false
   }
 }
 
+/**
+ * Fetches private study notes for the specific film.
+ * @param {number} filmId - The ID of the film to fetch notes for.
+ */
+const fetchNotes = async (filmId) => {
+  loadingNotes.value = true
+  try {
+    const res = await api.get(`/api/study-notes/${filmId}`)
+    notes.value = res.data
+  } catch (err) {
+    console.error("[StudyMode] Failed to fetch notes:", err)
+  } finally {
+    loadingNotes.value = false
+  }
+}
+
+/**
+ * Creates a new timestamped study note.
+ * Captures current video playback time and saves the content.
+ */
+const addNote = async () => {
+  if (!newNote.value.trim() || !film.value) return
+  
+  addingNote.value = true
+  try {
+    const currentTime = videoPlayer.value?.getCurrentTime() || 0
+    const res = await api.post(`/api/study-notes/${film.value.film_id}`, {
+      content: newNote.value,
+      timestamp: currentTime
+    })
+    
+    notes.value.push(res.data)
+    notes.value.sort((a, b) => a.timestamp - b.timestamp)
+    newNote.value = ''
+    showToast("Catatan waktu disimpan", "success")
+  } catch (err) {
+    showToast("Gagal menyimpan catatan", "error")
+  } finally {
+    addingNote.value = false
+  }
+}
+
+/**
+ * Fetches the scene breakdown (chapters) for the film.
+ * @param {number} filmId - The film ID.
+ */
+const fetchScenes = async (filmId) => {
+  loadingScenes.value = true
+  try {
+    const res = await api.get(`/api/film-scenes/${filmId}`)
+    scenes.value = res.data
+  } catch (err) {
+    console.error("[StudyMode] Failed to fetch scenes:", err)
+  } finally {
+    loadingScenes.value = false
+  }
+}
+
+/**
+ * Marks a new scene at the current video playback time.
+ * Triggers an immediate persistent sync with the backend.
+ */
+const addScene = async () => {
+  if (!newSceneTitle.value.trim() || !film.value) return
+  
+  const currentTime = videoPlayer.value?.getCurrentTime() || 0
+  const scene = {
+    title: newSceneTitle.value,
+    start_time: currentTime,
+    film_id: film.value.film_id
+  }
+  
+  // Optimistic update for responsive UI
+  scenes.value = [...scenes.value, scene].sort((a, b) => a.start_time - b.start_time)
+  newSceneTitle.value = ''
+
+  syncScenes()
+}
+
+/**
+ * Synchronizes the entire scene list with the backend.
+ * Uses a bulk update approach to maintain chapter order.
+ */
+const syncScenes = async () => {
+  if (!film.value) return
+  savingScenes.value = true
+  try {
+    const res = await api.post(`/api/film-scenes/${film.value.film_id}`, 
+      scenes.value.map(({ title, start_time, end_time, description }) => ({ 
+        title, 
+        start_time,
+        end_time: end_time || null,
+        description: description || null
+      }))
+    )
+    scenes.value = res.data
+    showToast("Struktur adegan diperbarui", "success")
+  } catch (err) {
+    const msg = err.data?.message || err.message || "Gagal menyimpan struktur adegan"
+    showToast(msg, "error")
+  } finally {
+    savingScenes.value = false
+  }
+}
+
+/**
+ * Removes a scene from the list after confirmation.
+ * @param {number} index - The index of the scene in the local reactive array.
+ */
+const removeScene = (index) => {
+  openConfirm(
+    'Hapus Adegan',
+    `Apakah Anda yakin ingin menghapus adegan "${scenes.value[index].title}"?`,
+    () => {
+      scenes.value.splice(index, 1)
+      syncScenes()
+    }
+  )
+}
+
+/**
+ * Initiates the inline editing mode for a specific scene.
+ * @param {number} index - Scene index.
+ */
+const startEditScene = (index) => {
+  editingSceneIndex.value = index
+  editSceneTitle.value = scenes.value[index].title
+}
+
+/**
+ * Cancels the current inline scene editing.
+ */
+const cancelEditScene = () => {
+  editingSceneIndex.value = null
+  editSceneTitle.value = ''
+}
+
+/**
+ * Persists the edited scene title and triggers a backend sync.
+ */
+const saveEditScene = () => {
+  if (!editSceneTitle.value.trim() || editingSceneIndex.value === null) return
+  
+  scenes.value[editingSceneIndex.value].title = editSceneTitle.value.trim()
+  editingSceneIndex.value = null
+  editSceneTitle.value = ''
+  syncScenes()
+}
+
+/**
+ * Deletes a note permanently after user confirmation.
+ * @param {number} id - Note ID.
+ */
+const deleteNote = async (id) => {
+  openConfirm(
+    'Hapus Catatan',
+    'Catatan waktu ini akan dihapus secara permanen. Lanjutkan?',
+    async () => {
+      try {
+        await api.delete(`/api/study-notes/${id}`)
+        notes.value = notes.value.filter(n => n.note_id !== id)
+        showToast("Catatan dihapus", "success")
+      } catch (err) {
+        showToast("Gagal menghapus catatan", "error")
+      }
+    }
+  )
+}
+
+/**
+ * Commands the video player to seek to a specific timestamp.
+ * @param {number} timestamp - Time in seconds.
+ */
+const seekToNote = (timestamp) => {
+  videoPlayer.value?.seekTo(timestamp)
+}
+
+/**
+ * Formats seconds into a readable HH:MM:SS or MM:SS string.
+ * @param {number} seconds - Duration in seconds.
+ * @returns {string} Formatted time string.
+ */
+const formatTimestamp = (seconds) => {
+  const h = Math.floor(seconds / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  const s = Math.floor(seconds % 60)
+  return [
+    h > 0 ? h : null,
+    m.toString().padStart(h > 0 ? 2 : 1, '0'),
+    s.toString().padStart(2, '0')
+  ].filter(x => x !== null).join(':')
+}
+
+/**
+ * Saves or updates a moderator's film evaluation.
+ * Accessible only by Staff roles.
+ */
 const saveEvaluation = async () => {
   if (!film.value) return
   saving.value = true
@@ -187,9 +451,15 @@ useHead({
             >
               <FileSpreadsheet class="w-4 h-4" /> <span class="flex-1 text-left">RAB</span>
             </button>
+            <button 
+              @click="selectTab('scenes')"
+              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2"
+              :class="activeTab === 'scenes' ? 'bg-brand-teal border-black shadow-[4px_4px_0px_#000] text-white -translate-y-0.5' : 'bg-stone-800/40 border-transparent text-stone-400 hover:bg-stone-800'"
+            >
+              <ListVideo class="w-4 h-4" /> <span class="flex-1 text-left">Struktur Adegan</span>
+            </button>
           </div>
         </div>
-
         <div v-if="isStaff || isOwner">
           <div class="text-[10px] font-black text-stone-500 uppercase tracking-[0.2em] px-3 mb-4">Evaluasi Kurator</div>
           <button 
@@ -202,6 +472,19 @@ useHead({
             <div v-if="evaluation" class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
           </button>
         </div>
+        
+        <div>
+          <div class="text-[10px] font-black text-stone-500 uppercase tracking-[0.2em] px-3 mb-4">Pengamatan Pribadi</div>
+          <button 
+            @click="selectTab('notes')"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2"
+            :class="activeTab === 'notes' ? 'bg-amber-400 border-black shadow-[4px_4px_0px_#000] text-black -translate-y-0.5' : 'bg-stone-800/40 border-transparent text-stone-400 hover:bg-stone-800'"
+          >
+            <StickyNote class="w-4 h-4" /> 
+            <span class="flex-1 text-left">Catatan Waktu</span>
+            <Badge v-if="notes.length > 0" variant="outline" class="bg-white/10 text-white border-white/20 text-[10px]">{{ notes.length }}</Badge>
+          </button>
+        </div>
       </nav>
     </aside>
 
@@ -212,6 +495,7 @@ useHead({
       <section class="w-full bg-black flex flex-col border-b border-black lg:border-b-2 relative shrink-0 overflow-hidden z-20 min-h-[30vh] lg:h-[50vh]">
         <ErrorBoundary name="Pemutar Video">
           <VideoPlayer
+            ref="videoPlayer"
             v-if="film.link_video_utama"
             :src="film.link_video_utama"
             :title="film.judul || 'Video'"
@@ -385,6 +669,187 @@ useHead({
           </div>
         </div>
 
+        <!-- Tab: Notes -->
+        <div v-else-if="activeTab === 'notes'" class="flex-1 flex flex-col h-full bg-stone-50 overflow-hidden">
+           <!-- Header Notes -->
+           <div class="p-4 md:p-6 border-b-2 border-black bg-white flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-3">
+                 <div class="w-10 h-10 bg-amber-400 border-2 border-black shadow-brutal-xs flex items-center justify-center">
+                    <StickyNote class="w-5 h-5 text-black" />
+                 </div>
+                 <div>
+                    <h2 class="font-black uppercase text-sm md:text-base leading-none">Catatan Waktu</h2>
+                    <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1">Tautkan analisis Anda pada menit tertentu</p>
+                 </div>
+              </div>
+           </div>
+
+           <!-- Add Note Form -->
+           <div class="p-4 md:p-6 bg-white border-b-2 border-black shrink-0">
+             <div class="flex gap-3">
+                <div class="flex-1 relative">
+                   <textarea 
+                     v-model="newNote"
+                     @keydown.enter.exact.prevent="addNote"
+                     placeholder="Tulis pengamatan di menit ini..."
+                     class="w-full border-2 border-black p-3 text-xs font-medium focus:outline-none bg-stone-50 resize-none h-20 text-stone-900"
+                   ></textarea>
+                   <div class="absolute bottom-2 right-2 text-[10px] font-black text-stone-300 uppercase">
+                      Tekan Enter untuk Simpan
+                   </div>
+                </div>
+                <button 
+                  @click="addNote"
+                  :disabled="addingNote || !newNote.trim()"
+                  class="bg-brand-teal text-white border-2 border-black shadow-brutal-xs px-4 h-20 flex flex-col items-center justify-center gap-1 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all disabled:opacity-50 disabled:grayscale"
+                >
+                   <Plus class="w-5 h-5" />
+                   <span class="text-[9px] font-black uppercase">Simpan</span>
+                </button>
+             </div>
+           </div>
+
+           <!-- Notes List -->
+           <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 no-scrollbar pb-10">
+              <div v-if="loadingNotes" class="flex flex-col items-center justify-center py-10 opacity-20">
+                 <Loader2 class="w-8 h-8 animate-spin" />
+              </div>
+              <div v-else-if="notes.length === 0" class="text-center py-10 opacity-30">
+                 <StickyNote class="w-12 h-12 mx-auto mb-3" />
+                 <p class="text-xs font-black uppercase tracking-widest">Belum ada catatan waktu</p>
+              </div>
+              <template v-else>
+                 <div 
+                   v-for="note in notes" 
+                   :key="note.note_id"
+                   class="bg-white border-2 border-black p-4 shadow-brutal-xs hover:shadow-none hover:translate-x-[2px] transition-all group"
+                 >
+                    <div class="flex items-start justify-between gap-4">
+                       <div class="flex-1">
+                          <div class="flex items-center gap-2 mb-2">
+                             <button 
+                               @click="seekToNote(note.timestamp)"
+                               class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-stone-900 border border-black text-brand-teal text-[10px] font-black rounded hover:bg-black transition-colors"
+                             >
+                                <PlayCircle class="w-3 h-3" />
+                                {{ formatTimestamp(note.timestamp) }}
+                             </button>
+                             <span class="text-[9px] font-bold text-stone-300 uppercase">{{ timeAgo(note.created_at) }}</span>
+                          </div>
+                          <p class="text-sm font-medium text-stone-800 leading-relaxed">{{ note.content }}</p>
+                       </div>
+                       <button 
+                         @click="deleteNote(note.note_id)"
+                         class="p-2 text-stone-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                       >
+                          <Trash class="w-4 h-4" />
+                       </button>
+                    </div>
+                 </div>
+              </template>
+           </div>
+        </div>
+
+        <!-- Tab: Scenes -->
+        <div v-else-if="activeTab === 'scenes'" class="flex-1 flex flex-col h-full bg-stone-50 overflow-hidden">
+           <div class="p-4 md:p-6 border-b-2 border-black bg-white flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-3">
+                 <div class="w-10 h-10 bg-brand-teal border-2 border-black shadow-brutal-xs flex items-center justify-center">
+                    <ListVideo class="w-5 h-5 text-white" />
+                 </div>
+                 <div>
+                    <h2 class="font-black uppercase text-sm md:text-base leading-none">Struktur Adegan</h2>
+                    <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1">Daftar Bab & Segmentasi Cerita</p>
+                 </div>
+              </div>
+           </div>
+
+           <!-- Add Scene (Only Owner/Staff) -->
+           <div v-if="isOwner || isStaff" class="p-4 md:p-6 bg-white border-b-2 border-black shrink-0">
+              <div class="flex gap-3">
+                 <div class="flex-1 relative">
+                    <input 
+                      v-model="newSceneTitle"
+                      @keydown.enter="addScene"
+                      placeholder="Judul adegan/bab baru..."
+                      class="w-full border-2 border-black p-3 text-sm font-bold focus:outline-none bg-stone-50 h-12 text-stone-900"
+                    />
+                 </div>
+                 <button 
+                   @click="addScene"
+                   :disabled="savingScenes || !newSceneTitle.trim()"
+                   class="bg-black text-white px-4 h-12 flex items-center justify-center gap-2 hover:bg-stone-800 transition-all disabled:opacity-50"
+                 >
+                    <Plus class="w-4 h-4" />
+                    <span class="text-[10px] font-black uppercase">Tanda Adegan</span>
+                 </button>
+              </div>
+              <p class="text-[9px] text-stone-400 font-bold uppercase mt-2">Adegan akan ditandai pada menit video saat ini.</p>
+           </div>
+
+           <!-- Scenes List -->
+           <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-2 no-scrollbar pb-10">
+              <div v-if="loadingScenes" class="flex flex-col items-center justify-center py-10 opacity-20">
+                 <Loader2 class="w-8 h-8 animate-spin" />
+              </div>
+              <div v-else-if="scenes.length === 0" class="text-center py-10 opacity-30">
+                 <ListVideo class="w-12 h-12 mx-auto mb-3" />
+                 <p class="text-xs font-black uppercase tracking-widest">Belum ada struktur adegan</p>
+              </div>
+              <template v-else>
+                 <div 
+                   v-for="(scene, index) in scenes" 
+                   :key="index"
+                   class="group flex items-center justify-between p-3 bg-white border-2 border-black hover:bg-stone-50 transition-all cursor-pointer shadow-brutal-xs hover:shadow-none translate-x-0 hover:translate-x-1"
+                   @click="seekToNote(scene.start_time)"
+                 >
+                    <div class="flex items-center gap-4">
+                       <div class="flex items-center gap-1.5 px-2 py-1 bg-stone-100 border border-black rounded text-[10px] font-black text-stone-800">
+                         <Clock class="w-3 h-3 text-stone-800" />
+                         {{ formatTimestamp(scene.start_time) }}
+                       </div>
+                       <input 
+                         v-if="editingSceneIndex === index"
+                         v-model="editSceneTitle"
+                         @click.stop
+                         @keydown.enter="saveEditScene"
+                         @keydown.esc="cancelEditScene"
+                         class="flex-1 border-b-2 border-brand-teal focus:outline-none bg-transparent text-sm font-black text-stone-900 uppercase py-0.5"
+                         autofocus
+                       />
+                       <span v-else class="text-sm font-black text-stone-900 uppercase truncate max-w-[200px] md:max-w-md">{{ scene.title }}</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-1 ml-4 shrink-0">
+                       <template v-if="editingSceneIndex === index">
+                          <button @click.stop="saveEditScene" class="p-1.5 text-brand-teal hover:bg-brand-teal/10 rounded transition-colors">
+                             <Check class="w-4 h-4" />
+                          </button>
+                          <button @click.stop="cancelEditScene" class="p-1.5 text-stone-400 hover:bg-stone-100 rounded transition-colors">
+                             <X class="w-4 h-4" />
+                          </button>
+                       </template>
+                       <template v-else-if="isOwner || isStaff">
+                          <button 
+                            @click.stop="startEditScene(index)"
+                            class="p-1.5 text-stone-300 hover:text-brand-teal transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                             <Pencil class="w-3.5 h-3.5" />
+                          </button>
+                          <button 
+                            @click.stop="removeScene(index)"
+                            class="p-1.5 text-stone-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                             <Trash class="w-3.5 h-3.5" />
+                          </button>
+                       </template>
+                       <ChevronRight v-else class="w-4 h-4 text-stone-200" />
+                    </div>
+                 </div>
+              </template>
+           </div>
+        </div>
+
         <!-- Tab: Documents (Naskah/Storyboard/RAB) -->
         <div v-else class="flex-1 w-full h-full bg-stone-200 relative">
           <div class="lg:hidden absolute top-3 left-3 z-30 pointer-events-none">
@@ -417,6 +882,15 @@ useHead({
       </div>
       <p class="text-xs font-black uppercase tracking-[0.3em] text-stone-400 animate-pulse">Menyiapkan Ruang Studi...</p>
     </div>
+
+    <!-- Confirmation Dialog -->
+    <ConfirmDialog
+      v-model:show="confirmState.show"
+      :title="confirmState.title"
+      :message="confirmState.message"
+      :loading="confirmState.loading"
+      @confirm="handleConfirm"
+    />
   </div>
 </template>
 

@@ -19,4 +19,8 @@ export default async function adminRoutes(fastify) {
   fastify.get('/storage', {
     preHandler: requireAdmin
   }, adminController.getStorageStats.bind(adminController));
+
+  fastify.get('/logs', {
+    preHandler: requireAdmin
+  }, adminController.getAuditLogs.bind(adminController));
 }

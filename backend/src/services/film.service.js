@@ -9,8 +9,42 @@ import { Film, BaseModel } from '../models/index.js';
 import { deleteFile } from '../lib/upload.js';
 import { FILM_STATUS, PAGINATION } from '../config/constants.js';
 import { embeddingService } from './embedding.service.js';
+import { sanitizeRichText, sanitizePlainText } from '../lib/sanitize.js';
 
 export class FilmService {
+  /**
+   * Normalizes and sanitizes film data before insertion or update.
+   * Cleans the crew array and strips dangerous HTML from content.
+   * 
+   * @param {object} data - Raw input data.
+   * @returns {object} Cleaned data object.
+   */
+  normalizeData(data) {
+    const clean = { ...data };
+
+    // 1. Clean Crew Structure
+    if (Array.isArray(clean.crew)) {
+      clean.crew = clean.crew
+        .filter(c => c && typeof c === 'object')
+        .map(c => ({
+          jabatan: typeof c.jabatan === 'string' ? c.jabatan.trim() : '',
+          anggota: Array.isArray(c.anggota)
+            ? c.anggota.filter(a => typeof a === 'string' && a.trim()).map(a => a.trim())
+            : []
+        }))
+        .filter(c => c.jabatan);
+      if (clean.crew.length === 0) clean.crew = null;
+    } else if (clean.crew !== undefined) {
+      clean.crew = null;
+    }
+
+    // 2. Sanitize HTML Content
+    if (clean.deskripsi_lengkap) clean.deskripsi_lengkap = sanitizeRichText(clean.deskripsi_lengkap);
+    if (clean.sinopsis) clean.sinopsis = sanitizePlainText(clean.sinopsis);
+
+    return clean;
+  }
+
   /**
    * Fetch a paginated list of films with multiple filtering and sorting options
    * @param {object} options - Search and pagination options
@@ -122,7 +156,7 @@ export class FilmService {
   async getById(id) {
     return Film.query()
       .findById(id)
-      .withGraphFetched('[creator(selectBasic), category, evaluation]')
+      .withGraphFetched('[creator(selectBasic), category]')
       .modifiers(BaseModel.defaultModifiers);
   }
 

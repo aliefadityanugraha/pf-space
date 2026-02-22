@@ -14,7 +14,9 @@ export const createMaterialSchema = {
       tipe: { type: 'string', enum: ['pdf', 'video'] },
       file_path: { type: ['string', 'null'] },
       video_url: { type: ['string', 'null'] },
-      is_active: { type: 'boolean' }
+      is_active: { type: 'boolean' },
+      is_featured: { type: 'boolean' },
+      kategori: { type: ['string', 'null'], maxLength: 100 }
     },
     additionalProperties: false
   }
@@ -36,7 +38,9 @@ export const updateMaterialSchema = {
       tipe: { type: 'string', enum: ['pdf', 'video'] },
       file_path: { type: ['string', 'null'] },
       video_url: { type: ['string', 'null'] },
-      is_active: { type: 'boolean' }
+      is_active: { type: 'boolean' },
+      is_featured: { type: 'boolean' },
+      kategori: { type: ['string', 'null'], maxLength: 100 }
     },
     additionalProperties: false
   }

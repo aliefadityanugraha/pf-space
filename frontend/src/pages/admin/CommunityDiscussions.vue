@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { api } from '@/lib/api'
-import AdminSidebar from '@/components/SidebarAdmin.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -23,8 +22,6 @@ import {
   User as UserIcon
 } from 'lucide-vue-next'
 import { timeAgo, assetUrl } from '@/lib/format'
-
-const sidebarCollapsed = ref(false)
 
 const discussions = ref([])
 const loading = ref(true)
@@ -215,175 +212,171 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-100">
-    <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
-    
-    <main :class="['p-4 md:p-8 transition-all duration-300', sidebarCollapsed ? 'ml-14' : 'ml-56']">
-      <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
-        <span class="text-stone-400">/</span>
-        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
-        <span class="text-stone-400">/</span>
-        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Komunitas</Badge>
-      </nav>
+  <div class="p-4 md:p-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
+      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <span class="text-stone-400">/</span>
+      <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+      <span class="text-stone-400">/</span>
+      <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Komunitas</Badge>
+    </nav>
 
-      <!-- Header -->
-      <PageHeader 
-        title="Diskusi Komunitas" 
-        description="Kelola topik diskusi umum untuk komunitas"
-        :icon="MessageCircle"
-        icon-color="bg-teal-500"
-      >
-        <template #actions>
-          <Button @click="openForm()" class="gap-2">
-            <Plus class="w-4 h-4" />
-            Buat Diskusi Baru
-          </Button>
-        </template>
-      </PageHeader>
+    <!-- Header -->
+    <PageHeader 
+      title="Diskusi Komunitas" 
+      description="Kelola topik diskusi umum untuk komunitas"
+      :icon="MessageCircle"
+      icon-color="bg-teal-500"
+    >
+      <template #actions>
+        <Button @click="openForm()" class="gap-2">
+          <Plus class="w-4 h-4" />
+          Buat Diskusi Baru
+        </Button>
+      </template>
+    </PageHeader>
 
-      <!-- Info Card -->
-      <Card class="mb-6 border-2 border-blue-300 bg-blue-50">
-        <CardContent class="p-4">
-          <p class="text-sm text-blue-900">
-            <strong>Catatan:</strong> Hanya satu diskusi yang bisa aktif dalam satu waktu. 
-            Diskusi aktif akan ditampilkan di halaman utama dan semua user bisa memberikan balasan.
-          </p>
-        </CardContent>
-      </Card>
+    <!-- Info Card -->
+    <Card class="mb-6 border-2 border-blue-300 bg-blue-50">
+      <CardContent class="p-4">
+        <p class="text-sm text-blue-900">
+          <strong>Catatan:</strong> Hanya satu diskusi yang bisa aktif dalam satu waktu. 
+          Diskusi aktif akan ditampilkan di halaman utama dan semua user bisa memberikan balasan.
+        </p>
+      </CardContent>
+    </Card>
 
-      <!-- Form Modal -->
-      <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center">
-        <div class="absolute inset-0 bg-black/50" @click="closeForm"></div>
-        <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-2xl mx-4">
-          <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-stone-100">
-            <h2 class="font-bold text-lg">{{ editingId ? 'Edit Diskusi' : 'Buat Diskusi Baru' }}</h2>
-            <button @click="closeForm" class="p-1 hover:bg-stone-200">
-              <XCircle class="w-5 h-5" />
-            </button>
-          </div>
-          <form @submit.prevent="saveDiscussion" class="p-6 space-y-4">
-            <div>
-              <label class="block text-sm font-bold mb-2">Judul Diskusi *</label>
-              <Input
-                v-model="formData.title"
-                placeholder="Contoh: Apa Karya favorit kalian tahun ini?"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-bold mb-2">Deskripsi (Opsional)</label>
-              <Textarea
-                v-model="formData.description"
-                placeholder="Tambahkan konteks atau pertanyaan lebih detail..."
-                class="min-h-[100px] resize-none"
-              />
-            </div>
-            <div class="flex gap-3 pt-4">
-              <Button type="button" variant="outline" class="flex-1" @click="closeForm">Batal</Button>
-              <Button type="submit" class="flex-1 gap-2" :disabled="saving">
-                <Loader2 v-if="saving" class="w-4 h-4 animate-spin" />
-                <CheckCircle v-else class="w-4 h-4" />
-                {{ editingId ? 'Update' : 'Buat' }} Diskusi
-              </Button>
-            </div>
-          </form>
+    <!-- Form Modal -->
+    <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="absolute inset-0 bg-black/50" @click="closeForm"></div>
+      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-2xl mx-4">
+        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-stone-100">
+          <h2 class="font-bold text-lg">{{ editingId ? 'Edit Diskusi' : 'Buat Diskusi Baru' }}</h2>
+          <button @click="closeForm" class="p-1 hover:bg-stone-200">
+            <XCircle class="w-5 h-5" />
+          </button>
         </div>
+        <form @submit.prevent="saveDiscussion" class="p-6 space-y-4">
+          <div>
+            <label class="block text-sm font-bold mb-2">Judul Diskusi *</label>
+            <Input
+              v-model="formData.title"
+              placeholder="Contoh: Apa Karya favorit kalian tahun ini?"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-bold mb-2">Deskripsi (Opsional)</label>
+            <Textarea
+              v-model="formData.description"
+              placeholder="Tambahkan konteks atau pertanyaan lebih detail..."
+              class="min-h-[100px] resize-none"
+            />
+          </div>
+          <div class="flex gap-3 pt-4">
+            <Button type="button" variant="outline" class="flex-1" @click="closeForm">Batal</Button>
+            <Button type="submit" class="flex-1 gap-2" :disabled="saving">
+              <Loader2 v-if="saving" class="w-4 h-4 animate-spin" />
+              <CheckCircle v-else class="w-4 h-4" />
+              {{ editingId ? 'Update' : 'Buat' }} Diskusi
+            </Button>
+          </div>
+        </form>
       </div>
+    </div>
 
-      <!-- Discussions List -->
-      <Card>
-        <CardHeader class="bg-teal-50 border-b-2 border-stone-800">
-          <div class="flex items-center gap-3">
-            <MessageCircle class="w-5 h-5" />
-            <CardTitle class="text-lg font-bold uppercase">Daftar Diskusi</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent class="p-0">
-          <!-- Loading -->
-          <div v-if="loading" class="flex items-center justify-center py-12">
-            <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
-          </div>
+    <!-- Discussions List -->
+    <Card>
+      <CardHeader class="bg-teal-50 border-b-2 border-stone-800">
+        <div class="flex items-center gap-3">
+          <MessageCircle class="w-5 h-5" />
+          <CardTitle class="text-lg font-bold uppercase">Daftar Diskusi</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent class="p-0">
+        <!-- Loading -->
+        <div v-if="loading" class="flex items-center justify-center py-12">
+          <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
+        </div>
 
-          <!-- Empty -->
-          <div v-else-if="discussions.length === 0" class="text-center py-12 text-stone-400">
-            <MessageCircle class="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p>Belum ada diskusi komunitas</p>
-          </div>
+        <!-- Empty -->
+        <div v-else-if="discussions.length === 0" class="text-center py-12 text-stone-400">
+          <MessageCircle class="w-12 h-12 mx-auto mb-2 opacity-50" />
+          <p>Belum ada diskusi komunitas</p>
+        </div>
 
-          <!-- Table -->
-          <template v-else>
-            <div 
-              v-for="discussion in discussions" 
-              :key="discussion.discussion_id" 
-              class="px-6 py-4 border-b border-stone-200 hover:bg-stone-50"
-            >
-              <div class="flex items-start justify-between gap-4">
-                <div class="flex-1">
-                  <div class="flex items-center gap-3 mb-2">
-                    <h3 class="text-lg font-bold text-stone-900">{{ discussion.title }}</h3>
-                    <Badge
-                      :variant="discussion.is_active ? 'default' : 'secondary'"
-                      :class="discussion.is_active ? 'bg-green-100 text-green-700' : ''"
-                    >
-                      {{ discussion.is_active ? 'Aktif' : 'Nonaktif' }}
-                    </Badge>
-                  </div>
-                  
-                  <p v-if="discussion.description" class="text-stone-600 text-sm mb-3">
-                    {{ discussion.description }}
-                  </p>
-
-                  <div class="flex items-center gap-4 text-xs text-stone-500">
-                    <span>Dibuat oleh {{ discussion.creator?.name }}</span>
-                    <span>•</span>
-                    <span>{{ formatTime(discussion.created_at) }}</span>
-                    <span>•</span>
-                    <button 
-                      @click="viewReplies(discussion)"
-                      class="text-brand-teal hover:underline font-medium"
-                    >
-                      {{ discussion.reply_count || 0 }} balasan
-                    </button>
-                  </div>
+        <!-- Table -->
+        <template v-else>
+          <div 
+            v-for="discussion in discussions" 
+            :key="discussion.discussion_id" 
+            class="px-6 py-4 border-b border-stone-200 hover:bg-stone-50"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <h3 class="text-lg font-bold text-stone-900">{{ discussion.title }}</h3>
+                  <Badge
+                    :variant="discussion.is_active ? 'default' : 'secondary'"
+                    :class="discussion.is_active ? 'bg-green-100 text-green-700' : ''"
+                  >
+                    {{ discussion.is_active ? 'Aktif' : 'Nonaktif' }}
+                  </Badge>
                 </div>
+                
+                <p v-if="discussion.description" class="text-stone-600 text-sm mb-3">
+                  {{ discussion.description }}
+                </p>
 
-                <div class="flex gap-2">
-                  <Button
-                    @click="toggleDiscussion(discussion.discussion_id, discussion.is_active)"
-                    size="sm"
-                    variant="outline"
-                    :title="discussion.is_active ? 'Nonaktifkan' : 'Aktifkan'"
+                <div class="flex items-center gap-4 text-xs text-stone-500">
+                  <span>Dibuat oleh {{ discussion.creator?.name }}</span>
+                  <span>•</span>
+                  <span>{{ formatTime(discussion.created_at) }}</span>
+                  <span>•</span>
+                  <button 
+                    @click="viewReplies(discussion)"
+                    class="text-brand-teal hover:underline font-medium"
                   >
-                    <Eye v-if="!discussion.is_active" class="w-4 h-4" />
-                    <EyeOff v-else class="w-4 h-4" />
-                  </Button>
-
-                  <Button
-                    @click="openForm(discussion)"
-                    size="sm"
-                    variant="outline"
-                    title="Edit"
-                  >
-                    <Edit class="w-4 h-4" />
-                  </Button>
-
-                  <Button
-                    @click="confirmDelete(discussion)"
-                    size="sm"
-                    variant="outline"
-                    class="text-red-600 hover:bg-red-50"
-                    title="Hapus"
-                  >
-                    <Trash2 class="w-4 h-4" />
-                  </Button>
+                    {{ discussion.reply_count || 0 }} balasan
+                  </button>
                 </div>
               </div>
+
+              <div class="flex gap-2">
+                <Button
+                  @click="toggleDiscussion(discussion.discussion_id, discussion.is_active)"
+                  size="sm"
+                  variant="outline"
+                  :title="discussion.is_active ? 'Nonaktifkan' : 'Aktifkan'"
+                >
+                  <Eye v-if="!discussion.is_active" class="w-4 h-4" />
+                  <EyeOff v-else class="w-4 h-4" />
+                </Button>
+
+                <Button
+                  @click="openForm(discussion)"
+                  size="sm"
+                  variant="outline"
+                  title="Edit"
+                >
+                  <Edit class="w-4 h-4" />
+                </Button>
+
+                <Button
+                  @click="confirmDelete(discussion)"
+                  size="sm"
+                  variant="outline"
+                  class="text-red-600 hover:bg-red-50"
+                  title="Hapus"
+                >
+                  <Trash2 class="w-4 h-4" />
+                </Button>
+              </div>
             </div>
-          </template>
-        </CardContent>
-      </Card>
-    </main>
+          </div>
+        </template>
+      </CardContent>
+    </Card>
 
     <!-- Confirm Delete Dialog -->
     <div v-if="showConfirm" class="fixed inset-0 z-50 flex items-center justify-center">

@@ -20,7 +20,7 @@ watch(isCollapsed, (val) => {
 })
 
 const allMenuItems = [
-  { name: 'Dasbor', icon: LayoutDashboard, path: '/admin/dashboard' },
+  { name: 'Dasbor', icon: LayoutDashboard, path: '/admin' },
   { name: 'Arsip', icon: Film, path: '/admin/archives' },
   { name: 'Kategori', icon: FolderOpen, path: '/admin/categories' },
   { name: 'Manajemen File', icon: Database, path: '/admin/storage' },

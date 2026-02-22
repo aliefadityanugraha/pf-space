@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { 
   User, Mail, Eye, EyeOff, Camera, Save, 
   Loader2, ThumbsUp, MessageCircle, Film as FilmIcon, Upload,
-  LayoutDashboard, Settings
+  LayoutDashboard, Settings, MapPin, Globe, Instagram, Linkedin
 } from 'lucide-vue-next'
 import { useHead } from '@unhead/vue'
 
@@ -23,7 +23,6 @@ const router = useRouter()
 const { user, refreshUser, initialized, isLoggedIn, isCreator } = useAuth()
 const { showToast } = useToast()
 const fileInput = ref(null)
-
 
 const userImageUrl = computed(() => assetUrl(user.value?.image || ''))
 
@@ -44,6 +43,11 @@ useHead({
 
 // --- SETTINGS FORM STATE ---
 const editName = ref('')
+const editBio = ref('')
+const editWebsite = ref('')
+const editLocation = ref('')
+const editInstagram = ref('')
+const editLinkedin = ref('')
 const currentPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
@@ -58,6 +62,11 @@ const savingPassword = ref(false)
 watch(user, (newUser) => {
   if (newUser) {
     editName.value = newUser.name || ''
+    editBio.value = newUser.bio || ''
+    editWebsite.value = newUser.website || ''
+    editLocation.value = newUser.location || ''
+    editInstagram.value = newUser.instagram || ''
+    editLinkedin.value = newUser.linkedin || ''
   }
 }, { immediate: true })
 
@@ -187,6 +196,11 @@ const saveProfile = async () => {
   try {
     const formData = new FormData()
     formData.append('name', editName.value)
+    formData.append('bio', editBio.value)
+    formData.append('website', editWebsite.value)
+    formData.append('location', editLocation.value)
+    formData.append('instagram', editInstagram.value)
+    formData.append('linkedin', editLinkedin.value)
     
     if (selectedFile.value) {
       formData.append('image', selectedFile.value)
@@ -195,7 +209,14 @@ const saveProfile = async () => {
     if (selectedFile.value) {
        await api.upload('/api/auth/update-user', formData, { method: 'PATCH' })
     } else {
-       await api.patch('/api/auth/update-user', { name: editName.value })
+       await api.patch('/api/auth/update-user', { 
+         name: editName.value,
+         bio: editBio.value,
+         website: editWebsite.value,
+         location: editLocation.value,
+         instagram: editInstagram.value,
+         linkedin: editLinkedin.value
+       })
     }
 
     await refreshUser()
@@ -463,9 +484,44 @@ onMounted(() => {
                 <Input v-model="editName" class="border-2 border-black shadow-brutal-xs md:shadow-brutal-sm focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all h-10 md:h-12 text-sm md:text-lg font-medium" />
               </div>
 
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                   <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Email</label>
+                   <Input :value="user?.email" disabled class="bg-stone-50 border-2 border-stone-200 text-stone-400 h-10 md:h-12 cursor-not-allowed font-mono text-xs md:text-sm" />
+                </div>
+                <div>
+                   <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Lokasi / Institusi</label>
+                   <Input v-model="editLocation" placeholder="Contoh: Jakarta, Indonesia" class="border-2 border-black shadow-brutal-xs h-10 md:h-12 text-sm" />
+                </div>
+              </div>
+
               <div>
-                <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Email</label>
-                <Input :value="user?.email" disabled class="bg-stone-100 border-2 border-stone-300 text-stone-500 h-10 md:h-12 cursor-not-allowed font-mono text-xs md:text-sm" />
+                <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Bio Singkat</label>
+                <textarea 
+                  v-model="editBio"
+                  rows="3"
+                  placeholder="Ceritakan sedikit tentang diri Anda dan fokus karya Anda..."
+                  class="w-full border-2 border-black p-3 text-sm font-medium focus:outline-none bg-white shadow-brutal-xs resize-none"
+                ></textarea>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div>
+                    <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Website / Portofolio</label>
+                    <Input v-model="editWebsite" placeholder="https://myportfolio.com" class="border-2 border-black shadow-brutal-xs h-10 md:h-12 text-sm" />
+                 </div>
+                 <div>
+                    <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Instagram (Username)</label>
+                    <div class="relative">
+                       <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 font-bold text-sm">@</span>
+                       <Input v-model="editInstagram" placeholder="username" class="border-2 border-black shadow-brutal-xs h-10 md:h-12 pl-8 text-sm" />
+                    </div>
+                 </div>
+              </div>
+
+              <div>
+                 <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">LinkedIn (URL Lengkap)</label>
+                 <Input v-model="editLinkedin" placeholder="https://linkedin.com/in/username" class="border-2 border-black shadow-brutal-xs h-10 md:h-12 text-sm" />
               </div>
 
               <div class="pt-2">

@@ -17,4 +17,5 @@ export * from './community.controller.js';
 export * from './admin.controller.js';
 export * from './learningMaterial.controller.js';
 export * from './evaluation.controller.js';
-
+export * from './studyNote.controller.js';
+export * from './filmScene.controller.js';

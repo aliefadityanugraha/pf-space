@@ -8,8 +8,8 @@
 import { filmService } from '../services/index.js';
 import { ApiResponse } from '../lib/response.js';
 import { ROLES, FILM_STATUS } from '../config/constants.js';
-import { NotFoundError, AuthorizationError } from '../lib/errors.js';
-import { sanitizeRichText, sanitizePlainText } from '../lib/sanitize.js';
+import { NotFoundError } from '../lib/errors.js';
+import { recordAuditLog } from '../lib/audit.js';
 
 export class FilmController {
   /**
@@ -155,27 +155,7 @@ export class FilmController {
    * @param {import('fastify').FastifyReply} reply
    */
   async create(request, reply) {
-    const data = { ...request.body };
-
-    // Normalize crew to a clean JSON structure or null
-    if (Array.isArray(data.crew)) {
-      data.crew = data.crew
-        .filter(c => c && typeof c === 'object')
-        .map(c => ({
-          jabatan: typeof c.jabatan === 'string' ? c.jabatan.trim() : '',
-          anggota: Array.isArray(c.anggota)
-            ? c.anggota.filter(a => typeof a === 'string' && a.trim()).map(a => a.trim())
-            : []
-        }))
-        .filter(c => c.jabatan);
-      if (data.crew.length === 0) data.crew = null;
-    } else if (data.crew !== null && data.crew !== undefined) {
-      data.crew = null;
-    }
-
-    // Sanitize user-generated content
-    if (data.deskripsi_lengkap) data.deskripsi_lengkap = sanitizeRichText(data.deskripsi_lengkap);
-    if (data.sinopsis) data.sinopsis = sanitizePlainText(data.sinopsis);
+    const data = filmService.normalizeData(request.body);
 
     const film = await filmService.create({
       ...data,
@@ -201,32 +181,10 @@ export class FilmController {
 
     // Only creator or admin can update
     if (film.user_id !== request.user.id && request.user.role_id !== ROLES.ADMIN) {
-      throw new AuthorizationError('You can only update your own films');
+      return ApiResponse.error(reply, 'You can only update your own films', 403);
     }
 
-    const updateData = { ...request.body };
-
-    // Normalize crew on update as well
-    if ('crew' in updateData) {
-      if (Array.isArray(updateData.crew)) {
-        updateData.crew = updateData.crew
-          .filter(c => c && typeof c === 'object')
-          .map(c => ({
-            jabatan: typeof c.jabatan === 'string' ? c.jabatan.trim() : '',
-            anggota: Array.isArray(c.anggota)
-              ? c.anggota.filter(a => typeof a === 'string' && a.trim()).map(a => a.trim())
-              : []
-          }))
-          .filter(c => c.jabatan);
-        if (updateData.crew.length === 0) updateData.crew = null;
-      } else if (updateData.crew !== null && updateData.crew !== undefined) {
-        updateData.crew = null;
-      }
-    }
-
-    // Sanitize user-generated content
-    if (updateData.deskripsi_lengkap) updateData.deskripsi_lengkap = sanitizeRichText(updateData.deskripsi_lengkap);
-    if (updateData.sinopsis) updateData.sinopsis = sanitizePlainText(updateData.sinopsis);
+    const updateData = filmService.normalizeData(request.body);
 
     // Reset to pending if creator updates (needs re-approval)
     if (request.user.role_id !== ROLES.ADMIN && (film.status === FILM_STATUS.PUBLISHED || film.status === FILM_STATUS.REJECTED)) {
@@ -253,10 +211,23 @@ export class FilmController {
 
     // Only creator or admin can delete
     if (film.user_id !== request.user.id && request.user.role_id !== ROLES.ADMIN) {
-      throw new AuthorizationError('You can only delete your own films');
+      return ApiResponse.error(reply, 'You can only delete your own films', 403);
     }
 
     await filmService.delete(id);
+
+    // Audit Log for Admin Deletion
+    if (request.user.role_id === ROLES.ADMIN) {
+      await recordAuditLog({
+        userId: request.user.id,
+        action: 'DELETE_FILM',
+        targetType: 'film',
+        targetId: id,
+        details: { title: film.judul, creator_id: film.user_id },
+        ipAddress: request.ip
+      });
+    }
+
     return ApiResponse.success(reply, null, 'Film deleted successfully');
   }
 
@@ -308,6 +279,17 @@ export class FilmController {
     }
 
     const updated = await filmService.updateStatus(id, FILM_STATUS.PUBLISHED, { rejection_reason: null });
+
+    // Audit Log
+    await recordAuditLog({
+      userId: request.user.id,
+      action: 'APPROVE_FILM',
+      targetType: 'film',
+      targetId: id,
+      details: { title: film.judul },
+      ipAddress: request.ip
+    });
+
     return ApiResponse.success(reply, updated, 'Film approved and published');
   }
 
@@ -327,6 +309,16 @@ export class FilmController {
 
     const updated = await filmService.updateStatus(id, FILM_STATUS.REJECTED, {
       rejection_reason: request.body.rejection_reason
+    });
+
+    // Audit Log
+    await recordAuditLog({
+      userId: request.user.id,
+      action: 'REJECT_FILM',
+      targetType: 'film',
+      targetId: id,
+      details: { title: film.judul, reason: request.body.rejection_reason },
+      ipAddress: request.ip
     });
 
     return ApiResponse.success(reply, updated, 'Film rejected');

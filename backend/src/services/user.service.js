@@ -16,7 +16,7 @@ export class UserService {
   async getProfileById(userId) {
     const user = await User.query()
       .findById(userId)
-      .select('id', 'name', 'image', 'role_id', 'createdAt');
+      .select('id', 'name', 'image', 'role_id', 'createdAt', 'bio', 'website', 'location', 'instagram', 'linkedin');
 
     if (!user) return null;
 
@@ -26,13 +26,37 @@ export class UserService {
       .withGraphFetched('[category]')
       .orderBy('created_at', 'desc');
 
+    // Aggregate Stats and Skills
+    const totalViews = films.reduce((acc, f) => acc + (f.views || 0), 0);
+    const skillsMap = {};
+    
+    films.forEach(f => {
+      // Check if crew info exists
+      if (f.crew) {
+        // Handle both old array format and new object format { crew: [...] }
+        const groups = Array.isArray(f.crew) ? f.crew : (f.crew.crew || []);
+        groups.forEach(g => {
+          const isMember = g.anggota?.some(m => m.user_id === user.id || m.name === user.name);
+          if (isMember && g.jabatan) {
+            skillsMap[g.jabatan] = (skillsMap[g.jabatan] || 0) + 1;
+          }
+        });
+      }
+    });
+
+    const topSkills = Object.entries(skillsMap)
+      .sort((a, b) => b[1] - a[1])
+      .map(e => e[0]);
+
     return {
-      id: user.id,
-      name: user.name,
-      image: user.image,
-      role_id: user.role_id,
+      ...user,
       created_at: user.createdAt,
-      films
+      films,
+      stats: {
+        totalFilms: films.length,
+        totalViews
+      },
+      topSkills
     };
   }
 }

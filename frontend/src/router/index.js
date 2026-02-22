@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import { useLoading } from '@/composables/useLoading'
 import Home from '../pages/Home.vue'
 import Login from '../pages/auth/Login.vue'
 import Register from '../pages/auth/Register.vue'
+import AdminLayout from '../components/AdminLayout.vue'
 
 const routes = [
   {
@@ -139,88 +141,96 @@ const routes = [
     meta: { guestOnly: true }
   },
   {
-    path: '/admin/dashboard',
-    name: 'AdminDashboard',
-    component: () => import('../pages/admin/DashboardAdmin.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/admin/rbac',
-    name: 'RBAC',
-    component: () => import('../pages/admin/RBAC.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/admin/categories',
-    name: 'AdminCategories',
-    component: () => import('../pages/admin/Categories.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/admin/archives',
-    name: 'AdminArchives',
-    component: () => import('../pages/admin/Archives.vue'),
-    meta: { requiresAuth: true, requiresModerator: true }
-  },
-  {
-    path: '/admin/reports',
-    name: 'AdminReports',
-    component: () => import('../pages/admin/Reports.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/admin/notifications',
-    name: 'AdminNotifications',
-    component: () => import('../pages/admin/Notifications.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/admin/settings',
-    name: 'AdminSettings',
-    component: () => import('../pages/admin/Settings.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/admin/trending',
-    name: 'TrendingManager',
-    component: () => import('../pages/admin/TrendingManager.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/admin/community',
-    name: 'CommunityDiscussions',
-    component: () => import('../pages/admin/CommunityDiscussions.vue'),
-    meta: { requiresAuth: true, requiresModerator: true }
+    path: '/admin',
+    component: AdminLayout,
+    meta: { requiresAuth: true, requiresModerator: true },
+    children: [
+      {
+        path: '',
+        name: 'AdminDashboard',
+        component: () => import('../pages/admin/DashboardAdmin.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'dashboard',
+        redirect: '/admin'
+      },
+      {
+        path: 'rbac',
+        name: 'RBAC',
+        component: () => import('../pages/admin/RBAC.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'categories',
+        name: 'AdminCategories',
+        component: () => import('../pages/admin/Categories.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'archives',
+        name: 'AdminArchives',
+        component: () => import('../pages/admin/Archives.vue')
+      },
+      {
+        path: 'reports',
+        name: 'AdminReports',
+        component: () => import('../pages/admin/Reports.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'notifications',
+        name: 'AdminNotifications',
+        component: () => import('../pages/admin/Notifications.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'settings',
+        name: 'AdminSettings',
+        component: () => import('../pages/admin/Settings.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'trending',
+        name: 'TrendingManager',
+        component: () => import('../pages/admin/TrendingManager.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'community',
+        name: 'CommunityDiscussions',
+        component: () => import('../pages/admin/CommunityDiscussions.vue')
+      },
+      {
+        path: 'help',
+        name: 'AdminHelp',
+        component: () => import('../pages/admin/Help.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'comments',
+        name: 'AdminComments',
+        component: () => import('../pages/admin/Comments.vue')
+      },
+      {
+        path: 'storage',
+        name: 'AdminStorage',
+        component: () => import('../pages/admin/StorageManager.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'logs',
+        name: 'AdminLogs',
+        component: () => import('../pages/admin/AuditLogs.vue'),
+        meta: { requiresAdmin: true }
+      }
+    ]
   },
   {
     path: '/manage-materi',
     name: 'MaterialManager',
     component: () => import('@/pages/MaterialManager.vue'),
     meta: { requiresAuth: true, requiresModerator: true }
-  },
-  {
-    path: '/admin/help',
-    name: 'AdminHelp',
-    component: () => import('../pages/admin/Help.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/admin/comments',
-    name: 'AdminComments',
-    component: () => import('../pages/admin/Comments.vue'),
-    meta: { requiresAuth: true, requiresModerator: true }
-  },
-  {
-    path: '/admin/storage',
-    name: 'AdminStorage',
-    component: () => import('../pages/admin/StorageManager.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/admin/logs',
-    name: 'AdminLogs',
-    component: () => import('../pages/admin/AuditLogs.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/:pathMatch(.*)*',
@@ -241,6 +251,9 @@ const router = createRouter({
 
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
+  const { start } = useLoading()
+  start()
+  
   const { isLoggedIn, isAdmin, isModerator, isCreator, initialized, init } = useAuth()
   
   // Wait for auth to initialize
@@ -271,6 +284,16 @@ router.beforeEach(async (to, from, next) => {
   }
   
   next()
+})
+
+router.afterEach(() => {
+  const { finish } = useLoading()
+  finish()
+})
+
+router.onError(() => {
+  const { finish } = useLoading()
+  finish()
 })
 
 export default router

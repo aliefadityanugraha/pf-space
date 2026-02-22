@@ -125,7 +125,7 @@ npm test
 npm run test:coverage
 
 # Run specific file
-npm test -- film.controller.test.js
+npm test -- src/__tests__/film.service.test.js
 ```
 
 #### Example Test
@@ -143,25 +143,21 @@ describe("FilmController", () => {
   });
 
   it("should create film successfully", async () => {
-    const mockRequest = {
-      body: {
-        judul: "Test Film",
-        category_id: 1,
-      },
-      user: { id: "user123" },
-    };
-
-    const mockReply = {
-      status: jest.fn().mockReturnThis(),
-      send: jest.fn(),
-    };
-
-    await controller.createFilm(mockRequest, mockReply);
-
-    expect(mockReply.status).toHaveBeenCalledWith(201);
+    // ... test logic
   });
 });
 ```
+
+#### Core Unit Tests Suite
+
+Backend memiliki beberapa unit test krusial untuk menjaga integritas data dan keamanan:
+
+1.  **`film.service.test.js`**: Menguji logika pembersihan data `crew` dan sanitasi HTML sebelum data disimpan ke database.
+2.  **`validation.test.js`**: Memastikan middleware Zod bekerja dengan benar dalam memblokir request tidak valid dan mentransformasi tipe data.
+3.  **`sanitize.test.js`**: Memastikan layer proteksi XSS (Cross-Site Scripting) berfungsi untuk membuang tag `<script>` atau atribut `onerror`.
+4.  **`upload.test.js`**: Menguji helper penentuan subfolder file berdasarkan tipe MIME.
+
+````
 
 ## 🔗 Integration Tests
 
@@ -172,7 +168,7 @@ describe("FilmController", () => {
 ```bash
 cd backend
 npm install
-```
+````
 
 #### Run Tests
 

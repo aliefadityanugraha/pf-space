@@ -6,6 +6,37 @@ All notable changes to PF Space project will be documented in this file.
 
 ### Added
 
+- **Centralized Validation**: Implementasi Zod schema untuk validasi request secara terpusat
+  - Middleware `validateRequest` untuk body, params, dan query
+  - Transformasi data otomatis (misal: ID dari string ke number)
+  - Penanganan error validasi yang konsisten
+
+- **Unit Testing**: Suite pengetesan komprehensif untuk backend
+  - Tests untuk `FilmService.normalizeData` (crew cleaning & sanitization)
+  - Tests untuk `Validation Middleware` (Zod integration)
+  - Tests untuk `Sanitization Utility` (XSS prevention)
+
+### Changed
+
+- **Refactoring Controller**: Pembersihan logika bisnis dari controller ke service layer
+  - `FilmController` sekarang lebih ramping (Thin Controller)
+  - Pembersihan data `crew` dipindahkan ke `FilmService.normalizeData`
+  - Sanitasi HTML dipindahkan ke service layer untuk konsistensi
+
+- **FilmScene Management**: Refactor `FilmSceneController` menggunakan centralized validation
+  - Penghapusan manual `parseInt` dan `isNaN` checks
+  - Proteksi rute yang lebih ketat dengan Zod
+
+### Fixed
+
+- **Data Consistency**: Penanganan field `crew` yang lebih aman dari input yang tidak valid
+- **Security**: Sanitasi HTML yang lebih merata di seluruh operasi create/update film
+- **Error Handling**: Standardisasi pesan error untuk kegagalan validasi dan otorisasi
+
+### Optimized
+
+- **Code Reuse**: Ekstraksi logika pembersihan data ke service layer mencegah duplikasi kode antara create dan update.
+
 - **Draft System**: Auto-save form data ke localStorage untuk mencegah kehilangan data
   - Composable `useFilmDraft` untuk mengelola draft
   - Auto-save setiap 3 detik saat form diisi

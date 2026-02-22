@@ -1,6 +1,7 @@
 import { filmController } from '../controllers/index.js';
-import { authenticate, requireModerator, requireCreator, optionalAuth, viewRateLimit } from '../middlewares/index.js';
+import { authenticate, requireModerator, requireCreator, optionalAuth, viewRateLimit, validateRequest } from '../middlewares/index.js';
 import { createFilmSchema, updateFilmSchema, rejectionSchema } from '../schemas/film.schema.js';
+import { numericIdParamSchema, filmIdParamSchema } from '../schemas/film.zod.js';
 
 /**
  * Register film-related routes
@@ -38,19 +39,22 @@ export default async function filmRoutes(fastify) {
 
   // Public: Get single film (with optional auth for unpublished)
   fastify.get('/:id', {
-    preHandler: optionalAuth
+    preHandler: [validateRequest(filmIdParamSchema, 'params'), optionalAuth]
   }, filmController.getById.bind(filmController));
 
   // Public: Get related films
   fastify.get('/:id/related', {
-    preHandler: async (request, reply) => {
-      reply.header('Cache-Control', 'public, max-age=300'); // 5 minutes cache
-    }
+    preHandler: [
+      validateRequest(filmIdParamSchema, 'params'),
+      async (request, reply) => {
+        reply.header('Cache-Control', 'public, max-age=300'); // 5 minutes cache
+      }
+    ]
   }, filmController.getRelated.bind(filmController));
 
   // Public: Increment view count (rate-limited per IP)
   fastify.post('/:id/views', {
-    preHandler: viewRateLimit
+    preHandler: [validateRequest(filmIdParamSchema, 'params'), viewRateLimit]
   }, filmController.incrementViews.bind(filmController));
 
   // Creator: Create new film
@@ -61,23 +65,26 @@ export default async function filmRoutes(fastify) {
 
   // Creator/Admin: Update film
   fastify.put('/:id', {
-    preHandler: [authenticate],
+    preHandler: [
+      validateRequest(numericIdParamSchema, 'params'),
+      authenticate
+    ],
     schema: updateFilmSchema
   }, filmController.update.bind(filmController));
 
   // Creator/Admin: Delete film
   fastify.delete('/:id', {
-    preHandler: authenticate
+    preHandler: [validateRequest(numericIdParamSchema, 'params'), authenticate]
   }, filmController.delete.bind(filmController));
 
   // Admin/Moderator: Approve film
   fastify.patch('/:id/approve', {
-    preHandler: requireModerator
+    preHandler: [validateRequest(numericIdParamSchema, 'params'), requireModerator]
   }, filmController.approve.bind(filmController));
 
   // Admin/Moderator: Reject film
   fastify.patch('/:id/reject', {
-    preHandler: [requireModerator],
+    preHandler: [validateRequest(numericIdParamSchema, 'params'), requireModerator],
     schema: rejectionSchema
   }, filmController.reject.bind(filmController));
 }

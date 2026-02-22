@@ -22,6 +22,7 @@ export class LearningMaterialService {
   async getAll({ page = 1, limit = 20, activeOnly = true, creator_id = null }) {
     let query = LearningMaterial.query()
       .withGraphFetched('creator')
+      .orderBy('is_featured', 'desc')
       .orderBy('created_at', 'desc');
 
     if (activeOnly) {
