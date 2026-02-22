@@ -23,6 +23,7 @@ import { auth } from './lib/auth.js';
 import routes from './routes/index.js';
 import tusRoutes from './routes/tus.routes.js';
 import staticRoutes from './routes/static.routes.js';
+import seoRoutes from './routes/seo.routes.js';
 import fastifyStatic from '@fastify/static';
 import { UPLOAD_DIR } from './lib/upload.js';
 import { seoMiddleware } from './middlewares/seo.middleware.js';
@@ -123,6 +124,9 @@ await fastify.register(tusRoutes, { prefix: '/api/files' });
 
 // Register API routes
 await fastify.register(routes, { prefix: '/api' });
+
+// Register SEO routes (root level)
+await fastify.register(seoRoutes);
 
 fastify.setErrorHandler(globalErrorHandler);
 
