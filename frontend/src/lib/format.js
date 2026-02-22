@@ -9,7 +9,10 @@ export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
  */
 export function assetUrl(url) {
   if (!url) return url
-  if (/^https?:\/\//i.test(url)) return url
+  
+  // Return early if it's already an absolute URL (http, https, or protocol-relative //)
+  if (/^(https?:)?\/\//i.test(url)) return url
+  
   const base = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE
   let path = url.startsWith('/') ? url : `/${url}`
   
