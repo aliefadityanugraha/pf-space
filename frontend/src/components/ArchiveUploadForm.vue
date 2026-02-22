@@ -205,10 +205,10 @@ const startVideoUpload = async () => {
   if (!selectedVideoFile.value) return
 
   const file = selectedVideoFile.value
-  const limit = 1024 * 1024 * 1024 // 1GB
+  const limit = 1024 * 1024 * 1024 *2 // 2GB
 
   if (file.size > limit) {
-    emit('error', 'Ukuran video terlalu besar (maksimal 1GB)')
+    emit('error', 'Ukuran video terlalu besar (maksimal 2GB)')
     showVideoModal.value = false
     selectedVideoFile.value = null
     return
