@@ -24,6 +24,7 @@ const allMenuItems = [
   { name: 'Arsip', icon: Film, path: '/admin/archives' },
   { name: 'Kategori', icon: FolderOpen, path: '/admin/categories' },
   { name: 'Manajemen File', icon: Database, path: '/admin/storage' },
+  { name: 'Log Audit', icon: Shield, path: '/admin/logs' },
   { name: 'Kontrol Akses', icon: Shield, path: '/admin/rbac' },
   { name: 'Trending', icon: Vote, path: '/admin/trending' },
   { name: 'Diskusi Komunitas', icon: MessageCircle, path: '/admin/community' },
