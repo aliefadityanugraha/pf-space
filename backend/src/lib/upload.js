@@ -165,3 +165,61 @@ export async function deleteFile(fileUrl) {
     console.error(`Failed to delete file ${fileUrl}:`, err);
   }
 }
+/**
+ * Calculate directory size and file count
+ * @param {string} dirPath 
+ * @returns {Promise<{size: number, count: number}>}
+ */
+async function getDirStats(dirPath) {
+  let size = 0;
+  let count = 0;
+
+  try {
+    const files = await fs.promises.readdir(dirPath, { withFileTypes: true });
+    
+    for (const file of files) {
+      const fullPath = path.join(dirPath, file.name);
+      if (file.isDirectory()) {
+        const stats = await getDirStats(fullPath);
+        size += stats.size;
+        count += stats.count;
+      } else {
+        const stats = await fs.promises.stat(fullPath);
+        size += stats.size;
+        count++;
+      }
+    }
+  } catch (err) {
+    console.error(`Error reading directory ${dirPath}:`, err.message);
+  }
+
+  return { size, count };
+}
+
+/**
+ * Get overall storage statistics for all upload subdirectories
+ * @returns {Promise<object>} stats object
+ */
+export async function getStorageStats() {
+  const stats = {
+    totalSize: 0,
+    totalCount: 0,
+    categories: {}
+  };
+
+  for (const [key, sub] of Object.entries(UPLOAD_SUBDIRS)) {
+    const subPath = path.join(UPLOAD_DIR, sub);
+    const dirStats = await getDirStats(subPath);
+    
+    stats.categories[key] = {
+      name: sub,
+      size: dirStats.size,
+      count: dirStats.count
+    };
+    
+    stats.totalSize += dirStats.size;
+    stats.totalCount += dirStats.count;
+  }
+
+  return stats;
+}

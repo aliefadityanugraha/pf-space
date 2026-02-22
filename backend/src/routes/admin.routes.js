@@ -12,8 +12,11 @@ import { requireAdmin } from '../middlewares/index.js';
  * @param {import('fastify').FastifyInstance} fastify - Fastify instance
  */
 export default async function adminRoutes(fastify) {
-  // Get dashboard statistics (requires admin role)
   fastify.get('/stats', {
     preHandler: requireAdmin
   }, adminController.getDashboardStats.bind(adminController));
+
+  fastify.get('/storage', {
+    preHandler: requireAdmin
+  }, adminController.getStorageStats.bind(adminController));
 }

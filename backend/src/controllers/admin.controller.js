@@ -9,8 +9,24 @@ import { Film } from '../models/Film.js';
 import { Discussion } from '../models/Discussion.js';
 import { Category } from '../models/Category.js';
 import { ApiResponse } from '../lib/response.js';
+import { getStorageStats } from '../lib/upload.js';
 
 export class AdminController {
+  /**
+   * Get storage usage statistics
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getStorageStats(request, reply) {
+    try {
+      const stats = await getStorageStats();
+      return ApiResponse.success(reply, stats);
+    } catch (error) {
+      request.log.error(error);
+      return ApiResponse.error(reply, 'Gagal mengambil statistik penyimpanan');
+    }
+  }
+
   /**
    * Fetch aggregate statistics and recent activity for the admin dashboard
    * @param {import('fastify').FastifyRequest} request - Fastify request object
