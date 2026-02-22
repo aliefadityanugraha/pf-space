@@ -8,34 +8,14 @@ const initialized = ref(false);
 let initPromise = null;
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
+import { assetUrl } from '@/lib/format';
+
 function normalizeUser(u) {
   if (!u) return u;
   const copy = { ...u };
-  const img = copy.image;
-  
-  // Handle image URL normalization
-  if (typeof img === 'string' && img.length > 0) {
-    // Case 1: Relative path starting with /uploads
-    if (img.startsWith('/uploads')) {
-      const base = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
-      copy.image = `${base}${img}`;
-    } 
-    // Case 2: Localhost URL that needs to be replaced
-    else if (img.includes('localhost') && img.includes('/uploads')) {
-      const base = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
-      copy.image = img.replace(/^https?:\/\/[^/]+/, base);
-    }
-    // Case 3: External URL (Google OAuth, etc.) - keep as is
-    else if (img.startsWith('http://') || img.startsWith('https://')) {
-      copy.image = img;
-    }
-    // Case 4: Relative path without leading slash
-    else if (!img.startsWith('http')) {
-      const base = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
-      copy.image = `${base}/${img}`;
-    }
+  if (copy.image) {
+    copy.image = assetUrl(copy.image);
   }
-  
   return copy;
 }
 
