@@ -12,8 +12,8 @@ export const createMaterialSchema = {
       judul: { type: 'string', minLength: 3, maxLength: 255 },
       deskripsi: { type: 'string', maxLength: 1000 },
       tipe: { type: 'string', enum: ['pdf', 'video'] },
-      file_path: { type: 'string' },
-      video_url: { type: 'string', format: 'uri' },
+      file_path: { type: ['string', 'null'] },
+      video_url: { type: ['string', 'null'] },
       is_active: { type: 'boolean' }
     },
     additionalProperties: false
@@ -34,8 +34,8 @@ export const updateMaterialSchema = {
       judul: { type: 'string', minLength: 3, maxLength: 255 },
       deskripsi: { type: 'string', maxLength: 1000 },
       tipe: { type: 'string', enum: ['pdf', 'video'] },
-      file_path: { type: 'string' },
-      video_url: { type: 'string', format: 'uri' },
+      file_path: { type: ['string', 'null'] },
+      video_url: { type: ['string', 'null'] },
       is_active: { type: 'boolean' }
     },
     additionalProperties: false

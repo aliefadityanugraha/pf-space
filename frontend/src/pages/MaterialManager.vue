@@ -191,11 +191,21 @@ const saveMaterial = async () => {
   formError.value = ''
 
   try {
+    const payload = {
+      judul: formData.value.judul,
+      deskripsi: formData.value.deskripsi,
+      tipe: formData.value.tipe,
+      is_active: formData.value.is_active,
+      // Only send what's relevant to the type
+      file_path: formData.value.tipe === 'pdf' ? formData.value.file_path : null,
+      video_url: formData.value.tipe === 'video' ? formData.value.video_url : null
+    }
+
     if (editingMaterial.value) {
-      await api.put(`/api/learning-materials/${editingMaterial.value.materi_id}`, formData.value)
+      await api.put(`/api/learning-materials/${editingMaterial.value.materi_id}`, payload)
       showToast('Materi berhasil diperbarui')
     } else {
-      await api.post('/api/learning-materials', formData.value)
+      await api.post('/api/learning-materials', payload)
       showToast('Materi berhasil ditambahkan')
     }
     closeModal()
