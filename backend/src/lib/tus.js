@@ -52,12 +52,6 @@ export const tusServer = new Server({
     // Fastify usually lowercases headers in request.raw.headers
     const metadataHeader = headers['upload-metadata'] || headers['Upload-Metadata'] || '';
     const metadata = parseMetadata(metadataHeader);
-    try {
-      const headerKeys = Object.keys(headers || {});
-      console.log('[Tus] namingFunction: method=%s url=%s headerKeys=%o', req.method, req.url, headerKeys);
-      console.log('[Tus] namingFunction: metadataHeader=%s', metadataHeader);
-      console.log('[Tus] namingFunction: parsed metadata=%o', metadata);
-    } catch {}
     
     const filename = metadata.filename || '';
     const filetype = metadata.filetype || '';
@@ -113,14 +107,16 @@ export const tusServer = new Server({
       const filetype = parsedMeta.filetype || '';
       const urlId = (req.url || '').split('/').filter(Boolean).pop() || '';
       const effectiveId = (upload && upload.id) || urlId;
-      console.log('[Tus] onUploadFinish: rawId=%s urlId=%s', upload && upload.id, urlId);
+      
       let subfolder = getSubfolderForType(filetype);
       const isUnknownType = !filetype || filetype === 'application/octet-stream' || filetype === 'binary/octet-stream';
       let ext = (path.extname(effectiveId) || '').toLowerCase();
+      
       // Tambahan: coba ambil ekstensi dari Upload-Metadata (filename) jika ID tanpa ekstensi
       if (!ext && parsedMeta.filename) {
         ext = (path.extname(parsedMeta.filename) || '').toLowerCase();
       }
+
       // Jika tipe tidak dikenal, coba deteksi dari metadata JSON yang disimpan oleh @tus/file-store
       if (isUnknownType) {
         try {
@@ -138,14 +134,14 @@ export const tusServer = new Server({
               if (jsonFiletype && (jsonFiletype !== 'application/octet-stream' && jsonFiletype !== 'binary/octet-stream')) {
                 subfolder = getSubfolderForType(jsonFiletype);
               }
-              console.log('[Tus] onUploadFinish: jsonMeta filetype=%s filename=%s', jsonFiletype || '(none)', jsonFilename || '(none)');
             } catch (e) {
-              console.warn('[Tus] onUploadFinish: gagal parse metadata JSON:', e.message);
+              // ignore
             }
           }
         } catch {}
       }
-      // Terakhir, mapping berdasarkan ekstensi jika masih belum jelas
+
+      // Final mapping by extension if still unknown
       if (isUnknownType) {
         if (['.mp4', '.webm', '.ogg', '.mov', '.m4v', '.avi', '.mkv'].includes(ext)) subfolder = 'videos';
         else if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'].includes(ext)) subfolder = 'images';
@@ -156,42 +152,28 @@ export const tusServer = new Server({
       const targetDir = path.join(UPLOAD_DIR, subfolder);
       const targetPath = path.join(targetDir, effectiveId);
 
-      console.log(`[Tus] onUploadFinish - id: ${effectiveId}, type: ${filetype || '(empty)'}, ext: ${ext || '(none)'}, subfolder: ${subfolder}`);
-      console.log('[Tus] onUploadFinish: currentPath=%s targetDir=%s targetPath=%s', currentPath, targetDir, targetPath);
-
       // Ensure target subfolder exists
       if (!fs.existsSync(targetDir)) {
         fs.mkdirSync(targetDir, { recursive: true });
-        console.log('[Tus] onUploadFinish: created targetDir');
       }
 
       // Move file to subfolder if it exists in root
       if (fs.existsSync(currentPath)) {
-        try {
-          const stat = fs.statSync(currentPath);
-          console.log('[Tus] onUploadFinish: currentPath exists size=%d bytes', stat.size);
-        } catch {}
-        // Use copy + unlink if rename fails (e.g., across volumes, though unlikely here)
         try {
           fs.renameSync(currentPath, targetPath);
           console.log(`[Tus] ✅ Moved file: ${effectiveId} -> ${subfolder}/`);
           
           // Optimize if it's an image
           if (subfolder === 'images' && !effectiveId.toLowerCase().endsWith('.gif')) {
-            console.log(`[Tus] ⚡ Optimizing image: ${effectiveId}`);
             optimizeImage(targetPath).catch(err => {
               console.error('[Tus] Optimization background error:', err.message);
             });
           }
         } catch (renameErr) {
-          console.warn(`[Tus] Rename failed, trying copy: ${renameErr.message}`);
           fs.copyFileSync(currentPath, targetPath);
           fs.unlinkSync(currentPath);
-          console.log('[Tus] onUploadFinish: copy+unlink completed');
-
-          // Optimize if it's an image
+          
           if (subfolder === 'images' && !effectiveId.toLowerCase().endsWith('.gif')) {
-            console.log(`[Tus] ⚡ Optimizing image: ${effectiveId}`);
             optimizeImage(targetPath).catch(err => {
               console.error('[Tus] Optimization background error:', err.message);
             });
@@ -201,29 +183,16 @@ export const tusServer = new Server({
         // Also move the .json metadata file
         const metaPath = `${currentPath}.json`;
         if (fs.existsSync(metaPath)) {
-          // no-op
-        }
-        if (fs.existsSync(metaPath)) {
           const targetMetaPath = `${targetPath}.json`;
           try {
             fs.renameSync(metaPath, targetMetaPath);
-            console.log('[Tus] onUploadFinish: metadata rename ok');
           } catch (e) {
-            if (fs.existsSync(metaPath)) {
-              fs.copyFileSync(metaPath, targetMetaPath);
-              fs.unlinkSync(metaPath);
-              console.log('[Tus] onUploadFinish: metadata copy+unlink ok');
-            }
+            fs.copyFileSync(metaPath, targetMetaPath);
+            fs.unlinkSync(metaPath);
           }
-          console.log(`[Tus] ✅ Moved metadata: ${effectiveId}.json -> ${subfolder}/`);
         }
-      } else {
-        // Maybe it's already in the target folder? (e.g. if hook called twice or resumed)
-        if (fs.existsSync(targetPath)) {
-          console.log(`[Tus] ℹ️ File already in target folder: ${targetPath}`);
-        } else {
-          console.error(`[Tus] ❌ File not found anywhere: ${effectiveId}`);
-        }
+      } else if (!fs.existsSync(targetPath)) {
+        console.error(`[Tus] ❌ File not found: ${effectiveId}`);
       }
     } catch (err) {
       console.error('[Tus] Error in onUploadFinish:', err);
