@@ -89,23 +89,42 @@ export function useAuth() {
   // Logout
   async function logout() {
     try {
+      // 1. Tell backend to sign out
       await authApi.logout();
-      
-      // Manual cleanup of cookies just in case the browser is stubborn
-      document.cookie.split(";").forEach(function(c) { 
-        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-      });
+    } catch (err) {
+      console.warn('Backend logout failed, continuing with frontend cleanup');
+    } finally {
+      // 2. Clear ALL local data
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // 3. Brutal cookie clearing for all possible paths and domains
+      const cookies = document.cookie.split(";");
+      const domain = window.location.hostname;
+      const baseDomain = domain.split('.').slice(-2).join('.');
+
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i];
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+        
+        // Clear for current path, root path, and domains
+        const paths = ['/', window.location.pathname];
+        const domains = [null, domain, `.${domain}`, `.${baseDomain}`];
+        
+        paths.forEach(p => {
+          domains.forEach(d => {
+            let cookieString = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${p}`;
+            if (d) cookieString += `;domain=${d}`;
+            document.cookie = cookieString;
+          });
+        });
+      }
 
       user.value = null;
       
-      // Hard reload and redirect to home to clear any memory cache and reset app state
-      window.location.href = '/';
-    } catch (err) {
-      console.error('Logout failed:', err);
-      // Fallback
-      window.location.href = '/';
-    } finally {
-      user.value = null;
+      // 4. Force hard reload to home without cache
+      window.location.replace('/');
     }
   }
 
