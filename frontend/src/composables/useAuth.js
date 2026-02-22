@@ -110,6 +110,20 @@ export function useAuth() {
   async function logout() {
     try {
       await authApi.logout();
+      
+      // Manual cleanup of cookies just in case the browser is stubborn
+      document.cookie.split(";").forEach(function(c) { 
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+      });
+
+      user.value = null;
+      
+      // Hard reload and redirect to home to clear any memory cache and reset app state
+      window.location.href = '/';
+    } catch (err) {
+      console.error('Logout failed:', err);
+      // Fallback
+      window.location.href = '/';
     } finally {
       user.value = null;
     }
