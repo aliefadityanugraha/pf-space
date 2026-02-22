@@ -211,6 +211,12 @@ const routes = [
     meta: { requiresAuth: true, requiresModerator: true }
   },
   {
+    path: '/admin/storage',
+    name: 'AdminStorage',
+    component: () => import('../pages/admin/StorageManager.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('../pages/NotFound.vue')

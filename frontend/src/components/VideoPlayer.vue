@@ -46,6 +46,37 @@ onMounted(async () => {
         hls = new Hls.default()
         hls.loadSource(src)
         hls.attachMedia(videoEl.value)
+
+        // Listen for when manifest is loaded to update quality menu
+        hls.on(Hls.default.Events.MANIFEST_PARSED, () => {
+          const availableQualities = hls.levels.map((l) => l.height)
+          
+          // Add 'Auto' quality
+          const qualities = [0, ...availableQualities]
+          
+          plyr.config.quality = {
+            default: 0,
+            options: qualities,
+            forced: true,
+            onChange: (newQuality) => {
+              if (newQuality === 0) {
+                hls.currentLevel = -1 // Auto
+              } else {
+                hls.levels.forEach((level, levelIndex) => {
+                  if (level.height === newQuality) {
+                    hls.currentLevel = levelIndex
+                  }
+                })
+              }
+            },
+          }
+          
+          // Update Plyr labels
+          plyr.config.i18n.quality = 'Kualitas'
+          const labels = { 0: 'Auto' }
+          availableQualities.forEach(q => { labels[q] = `${q}p` })
+          plyr.config.displayDuration = true
+        })
       } else if (videoEl.value.canPlayType('application/vnd.apple.mpegurl')) {
         videoEl.value.src = src
       } else {
@@ -57,9 +88,13 @@ onMounted(async () => {
     }
 
     plyr = new Plyr(videoEl.value, {
-      controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'pip', 'airplay', 'fullscreen'],
+      controls: [
+        'play-large', 'play', 'progress', 'current-time', 
+        'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'
+      ],
       invertTime: false,
-      speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] }
+      speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
+      quality: { default: 0, options: [0] } // Initial state
     })
 
     const key = lsKey()
