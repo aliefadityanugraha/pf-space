@@ -13,5 +13,9 @@ export default defineConfig({
   },
   server: {
     allowedHosts: ['103.127.96.155', '07db-210-87-124-214.ngrok-free.app']
+  },
+  test: {
+    environment: 'happy-dom',
+    globals: true
   }
 })

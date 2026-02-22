@@ -167,3 +167,10 @@ export function useAuth() {
     refreshUser
   };
 }
+
+// For testing purposes only
+export function _resetAuthState() {
+  user.value = null;
+  initialized.value = false;
+  initPromise = null;
+}

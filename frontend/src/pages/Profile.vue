@@ -257,10 +257,10 @@ onMounted(() => {
 
 <template>
   <PageLayout>
-    <div class="max-w-7xl mx-auto mb-16">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 mb-16">
       
       <!-- Compact Header (Brutal Style) -->
-      <div class="flex flex-col md:flex-row items-center gap-5 md:gap-6 mb-8 p-5 md:p-6 bg-white border-2 border-white/20 shadow-brutal relative z-10 mx-1 md:mx-0">
+      <div class="flex flex-col md:flex-row items-center gap-5 md:gap-6 mb-8 p-5 md:p-6 bg-white border-2 border-white/20 shadow-brutal relative z-10">
         <!-- Decoration Dots -->
         <div class="absolute top-2 right-2 md:top-3 md:right-3 flex gap-1">
           <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-black rounded-full"></div>
@@ -323,7 +323,7 @@ onMounted(() => {
       </div>
 
       <!-- Tabs Navigation (Brutal Style) -->
-      <div class="flex gap-2.5 md:gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide px-1 md:px-0">
+      <div class="flex gap-2.5 md:gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide">
         <button 
           @click="activeTab = 'dashboard'" 
           :class="['px-4 md:px-6 py-2.5 md:py-3 font-display font-bold uppercase tracking-widest text-[10px] md:text-sm border-2 border-black transition-all shadow-brutal-xs flex items-center gap-1.5 md:gap-2 whitespace-nowrap', activeTab === 'dashboard' ? 'bg-brand-teal text-white translate-x-[1px] translate-y-[1px] shadow-none' : 'bg-white text-stone-900']"
@@ -348,7 +348,7 @@ onMounted(() => {
           
           <div v-else class="space-y-8 animate-fade-in">
             <!-- Stats Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 px-1">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
               <Card class="bg-white border-2 border-black shadow-brutal">
                 <CardContent class="p-3 md:p-5 flex items-center md:flex-col justify-start md:justify-center text-left md:text-center gap-3">
                    <div class="w-10 h-10 md:w-12 md:h-12 bg-stone-100 border-2 border-black flex items-center justify-center shadow-sm flex-shrink-0">
@@ -401,7 +401,7 @@ onMounted(() => {
                 </Button>
               </div>
 
-              <div v-else class="space-y-3 md:space-y-4 px-1">
+              <div v-else class="space-y-3 md:space-y-4">
                 <div v-for="film in films" :key="film.film_id" class="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white border-2 border-black shadow-brutal hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-brutal-sm transition-all overflow-hidden">
                    <div class="w-10 h-14 md:w-12 md:h-16 bg-stone-200 flex-shrink-0 overflow-hidden border border-black relative">
                       <img v-if="film.gambar_poster" :src="film.gambar_poster" class="w-full h-full object-cover" />
