@@ -183,11 +183,33 @@ export class AuthController {
   async logout(request, reply) {
     const isProduction = process.env.NODE_ENV === 'production';
     const secureAttr = isProduction ? '; Secure' : '';
+    const host = request.headers.host ? request.headers.host.split(':')[0] : null;
     
-    reply.header('set-cookie', [
-      `better-auth.session_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax${secureAttr}`,
-      `better-auth.session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax${secureAttr}`
-    ]);
+    const cookiesToClear = [
+      'better-auth.session_token',
+      'better-auth.session'
+    ];
+
+    const setCookieHeaders = [];
+    
+    cookiesToClear.forEach(name => {
+      // 1. Clear without domain
+      setCookieHeaders.push(`${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax${secureAttr}`);
+      
+      // 2. Clear with explicit host domain
+      if (host) {
+        setCookieHeaders.push(`${name}=; Path=/; Domain=${host}; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax${secureAttr}`);
+        
+        // 3. Clear with wildcard domain for subdomains
+        const domainParts = host.split('.');
+        if (domainParts.length >= 2) {
+          const baseDomain = `.${domainParts.slice(-2).join('.')}`;
+          setCookieHeaders.push(`${name}=; Path=/; Domain=${baseDomain}; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax${secureAttr}`);
+        }
+      }
+    });
+
+    reply.header('set-cookie', setCookieHeaders);
     return ApiResponse.success(reply, null, 'Logged out');
   }
 
