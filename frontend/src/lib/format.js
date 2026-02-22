@@ -11,7 +11,14 @@ export function assetUrl(url) {
   if (!url) return url
   if (/^https?:\/\//i.test(url)) return url
   const base = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE
-  return `${base}${url.startsWith('/') ? url : `/${url}`}`
+  let path = url.startsWith('/') ? url : `/${url}`
+  
+  // Auto-prepend /uploads if it's a relative path and doesn't have it
+  if (!path.startsWith('/uploads/') && !path.startsWith('/api/')) {
+    path = `/uploads${path}`
+  }
+  
+  return `${base}${path}`
 }
 
 export function formatDate(date, withTime = false) {
