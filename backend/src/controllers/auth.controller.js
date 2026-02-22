@@ -181,9 +181,12 @@ export class AuthController {
    * @param {import('fastify').FastifyReply} reply
    */
   async logout(request, reply) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const secureAttr = isProduction ? '; Secure' : '';
+    
     reply.header('set-cookie', [
-      'better-auth.session_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly',
-      'better-auth.session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly'
+      `better-auth.session_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax${secureAttr}`,
+      `better-auth.session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax${secureAttr}`
     ]);
     return ApiResponse.success(reply, null, 'Logged out');
   }
