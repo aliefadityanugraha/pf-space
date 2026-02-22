@@ -17,6 +17,7 @@ import path from 'path';
 import { pipeline } from 'stream/promises';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
+import sharp from 'sharp';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,17 +65,68 @@ export function generateUniqueName(originalName) {
 }
 
 /**
- * Save a file stream to the appropriate upload subdirectory
+ * Optimize an image file (resize and convert to webp)
+ * @param {string} inputPath 
+ * @param {string} outputPath (optional, if same as input it will overwrite)
+ * @returns {Promise<string>} final output path
+ */
+export async function optimizeImage(inputPath, outputPath) {
+  const targetPath = outputPath || inputPath + '.tmp';
+  
+  try {
+    await sharp(inputPath)
+      .resize(1200, null, { 
+        withoutEnlargement: true,
+        fit: 'inside'
+      })
+      .webp({ quality: 80 })
+      .toFile(targetPath);
+
+    // If we used a temp file, replace the original
+    if (targetPath !== inputPath && !outputPath) {
+      await fs.promises.unlink(inputPath);
+      await fs.promises.rename(targetPath, inputPath);
+    }
+    
+    return outputPath || inputPath;
+  } catch (err) {
+    console.error('[Sharp] Image optimization failed:', err.message);
+    // Return original if optimization fails
+    return inputPath;
+  }
+}
+
+/**
+ * Save a file stream to the appropriate upload subdirectory.
+ * Optimizes images automatically.
  * @param {object} file - Fastify file object
  * @param {string} subfolder - Target subfolder (default: determined by mimetype)
  * @returns {string} Relative URL of the saved file
  */
 export async function saveFile(file, subfolder) {
   const targetSubfolder = subfolder || getSubfolderForType(file.mimetype);
-  const uniqueName = generateUniqueName(file.filename);
+  const isImage = file.mimetype.startsWith('image/') && file.mimetype !== 'image/gif';
+  
+  // For images, we might want to change extension to .webp
+  let uniqueName = generateUniqueName(file.filename);
+  if (isImage) {
+    const id = uniqueName.split('.')[0];
+    uniqueName = `${id}.webp`;
+  }
+  
   const filePath = path.join(UPLOAD_DIR, targetSubfolder, uniqueName);
   
-  await pipeline(file.file, fs.createWriteStream(filePath));
+  if (isImage) {
+    // Pipe through sharp for optimization
+    const transformer = sharp()
+      .resize(1200, null, { withoutEnlargement: true, fit: 'inside' })
+      .webp({ quality: 80 });
+      
+    await pipeline(file.file, transformer, fs.createWriteStream(filePath));
+  } else {
+    // Direct stream for non-images
+    await pipeline(file.file, fs.createWriteStream(filePath));
+  }
   
   return `/uploads/${targetSubfolder}/${uniqueName}`;
 }

@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "si-film-backend",
+      name: "pfspace-backend",
       cwd: "./backend",
       script: "src/index.js",
       instances: 1,
@@ -11,7 +11,7 @@ module.exports = {
       }
     },
     {
-      name: "si-film-frontend",
+      name: "pfspace-frontend",
       cwd: "./frontend",
       script: "serve",
       env: {

@@ -11,7 +11,7 @@ import { FileStore } from '@tus/file-store';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
-import { UPLOAD_DIR, getSubfolderForType } from './upload.js';
+import { UPLOAD_DIR, getSubfolderForType, optimizeImage } from './upload.js';
 
 /**
  * Parse Tus Upload-Metadata header into a key-value object.
@@ -175,11 +175,27 @@ export const tusServer = new Server({
         try {
           fs.renameSync(currentPath, targetPath);
           console.log(`[Tus] ✅ Moved file: ${effectiveId} -> ${subfolder}/`);
+          
+          // Optimize if it's an image
+          if (subfolder === 'images' && !effectiveId.toLowerCase().endsWith('.gif')) {
+            console.log(`[Tus] ⚡ Optimizing image: ${effectiveId}`);
+            optimizeImage(targetPath).catch(err => {
+              console.error('[Tus] Optimization background error:', err.message);
+            });
+          }
         } catch (renameErr) {
           console.warn(`[Tus] Rename failed, trying copy: ${renameErr.message}`);
           fs.copyFileSync(currentPath, targetPath);
           fs.unlinkSync(currentPath);
           console.log('[Tus] onUploadFinish: copy+unlink completed');
+
+          // Optimize if it's an image
+          if (subfolder === 'images' && !effectiveId.toLowerCase().endsWith('.gif')) {
+            console.log(`[Tus] ⚡ Optimizing image: ${effectiveId}`);
+            optimizeImage(targetPath).catch(err => {
+              console.error('[Tus] Optimization background error:', err.message);
+            });
+          }
         }
         
         // Also move the .json metadata file
