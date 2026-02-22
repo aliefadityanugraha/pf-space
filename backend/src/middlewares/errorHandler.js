@@ -30,16 +30,31 @@ export const globalErrorHandler = (error, request, reply) => {
   // 2. Handle Zod Validation Errors (if they bubble up)
   if (error instanceof ZodError) {
     const issues = Array.isArray(error.errors) ? error.errors : [];
-    const details = issues.map(err => ({
-      field: err.path.join('.'),
-      message: err.message
-    }));
-    return ApiResponse.badRequest(reply, 'Validation failed', details);
+    const details = issues.map(err => {
+      let message = err.message;
+      if (message.includes('match format uri')) message = 'Format URL tidak valid';
+      
+      return {
+        field: err.path.join('.'),
+        message: message
+      };
+    });
+    return ApiResponse.badRequest(reply, 'Validasi gagal', details);
   }
 
   // 3. Handle Fastify/JsonSchema Validation Errors
   if (error.validation) {
-    return ApiResponse.badRequest(reply, 'Validation failed', error.validation);
+    const details = error.validation.map(err => {
+      let message = err.message;
+      if (err.params?.format === 'uri') message = 'Format URL tidak valid';
+      if (message === 'is required') message = 'Wajib diisi';
+      
+      return {
+        field: err.instancePath.replace(/^\//, '').replace(/\//g, '.') || err.params?.missingProperty,
+        message: message
+      };
+    });
+    return ApiResponse.badRequest(reply, 'Validasi gagal', details);
   }
 
   // 4. Handle Database Errors (Objection/Knex/MySQL)

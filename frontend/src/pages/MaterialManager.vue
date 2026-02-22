@@ -172,23 +172,37 @@ const closeModal = () => {
 
 // Save material
 const saveMaterial = async () => {
+  // Reset error
+  formError.value = ''
+
+  // Pre-submit validation
   if (!formData.value.judul.trim()) {
-    formError.value = 'Judul wajib diisi'
+    formError.value = 'Judul materi wajib diisi'
     return
   }
 
-  if (formData.value.tipe === 'pdf' && !formData.value.file_path) {
-    formError.value = 'File PDF wajib diupload'
-    return
+  if (formData.value.tipe === 'pdf') {
+    if (!formData.value.file_path) {
+      formError.value = 'Anda harus mengunggah file PDF terlebih dahulu'
+      return
+    }
   }
 
-  if (formData.value.tipe === 'video' && !formData.value.video_url) {
-    formError.value = 'URL Video wajib diisi'
-    return
+  if (formData.value.tipe === 'video') {
+    if (!formData.value.video_url.trim()) {
+      formError.value = 'URL Video YouTube wajib diisi'
+      return
+    }
+    
+    // Simple YouTube URL regex
+    const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/
+    if (!ytRegex.test(formData.value.video_url)) {
+      formError.value = 'Mohon masukkan alamat URL YouTube yang valid'
+      return
+    }
   }
 
   saving.value = true
-  formError.value = ''
 
   try {
     const payload = {
@@ -196,7 +210,6 @@ const saveMaterial = async () => {
       deskripsi: formData.value.deskripsi,
       tipe: formData.value.tipe,
       is_active: formData.value.is_active,
-      // Only send what's relevant to the type
       file_path: formData.value.tipe === 'pdf' ? formData.value.file_path : null,
       video_url: formData.value.tipe === 'video' ? formData.value.video_url : null
     }
@@ -211,7 +224,12 @@ const saveMaterial = async () => {
     closeModal()
     await fetchMaterials()
   } catch (err) {
-    formError.value = err.message || 'Gagal menyimpan materi'
+    // Better error mapping for nested validation
+    if (err.data && Array.isArray(err.data.details)) {
+      formError.value = err.data.details[0].message
+    } else {
+      formError.value = err.message || 'Gagal menyimpan materi'
+    }
   } finally {
     saving.value = false
   }
