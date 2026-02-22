@@ -66,7 +66,8 @@ export const auth = betterAuth({
     crossSubDomainCookies: {
       enabled: true
     },
-    trustProxy: true
+    trustProxy: true,
+    useSecureCookies: false
   },
   trustedOrigins: [
     'http://localhost:3000', 
