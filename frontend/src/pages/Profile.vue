@@ -177,6 +177,11 @@ const handleFileChange = (event) => {
 }
 
 const saveProfile = async () => {
+  if (!editName.value.trim()) {
+    showToast('Nama tidak boleh kosong', 'error')
+    return
+  }
+  
   savingProfile.value = true
   
   try {
@@ -196,16 +201,26 @@ const saveProfile = async () => {
     await refreshUser()
     showToast('Profil berhasil diperbarui!')
     selectedFile.value = null
+    previewImage.value = null
   } catch (err) {
-    showToast(err.message || 'Gagal memperbarui profil', 'error')
+    if (err.data && Array.isArray(err.data.details)) {
+      showToast(err.data.details[0].message, 'error')
+    } else {
+      showToast(err.message || 'Gagal memperbarui profil', 'error')
+    }
   } finally {
     savingProfile.value = false
   }
 }
 
 const changePassword = async () => {
+  if (!currentPassword.value || !newPassword.value) {
+    showToast('Mohon isi kata sandi lama dan baru', 'error')
+    return
+  }
+
   if (newPassword.value !== confirmPassword.value) {
-    showToast('Password tidak cocok', 'error')
+    showToast('Konfirmasi kata sandi tidak cocok', 'error')
     return
   }
   
@@ -219,9 +234,13 @@ const changePassword = async () => {
     currentPassword.value = ''
     newPassword.value = ''
     confirmPassword.value = ''
-    showToast('Password berhasil diubah!')
+    showToast('Kata sandi berhasil diubah!')
   } catch (err) {
-    showToast(err.message || 'Gagal mengubah password', 'error')
+    if (err.data && Array.isArray(err.data.details)) {
+      showToast(err.data.details[0].message, 'error')
+    } else {
+      showToast(err.message || 'Gagal mengubah kata sandi', 'error')
+    }
   } finally {
     savingPassword.value = false
   }

@@ -23,12 +23,12 @@ const handleSubmit = async () => {
   error.value = ''
   
   if (password.value !== confirmPassword.value) {
-    error.value = 'Passwords do not match'
+    error.value = 'Konfirmasi kata sandi tidak cocok'
     return
   }
   
   if (!agreeTerms.value) {
-    error.value = 'Please agree to the terms'
+    error.value = 'Anda harus menyetujui Syarat & Ketentuan'
     return
   }
 
@@ -41,7 +41,8 @@ const handleSubmit = async () => {
   if (result.success) {
     router.push('/')
   } else {
-    error.value = result.message
+    // If it's a validation error from Better Auth (usually a raw string or complex object)
+    error.value = result.message || 'Pendaftaran gagal'
   }
 }
 

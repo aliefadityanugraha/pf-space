@@ -63,7 +63,12 @@ export function useFilmForm() {
       
       return true
     } catch (err) {
-      error.value = err.message || 'Gagal menyimpan film'
+      // Better error mapping for nested validation
+      if (err.data && Array.isArray(err.data.details) && err.data.details.length > 0) {
+        error.value = err.data.details[0].message
+      } else {
+        error.value = err.message || 'Gagal menyimpan film'
+      }
       showToast(error.value, 'error')
       return false
     } finally {
