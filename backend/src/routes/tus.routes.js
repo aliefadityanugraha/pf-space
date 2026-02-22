@@ -29,6 +29,8 @@ export default async function tusRoutes(fastify) {
     reply.header('Access-Control-Allow-Headers', 'Tus-Resumable, Upload-Length, Upload-Offset, Upload-Metadata, Content-Type, Content-Length, Authorization, Tus-Version, X-HTTP-Method-Override, X-Requested-With');
     reply.header('Access-Control-Expose-Headers', 'Tus-Resumable, Upload-Length, Upload-Offset, Upload-Metadata, Location, Tus-Version, Tus-Extension, Tus-Max-Size');
     reply.header('Access-Control-Allow-Credentials', 'true');
+    reply.header('Cache-Control', 'no-store');
+    reply.header('X-Accel-Buffering', 'no');
 
     // Handle Preflight (OPTIONS) immediately
     if (request.method === 'OPTIONS') {
