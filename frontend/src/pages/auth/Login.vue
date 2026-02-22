@@ -27,7 +27,12 @@ const handleSubmit = async () => {
   if (result.success) {
     router.push('/')
   } else {
-    error.value = result.message
+    // Translate common Better Auth errors
+    if (result.message === 'Unauthorized' || result.message?.toLowerCase().includes('invalid credentials')) {
+      error.value = 'Email atau kata sandi salah'
+    } else {
+      error.value = result.message || 'Terjadi kesalahan saat masuk'
+    }
   }
 }
 
