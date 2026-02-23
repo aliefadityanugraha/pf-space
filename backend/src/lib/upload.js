@@ -18,6 +18,7 @@ import { pipeline } from 'stream/promises';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import sharp from 'sharp';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -221,5 +222,57 @@ export async function getStorageStats() {
     stats.totalCount += dirStats.count;
   }
 
+  const disk = getDiskSpaceForPath(UPLOAD_DIR);
+  if (disk) {
+    stats.disk = {
+      total: disk.total,
+      used: disk.used,
+      free: disk.free,
+      usedPercent: disk.total > 0 ? Math.round((disk.used / disk.total) * 100) : 0
+    };
+  }
+
   return stats;
+}
+
+function getDiskSpaceForPath(targetPath) {
+  try {
+    if (process.platform === 'win32') {
+      const root = path.parse(targetPath).root;
+      const drive = root && /^[A-Za-z]:\\?$/.test(root) ? root[0] : 'C';
+      try {
+        const out = execSync(`powershell -NoProfile -Command "Get-PSDrive -Name ${drive} | Select-Object Used,Free | ConvertTo-Json -Compress"`, { stdio: ['ignore', 'pipe', 'ignore'] }).toString();
+        const obj = JSON.parse(out);
+        const used = Number(obj.Used || 0);
+        const free = Number(obj.Free || 0);
+        const total = used + free;
+        return { total, free, used };
+      } catch {}
+      try {
+        const wmic = execSync(`wmic logicaldisk where "DeviceID='${drive.toUpperCase()}:'" get Size,FreeSpace /format:csv`, { stdio: ['ignore', 'pipe', 'ignore'] }).toString();
+        const line = wmic.split('\n').find(l => l.includes(':,'));
+        if (line) {
+          const parts = line.trim().split(',');
+          const free = Number(parts[1] || 0);
+          const total = Number(parts[2] || 0);
+          const used = Math.max(total - free, 0);
+          return { total, free, used };
+        }
+      } catch {}
+      return null;
+    } else {
+      const out = execSync(`df -Pk "${targetPath}"`, { stdio: ['ignore', 'pipe', 'ignore'] }).toString();
+      const lines = out.trim().split('\n');
+      const data = lines[lines.length - 1].trim().split(/\s+/);
+      const totalKb = Number(data[1] || 0);
+      const usedKb = Number(data[2] || 0);
+      const availKb = Number(data[3] || 0);
+      const total = totalKb * 1024;
+      const used = usedKb * 1024;
+      const free = availKb * 1024;
+      return { total, free, used };
+    }
+  } catch {
+    return null;
+  }
 }

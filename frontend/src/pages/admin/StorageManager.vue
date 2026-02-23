@@ -100,7 +100,22 @@ onMounted(() => {
           <CardContent class="p-6">
             <div class="text-5xl font-black text-stone-900 mb-2">{{ formatSize(storageStats.totalSize) }}</div>
             <p class="text-stone-500 text-sm mb-6 uppercase font-bold">Tersebar di {{ storageStats.totalCount }} file</p>
-            
+            <div v-if="storageStats.disk" class="mb-6">
+              <div class="flex items-center justify-between text-[11px] font-mono mb-1">
+                <span>Terpakai</span>
+                <span>{{ Math.round((storageStats.disk.used / (storageStats.disk.total || 1)) * 100) }}%</span>
+              </div>
+              <div class="w-full h-3 bg-stone-200 border border-stone-800 overflow-hidden">
+                <div 
+                  class="h-full bg-stone-800"
+                  :style="{ width: `${(storageStats.disk.used / (storageStats.disk.total || 1)) * 100}%` }"
+                ></div>
+              </div>
+              <div class="mt-2 text-xs text-stone-600">
+                {{ formatSize(storageStats.disk.used) }} dari {{ formatSize(storageStats.disk.total) }} • Sisa {{ formatSize(storageStats.disk.free) }}
+              </div>
+            </div>
+
             <div class="space-y-4">
               <div v-for="(cat, key) in storageStats.categories" :key="key">
                 <div class="flex items-center justify-between text-xs font-bold uppercase mb-1">

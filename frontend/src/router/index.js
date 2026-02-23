@@ -291,9 +291,23 @@ router.afterEach(() => {
   finish()
 })
 
-router.onError(() => {
+router.onError((err) => {
   const { finish } = useLoading()
   finish()
+  try {
+    const msg = String(err && err.message ? err.message : err || '')
+    const isChunkError =
+      msg.includes('Loading chunk') ||
+      msg.includes('ChunkLoadError') ||
+      msg.includes('Failed to fetch dynamically imported module') ||
+      msg.includes('Importing a module script failed') ||
+      msg.includes('dynamic import')
+    if (isChunkError) {
+      window.location.reload()
+    }
+  } catch {
+    // no-op
+  }
 })
 
 export default router

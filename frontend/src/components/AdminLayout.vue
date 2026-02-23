@@ -15,23 +15,19 @@ const sidebarCollapsed = ref(false)
         sidebarCollapsed ? 'ml-14' : 'ml-56'
       ]"
     >
-      <router-view v-slot="{ Component }">
-        <transition name="page-fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
+      <router-view v-slot="{ Component, route }">
+        <Suspense>
+          <component :is="Component" :key="route.fullPath" />
+          <template #fallback>
+            <div class="flex-1 p-8 flex items-center justify-center">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900"></div>
+            </div>
+          </template>
+        </Suspense>
       </router-view>
     </div>
   </div>
 </template>
 
 <style scoped>
-.page-fade-enter-active,
-.page-fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.page-fade-enter-from,
-.page-fade-leave-to {
-  opacity: 0;
-}
 </style>

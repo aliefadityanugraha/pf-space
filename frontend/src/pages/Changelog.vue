@@ -137,9 +137,7 @@ onMounted(fetchChangelog)
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-brand-cream">
     <Navbar />
-
     <main class="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 pt-20 md:pt-25">
       <SectionHeader 
         title="Catatan Perubahan" 
@@ -223,6 +221,4 @@ onMounted(fetchChangelog)
     </main>
 
     <Footer />
-
-  </div>
 </template>
