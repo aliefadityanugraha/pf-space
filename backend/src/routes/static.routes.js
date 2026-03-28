@@ -10,6 +10,8 @@ import path from 'path';
 import { UPLOAD_DIR } from '../lib/upload.js';
 import { ApiResponse } from '../lib/response.js';
 
+const IS_DEV = process.env.NODE_ENV !== 'production';
+
 /**
  * Register static file delivery routes
  * @param {import('fastify').FastifyInstance} fastify - Fastify instance
@@ -20,10 +22,10 @@ export default async function staticRoutes(fastify) {
    */
   fastify.get('/uploads/*', async (request, reply) => {
     const filePath = request.params['*'];
-    let absolutePath = path.join(UPLOAD_DIR, filePath);
+    let absolutePath = path.resolve(UPLOAD_DIR, filePath);
 
     // Security check to prevent path traversal
-    if (!absolutePath.startsWith(UPLOAD_DIR)) {
+    if (!absolutePath.startsWith(path.resolve(UPLOAD_DIR))) {
       return ApiResponse.error(reply, 'Forbidden', 403);
     }
 
@@ -39,13 +41,12 @@ export default async function staticRoutes(fastify) {
       const found = candidates.find(p => fs.existsSync(p));
       if (found) {
         absolutePath = found;
-        console.log(`[Static] Fallback resolved: ${filePath} -> ${found}`);
+        if (IS_DEV) console.log(`[Static] Fallback resolved: ${filePath} -> ${found}`);
       } else {
-        console.log(`[Static] 404 - File not found: ${absolutePath}`);
+        if (IS_DEV) console.log(`[Static] 404 - File not found: ${absolutePath}`);
         return ApiResponse.notFound(reply, 'File not found');
       }
     }
-    console.log(`[Static] Serving: ${absolutePath}`);
 
     const stat = fs.statSync(absolutePath);
     if (!stat.isFile()) {
@@ -68,9 +69,31 @@ export default async function staticRoutes(fastify) {
       return reply.send(fs.createReadStream(absolutePath));
     }
 
-    // 2. Video Handling: Set proper content-type and disposition for streaming
+    // 2. Video Handling: Support Range Requests (HTTP 206) for seeking
     if (['.mp4', '.webm', '.ogg', '.mov'].includes(ext)) {
-      reply.header('Content-Type', `video/${ext === '.mov' ? 'quicktime' : ext.substring(1)}`);
+      const fileSize = stat.size;
+      const contentType = `video/${ext === '.mov' ? 'quicktime' : ext.substring(1)}`;
+      const range = request.headers.range;
+
+      if (range) {
+        // Parse Range header: "bytes=start-end"
+        const parts = range.replace(/bytes=/, '').split('-');
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunkSize = end - start + 1;
+
+        reply.status(206);
+        reply.header('Content-Range', `bytes ${start}-${end}/${fileSize}`);
+        reply.header('Accept-Ranges', 'bytes');
+        reply.header('Content-Length', chunkSize);
+        reply.header('Content-Type', contentType);
+        return reply.send(fs.createReadStream(absolutePath, { start, end }));
+      }
+
+      // No range requested — send full file
+      reply.header('Content-Type', contentType);
+      reply.header('Content-Length', fileSize);
+      reply.header('Accept-Ranges', 'bytes');
       reply.header('Content-Disposition', 'inline');
       return reply.send(fs.createReadStream(absolutePath));
     }
@@ -98,3 +121,4 @@ export default async function staticRoutes(fastify) {
     return reply.sendFile(filePath);
   });
 }
+

@@ -6,6 +6,14 @@ import { assetUrl } from '@/lib/format'
 import PageLayout from '@/components/PageLayout.vue'
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Printer, Download, ArrowLeft, FileText, Loader2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Aset Pembelajaran - PF Space',
+  meta: [
+    { name: 'description', content: 'Lihat dokumen naskah, storyboard, dan RAB arsip di PF Space.' }
+  ]
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -134,18 +142,19 @@ watch(() => route.params, () => {
       <template v-else>
         <!-- Breadcrumb -->
         <nav class="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm mb-6 flex-wrap">
-          <template v-for="(crumb, index) in breadcrumbs" :key="index">
+          <template v-for="(crumb, index) in breadcrumbs">
             <router-link 
+              :key="`link-${index}`"
               v-if="!crumb.active" 
               :to="crumb.path"
               class="font-bold uppercase tracking-wide text-stone-400 hover:text-stone-600 transition-colors whitespace-nowrap"
             >
               {{ crumb.label }}
             </router-link>
-            <span v-else class="font-bold uppercase tracking-wide text-stone-800 border-b-2 border-orange-400 pb-0.5 whitespace-nowrap">
+            <span :key="`span-${index}`" v-else class="font-bold uppercase tracking-wide text-stone-800 border-b-2 border-orange-400 pb-0.5 whitespace-nowrap">
               {{ crumb.label }}
             </span>
-            <span v-if="index < breadcrumbs.length - 1" class="text-stone-300">/</span>
+            <span :key="`slash-${index}`" v-if="index < breadcrumbs.length - 1" class="text-stone-300">/</span>
           </template>
         </nav>
 

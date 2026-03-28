@@ -2,9 +2,8 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHead } from '@unhead/vue'
-import Navbar from '@/components/Navbar.vue'
-import Footer from '@/components/Footer.vue'
-import SectionHeader from '@/components/SectionHeader.vue'
+import PageLayout from '@/components/PageLayout.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -38,6 +37,43 @@ const typeColor = {
 }
 
 const fallbackData = () => ([
+  {
+    id: 'v1_3_0',
+    version: '1.3.0',
+    date: '2026-03-04',
+    type: 'feature',
+    title: 'Notifikasi Web & Tampilan Auth Baru',
+    description: 'Penambahan fitur notifikasi in-app dan perombakan desain halaman Autentikasi.',
+    items: [
+      'Sistem notifikasi dalam peramban untuk update profil, penggantian sandi, dan persetujuan film',
+      'Desain modern halaman Login, Register, dan Lupa Sandi dengan layout screen-split'
+    ]
+  },
+  {
+    id: 'v1_2_2',
+    version: '1.2.2',
+    date: '2026-03-03',
+    type: 'fix',
+    title: 'Perbaikan Sistem & Pembaruan UI',
+    description: 'Penyelesaian masalah rendering data, database, dan konsistensi user interface.',
+    items: [
+      'Filter status diperbaiki sehingga materi pembelajaran nonaktif disembunyikan dari halaman publik',
+      'Penyelesaian isu API di mana penyimpanan data ke database sering gagal',
+      'Penyesuaian shadow dan warna pada dark mode toggle agar sesuai dengan desain brutalism'
+    ]
+  },
+  {
+    id: 'v1_2_1',
+    version: '1.2.1',
+    date: '2026-02-25',
+    type: 'change',
+    title: 'Refaktor API & Standarisasi Dokumentasi',
+    description: 'Transformasi struktur internal backend API dan dokumentasi modul Vue.',
+    items: [
+      'Implementasi format validasi global menggunakan pustaka Zod dengan format sentralisasi',
+      'Integrasi standar JSDoc di berbagai berkas komponen dan utilitas secara menyeluruh'
+    ]
+  },
   {
     id: 'v1_2_0',
     version: '1.2.0',
@@ -137,15 +173,22 @@ onMounted(fetchChangelog)
 </script>
 
 <template>
-    <Navbar />
-    <main class="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 pt-20 md:pt-25">
-      <SectionHeader 
+  <PageLayout>
+    <div class="max-w-7xl mx-auto px-4 md:px-8 mb-16">
+      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-2 md:pt-8">
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+        <span class="text-stone-400">/</span>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Changelog</Badge>
+      </nav>
+
+       <PageHeader 
         title="Catatan Perubahan" 
-        subtitle="Rangkuman update, perbaikan, dan perubahan yang terjadi di PF Space."
-        :light-text="false"
+        description="Rangkuman update, perbaikan, dan perubahan yang terjadi di PF Space."
+        icon-color="bg-brand-teal"
+        class="mb-6 md:mb-10"
       />
 
-      <div class="mt-6 flex flex-col md:flex-row gap-3 md:gap-4">
+      <div class="mt-8 flex flex-col md:flex-row gap-3 md:gap-4">
         <div class="flex-1 relative">
           <Search class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
           <Input
@@ -218,7 +261,6 @@ onMounted(fetchChangelog)
           </CardContent>
         </Card>
       </div>
-    </main>
-
-    <Footer />
+    </div>
+  </PageLayout>
 </template>

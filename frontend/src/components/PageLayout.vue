@@ -14,7 +14,7 @@ defineProps({
   <div class="min-h-screen flex flex-col bg-brand-cream">
     <Navbar :light-title="lightNavbar" />
 
-    <main class="flex-1 pt-28 pb-16">
+    <main class="flex-1 pt-20 md:pt-28 pb-16">
       <slot></slot>
     </main>
 

@@ -1,3 +1,4 @@
+```
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -9,8 +10,9 @@ import { useHead } from "@unhead/vue";
 
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
-import { Loader2 } from "lucide-vue-next";
+import { Loader2, Flag } from "lucide-vue-next";
 import ErrorBoundary from "@/components/ErrorBoundary.vue";
+import ReportModal from '@/components/ReportModal.vue';
 
 // Sub-components (extracted from this file)
 import DetailVideoSection from "@/components/detail/DetailVideoSection.vue";
@@ -163,28 +165,19 @@ const handleToggleCollection = async () => {
 
 // ─── Share ──────────────────────────────────────────────
 const handleShare = async () => {
-  const shareData = {
-    title: film.value?.judul || "PF Space Archive",
-    text: `Lihat karya ${film.value?.judul} di PF Space`,
-    url: window.location.href,
-  };
-
   try {
-    if (navigator.share) {
-      await navigator.share(shareData);
-    } else {
-      await navigator.clipboard.writeText(window.location.href);
-      showToast("Link berhasil disalin!");
-    }
+    await navigator.clipboard.writeText(window.location.href);
+    showToast("🔗 Tautan berhasil disalin!");
   } catch (err) {
-    if (err.name !== "AbortError") {
-      console.error("Error sharing:", err);
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        showToast("Link berhasil disalin!");
-      } catch (clipboardErr) {
-        showToast("Gagal membagikan", "error");
-      }
+    if (navigator.share) {
+      // Fallback for strict environments like iOS Safari if clipboard fails
+      await navigator.share({
+        title: film.value?.judul || "PF Space Archive",
+        text: `Lihat karya ${film.value?.judul} di PF Space`,
+        url: window.location.href,
+      }).catch(() => {});
+    } else {
+      showToast("Gagal menyalin tautan", "error");
     }
   }
 };
@@ -203,6 +196,39 @@ const shareTo = (platform) => {
   if (urls[platform]) {
     window.open(urls[platform], "_blank", "noopener,noreferrer");
   }
+};
+
+// ─── Reporting ──────────────────────────────────────────
+const showReportModal = ref(false);
+const openReport = () => {
+  if (!isLoggedIn.value) {
+    showToast("Silakan login untuk melaporkan konten", "error");
+    return;
+  }
+  reportType.value = "film";
+  reportTarget.value = { id: film.value.film_id, name: film.value.judul };
+  showReportModal.value = true;
+};
+
+const reportType = ref("film");
+const reportTarget = ref({ id: null, name: "" });
+
+const handleReportContent = (target) => {
+  if (!isLoggedIn.value) {
+    showToast("Silakan login untuk melaporkan konten", "error");
+    return;
+  }
+  
+  // If target has diskusi_id, it's a comment
+  if (target.diskusi_id) {
+    reportType.value = "comment";
+    reportTarget.value = { id: target.diskusi_id, name: `Komentar oleh ${target.user?.name}` };
+  } else {
+    reportType.value = "film";
+    reportTarget.value = { id: film.value.film_id, name: film.value.judul };
+  }
+  
+  showReportModal.value = true;
 };
 
 // ─── Comments ───────────────────────────────────────────
@@ -428,12 +454,52 @@ onUnmounted(() => {
   <div class="min-h-screen flex flex-col bg-brand-cream">
     <Navbar :light-title="isLightTitle" />
 
-    <!-- Loading -->
+    <!-- Premium Skeleton Loading State -->
     <div
       v-if="loading"
-      class="min-h-screen flex items-center justify-center pt-14"
+      class="min-h-screen flex flex-col bg-[#1c1917] pt-16 md:pt-20"
     >
-      <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
+      <!-- Video + Sidebar Area Skeleton -->
+      <div class="flex flex-col lg:flex-row border-b border-[#fafaf9]/10">
+        <!-- Video Player Skeleton -->
+        <div class="flex-1 w-full">
+          <div class="aspect-video bg-stone-800 animate-pulse w-full"></div>
+          <!-- Action Bar Skeleton -->
+          <div class="h-16 md:h-20 bg-stone-900 border-t border-[#fafaf9]/5 px-4 flex items-center justify-between animate-pulse">
+             <div class="h-6 bg-stone-800 w-1/3 rounded"></div>
+             <div class="flex gap-2 hidden md:flex">
+               <div class="h-8 w-20 bg-stone-800 rounded"></div>
+               <div class="h-8 w-24 bg-stone-800 rounded"></div>
+             </div>
+          </div>
+        </div>
+        <!-- Right Sidebar Skeleton -->
+        <div class="w-full lg:w-80 xl:w-96 shrink-0 bg-[#292524] p-4 flex flex-col gap-3 animate-pulse">
+          <div class="w-24 h-4 bg-stone-700 rounded mb-2"></div>
+          <div v-for="i in 3" :key="i" class="w-full h-16 md:h-20 bg-stone-700 rounded-lg"></div>
+        </div>
+      </div>
+      
+      <!-- Content Area Skeleton -->
+      <div class="flex-1 bg-brand-cream p-4 md:p-8">
+        <div class="max-w-7xl mx-auto space-y-4 animate-pulse">
+           <div class="h-8 md:h-12 w-2/3 md:w-1/2 bg-stone-300"></div>
+           <div class="flex gap-4 mb-8">
+             <div class="h-4 w-20 bg-stone-300"></div>
+             <div class="h-4 w-20 bg-stone-300"></div>
+             <div class="h-4 w-24 bg-stone-300"></div>
+           </div>
+           
+           <!-- Text lines -->
+           <div class="space-y-3 mt-8">
+             <div class="h-4 w-full bg-stone-200"></div>
+             <div class="h-4 w-full bg-stone-200"></div>
+             <div class="h-4 w-11/12 bg-stone-200"></div>
+             <div class="h-4 w-4/5 bg-stone-200"></div>
+             <div class="h-4 w-5/6 bg-stone-200"></div>
+           </div>
+        </div>
+      </div>
     </div>
 
     <template v-else-if="film">
@@ -458,9 +524,28 @@ onUnmounted(() => {
             <Button v-if="user?.id === film.user_id" size="sm" variant="outline" class="h-8 text-[10px] border-white/20 text-white hover:bg-white/10" @click="router.push(`/archive/${film.slug}/edit`)">
               Perbaiki Karya
             </Button>
+            <!-- Flag Report -->
+            <Button
+              variant="ghost"
+              class="gap-2 text-stone-400 hover:text-red-600 hover:bg-red-50"
+              @click="openReport"
+            >
+              <Flag class="w-4 h-4" />
+              <span class="text-xs font-bold uppercase tracking-tight">Laporkan</span>
+            </Button>
           </div>
         </div>
       </div>
+
+      <!-- Report Modal -->
+      <ReportModal 
+        v-if="film"
+        :show="showReportModal"
+        @update:show="showReportModal = $event"
+        :target-type="reportType"
+        :target-id="reportTarget.id"
+        :target-name="reportTarget.name"
+      />
 
       <!-- SECTION 1: VIDEO + SIDEBAR -->
       <ErrorBoundary name="Video Player">
@@ -508,6 +593,7 @@ onUnmounted(() => {
               @update:newComment="newComment = $event"
               @submit-comment="submitComment"
               @delete-comment="deleteComment"
+              @report-content="handleReportContent"
             />
           </ErrorBoundary>
 

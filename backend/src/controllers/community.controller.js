@@ -25,6 +25,22 @@ export class CommunityController {
   }
 
   /**
+   * Public: Retrieve a single community discussion topic by ID
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getOne(request, reply) {
+    const { id } = request.params;
+    const discussion = await communityService.getById(id);
+    
+    if (!discussion) {
+      return ApiResponse.notFound(reply, 'Discussion not found');
+    }
+    
+    return ApiResponse.success(reply, discussion);
+  }
+
+  /**
    * Administrative: Fetch a paginated list of all historical community topics
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
@@ -151,6 +167,22 @@ export class CommunityController {
       sanitizePlainText(content.trim())
     );
 
+    // Notify the discussion creator
+    try {
+      if (discussion.user_id && discussion.user_id !== request.user.id) {
+        const { notificationService } = await import('../services/index.js');
+        await notificationService.create({
+          user_id: discussion.user_id,
+          type: 'community_reply',
+          title: 'Ada balasan di diskusi Anda',
+          message: `${request.user.name} membalas diskusi komunitas "${discussion.title}".`,
+          data: { discussion_id: discussion.discussion_id, reply_id: replyData.reply_id }
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send notification for community reply:', err.message);
+    }
+
     return ApiResponse.success(reply, replyData, 'Reply added successfully', 201);
   }
 
@@ -184,6 +216,22 @@ export class CommunityController {
     }
 
     return ApiResponse.success(reply, null, 'Reply deleted successfully');
+  }
+
+  /**
+   * Fetch a single community reply by ID
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getReplyById(request, reply) {
+    const { replyId } = request.params;
+    const replyData = await communityService.getReplyById(replyId);
+    
+    if (!replyData) {
+      return ApiResponse.notFound(reply, 'Reply not found');
+    }
+
+    return ApiResponse.success(reply, replyData);
   }
 }
 

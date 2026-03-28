@@ -1,7 +1,10 @@
 /**
  * src/schemas/category.schema.js
  * 
- * Validation schemas for film categories.
+ * Fastify JSON Schema validation for film categories.
+ * 
+ * @deprecated LEGACY — Zod equivalents exist in `lib/validation.js`.
+ * Prefer Zod schemas with `validateRequest` middleware for new features.
  */
 
 export const categorySchema = {

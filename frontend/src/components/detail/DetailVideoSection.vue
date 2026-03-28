@@ -56,11 +56,11 @@ const getYoutubeThumbnail = (url) => {
 </script>
 
 <template>
-  <section class="pt-16 md:pt-20 bg-stone-900 min-h-[calc(100vh-30rem)]">
+  <section class="pt-16 md:pt-20 bg-[#1c1917] min-h-[calc(100vh-30rem)]">
     <div class="flex flex-col lg:flex-row">
       <!-- Left: Video Player -->
       <div class="flex-1 flex flex-col">
-        <div class="w-full bg-black">
+        <div class="w-full bg-[#000000]">
           <div class="aspect-video">
             <VideoPlayer
               v-if="hasActiveVideo"
@@ -78,11 +78,11 @@ const getYoutubeThumbnail = (url) => {
             />
             <div
               v-else
-              class="w-full h-full flex items-center justify-center bg-stone-900"
+              class="w-full h-full flex items-center justify-center bg-[#1c1917]"
             >
               <div class="text-center">
                 <div
-                  class="w-20 h-20 mx-auto mb-4 rounded-full bg-stone-800 flex items-center justify-center"
+                  class="w-20 h-20 mx-auto mb-4 rounded-full bg-[#292524] flex items-center justify-center"
                 >
                   <Film class="w-10 h-10 text-stone-600" />
                 </div>
@@ -103,10 +103,10 @@ const getYoutubeThumbnail = (url) => {
 
       <!-- Right: Sidebar - Video Playlist -->
       <div
-        class="w-full lg:w-80 xl:w-96 shrink-0 bg-stone-800/50 border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col"
+        class="w-full lg:w-80 xl:w-96 shrink-0 bg-[#292524]/50 border-t lg:border-t-0 lg:border-l border-[#fafaf9]/10 flex flex-col"
       >
-        <div class="p-3 md:p-4 border-b border-white/10">
-          <h3 class="text-white font-bold text-xs md:text-sm uppercase tracking-wider">
+        <div class="p-3 md:p-4 border-b border-[#fafaf9]/10">
+          <h3 class="text-[#fafaf9] font-bold text-xs md:text-sm uppercase tracking-wider">
             Daftar Video
           </h3>
           <p class="text-stone-500 text-[10px] md:text-xs mt-0.5 md:mt-1">
@@ -125,13 +125,13 @@ const getYoutubeThumbnail = (url) => {
             :class="
               activeVideoType === item.type
                 ? 'bg-brand-red/20 border border-brand-red/40'
-                : 'hover:bg-white/5 border border-transparent'
+                : 'hover:bg-[#fafaf9]/5 border border-transparent'
             "
             @click="emit('switch-video', item)"
           >
             <!-- Thumbnail -->
             <div
-              class="w-24 h-[54px] md:w-32 md:h-[72px] bg-stone-700 flex-shrink-0 overflow-hidden rounded border border-white/10 relative"
+              class="w-24 h-[54px] md:w-32 md:h-[72px] bg-[#e7e5e4] flex-shrink-0 overflow-hidden rounded border border-[#fafaf9]/10 relative"
             >
               <img
                 v-if="getYoutubeThumbnail(item.url)"
@@ -141,7 +141,7 @@ const getYoutubeThumbnail = (url) => {
               />
               <div
                 v-else
-                class="w-full h-full flex items-center justify-center bg-stone-800"
+                class="w-full h-full flex items-center justify-center bg-[#292524]"
               >
                 <Film
                   v-if="item.icon === 'film'"
@@ -156,7 +156,7 @@ const getYoutubeThumbnail = (url) => {
               <!-- Now Playing indicator -->
               <div
                 v-if="activeVideoType === item.type"
-                class="absolute inset-0 flex items-center justify-center bg-black/40"
+                class="absolute inset-0 flex items-center justify-center bg-[#000000]/40"
               >
                 <div class="flex items-center gap-1">
                   <div
@@ -175,15 +175,15 @@ const getYoutubeThumbnail = (url) => {
               <!-- Play icon overlay -->
               <div
                 v-else
-                class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                class="absolute inset-0 flex items-center justify-center bg-[#000000]/20 opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <Play class="w-5 h-5 md:w-6 md:h-6 text-white fill-white" />
+                <Play class="w-5 h-5 md:w-6 md:h-6 text-[#fafaf9] fill-[#fafaf9]" />
               </div>
               <!-- Number badge -->
               <div
-                class="absolute top-1 left-1 w-5 h-5 bg-black/70 rounded flex items-center justify-center"
+                class="absolute top-1 left-1 w-5 h-5 bg-[#000000]/70 rounded flex items-center justify-center"
               >
-                <span class="text-white text-[10px] font-bold">{{
+                <span class="text-[#fafaf9] text-[10px] font-bold">{{
                   idx + 1
                 }}</span>
               </div>
@@ -208,8 +208,8 @@ const getYoutubeThumbnail = (url) => {
                 class="text-xs md:text-sm font-medium line-clamp-2 transition-colors"
                 :class="
                   activeVideoType === item.type
-                    ? 'text-white'
-                    : 'text-white/70 group-hover:text-white'
+                    ? 'text-[#fafaf9]'
+                    : 'text-[#fafaf9]/70 group-hover:text-[#fafaf9]'
                 "
               >
                 {{ item.description }}

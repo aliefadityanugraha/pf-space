@@ -34,6 +34,11 @@ export const validate = (schema, data, reply) => {
 
 export const updateProfileSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name is too long').optional(),
+  bio: z.string().max(1000).optional().nullable(),
+  website: z.string().max(255).optional().nullable(),
+  location: z.string().max(255).optional().nullable(),
+  instagram: z.string().max(100).optional().nullable(),
+  linkedin: z.string().max(255).optional().nullable(),
 });
 
 // --- FILM SCHEMAS ---

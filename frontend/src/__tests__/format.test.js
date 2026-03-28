@@ -17,7 +17,6 @@ describe('Format Utility', () => {
       const relativePath = 'poster.jpg';
       const result = assetUrl(relativePath);
       
-      // Since API_BASE is likely http://localhost:3000 in test env
       expect(result).toContain('http://localhost:3000');
       expect(result).toContain('/uploads/poster.jpg');
     });

@@ -1,32 +1,28 @@
 import { ref, readonly } from 'vue'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 
+// Configure NProgress with custom settings
+NProgress.configure({ showSpinner: false, minimum: 0.1, speed: 400 });
+
+// Fallback legacy state variables (in case other components depend on them)
 const isLoading = ref(false)
 const progress = ref(0)
-let interval = null
 
 export function useLoading() {
   const start = () => {
     isLoading.value = true
     progress.value = 10
-    
-    if (interval) clearInterval(interval)
-    
-    interval = setInterval(() => {
-      if (progress.value < 90) {
-        progress.value += Math.random() * 5
-      }
-    }, 200)
+    NProgress.start()
   }
 
   const finish = () => {
     progress.value = 100
+    NProgress.done()
     setTimeout(() => {
       isLoading.value = false
-      setTimeout(() => {
-        progress.value = 0
-      }, 200)
-    }, 200)
-    if (interval) clearInterval(interval)
+      progress.value = 0
+    }, 300)
   }
 
   return {

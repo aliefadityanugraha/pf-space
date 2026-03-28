@@ -23,4 +23,12 @@ export default async function adminRoutes(fastify) {
   fastify.get('/logs', {
     preHandler: requireAdmin
   }, adminController.getAuditLogs.bind(adminController));
+
+  fastify.post('/backup', {
+    preHandler: requireAdmin
+  }, adminController.generateBackup.bind(adminController));
+
+  fastify.post('/backup/restore', {
+    preHandler: requireAdmin
+  }, adminController.restoreBackup.bind(adminController));
 }

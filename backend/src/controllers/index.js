@@ -19,3 +19,5 @@ export * from './learningMaterial.controller.js';
 export * from './evaluation.controller.js';
 export * from './studyNote.controller.js';
 export * from './filmScene.controller.js';
+export * from './report.controller.js';
+export * from './setting.controller.js';

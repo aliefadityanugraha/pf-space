@@ -16,6 +16,10 @@ export default async function notificationRoutes(fastify) {
   fastify.get('/', {
     preHandler: authenticate
   }, notificationController.getNotifications.bind(notificationController));
+  // User: Create personal notification
+  fastify.post('/', {
+    preHandler: authenticate
+  }, notificationController.createNotification.bind(notificationController));
 
   // User: Mark a specific notification as read
   fastify.patch('/:id/read', {

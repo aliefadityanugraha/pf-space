@@ -256,6 +256,22 @@ export class FilmController {
   }
 
   /**
+   * Creator: Get aggregate stats for dashboard
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getStats(request, reply) {
+    const { gamificationService } = await import('../services/index.js');
+    const stats = await filmService.getUserStats(request.user.id);
+    const badges = await gamificationService.getUserBadges(request.user.id, stats);
+    
+    return ApiResponse.success(reply, {
+      ...stats,
+      badges
+    });
+  }
+
+  /**
    * Admin: Fetch a list of films waiting for approval
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
@@ -279,6 +295,16 @@ export class FilmController {
     }
 
     const updated = await filmService.updateStatus(id, FILM_STATUS.PUBLISHED, { rejection_reason: null });
+    
+    // Notify Creator
+    const { notificationService } = await import('../services/index.js');
+    await notificationService.create({
+      user_id: film.user_id,
+      type: 'approval',
+      title: 'Karya Disetujui!',
+      message: `Selamat! Karya "${film.judul}" Anda telah disetujui dan kini dapat dilihat oleh publik.`,
+      data: { film_id: id, slug: film.slug }
+    });
 
     // Audit Log
     await recordAuditLog({
@@ -309,6 +335,16 @@ export class FilmController {
 
     const updated = await filmService.updateStatus(id, FILM_STATUS.REJECTED, {
       rejection_reason: request.body.rejection_reason
+    });
+
+    // Notify Creator
+    const { notificationService } = await import('../services/index.js');
+    await notificationService.create({
+      user_id: film.user_id,
+      type: 'rejection',
+      title: 'Karya Perlu Perbaikan',
+      message: `Karya "${film.judul}" Anda memerlukan beberapa perbaikan. Alasan: ${request.body.rejection_reason}`,
+      data: { film_id: id, slug: film.slug, reason: request.body.rejection_reason }
     });
 
     // Audit Log

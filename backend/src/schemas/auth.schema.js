@@ -1,7 +1,10 @@
 /**
  * src/schemas/auth.schema.js
  * 
- * Validation schemas for authentication and user management.
+ * Fastify JSON Schema validation for authentication.
+ * 
+ * @deprecated LEGACY — Zod equivalents exist in `lib/validation.js`.
+ * Prefer Zod schemas with `validateRequest` middleware for new features.
  */
 
 export const updateProfileSchema = {
@@ -9,7 +12,12 @@ export const updateProfileSchema = {
     type: 'object',
     properties: {
       name: { type: 'string', minLength: 2, maxLength: 100 },
-      image: { type: 'string' }
+      image: { type: 'string' },
+      bio: { type: 'string', maxLength: 1000, nullable: true },
+      website: { type: 'string', maxLength: 255, nullable: true },
+      location: { type: 'string', maxLength: 255, nullable: true },
+      instagram: { type: 'string', maxLength: 100, nullable: true },
+      linkedin: { type: 'string', maxLength: 255, nullable: true }
     },
     additionalProperties: false
   }

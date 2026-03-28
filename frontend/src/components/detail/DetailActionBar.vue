@@ -34,18 +34,18 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="bg-stone-900 p-4 md:p-5 border-t border-white/5">
+  <div class="bg-[#1c1917] p-4 md:p-5 border-t border-[#fafaf9]/5">
     <!-- Title & Meta -->
     <div
       class="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-3"
     >
       <div class="flex-1 min-w-0">
         <h2
-          class="text-base sm:text-lg md:text-xl font-display font-bold text-white mb-1 truncate"
+          class="text-base sm:text-lg md:text-xl font-display font-bold text-[#fafaf9] mb-1 truncate"
         >
           {{ film.judul }}
         </h2>
-        <div class="flex flex-wrap items-center gap-3 text-sm text-stone-400">
+        <div class="flex flex-wrap items-center gap-3 text-sm text-[#a8a29e]">
           <router-link
             v-if="film.creator?.id"
             :to="`/creator/${film.creator.id}`"
@@ -68,7 +68,7 @@ const router = useRouter()
           <Badge
             v-if="film.category"
             variant="secondary"
-            class="bg-white/10 text-stone-300 border-0 text-xs"
+            class="bg-[#fafaf9]/10 text-stone-300 border-0 text-xs"
           >
             {{ film.category.nama_kategori }}
           </Badge>
@@ -94,8 +94,8 @@ const router = useRouter()
           :class="[
             'h-8 md:h-9 text-[10px] md:text-xs px-2 md:px-3',
             voteData.has_voted
-              ? 'bg-pink-600 hover:bg-pink-700 border-pink-600 text-white'
-              : 'border-white/20 text-white/80 hover:bg-white/10 hover:text-white'
+              ? 'bg-pink-600 hover:bg-pink-700 border-pink-600 text-[#fafaf9]'
+              : 'border-[#fafaf9]/20 text-[#fafaf9]/80 hover:bg-[#fafaf9]/10 hover:text-[#fafaf9]'
           ]"
           @click="emit('toggle-vote')"
           :disabled="voting"
@@ -115,7 +115,7 @@ const router = useRouter()
           variant="outline"
           size="sm"
           :class="[
-            'h-8 md:h-9 text-[10px] md:text-xs px-2 md:px-3 border-white/20 text-white/80 hover:bg-white/10 hover:text-white',
+            'h-8 md:h-9 text-[10px] md:text-xs px-2 md:px-3 border-[#fafaf9]/20 text-[#fafaf9]/80 hover:bg-[#fafaf9]/10 hover:text-[#fafaf9]',
             isInCollection ? 'border-brand-orange text-brand-orange' : ''
           ]"
           @click="emit('toggle-collection')"
@@ -138,7 +138,7 @@ const router = useRouter()
         <Button
           variant="outline"
           size="sm"
-          class="h-8 md:h-9 text-[10px] md:text-xs px-2 md:px-3 border-white/20 text-white/80 hover:bg-white/10 hover:text-white"
+          class="h-8 md:h-9 text-[10px] md:text-xs px-2 md:px-3 border-[#fafaf9]/20 text-[#fafaf9]/80 hover:bg-[#fafaf9]/10 hover:text-[#fafaf9]"
           @click="emit('share')"
         >
           <Share2 class="w-3.5 h-3.5 mr-1" />
@@ -158,7 +158,7 @@ const router = useRouter()
         <Button
           variant="outline"
           size="sm"
-          class="h-8 md:h-9 bg-white/10 text-white border-white/20 hover:bg-white/20 px-2"
+          class="h-8 md:h-9 bg-[#fafaf9]/10 text-[#fafaf9] border-[#fafaf9]/20 hover:bg-[#fafaf9]/20 px-2"
           @click="emit('share-to', 'twitter')"
           title="Bagikan ke X"
         >

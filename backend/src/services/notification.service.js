@@ -44,21 +44,19 @@ export class NotificationService {
 
     const offset = (page - 1) * limit;
     
-    const [notifications, totalResult] = await Promise.all([
+    const [notifications, stats] = await Promise.all([
       query.limit(limit).offset(offset),
-      Notification.query().where('user_id', userId).count('id as total').first()
+      Notification.query()
+        .where('user_id', userId)
+        .select(
+          Notification.raw('COUNT(id) as total'),
+          Notification.raw('SUM(CASE WHEN is_read = false THEN 1 ELSE 0 END) as unread_count')
+        )
+        .first()
     ]);
 
-    const total = parseInt(totalResult?.total || 0);
-
-    // Get unread count
-    const unreadResult = await Notification.query()
-      .where('user_id', userId)
-      .where('is_read', false)
-      .count('id as total')
-      .first();
-      
-    const unreadCount = parseInt(unreadResult?.total || 0);
+    const total = parseInt(stats?.total || 0);
+    const unreadCount = parseInt(stats?.unread_count || 0);
 
     return {
       notifications,

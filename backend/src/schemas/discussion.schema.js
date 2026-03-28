@@ -1,7 +1,10 @@
 /**
  * src/schemas/discussion.schema.js
  * 
- * Validation schemas for film discussions and comments.
+ * Fastify JSON Schema validation for discussions and comments.
+ * 
+ * @deprecated LEGACY — Zod equivalents exist in `lib/validation.js`.
+ * Prefer Zod schemas with `validateRequest` middleware for new features.
  */
 
 export const createCommentSchema = {

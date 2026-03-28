@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import { useToast } from '@/composables/useToast'
+import { useNotifications } from '@/composables/useNotifications'
 import { api } from '@/lib/api'
 import { assetUrl } from '@/lib/format'
 import PageLayout from '@/components/PageLayout.vue'
@@ -15,14 +16,17 @@ import { Badge } from '@/components/ui/badge'
 import { 
   User, Mail, Eye, EyeOff, Camera, Save, 
   Loader2, ThumbsUp, MessageCircle, Film as FilmIcon, Upload,
-  LayoutDashboard, Settings, MapPin, Globe, Instagram, Linkedin
+  LayoutDashboard, Settings, MapPin, Globe, Instagram, Linkedin,
+  Award, FileText, Star, MessageSquare
 } from 'lucide-vue-next'
 import { useHead } from '@unhead/vue'
 
 const router = useRouter()
 const { user, refreshUser, initialized, isLoggedIn, isCreator } = useAuth()
 const { showToast } = useToast()
+const { fetchNotifications } = useNotifications()
 const fileInput = ref(null)
+const imageError = ref(false)
 
 const userImageUrl = computed(() => assetUrl(user.value?.image || ''))
 
@@ -94,6 +98,7 @@ const summary = ref({
   totalVotes: 0,
   totalComments: 0
 })
+const badges = ref([])
 
 const statusColors = {
   pending: 'bg-yellow-100 text-yellow-900 border-yellow-900',
@@ -112,52 +117,33 @@ const fetchDashboardData = async () => {
   dashboardLoading.value = true
   dashboardError.value = ''
   try {
+    // 1. Fetch Summary Stats (One Query)
+    const statsRes = await api.get('/api/films/my-stats')
+    summary.value = {
+      totalFilms: statsRes.data.totalFilms || 0,
+      pending: statsRes.data.pending || 0,
+      published: statsRes.data.published || 0,
+      rejected: statsRes.data.rejected || 0,
+      totalVotes: statsRes.data.totalVotes || 0,
+      totalComments: statsRes.data.totalComments || 0
+    }
+    badges.value = statsRes.data.badges || []
+
+    // 2. Fetch Recent Films (For the list)
     const myFilmsRes = await api.get('/api/films/my-films', {
       params: { page: 1, limit: 10 }
     })
     const myFilms = Array.isArray(myFilmsRes.data) ? myFilmsRes.data : []
 
-    const statsMap = {}
-    if (myFilms.length > 0) {
-      await Promise.all(
-        myFilms.map(async (film) => {
-          const filmId = film.film_id
-          try {
-            const [voteRes, commentRes] = await Promise.all([
-              api.get(`/api/votes/${filmId}`),
-              api.get(`/api/discussions/film/${filmId}/count`)
-            ])
-            statsMap[filmId] = {
-              vote_count: voteRes.data?.vote_count ?? 0,
-              comment_count: commentRes.data?.comment_count ?? 0
-            }
-          } catch {
-            statsMap[filmId] = { vote_count: 0, comment_count: 0 }
-          }
-        })
-      )
-    }
-
-    const merged = myFilms.map((film) => {
-      const stats = statsMap[film.film_id] || {}
-      return {
-        ...film,
-        gambar_poster: assetUrl(film.gambar_poster),
-        vote_count: stats.vote_count || 0,
-        comment_count: stats.comment_count || 0
-      }
-    })
-
-    films.value = merged
-
-    summary.value = {
-      totalFilms: merged.length,
-      pending: merged.filter((f) => f.status === 'pending').length,
-      published: merged.filter((f) => f.status === 'published').length,
-      rejected: merged.filter((f) => f.status === 'rejected').length,
-      totalVotes: merged.reduce((sum, f) => sum + (f.vote_count || 0), 0),
-      totalComments: merged.reduce((sum, f) => sum + (f.comment_count || 0), 0)
-    }
+    // We still want basic vote/comment count for the recent list items
+    // If they aren't in the film object, we might still need them, 
+    // but the summary is now efficient.
+    // Let's check if the film object already has these (usually it should if joined in backend)
+    // For now, keep the list simple or we can join them in getMyFilms later.
+    films.value = myFilms.map(f => ({
+      ...f,
+      gambar_poster: assetUrl(f.gambar_poster)
+    }))
 
   } catch (err) {
     dashboardError.value = 'Gagal memuat data dashboard.'
@@ -180,6 +166,7 @@ const handleFileChange = (event) => {
     const reader = new FileReader()
     reader.onload = (e) => {
       previewImage.value = e.target.result
+      imageError.value = false
     }
     reader.readAsDataURL(file)
   }
@@ -221,6 +208,8 @@ const saveProfile = async () => {
 
     await refreshUser()
     showToast('Profil berhasil diperbarui!')
+    await api.post('/api/notifications', { type: 'system', title: 'Profil Diperbarui', message: 'Perubahan pada profil Anda telah berhasil disimpan.' })
+    fetchNotifications()
     selectedFile.value = null
     previewImage.value = null
   } catch (err) {
@@ -256,6 +245,8 @@ const changePassword = async () => {
     newPassword.value = ''
     confirmPassword.value = ''
     showToast('Kata sandi berhasil diubah!')
+    await api.post('/api/notifications', { type: 'system', title: 'Keamanan Akun', message: 'Kata sandi Anda berhasil diperbarui.' })
+    fetchNotifications()
   } catch (err) {
     if (err.data && Array.isArray(err.data.details)) {
       showToast(err.data.details[0].message, 'error')
@@ -299,10 +290,12 @@ onMounted(() => {
           />
           <div class="w-20 h-20 md:w-24 md:h-24 border-2 border-black bg-stone-200 overflow-hidden shadow-sm relative">
              <img 
-              v-if="previewImage || user?.image"
+              v-if="(previewImage || user?.image) && !imageError"
               :src="previewImage || userImageUrl" 
               :alt="user?.name"
+              referrerpolicy="no-referrer"
               class="w-full h-full object-cover"
+              @error="imageError = true"
             />
             <div v-else class="w-full h-full flex items-center justify-center bg-brand-teal/20">
               <User class="w-8 h-8 md:w-10 md:h-10 text-stone-900" />
@@ -368,6 +361,27 @@ onMounted(() => {
           <LoadingState v-if="dashboardLoading" text="Memuat statistik..." class="py-10" />
           
           <div v-else class="space-y-8 animate-fade-in">
+            <!-- Badges Section -->
+            <div v-if="badges.length > 0" class="bg-white border-2 border-black p-4 md:p-6 shadow-brutal relative overflow-hidden">
+               <div class="absolute -right-6 -top-6 w-24 h-24 bg-brand-teal/10 rounded-full"></div>
+               <h4 class="text-xs md:text-sm font-display font-bold text-stone-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                 <Award class="w-4 h-4 text-brand-teal" /> Koleksi Lencana Kreator
+               </h4>
+               <div class="flex flex-wrap gap-3">
+                 <div v-for="badge in badges" :key="badge.id" class="group relative">
+                   <div :class="['w-12 h-12 md:w-14 md:h-14 border-2 border-black flex items-center justify-center shadow-brutal-xs transition-transform hover:-rotate-3 cursor-help', badge.color]">
+                      <component :is="{ Award, FileText, Star, MessageSquare, Camera }[badge.icon]" class="w-6 h-6 md:w-7 md:h-7" />
+                   </div>
+                   <!-- Tooltip -->
+                   <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-48 p-2 bg-black text-white text-[10px] font-bold uppercase tracking-tight text-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl border border-white/20">
+                     <p class="text-brand-teal mb-0.5">{{ badge.name }}</p>
+                     <p class="text-stone-400 font-medium normal-case leading-tight">{{ badge.description }}</p>
+                     <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-black"></div>
+                   </div>
+                 </div>
+               </div>
+            </div>
+
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
               <Card class="bg-white border-2 border-black shadow-brutal">

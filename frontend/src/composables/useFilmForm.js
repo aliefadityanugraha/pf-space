@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '@/lib/api'
 import { useToast } from '@/composables/useToast'
+import { useNotifications } from '@/composables/useNotifications'
 
 export function useFilmForm() {
   const router = useRouter()
@@ -51,10 +52,14 @@ export function useFilmForm() {
         // Update
         await api.put(`/api/films/${filmId}`, payload)
         showToast(customSuccessMessage || 'Film berhasil diperbarui!')
+        await api.post('/api/notifications', { type: 'system', title: 'Karya Diperbarui', message: payload.judul + ' berhasil diperbarui.' })
+        useNotifications().fetchNotifications()
       } else {
         // Create
         await api.post('/api/films', payload)
         showToast(customSuccessMessage || 'Film berhasil disubmit! Menunggu review admin.')
+        await api.post('/api/notifications', { type: 'system', title: 'Karya Berhasil Diunggah', message: payload.judul + ' sedang menunggu ulasan.' })
+        useNotifications().fetchNotifications()
       }
       
       setTimeout(() => {

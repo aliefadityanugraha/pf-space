@@ -37,6 +37,11 @@ export default async function filmRoutes(fastify) {
     preHandler: requireCreator
   }, filmController.getMyFilms.bind(filmController));
 
+  // Creator: Get dashboard stats
+  fastify.get('/my-stats', {
+    preHandler: requireCreator
+  }, filmController.getStats.bind(filmController));
+
   // Public: Get single film (with optional auth for unpublished)
   fastify.get('/:id', {
     preHandler: [validateRequest(filmIdParamSchema, 'params'), optionalAuth]

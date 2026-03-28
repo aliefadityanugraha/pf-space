@@ -3,10 +3,12 @@ import { ref, onMounted, onErrorCaptured } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useToast } from '@/composables/useToast'
 import { useLoading } from '@/composables/useLoading'
-import SidebarChat from './components/SidebarChat.vue'
+import ChatSidebar from './components/ChatSidebar.vue'
 import AnnouncementModal from './components/AnnouncementModal.vue'
+import ScrollToTop from './components/ScrollToTop.vue'
 import Toast from './components/Toast.vue'
 import ErrorBoundary from './components/ErrorBoundary.vue'
+import NetworkStatus from './components/NetworkStatus.vue'
 
 const { init, initialized } = useAuth()
 const { toast } = useToast()
@@ -53,17 +55,11 @@ onMounted(() => {
 
   <!-- Normal App -->
   <template v-else-if="initialized">
-    <!-- Global Progress Bar -->
-    <div 
-      v-if="isLoading" 
-      class="fixed top-0 left-0 right-0 h-1 z-[9999] bg-brand-teal transition-all duration-300 ease-out"
-      :style="{ width: `${progress}%` }"
-    ></div>
-
     <ErrorBoundary name="Halaman">
       <router-view />
     </ErrorBoundary>
-    <SidebarChat />
+    <ScrollToTop />
+    <ChatSidebar />
     <AnnouncementModal />
     
     <!-- Global Pattern Overlay -->
@@ -81,7 +77,10 @@ onMounted(() => {
     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
   </div>
 
+  <!-- eslint-disable-next-line vue/no-multiple-template-root -->
   <Toast :show="toast.show" :type="toast.type" :message="toast.message" @close="toast.show = false" />
+  
+  <NetworkStatus />
 </template>
 
 <style>

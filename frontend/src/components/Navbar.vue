@@ -1,9 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
-import { Search, User, Film, LogOut, Settings, LayoutDashboard, Upload, LogIn, Shield, Loader2, X, Bookmark, Info, BookOpen } from 'lucide-vue-next'
+import { api } from '@/lib/api'
+import { Search, User, Film, LogOut, Settings, LayoutDashboard, Upload, LogIn, Shield, Loader2, X, Bookmark, Info, BookOpen, Ticket } from 'lucide-vue-next'
 import NotificationDropdown from './NotificationDropdown.vue'
+import ThemeToggle from './ThemeToggle.vue'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -25,11 +27,11 @@ const props = defineProps({
 })
 
 import { useLiveSearch } from '@/composables/useLiveSearch'
-import { computed } from 'vue'
 
 const router = useRouter()
 const { user, isLoggedIn, isCreator, isModerator, isAdmin, logout } = useAuth()
-const open = ref(false)
+const isDropdownOpen = ref(false)
+const imageError = ref(false)
 
 // Reactive status based on user role
 const searchStatus = computed(() => (isAdmin.value || isModerator.value) ? 'all' : 'published')
@@ -53,19 +55,56 @@ const goToArchive = (slug) => {
 
 const handleLogout = async () => {
   await logout()
-  open.value = false
+  isDropdownOpen.value = false
   router.push('/')
 }
+
+const showFestivalMode = ref(false)
+const searchInputRef = ref(null)
+
+const fetchFestivalSetting = async () => {
+  try {
+    const res = await api.get('/api/settings/public')
+    const festivalSetting = res.data?.find(s => s.key === 'festival_mode')
+    if (festivalSetting && festivalSetting.value && festivalSetting.value.is_active) {
+      showFestivalMode.value = true
+    }
+  } catch (err) {
+    console.error('Failed to fetch festival setting', err)
+  }
+}
+
+// Handle Global Ctrl+K / Cmd+K
+const handleKeydown = (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault()
+    if (searchInputRef.value) {
+      // Focus the input element inside Shadcn's Input wrapper
+      searchInputRef.value.$el?.focus() || searchInputRef.value.focus()
+    }
+  }
+}
+
+onMounted(() => {
+  fetchFestivalSetting()
+  window.addEventListener('keydown', handleKeydown)
+})
+
+import { onUnmounted } from 'vue'
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
   <nav 
-    class="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 transition-all duration-500 border-white/20 border-b-2 backdrop-blur-md">
+    class="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 transition-all duration-500"
+    :class="lightTitle ? 'bg-transparent backdrop-blur-md border-b-2 border-white/20' : 'bg-brand-cream border-b-1 border-white/20 shadow-[0_2px_0_rgba(28,25,23,1)]'"
+  >
     <div class="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
       <!-- Logo -->
       <router-link to="/" class="flex items-center gap-2 md:gap-3">
-        <!-- <img src="/logo-smkn-ngasem.png" alt="SMK Ngasem" class="w-8 h-8 md:w-10 md:h-10 object-contain" />
-        <span class="font-display text-lg md:text-xl font-bold" :class="lightTitle ? 'text-white' : 'text-stone-900'">|</span> -->
         <img src="/logo-perfilman.png" alt="Perfilman" class="w-8 h-8 md:w-10 md:h-10 object-contain" />
         <span 
           class="text-base md:text-xl font-bold font-display block md:block transition-colors duration-500"
@@ -76,21 +115,24 @@ const handleLogout = async () => {
       <!-- Search Bar -->
       <div class="hidden md:block flex-1 max-w-md mx-4 md:mx-8 relative group">
         <div class="relative z-50">
-          <Search v-if="!isSearching" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors z-10" :class="lightTitle ? 'text-white/70' : 'text-black/50'" />
+          <Search v-if="!isSearching" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors z-10 text-black/50" />
           <Loader2 v-else class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-teal animate-spin z-10" />
           
           <Input 
+            ref="searchInputRef"
             v-model="searchQuery"
             type="text" 
             placeholder="Cari di arsip…"
-            class="h-11 pl-12 pr-36 border-2 shadow-brutal focus-visible:ring-0 transition-all duration-300"
-            :class="[
-              lightTitle 
-                ? 'bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:bg-white/20 focus:border-white/40' 
-                : 'bg-orange-100 border-black text-stone-900 focus:border-black'
-            ]"
+            class="h-11 pl-12 pr-40 border-2 shadow-brutal focus-visible:ring-0 transition-all duration-300 bg-white hover:bg-orange-50 focus:bg-orange-50 border-black text-stone-900 focus:border-black"
             @focus="showResults = searchQuery.length > 0"
           />
+
+          <!-- Keyboard Shortcut Hint -->
+          <div class="absolute right-12 top-1/2 -translate-y-1/2 pointer-events-none hidden lg:flex gap-1">
+            <kbd class="pointer-events-none inline-flex h-5 items-center gap-1 rounded border border-stone-200 bg-stone-100 px-1.5 font-mono text-[10px] font-medium text-stone-500">
+              <span class="text-xs">⌘</span>K
+            </kbd>
+          </div>
 
           <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
             <button 
@@ -167,8 +209,16 @@ const handleLogout = async () => {
         <div v-if="showResults" class="fixed inset-0 z-30" @click="showResults = false"></div>
       </div>
 
-      <!-- Right Side Actions -->
-      <div class="flex items-center gap-1.5">
+      <div class="flex items-center gap-1.5 md:gap-3">
+        <!-- <ThemeToggle /> -->
+        <router-link v-if="showFestivalMode" to="/festival">
+          <Button 
+            class="bg-yellow-400 text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2 mr-1"
+          >
+            <Ticket class="w-3 h-3 md:w-4 md:h-4 text-stone-900" />
+            <span class="hidden sm:inline">Festival</span>
+          </Button>
+        </router-link>
         <router-link to="/materi">
           <Button 
             class="bg-brand-orange text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2"
@@ -177,16 +227,7 @@ const handleLogout = async () => {
             <span class="hidden sm:inline">Materi</span>
           </Button>
         </router-link>
-        <!-- About Button -->
-        <!-- <router-link to="/about">
-          <Button 
-            class="bg-teal-900 text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2"
-          >
-            <Info class="w-3 h-3 md:w-4 md:h-4" />
-            <span class="hidden sm:inline">Tentang Kami</span>
-          </Button>
-        </router-link> -->
-
+      
         <!-- Auth Buttons (Not Logged In) -->
         <div v-if="!isLoggedIn" class="flex items-center gap-1 md:gap-2">
           <router-link to="/auth/login">
@@ -205,20 +246,21 @@ const handleLogout = async () => {
         <template v-else>
           <NotificationDropdown />
           
-          <DropdownMenu v-model:open="open">
+          <DropdownMenu :open="isDropdownOpen" @update:open="isDropdownOpen = $event">
             <DropdownMenuTrigger as-child>
               <button 
                 type="button"
                 class="w-9 h-9 md:w-11 md:h-11 bg-white border-2 border-black shadow-brutal flex items-center justify-center hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-all cursor-pointer overflow-hidden"
               >
                 <img 
-                  v-if="user?.image" 
+                  v-if="user?.image && !imageError" 
                   :src="assetUrl(user.image)" 
                   :alt="user.name" 
+                  referrerpolicy="no-referrer"
                   class="w-full h-full object-cover"
-                  @error="(e) => e.target.style.display = 'none'"
+                  @error="imageError = true"
                 />
-                <User v-else class="w-4 h-4 md:w-5 md:h-5 transition-colors" :class="lightTitle ? 'text-white/80' : 'text-black'" />
+                <User v-else class="w-4 h-4 md:w-5 md:h-5 transition-colors" :class="lightTitle ? 'text-white' : 'text-black'" />
               </button>
             </DropdownMenuTrigger>
             

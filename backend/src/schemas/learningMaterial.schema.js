@@ -1,7 +1,10 @@
 /**
  * src/schemas/learningMaterial.schema.js
  * 
- * Validation schemas for learning materials.
+ * Fastify JSON Schema validation for learning materials.
+ * 
+ * @deprecated LEGACY — For new features, prefer Zod schemas
+ * with `validateRequest` middleware for consistency.
  */
 
 export const createMaterialSchema = {
@@ -52,7 +55,8 @@ export const queryMaterialSchema = {
     properties: {
       page: { type: 'integer', minimum: 1, default: 1 },
       limit: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
-      owner: { type: 'string', enum: ['true', 'false'] }
+      owner: { type: 'string', enum: ['true', 'false'] },
+      status: { type: 'string', enum: ['all'] }
     }
   }
 };

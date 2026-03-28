@@ -15,11 +15,11 @@
   --font-accent: "Cormorant Garamond", serif;
 
   /* Brutal Design System Shadows */
-  --shadow-brutal: 4px 4px 0px 0px rgba(0, 0, 0, 1);
-  --shadow-brutal-lg: 10px 10px 0px 0px rgba(0, 0, 0, 1);
-  --shadow-brutal-md: 6px 6px 0px 0px rgba(0, 0, 0, 1);
-  --shadow-brutal-sm: 4px 4px 0px 0px rgba(0, 0, 0, 1);
-  --shadow-brutal-xs: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-brutal: var(--shadow-brutal-color, 4px 4px 0px 0px rgba(0, 0, 0, 1));
+  --shadow-brutal-lg: var(--shadow-brutal-lg-color, 10px 10px 0px 0px rgba(0, 0, 0, 1));
+  --shadow-brutal-md: var(--shadow-brutal-md-color, 6px 6px 0px 0px rgba(0, 0, 0, 1));
+  --shadow-brutal-sm: var(--shadow-brutal-sm-color, 4px 4px 0px 0px rgba(0, 0, 0, 1));
+  --shadow-brutal-xs: var(--shadow-brutal-xs-color, 2px 2px 0px 0px rgba(0, 0, 0, 1));
   --shadow-brutal-white: 4px 4px 0px 0px rgba(255, 255, 255, 0.1);
 
   /* Custom Spacing */
@@ -68,6 +68,30 @@
       transform: scale(1);
     }
   }
+
+  /* Micro Animations Configuration for Tailwind v4 */
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-toast-progress: toast-progress 3s linear forwards;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes toast-progress {
+    0% { transform: scaleX(1); }
+    100% { transform: scaleX(0); }
+  }
+}
+
+/* Base animation delay utility for staggered children */
+@media (prefers-reduced-motion: no-preference) {
+  .stagger-1 { animation-delay: 100ms !important; }
+  .stagger-2 { animation-delay: 200ms !important; }
+  .stagger-3 { animation-delay: 300ms !important; }
+  .stagger-4 { animation-delay: 400ms !important; }
+  .stagger-5 { animation-delay: 500ms !important; }
+  .stagger-6 { animation-delay: 600ms !important; }
 }
 
 :root {
@@ -91,36 +115,34 @@
 
 /* shadcn/ui CSS Variables - Customized for Brutal Design */
 :root {
-  --background: 231 229 228; /* brand-cream */
-  --foreground: 28 25 23; /* stone-900 */
+  --background: #e7e5e4; /* stone-200 / brand-cream */
+  --foreground: #1c1917; /* stone-900 */
 
-  --card: 250 250 249; /* stone-50 */
-  --card-foreground: 28 25 23;
+  --card: #fafaf9; /* stone-50 */
+  --card-foreground: #1c1917;
 
-  --popover: 250 250 249;
-  --popover-foreground: 28 25 23;
+  --popover: #fafaf9;
+  --popover-foreground: #1c1917;
 
-  --primary: 38 92 92; /* brand-teal */
-  --primary-foreground: 250 250 249;
+  --primary: #265c5c; /* brand-teal */
+  --primary-foreground: #fafaf9;
 
-  --secondary: 253 186 116; /* brand-orange */
-  --secondary-foreground: 28 25 23;
+  --secondary: #fdba74; /* brand-orange */
+  --secondary-foreground: #1c1917;
 
-  --muted: 214 211 209; /* stone-300 */
-  --muted-foreground: 87 83 78; /* stone-600 */
+  --muted: #d6d3d1; /* stone-300 */
+  --muted-foreground: #57534e; /* stone-600 */
 
-  --accent: 239 68 68; /* brand-red */
-  --accent-foreground: 250 250 249;
+  --accent: #ef4444; /* brand-red */
+  --accent-foreground: #fafaf9;
 
-  --destructive: 239 68 68;
-  --destructive-foreground: 250 250 249;
+  --destructive: #ef4444;
+  --destructive-foreground: #fafaf9;
 
-  --border: 28 25 23; /* black border for brutal style */
-  --input: 28 25 23;
-  --ring: 38 92 92; /* brand-teal */
-}
+  --border: #1c1917; /* black border for brutal style */
+  --input: #1c1917;
+  --ring: #265c5c; /* brand-teal */
 
-:root {
   font-family: var(--font-body);
   line-height: 1.5;
   font-weight: 400;
@@ -130,10 +152,75 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.dark {
+  --background: #1c1917; /* stone-900 */
+  --foreground: #fafaf9; /* stone-50 */
+
+  --card: #292524; /* stone-800 */
+  --card-foreground: #fafaf9;
+
+  --popover: #292524;
+  --popover-foreground: #fafaf9;
+
+  --primary: #265c5c; /* brand-teal */
+  --primary-foreground: #fafaf9;
+
+  --secondary: #fdba74; /* brand-orange */
+  --secondary-foreground: #1c1917;
+
+  --muted: #44403c; /* stone-700 */
+  --muted-foreground: #a8a29e; /* stone-400 */
+
+  --accent: #ef4444; /* brand-red */
+  --accent-foreground: #fafaf9;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #fafaf9;
+
+  --border: #fafaf9; /* white border for brutal style in dark mode */
+  --input: #fafaf9;
+  --ring: #265c5c; /* brand-teal */
+
+  /* Overriding Tailwind's base utility colors for Brutalism Theme */
+  --color-brand-cream: #1c1917;
+  --color-white: #1c1917; /* Invert white to stone-900 */
+  --color-black: #fafaf9; /* Invert black to stone-50 */
+  
+  /* Full Stone Palette Inversion (50 <-> 900, etc) */
+  --color-stone-50: #1c1917;
+  --color-stone-100: #292524;
+  --color-stone-200: #44403c;
+  --color-stone-300: #57534e;
+  --color-stone-400: #78716c;
+  --color-stone-500: #a8a29e;
+  --color-stone-600: #d6d3d1;
+  --color-stone-700: #e7e5e4;
+  --color-stone-800: #f5f5f4;
+  --color-stone-900: #fafaf9;
+  --color-stone-950: #ffffff;
+
+  /* Accent overrides */
+  --color-orange-50: #292524;
+  --color-orange-100: #44403c;
+  --color-amber-100: #451a03;
+  --color-amber-700: #fde68a;
+  --color-red-100: #450a0a;
+  --color-red-600: #f87171;
+  --color-red-700: #fecaca;
+
+  /* Brutal Design System Shadows for Dark Mode (Darker shadow instead of white) */
+  --shadow-brutal-color: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-brutal-lg-color: 10px 10px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-brutal-md-color: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-brutal-sm-color: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-brutal-xs-color: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: var(--color-brand-cream);
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 /* Font utility classes */
@@ -161,7 +248,7 @@ body {
   font-weight: bold;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
-  color: #000;
+  color: var(--foreground);
 }
 
 .prose p {
@@ -182,16 +269,16 @@ body {
 }
 
 .prose blockquote {
-  border-left: 4px solid #000;
+  border-left: 4px solid var(--border);
   padding-left: 1rem;
   font-style: italic;
   margin: 1.5rem 0;
-  color: #444;
+  color: var(--muted-foreground);
 }
 
 .prose strong {
   font-weight: bold;
-  color: #000;
+  color: var(--foreground);
 }
 
 .prose em {
@@ -213,4 +300,15 @@ body {
 }
 .shadow-brutal-lg {
   box-shadow: var(--shadow-brutal-lg);
+}
+
+/* NProgress Customization */
+#nprogress .bar {
+  background: var(--color-brand-teal) !important;
+  height: 3px !important;
+  z-index: 10000 !important;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px var(--color-brand-teal), 0 0 5px var(--color-brand-teal) !important;
 }

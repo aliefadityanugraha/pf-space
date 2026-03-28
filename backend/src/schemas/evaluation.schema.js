@@ -1,7 +1,10 @@
 /**
  * src/schemas/evaluation.schema.js
  * 
- * Validation schemas for film evaluations.
+ * Fastify JSON Schema validation for film evaluations.
+ * 
+ * @deprecated LEGACY — For new features, prefer Zod schemas
+ * with `validateRequest` middleware for consistency.
  */
 
 export const upsertEvaluationSchema = {

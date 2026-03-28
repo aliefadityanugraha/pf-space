@@ -25,15 +25,13 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
 
 ### 1. Alur & Fitur untuk Kreator
 
-- [ ] **Dashboard kreator yang "hidup"**
-  - `DashboardUser.vue` masih dummy; belum terhubung ke data film/vote/komentar asli
-  - Target: ringkasan performa film (views/vote/komentar per film, status review terbaru)
+- [x] **Dashboard kreator yang "hidup"**
+  - Menggunakan `Profile.vue` dan `MyArchive.vue` yang sudah terhubung dengan data asli (statistik, status review, dsb).
 
-- [ ] **Alasan penolakan film**
-  - Status sudah ada (`pending`/`published`/`rejected`), tapi belum ada field "alasan ditolak" yang tampil ke kreator
-  - Penting supaya kreator tahu apa yang perlu diperbaiki
+- [x] **Alasan penolakan film**
+  - Ditambahkan tooltip dan modal detail alasan penolakan di `MyArchive.vue`.
 
-- [ ] **Panduan kualitas & kriteria kurasi**
+- [x] **Panduan kualitas & kriteria kurasi**
   - Halaman/panel yang menjelaskan standar kurasi (konten, format file, resolusi, hak cipta)
   - Muncul di sekitar form Upload/Edit
 
@@ -41,9 +39,8 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
 
 ### 2. Pengalaman Pengguna Umum
 
-- [ ] **Profil pengguna & pengaturan akun**
-  - Halaman "Profil saya" untuk ganti nama, foto, preferensi
-  - User sudah ada di backend, tapi di frontend belum diekspos
+- [x] **Profil pengguna & pengaturan akun**
+  - Halaman "Profil saya" sudah lengkap dengan ganti foto, ubah kata sandi, dsb.
 
 - [ ] **Notifikasi yang lebih jelas**
   - Pusat notifikasi di navbar atau halaman khusus
@@ -53,9 +50,8 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
   - Sudah ada: live search, filter kategori
   - Ditambah: filter tahun, durasi, status arsip, tag tema
 
-- [ ] **Halaman 404 khusus**
-  - Saat ini error redirect langsung ke `/`
-  - Lebih ramah dengan halaman 404 dan CTA kembali ke arsip
+- [x] **Halaman 404 khusus**
+  - Telah diimplementasikan dengan `NotFound.vue` dengan gaya brutalist penuh.
 
 ---
 
@@ -112,19 +108,20 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
 
 ## 📅 Prioritas
 
-### Phase 1 (High Priority)
+### Phase 1 (High Priority) ✅ SELESAI
 
-1. Dashboard kreator dengan data real
-2. Profil pengguna & pengaturan akun
-3. Alasan penolakan film
-4. Halaman 404
+1. ~~Dashboard kreator dengan data real~~
+2. ~~Profil pengguna & pengaturan akun~~
+3. ~~Alasan penolakan film~~
+4. ~~Halaman 404~~
 
 ### Phase 2 (Medium Priority)
 
-1. Notifikasi sistem
-2. Pelaporan konten
-3. Filter lanjutan katalog
-4. Rate limiting AI Chat
+1. Mode Festival (Sedang Dikerjakan)
+2. Notifikasi sistem
+3. Pelaporan konten
+4. Filter lanjutan katalog
+5. Rate limiting AI Chat
 
 ### Phase 3 (Low Priority)
 
@@ -139,7 +136,6 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
 
 - **Film Series/Playlist** - Grup film berdasarkan seri atau tema
 - **Review System** - Rating dan review detail dari pengguna
-- **Festival Mode** - Mode khusus untuk acara festival film kampus
 - **Analytics Dashboard** - Dashboard analitik untuk admin
 - **Multi-language** - Dukungan bahasa Indonesia & English
 - **Dark Mode Toggle** - Pilihan tema gelap/terang

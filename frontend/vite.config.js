@@ -3,7 +3,6 @@ import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
   resolve: {
@@ -12,10 +11,23 @@ export default defineConfig({
     }
   },
   server: {
-    allowedHosts: ['103.127.96.155', '07db-210-87-124-214.ngrok-free.app']
+    allowedHosts: ['103.127.96.155']
   },
   test: {
     environment: 'happy-dom',
     globals: true
+  },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-vue': ['vue', 'vue-router', '@vueuse/core'],
+          'vendor-editor': ['@tiptap/vue-3', '@tiptap/starter-kit'],
+          'vendor-player': ['plyr', 'hls.js'],
+          'vendor-icons': ['lucide-vue-next']
+        }
+      }
+    }
   }
 })

@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Card, CardContent } from '@/components/ui/card'
 import { Film, Play } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
@@ -68,6 +68,7 @@ const displaySubtitle = computed(() => {
   if (props.archive?.category?.nama_kategori) return props.archive.category.nama_kategori
   return ''
 })
+  const isImageLoaded = ref(false)
 </script>
 
 <template>
@@ -80,11 +81,15 @@ const displaySubtitle = computed(() => {
   >
     <!-- Image Section -->
     <div :class="[aspectClass, 'bg-stone-200 relative overflow-hidden border-b-2 border-black']">
+      <div v-show="!isImageLoaded && imageSrc" class="absolute inset-0 bg-stone-300 animate-pulse flex items-center justify-center z-10 transition-opacity duration-300" :class="isImageLoaded ? 'opacity-0' : 'opacity-100'"></div>
       <img 
         v-if="imageSrc" 
         :src="imageSrc" 
         :alt="displayTitle"
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        loading="lazy"
+        @load="isImageLoaded = true"
+        class="w-full h-full object-cover transition-all duration-700"
+        :class="isImageLoaded ? 'opacity-100 scale-100 group-hover:scale-105' : 'opacity-0 scale-105'"
       />
       <div v-else class="w-full h-full flex items-center justify-center">
         <Film class="w-12 h-12 text-stone-400" />
@@ -102,8 +107,8 @@ const displaySubtitle = computed(() => {
     <!-- Content Section -->
     <CardContent :class="cn('p-3 md:p-4', contentClass)">
       <slot name="content">
-        <h3 class="font-bold text-sm md:text-base text-stone-900 line-clamp-1 mb-1">{{ displayTitle }}</h3>
-        <p v-if="displaySubtitle" class="text-[10px] md:text-xs text-stone-500 mb-1 flex items-center gap-1 z-10 relative">
+        <h3 class="font-bold text-base md:text-lg text-stone-900 line-clamp-1 mb-1">{{ displayTitle }}</h3>
+        <p v-if="displaySubtitle" class="text-xs md:text-sm text-stone-500 mb-1 flex items-center gap-1 z-10 relative">
           <slot name="subtitle-icon"></slot>
           <router-link 
             v-if="archive?.creator?.id && displaySubtitle === archive.creator.name"

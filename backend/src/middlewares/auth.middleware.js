@@ -6,7 +6,7 @@
  */
 
 import { auth } from '../lib/auth.js';
-import { ROLES } from '../models/index.js';
+import { ROLES } from '../config/constants.js';
 import { AuthenticationError, AuthorizationError } from '../lib/errors.js';
 
 /**

@@ -9,13 +9,13 @@ export class LearningMaterialController {
    * Filterable by owner for management purposes
    */
   async getAll(request, reply) {
-    const { page, limit, owner } = request.query;
+    const { page, limit, owner, status } = request.query;
     
     const isAdmin = request.user && request.user.role_id === ROLES.ADMIN;
     const isModerator = request.user && request.user.role_id === ROLES.MODERATOR;
     
-    // Only admins/moderators can see inactive materials
-    const activeOnly = !(isAdmin || isModerator);
+    // Only admins/moderators can see inactive materials if explicitly requested
+    const activeOnly = !(status === 'all' && (isAdmin || isModerator));
 
     const options = { 
       page, 

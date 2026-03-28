@@ -15,7 +15,7 @@ vi.mock('@/lib/api', () => ({
       this.status = status;
     }
   },
-  assetUrl: (url) => url // simple mock
+  assetUrl: (url) => url
 }));
 
 import { authApi } from '@/lib/api';

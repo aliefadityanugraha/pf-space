@@ -1,5 +1,7 @@
 <script setup>
 import PageLayout from '@/components/PageLayout.vue'
+import PageHeader from '@/components/PageHeader.vue'
+import { Badge } from '@/components/ui/badge'
 import { useHead } from '@unhead/vue'
 
 useHead({
@@ -12,8 +14,19 @@ useHead({
 
 <template>
   <PageLayout>
-    <div class="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
-        <h1 class="text-2xl md:text-5xl font-display font-semibold text-slate-900 mb-4 md:mb-6">Tentang PF Space</h1>
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-2 md:pt-8">
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+        <span class="text-stone-400">/</span>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Tentang</Badge>
+      </nav>
+
+      <PageHeader 
+        title="Tentang PF Space" 
+        description="Pelajari lebih lanjut tentang misi kami dalam mengarsipkan dan menampilkan karya film siswa."
+        icon-color="bg-brand-orange"
+      />
         
         <p class="text-sm md:text-lg font-body text-slate-600 mb-8 md:mb-12 leading-relaxed">
           PF Space adalah platform digital yang didedikasikan untuk mengarsipkan dan menampilkan karya film siswa. 

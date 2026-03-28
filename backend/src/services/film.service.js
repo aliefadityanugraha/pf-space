@@ -1,21 +1,21 @@
 /**
  * src/services/film.service.js
- * 
- * Service for film-related business logic, handling database 
+ *
+ * Service for film-related business logic, handling database
  * operations for creating, reading, updating, and deleting films.
  */
 
-import { Film, BaseModel } from '../models/index.js';
-import { deleteFile } from '../lib/upload.js';
-import { FILM_STATUS, PAGINATION } from '../config/constants.js';
-import { embeddingService } from './embedding.service.js';
-import { sanitizeRichText, sanitizePlainText } from '../lib/sanitize.js';
+import { Film, BaseModel, Vote, Discussion } from "../models/index.js";
+import { deleteFile } from "../lib/upload.js";
+import { FILM_STATUS, PAGINATION } from "../config/constants.js";
+import { embeddingService } from "./embedding.service.js";
+import { sanitizeRichText, sanitizePlainText } from "../lib/sanitize.js";
 
 export class FilmService {
   /**
    * Normalizes and sanitizes film data before insertion or update.
    * Cleans the crew array and strips dangerous HTML from content.
-   * 
+   *
    * @param {object} data - Raw input data.
    * @returns {object} Cleaned data object.
    */
@@ -25,21 +25,24 @@ export class FilmService {
     // 1. Clean Crew Structure
     if (Array.isArray(clean.crew)) {
       clean.crew = clean.crew
-        .filter(c => c && typeof c === 'object')
-        .map(c => ({
-          jabatan: typeof c.jabatan === 'string' ? c.jabatan.trim() : '',
+        .filter((c) => c && typeof c === "object")
+        .map((c) => ({
+          jabatan: typeof c.jabatan === "string" ? c.jabatan.trim() : "",
           anggota: Array.isArray(c.anggota)
-            ? c.anggota.filter(a => typeof a === 'string' && a.trim()).map(a => a.trim())
-            : []
+            ? c.anggota
+                .filter((a) => typeof a === "string" && a.trim())
+                .map((a) => a.trim())
+            : [],
         }))
-        .filter(c => c.jabatan);
+        .filter((c) => c.jabatan);
       if (clean.crew.length === 0) clean.crew = null;
     } else if (clean.crew !== undefined) {
       clean.crew = null;
     }
 
     // 2. Sanitize HTML Content
-    if (clean.deskripsi_lengkap) clean.deskripsi_lengkap = sanitizeRichText(clean.deskripsi_lengkap);
+    if (clean.deskripsi_lengkap)
+      clean.deskripsi_lengkap = sanitizeRichText(clean.deskripsi_lengkap);
     if (clean.sinopsis) clean.sinopsis = sanitizePlainText(clean.sinopsis);
 
     return clean;
@@ -61,21 +64,21 @@ export class FilmService {
    * @returns {Promise<{films: Film[], pagination: object}>} Paginated result object
    */
   async getAll(options = {}) {
-    const { 
-      page = PAGINATION.DEFAULT_PAGE, 
-      limit = PAGINATION.DEFAULT_LIMIT, 
+    const {
+      page = PAGINATION.DEFAULT_PAGE,
+      limit = PAGINATION.DEFAULT_LIMIT,
       status = FILM_STATUS.PUBLISHED,
       category_id,
       search,
       user_id,
-      sortBy = 'created_at',
-      sortOrder = 'desc',
+      sortBy = "created_at",
+      sortOrder = "desc",
       requesting_user_id,
-      is_banner_active
+      is_banner_active,
     } = options;
 
     const query = Film.query()
-      .withGraphFetched('[creator(selectBasic), category]')
+      .withGraphFetched("[creator(selectBasic), category]")
       .modifiers(BaseModel.defaultModifiers);
 
     // Helper to apply filters to both main and count queries
@@ -84,55 +87,57 @@ export class FilmService {
       if (status) {
         if (status === FILM_STATUS.PUBLISHED && requesting_user_id) {
           // Public shows published, but owner sees their own too
-          q.where(builder => {
-            builder.where('status', FILM_STATUS.PUBLISHED)
-                   .orWhere('user_id', requesting_user_id);
+          q.where((builder) => {
+            builder
+              .where("status", FILM_STATUS.PUBLISHED)
+              .orWhere("user_id", requesting_user_id);
           });
         } else {
-          q.where('status', status);
+          q.where("status", status);
         }
       }
 
       // 2. Explicit User Filter
       if (user_id) {
-        q.where('user_id', user_id);
+        q.where("user_id", user_id);
       }
 
       // 3. Category Filter
       if (category_id) {
-        q.where('category_id', category_id);
+        q.where("category_id", category_id);
       }
 
       // 4. Search by title or synopsis (Case-Insensitive)
       if (search && String(search).trim()) {
         const term = `%${String(search).trim()}%`;
-        q.where(builder => {
-          builder.where('judul', 'like', term)
-                 .orWhere('sinopsis', 'like', term);
+        q.where((builder) => {
+          builder
+            .where("judul", "like", term)
+            .orWhere("sinopsis", "like", term);
         });
       }
 
       // 5. Banner Filter
       if (is_banner_active !== undefined) {
-        q.where('is_banner_active', is_banner_active);
+        q.where("is_banner_active", is_banner_active);
       }
     };
 
     applyFilters(query);
 
     // Sorting
-    query.orderBy(sortBy || 'created_at', sortOrder || 'desc');
+    query.orderBy(sortBy || "created_at", sortOrder || "desc");
 
     // Pagination
     const offset = (page - 1) * limit;
-    
+
     // Count query
     const countQuery = Film.query();
     applyFilters(countQuery);
 
     const [films, totalResult] = await Promise.all([
       query.limit(limit).offset(offset),
-      countQuery.count('film_id as total').first()
+      countQuery.count("film_id as total").first(),
     ]);
 
     const total = parseInt(totalResult?.total || 0);
@@ -143,8 +148,8 @@ export class FilmService {
         page: parseInt(page),
         limit: parseInt(limit),
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -156,7 +161,7 @@ export class FilmService {
   async getById(id) {
     return Film.query()
       .findById(id)
-      .withGraphFetched('[creator(selectBasic), category]')
+      .withGraphFetched("[creator(selectBasic), category]")
       .modifiers(BaseModel.defaultModifiers);
   }
 
@@ -166,9 +171,7 @@ export class FilmService {
    * @returns {Promise<number>} Number of rows updated
    */
   async incrementViews(id) {
-    return Film.query()
-      .findById(id)
-      .increment('views', 1);
+    return Film.query().findById(id).increment("views", 1);
   }
 
   /**
@@ -178,8 +181,8 @@ export class FilmService {
    */
   async getBySlug(slug) {
     return Film.query()
-      .where('slug', slug)
-      .withGraphFetched('[creator(selectBasic), category, evaluation]')
+      .where("slug", slug)
+      .withGraphFetched("[creator(selectBasic), category, evaluation]")
       .modifiers(BaseModel.defaultModifiers)
       .first();
   }
@@ -195,12 +198,12 @@ export class FilmService {
     if (!film) return [];
 
     return Film.query()
-      .where('category_id', film.category_id)
-      .where('status', FILM_STATUS.PUBLISHED)
-      .whereNot('film_id', filmId)
-      .withGraphFetched('[creator(selectBasic), category]')
+      .where("category_id", film.category_id)
+      .where("status", FILM_STATUS.PUBLISHED)
+      .whereNot("film_id", filmId)
+      .withGraphFetched("[creator(selectBasic), category]")
       .modifiers(BaseModel.defaultModifiers)
-      .orderByRaw('RAND()') // Randomize related films
+      .orderByRaw("RAND()") // Randomize related films
       .limit(limit);
   }
 
@@ -213,28 +216,37 @@ export class FilmService {
     return Film.transaction(async (trx) => {
       // Insert film first within transaction
       const film = await Film.query(trx).insert(data);
-      
+
       // Generate and update slug with ID
       const slug = Film.generateSlug(data.judul, film.film_id);
       await Film.query(trx).findById(film.film_id).patch({ slug });
-      
+
       // Generate embedding if semantic search is enabled and film is published
-      if (process.env.USE_SEMANTIC_SEARCH === 'true' && data.status === FILM_STATUS.PUBLISHED) {
+      if (
+        process.env.USE_SEMANTIC_SEARCH === "true" &&
+        data.status === FILM_STATUS.PUBLISHED
+      ) {
         try {
           const filmWithCategory = await Film.query(trx)
             .findById(film.film_id)
-            .withGraphFetched('category');
-          
-          const embedding = await embeddingService.generateFilmEmbedding(filmWithCategory);
-          await Film.query(trx).findById(film.film_id).patch({ 
-            embedding: JSON.stringify(embedding) 
-          });
+            .withGraphFetched("category");
+
+          const embedding =
+            await embeddingService.generateFilmEmbedding(filmWithCategory);
+          await Film.query(trx)
+            .findById(film.film_id)
+            .patch({
+              embedding: JSON.stringify(embedding),
+            });
         } catch (error) {
-          console.error('Failed to generate embedding for new film:', error.message);
+          console.error(
+            "Failed to generate embedding for new film:",
+            error.message,
+          );
           // Don't fail the transaction if embedding generation fails
         }
       }
-      
+
       return { ...film, slug };
     });
   }
@@ -256,11 +268,11 @@ export class FilmService {
 
     // Handle file cleanup for fields that are being updated
     const fileFields = [
-      'gambar_poster',
-      'banner_url',
-      'file_naskah',
-      'file_storyboard',
-      'file_rab'
+      "gambar_poster",
+      "banner_url",
+      "file_naskah",
+      "file_storyboard",
+      "file_rab",
     ];
 
     for (const field of fileFields) {
@@ -272,14 +284,21 @@ export class FilmService {
     const updated = await Film.query().patchAndFetchById(id, data);
 
     // Regenerate embedding if semantic search is enabled and content changed
-    if (process.env.USE_SEMANTIC_SEARCH === 'true' && updated.status === FILM_STATUS.PUBLISHED) {
-      const contentChanged = data.judul || data.sinopsis || data.deskripsi_lengkap || data.category_id;
-      
+    if (
+      process.env.USE_SEMANTIC_SEARCH === "true" &&
+      updated.status === FILM_STATUS.PUBLISHED
+    ) {
+      const contentChanged =
+        data.judul ||
+        data.sinopsis ||
+        data.deskripsi_lengkap ||
+        data.category_id;
+
       if (contentChanged) {
         try {
           await embeddingService.updateFilmEmbedding(id);
         } catch (error) {
-          console.error('Failed to update embedding:', error.message);
+          console.error("Failed to update embedding:", error.message);
           // Don't fail the update if embedding generation fails
         }
       }
@@ -299,11 +318,11 @@ export class FilmService {
 
     // Delete all associated files
     const fileFields = [
-      'gambar_poster',
-      'banner_url',
-      'file_naskah',
-      'file_storyboard',
-      'file_rab'
+      "gambar_poster",
+      "banner_url",
+      "file_naskah",
+      "file_storyboard",
+      "file_rab",
     ];
 
     for (const field of fileFields) {
@@ -323,14 +342,23 @@ export class FilmService {
    * @returns {Promise<Film>} Updated film object
    */
   async updateStatus(id, status, extra = {}) {
-    const updated = await Film.query().patchAndFetchById(id, { status, ...extra });
+    const updated = await Film.query().patchAndFetchById(id, {
+      status,
+      ...extra,
+    });
 
     // Generate embedding when film is published
-    if (process.env.USE_SEMANTIC_SEARCH === 'true' && status === FILM_STATUS.PUBLISHED) {
+    if (
+      process.env.USE_SEMANTIC_SEARCH === "true" &&
+      status === FILM_STATUS.PUBLISHED
+    ) {
       try {
         await embeddingService.updateFilmEmbedding(id);
       } catch (error) {
-        console.error('Failed to generate embedding on publish:', error.message);
+        console.error(
+          "Failed to generate embedding on publish:",
+          error.message,
+        );
       }
     }
 
@@ -354,10 +382,10 @@ export class FilmService {
    */
   async getLatest(limit = 10) {
     return Film.query()
-      .where('status', FILM_STATUS.PUBLISHED)
-      .withGraphFetched('[creator(selectBasic), category]')
+      .where("status", FILM_STATUS.PUBLISHED)
+      .withGraphFetched("[creator(selectBasic), category]")
       .modifiers(BaseModel.defaultModifiers)
-      .orderBy('created_at', 'desc')
+      .orderBy("created_at", "desc")
       .limit(limit);
   }
 
@@ -367,10 +395,50 @@ export class FilmService {
    */
   async getPending() {
     return Film.query()
-      .where('status', FILM_STATUS.PENDING)
-      .withGraphFetched('[creator(selectBasic), category]')
+      .where("status", FILM_STATUS.PENDING)
+      .withGraphFetched("[creator(selectBasic), category]")
       .modifiers(BaseModel.defaultModifiers)
-      .orderBy('created_at', 'asc');
+      .orderBy("created_at", "asc");
+  }
+
+  /**
+   * Get aggregated stats for a specific creator (N+1 optimization)
+   * @param {string} userId - User ID of the creator
+   * @returns {Promise<object>} Stats object
+   */
+  async getUserStats(userId) {
+    const [filmStats, voteCount, commentCount] = await Promise.all([
+      Film.query()
+        .where('user_id', userId)
+        .select(
+          Film.raw('COUNT(film_id) as totalFilms'),
+          Film.raw('SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as pending', [FILM_STATUS.PENDING]),
+          Film.raw('SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as published', [FILM_STATUS.PUBLISHED]),
+          Film.raw('SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected', [FILM_STATUS.REJECTED])
+        )
+        .first(),
+      
+      Vote.query()
+        .join('films', 'votes.film_id', 'films.film_id')
+        .where('films.user_id', userId)
+        .count('votes.vote_id as total')
+        .first(),
+
+      Discussion.query()
+        .join('films', 'discussions.film_id', 'films.film_id')
+        .where('films.user_id', userId)
+        .count('discussions.diskusi_id as total')
+        .first()
+    ]);
+
+    return {
+      totalFilms: parseInt(filmStats?.totalFilms || 0),
+      pending: parseInt(filmStats?.pending || 0),
+      published: parseInt(filmStats?.published || 0),
+      rejected: parseInt(filmStats?.rejected || 0),
+      totalVotes: parseInt(voteCount?.total || 0),
+      totalComments: parseInt(commentCount?.total || 0)
+    };
   }
 }
 

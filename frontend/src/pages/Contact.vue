@@ -1,7 +1,8 @@
 <script setup>
 import PageLayout from '@/components/PageLayout.vue'
-import SectionHeader from '@/components/SectionHeader.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Mail, Instagram, Globe } from 'lucide-vue-next'
 import { useHead } from '@unhead/vue'
 
@@ -16,10 +17,16 @@ useHead({
 <template>
   <PageLayout>
     <div class="max-w-7xl mx-auto px-4 md:px-8">
-      <SectionHeader 
+      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-2 md:pt-8">
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+        <span class="text-stone-400">/</span>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Kontak</Badge>
+      </nav>
+
+      <PageHeader 
         title="Hubungi Kami" 
-        subtitle="Punya pertanyaan atau ingin berkolaborasi? Kami siap membantu."
-        :light-text="false"
+        description="Punya pertanyaan atau ingin berkolaborasi? Kami siap membantu."
+        icon-color="bg-brand-teal"
         class="mb-6 md:mb-10"
       />
 

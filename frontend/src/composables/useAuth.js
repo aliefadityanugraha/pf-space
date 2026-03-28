@@ -1,5 +1,6 @@
 import { ref, computed, readonly } from 'vue';
-import { authApi, ApiError } from '@/lib/api';
+import { authApi, api, ApiError } from '@/lib/api';
+import { useNotifications } from '@/composables/useNotifications';
 
 // Global state
 const user = ref(null);
@@ -19,12 +20,13 @@ function normalizeUser(u) {
   return copy;
 }
 
-export function useAuth() {
-  const isLoggedIn = computed(() => !!user.value);
-  const isAdmin = computed(() => user.value?.role?.name === 'admin');
-  const isModerator = computed(() => ['moderator', 'admin'].includes(user.value?.role?.name));
-  const isCreator = computed(() => ['creator', 'moderator', 'admin'].includes(user.value?.role?.name));
+// Pindahkan computed properties ke Global Scope agar tidak di-recreate setiap useAuth() dipanggil
+const isLoggedIn = computed(() => !!user.value);
+const isAdmin = computed(() => user.value?.role?.name === 'admin');
+const isModerator = computed(() => ['moderator', 'admin'].includes(user.value?.role?.name));
+const isCreator = computed(() => ['creator', 'moderator', 'admin'].includes(user.value?.role?.name));
 
+export function useAuth() {
   // Initialize - check session on app load
   async function init() {
     if (initialized.value) return;
@@ -48,13 +50,22 @@ export function useAuth() {
     return initPromise;
   }
 
-  // Login with email/password
+  /**
+   * Login with email/password
+   * @returns {Promise<{success: boolean, message?: string}>} Mengembalikan object error. Pastikan komponen selalu mengecek `if (!res.success)`
+   */
   async function login(email, password) {
     loading.value = true;
     try {
       await authApi.login(email, password);
       const res = await authApi.getProfile();
       user.value = normalizeUser(res.data);
+      try {
+        await api.post('/api/notifications', { type: 'system', title: 'Login Berhasil', message: `Selamat datang kembali, ${user.value.name}!` });
+        useNotifications().fetchNotifications();
+      } catch (err) {
+        console.warn('Gagal membuat notifikasi', err);
+      }
       return { success: true };
     } catch (err) {
       const message = err instanceof ApiError ? err.message : 'Login failed';
@@ -64,7 +75,10 @@ export function useAuth() {
     }
   }
 
-  // Register
+  /**
+   * Register akun baru
+   * @returns {Promise<{success: boolean, message?: string}>} Mengembalikan object error. Pastikan komponen selalu mengecek `if (!res.success)`
+   */
   async function register(data) {
     loading.value = true;
     try {
@@ -72,6 +86,12 @@ export function useAuth() {
       // Auto login after register
       const res = await authApi.getProfile();
       user.value = normalizeUser(res.data);
+      try {
+        await api.post('/api/notifications', { type: 'system', title: 'Registrasi Berhasil', message: `Selamat datang, ${user.value.name}! Akun Anda berhasil dibuat.` });
+        useNotifications().fetchNotifications();
+      } catch (err) {
+        console.warn('Gagal membuat notifikasi', err);
+      }
       return { success: true };
     } catch (err) {
       const message = err instanceof ApiError ? err.message : 'Registration failed';
@@ -90,13 +110,24 @@ export function useAuth() {
   async function logout() {
     try {
       // 1. Tell backend to sign out
+      // Catatan Terkait Cookie: Cookie keamanan `HttpOnly` TIDAK dapat dihapus dengan JavaScript pada browser. 
+      // Ia hanya bisa dihapus dengan instruksi `Set-Cookie` dari backend (dari authApi.logout() ini).
       await authApi.logout();
     } catch (err) {
       console.warn('Backend logout failed, continuing with frontend cleanup');
     } finally {
-      // 2. Clear ALL local data
-      localStorage.clear();
-      sessionStorage.clear();
+      // 2. Clear app-specific local data (avoid clearing third-party data)
+      const appPrefixes = ['pf-', 'auth-', 'user-', 'film-', 'draft-', 'chat-'];
+      [localStorage, sessionStorage].forEach(storage => {
+        const keysToRemove = [];
+        for (let i = 0; i < storage.length; i++) {
+          const key = storage.key(i);
+          if (appPrefixes.some(prefix => key.startsWith(prefix)) || key === 'token' || key === 'user') {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => storage.removeItem(key));
+      });
 
       // 3. Brutal cookie clearing for all possible paths and domains
       const cookies = document.cookie.split(";");

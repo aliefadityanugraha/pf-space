@@ -6,6 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import AuthCard from '@/components/AuthCard.vue'
 import { Lock, ArrowLeft, CheckCircle, Loader2 } from 'lucide-vue-next'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Atur Ulang Kata Sandi - PF Space',
+  meta: [
+    { name: 'description', content: 'Atur ulang kata sandi akun PF Space Anda.' }
+  ]
+})
 
 const route = useRoute()
 const router = useRouter()

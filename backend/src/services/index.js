@@ -19,3 +19,5 @@ export * from './learningMaterial.service.js';
 export * from './evaluation.service.js';
 export * from './studyNote.service.js';
 export * from './filmScene.service.js';
+export * from './gamification.service.js';
+export * from './report.service.js';

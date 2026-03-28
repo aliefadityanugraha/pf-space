@@ -10,7 +10,12 @@ import { Discussion } from '../models/Discussion.js';
 import { Category } from '../models/Category.js';
 import { AuditLog } from '../models/AuditLog.js';
 import { ApiResponse } from '../lib/response.js';
-import { getStorageStats } from '../lib/upload.js';
+import { getStorageStats, UPLOAD_DIR } from '../lib/upload.js';
+import mysqldump from 'mysqldump';
+import archiver from 'archiver';
+import extractZip from 'extract-zip';
+import fs from 'fs';
+import path from 'path';
 
 export class AdminController {
   /**
@@ -24,7 +29,8 @@ export class AdminController {
       const limit = parseInt(request.query.limit) || 20;
 
       const logs = await AuditLog.query()
-        .withGraphFetched('user')
+        .withGraphFetched('user(selectBasic)')
+        .modifiers(AuditLog.defaultModifiers)
         .orderBy('created_at', 'desc')
         .page(page - 1, limit);
 
@@ -36,7 +42,7 @@ export class AdminController {
       });
     } catch (error) {
       request.log.error(error);
-      return ApiResponse.error(reply, 'Gagal mengambil log audit');
+      return ApiResponse.error(reply, error.message || 'Gagal mengambil log audit', 500);
     }
   }
 
@@ -114,6 +120,141 @@ export class AdminController {
     } catch (error) {
       request.log.error(error);
       return ApiResponse.error(reply, 'Internal server error while fetching dashboard stats');
+    }
+  }
+
+  /**
+   * Generate database and files backup
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async generateBackup(request, reply) {
+    try {
+      // Ensure backup directory exists
+      const backupDir = path.join(process.cwd(), 'backup');
+      if (!fs.existsSync(backupDir)) {
+        fs.mkdirSync(backupDir, { recursive: true });
+      }
+
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      const sqlFileName = `dump_${timestamp}.sql`;
+      const sqlFilePath = path.join(backupDir, sqlFileName);
+      const zipFileName = `backup_${timestamp}.zip`;
+      const zipFilePath = path.join(backupDir, zipFileName);
+
+      // Dump DB
+      await mysqldump({
+        connection: {
+          host: process.env.DB_HOST || 'localhost',
+          user: process.env.DB_USER || 'root',
+          password: process.env.DB_PASSWORD || '',
+          database: process.env.DB_NAME || 'film',
+          port: parseInt(process.env.DB_PORT) || 3306
+        },
+        dumpToFile: sqlFilePath,
+      });
+
+      // Create Zip
+      const output = fs.createWriteStream(zipFilePath);
+      const archive = archiver('zip', {
+        zlib: { level: 9 }
+      });
+
+      const archivePromise = new Promise((resolve, reject) => {
+        output.on('close', resolve);
+        archive.on('error', reject);
+      });
+
+      archive.pipe(output);
+      archive.file(sqlFilePath, { name: sqlFileName });
+      archive.directory(UPLOAD_DIR, 'uploads');
+      await archive.finalize();
+      await archivePromise;
+
+      // Clean up the .sql file since it's already in the .zip
+      fs.unlinkSync(sqlFilePath);
+
+      // Check if user requested download via query param ?download=true
+      const download = request.query.download === 'true';
+
+      if (download) {
+        const fileStream = fs.createReadStream(zipFilePath);
+        reply.header('Content-Type', 'application/zip');
+        reply.header('Content-Disposition', `attachment; filename="${zipFileName}"`);
+        return reply.send(fileStream);
+      } else {
+        return ApiResponse.success(reply, { filename: zipFileName }, 'Backup berhasil dibuat dan disimpan di server');
+      }
+    } catch (error) {
+      request.log.error(error);
+      return ApiResponse.error(reply, error.message || 'Gagal membuat backup', 500);
+    }
+  }
+
+  /**
+   * Restore database and files from uploaded zip
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async restoreBackup(request, reply) {
+    try {
+      const data = await request.file();
+      if (!data) {
+        return ApiResponse.error(reply, 'File backup tidak ditemukan', 400);
+      }
+
+      const tempDir = path.join(process.cwd(), 'temp-restore');
+      if (fs.existsSync(tempDir)) {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      }
+      fs.mkdirSync(tempDir, { recursive: true });
+
+      const zipPath = path.join(tempDir, 'backup.zip');
+      const { pipeline } = await import('stream');
+      const { promisify } = await import('util');
+      const pump = promisify(pipeline);
+      await pump(data.file, fs.createWriteStream(zipPath));
+
+      await extractZip(zipPath, { dir: tempDir });
+
+      // Find the .sql file
+      const files = fs.readdirSync(tempDir);
+      const sqlFile = files.find(f => f.endsWith('.sql'));
+
+      if (sqlFile) {
+        const sqlFilePath = path.join(tempDir, sqlFile);
+        const dbHost = process.env.DB_HOST || 'localhost';
+        const dbUser = process.env.DB_USER || 'root';
+        const dbPass = process.env.DB_PASSWORD || '';
+        const dbName = process.env.DB_NAME || 'film';
+        const dbPort = process.env.DB_PORT || '3306';
+
+        const passStr = dbPass ? `-p"${dbPass}"` : '';
+        // Note: Using child_process exec to run mysql CLI. This requires mysql to be in PATH!
+        const cmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} ${passStr} ${dbName} < "${sqlFilePath}"`;
+
+        const { exec } = await import('child_process');
+        const execPromise = promisify(exec);
+        await execPromise(cmd);
+      }
+
+      // Restore uploads folder
+      const uploadsExtractDir = path.join(tempDir, 'uploads');
+      if (fs.existsSync(uploadsExtractDir)) {
+        fs.cpSync(uploadsExtractDir, UPLOAD_DIR, { recursive: true, force: true });
+      }
+
+      // Cleanup
+      fs.rmSync(tempDir, { recursive: true, force: true });
+
+      return ApiResponse.success(reply, null, 'Backup berhasil direstore!');
+    } catch (error) {
+      request.log.error(error);
+      const tempDir = path.join(process.cwd(), 'temp-restore');
+      if (fs.existsSync(tempDir)) {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      }
+      return ApiResponse.error(reply, error.message || 'Gagal merestore backup', 500);
     }
   }
 }

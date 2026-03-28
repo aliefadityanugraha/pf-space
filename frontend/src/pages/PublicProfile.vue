@@ -18,6 +18,7 @@ const loading = ref(true)
 const user = ref(null)
 const films = ref([])
 const error = ref(null)
+const imageError = ref(false)
 
 useHead({
   title: () => user.value ? `${user.value.name} - Filmmaker Portfolio` : 'Filmmaker Portfolio'
@@ -70,8 +71,8 @@ watch(() => route.params.id, fetchProfile)
 
           <!-- Left: Image -->
           <div class="shrink-0">
-             <div class="w-32 h-32 md:w-48 md:h-48 border-4 border-black shadow-[6px_6px_0px_#000] overflow-hidden bg-brand-yellow">
-                <img v-if="user.image" :src="user.image" class="w-full h-full object-cover" />
+              <div class="w-32 h-32 md:w-48 md:h-48 border-4 border-black shadow-[6px_6px_0px_#000] overflow-hidden bg-brand-yellow">
+                <img v-if="user.image && !imageError" :src="user.image" referrerpolicy="no-referrer" class="w-full h-full object-cover" @error="imageError = true" />
                 <div v-else class="w-full h-full flex items-center justify-center text-6xl font-black text-black">
                    {{ user.name.charAt(0) }}
                 </div>
@@ -80,7 +81,7 @@ watch(() => route.params.id, fetchProfile)
 
           <!-- Center: Info -->
           <div class="flex-1">
-             <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2 leading-none">{{ user.name }}</h1>
+             <h1 class="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-2 leading-none">{{ user.name }}</h1>
              
              <div class="flex flex-wrap items-center gap-4 text-stone-500 font-bold text-xs uppercase mb-6">
                 <div v-if="user.location" class="flex items-center gap-1.5">

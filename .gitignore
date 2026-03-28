@@ -43,3 +43,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Backend Uploads & Backups
+backend/uploads/
+backend/backup/
+backend/src/uploads/
+backend/.env

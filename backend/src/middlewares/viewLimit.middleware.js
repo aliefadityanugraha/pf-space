@@ -69,6 +69,19 @@ export const viewRateLimit = async (request, reply) => {
     });
   }
 
+  const MAX_STORE_SIZE = 50000;
+  
+  // Emergency cleanup if the store gets too large during high traffic
+  if (viewStore.size >= MAX_STORE_SIZE) {
+    const iter = viewStore.entries();
+    for (let i = 0; i < Math.floor(MAX_STORE_SIZE * 0.25); i++) {
+      const entry = iter.next();
+      if (entry.done) break;
+      // Maps maintain insertion order, so this effectively deletes the oldest entries
+      viewStore.delete(entry.value[0]);
+    }
+  }
+
   // Record this view
   viewStore.set(key, now);
 };

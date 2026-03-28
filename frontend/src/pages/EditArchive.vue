@@ -6,9 +6,19 @@ import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, AlertTriangle, Loader2 } from 'lucide-vue-next'
+import PageHeader from '@/components/PageHeader.vue'
+import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/composables/useToast'
 import { useFilmForm } from '@/composables/useFilmForm'
 import ArchiveUploadForm from '@/components/ArchiveUploadForm.vue'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Edit Karya - PF Space',
+  meta: [
+    { name: 'description', content: 'Edit informasi dan materi karya arsip Anda di PF Space.' }
+  ]
+})
 
 const router = useRouter()
 const route = useRoute()
@@ -84,17 +94,28 @@ onMounted(() => {
   <div class="min-h-screen flex flex-col bg-brand-cream">
     <Navbar />
 
-    <main class="w-full max-w-7xl mx-auto px-4 md:px-8 pt-28 pb-16">
+    <main class="w-full max-w-7xl mx-auto px-4 md:px-8 pt-24 pb-16">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-4">
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+        <span class="text-stone-400">/</span>
+        <router-link to="/my-archive" class="text-stone-600 hover:underline">Karya Saya</router-link>
+        <span class="text-stone-400">/</span>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Edit</Badge>
+      </nav>
+
       <!-- Header -->
-      <div class="flex items-center gap-4 mb-8">
-        <Button variant="outline" size="sm" @click="handleCancel">
-          <ArrowLeft class="w-4 h-4" />
-        </Button>
-        <div>
-          <h1 class="text-3xl md:text-4xl font-display text-stone-900">Edit Karya</h1>
-          <p class="text-stone-500">Perubahan pada karya yang sudah dipublikasi akan memerlukan review ulang.</p>
-        </div>
-      </div>
+      <PageHeader 
+        title="Edit Karya" 
+        description="Perubahan pada karya yang sudah dipublikasi memerlukan review ulang."
+        icon-color="bg-brand-red"
+      >
+        <template #actions>
+          <Button variant="outline" size="sm" @click="handleCancel" class="hidden md:flex gap-2">
+            <ArrowLeft class="w-4 h-4" /> Batal
+          </Button>
+        </template>
+      </PageHeader>
 
       <!-- Loading -->
       <div v-if="loading" class="flex items-center justify-center py-20">

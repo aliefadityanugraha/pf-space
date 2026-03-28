@@ -20,6 +20,9 @@ import settingRoutes from './setting.routes.js';
 import evaluationRoutes from './evaluation.routes.js';
 import studyNoteRoutes from './studyNote.routes.js';
 import filmSceneRoutes from './filmScene.routes.js';
+import reportRoutes from './report.routes.js';
+import { knex } from '../database/index.js';
+import os from 'os';
 
 /**
  * Register all application routes with their respective prefixes
@@ -71,15 +74,43 @@ export default async function routes(fastify) {
   // Film scenes
   await fastify.register(filmSceneRoutes, { prefix: '/film-scenes' });
 
+  // Reporting feature
+  await fastify.register(reportRoutes, { prefix: '/reports' });
+
   // System administration
   await fastify.register(adminRoutes, { prefix: '/admin' });
 
   // Basic API health status
   fastify.get('/health', async () => {
+    let dbStatus = 'disconnected';
+    let dbPing = 0;
+    try {
+      const start = Date.now();
+      await knex.raw('SELECT 1');
+      dbPing = Date.now() - start;
+      dbStatus = 'connected';
+    } catch (e) {
+      dbStatus = 'error';
+    }
+
+    const totalMem = os.totalmem();
+    const freeMem = os.freemem();
+    const usedMem = totalMem - freeMem;
+
     return { 
       success: true,
-      message: 'API is running',
-      timestamp: new Date().toISOString()
+      message: 'System Operational',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      database: {
+        status: dbStatus,
+        ping_ms: dbPing
+      },
+      memory: {
+        used_mb: Math.round(usedMem / 1024 / 1024),
+        total_mb: Math.round(totalMem / 1024 / 1024),
+        usage_percent: Math.round((usedMem / totalMem) * 100)
+      }
     };
   });
 }

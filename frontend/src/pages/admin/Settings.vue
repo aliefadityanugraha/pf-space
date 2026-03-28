@@ -26,12 +26,25 @@ const announcementConfig = ref({
   type: 'modal'
 })
 
+const festivalConfig = ref({
+  is_active: false,
+  title: 'Festival Mode',
+})
+
 const fetchSettings = async () => {
   loading.value = true
   try {
-    const res = await api.get('/api/settings/announcement_modal')
-    if (res.data && res.data.value) {
-      announcementConfig.value = res.data.value
+    const [announcementRes, festivalRes] = await Promise.all([
+      api.get('/api/settings/announcement_modal').catch(() => ({ data: null })),
+      api.get('/api/settings/festival_mode').catch(() => ({ data: null }))
+    ])
+    
+    if (announcementRes.data && announcementRes.data.value) {
+      announcementConfig.value = announcementRes.data.value
+    }
+    
+    if (festivalRes.data && festivalRes.data.value) {
+      festivalConfig.value = festivalRes.data.value
     }
   } catch (err) {
     console.error('Failed to fetch settings:', err)
@@ -44,16 +57,121 @@ const fetchSettings = async () => {
 const saveSettings = async () => {
   saving.value = true
   try {
-    await api.post('/api/settings/announcement_modal', {
-      value: announcementConfig.value,
-      is_public: true
-    })
+    await Promise.all([
+      api.post('/api/settings/announcement_modal', {
+        value: announcementConfig.value,
+        is_public: true
+      }),
+      api.post('/api/settings/festival_mode', {
+        value: festivalConfig.value,
+        is_public: true
+      })
+    ])
     showToast('Pengaturan berhasil disimpan')
   } catch (err) {
     console.error('Failed to save settings:', err)
     showToast('Gagal menyimpan pengaturan', 'error')
   } finally {
     saving.value = false
+  }
+}
+
+const downloadBackup = ref(true)
+const generatingBackup = ref(false)
+
+const generateBackup = async () => {
+  generatingBackup.value = true
+  try {
+    const download = downloadBackup.value
+    
+    if (download) {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+      const response = await fetch(`${apiUrl}/api/admin/backup?download=true`, {
+        method: 'POST',
+        credentials: 'include'
+      })
+      
+      if (!response.ok) throw new Error('Download failed')
+      
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      
+      const disposition = response.headers.get('content-disposition')
+      let filename = `backup_${new Date().toISOString().slice(0,10)}.zip`
+      if (disposition && disposition.indexOf('attachment') !== -1) {
+        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition)
+        if (matches != null && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '')
+        }
+      }
+      
+      link.setAttribute('download', filename)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+      showToast('Backup berhasil diunduh')
+    } else {
+      await api.post('/api/admin/backup?download=false', {})
+      showToast('Backup berhasil dibuat dan disimpan di server')
+    }
+  } catch (err) {
+    console.error('Failed to generate backup:', err)
+    showToast('Gagal membuat backup.', 'error')
+  } finally {
+    generatingBackup.value = false
+  }
+}
+
+const fileInput = ref(null)
+const restoringBackup = ref(false)
+const selectedFile = ref(null)
+
+const handleFileSelect = (event) => {
+  const file = event.target.files[0]
+  if (file && file.name.endsWith('.zip')) {
+    selectedFile.value = file
+  } else {
+    showToast('Harap pilih file berformat .zip', 'error')
+    event.target.value = ''
+    selectedFile.value = null
+  }
+}
+
+const restoreBackup = async () => {
+  if (!selectedFile.value) {
+    showToast('Pilih file backup (.zip) terlebih dahulu', 'error')
+    return
+  }
+  
+  if (!confirm('Peringatan: Proses ini akan menimpa seluruh database dan file saat ini dengan data dari file backup. Lanjutkan?')) return
+
+  restoringBackup.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', selectedFile.value)
+
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+    const response = await fetch(`${apiUrl}/api/admin/backup/restore`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include'
+    })
+
+    const resData = await response.json()
+    if (!response.ok) throw new Error(resData.message || 'Restore failed')
+
+    showToast('Backup berhasil dipulihkan!')
+    selectedFile.value = null
+    if (fileInput.value) fileInput.value.value = ''
+    setTimeout(() => window.location.reload(), 2000)
+  } catch (err) {
+    console.error('Failed to restore backup:', err)
+    showToast(err.message || 'Gagal merestore backup.', 'error')
+  } finally {
+    restoringBackup.value = false
   }
 }
 
@@ -207,6 +325,109 @@ onMounted(fetchSettings)
                        </div>
                     </div>
                  </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        <!-- Festival Mode Settings Section -->
+        <section class="space-y-6">
+          <div class="flex items-center gap-3 mb-2">
+            <Megaphone class="w-6 h-6 text-yellow-500" />
+            <h2 class="text-xl font-display font-bold uppercase tracking-tight">Mode Festival</h2>
+          </div>
+          
+          <Card class="border-2 border-black shadow-brutal rounded-none overflow-hidden bg-yellow-400">
+            <CardHeader class="border-b-2 border-black flex flex-row items-center justify-between py-4">
+              <div class="flex items-center gap-2 text-stone-900">
+                <AlertCircle class="w-4 h-4" />
+                <span class="text-xs font-bold uppercase tracking-widest">Aktivasi Halaman Festival</span>
+              </div>
+              
+              <div class="flex items-center gap-3">
+                <span :class="[festivalConfig.is_active ? 'text-green-800' : 'text-stone-700', 'text-[10px] font-bold uppercase tracking-widest']">
+                  {{ festivalConfig.is_active ? 'Aktif' : 'Non-aktif' }}
+                </span>
+                <button 
+                  @click="festivalConfig.is_active = !festivalConfig.is_active"
+                  :class="[
+                    festivalConfig.is_active ? 'bg-green-500' : 'bg-stone-300',
+                    'w-12 h-6 border-2 border-black rounded-full relative transition-colors'
+                  ]"
+                >
+                  <div :class="[festivalConfig.is_active ? 'translate-x-6' : 'translate-x-0', 'absolute top-0.5 left-0.5 w-4 h-4 bg-white border-2 border-black rounded-full transition-transform']"></div>
+                </button>
+              </div>
+            </CardHeader>
+            <CardContent class="p-6 md:p-8 bg-stone-50">
+              <p class="text-sm font-body text-stone-700">Jika diaktifkan, tombol Festival akan muncul di navigasi utama dan halaman festival dapat diakses. Gunakan fitur ini selama periode acara eksibisi.</p>
+            </CardContent>
+          </Card>
+        </section>
+        <!-- Backup System Settings Section -->
+        <section class="space-y-6">
+          <div class="flex items-center gap-3 mb-2">
+            <Save class="w-6 h-6 text-brand-teal" />
+            <h2 class="text-xl font-display font-bold uppercase tracking-tight">Sistem Backup</h2>
+          </div>
+          
+          <Card class="border-2 border-black shadow-brutal rounded-none overflow-hidden bg-white">
+            <CardHeader class="border-b-2 border-black flex flex-row items-center justify-between py-4 bg-stone-50">
+              <div class="flex items-center gap-2 text-stone-900">
+                <AlertCircle class="w-4 h-4" />
+                <span class="text-xs font-bold uppercase tracking-widest">Backup Database & File Upload</span>
+              </div>
+            </CardHeader>
+            <CardContent class="p-6 md:p-8">
+              <p class="text-sm font-body text-stone-700 mb-6">Fitur ini memungkinkan Anda untuk melakukan backup seluruh database dan file yang telah diunggah ke server. Anda bisa mengunduhnya langsung atau menyimpannya di server.</p>
+              
+              <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="downloadBackup" v-model="downloadBackup" class="w-4 h-4 border-2 border-black rounded-none text-brand-teal focus:ring-brand-teal" />
+                  <label for="downloadBackup" class="text-xs font-bold uppercase tracking-widest cursor-pointer select-none">Download ke komputer ini</label>
+                </div>
+                
+                <Button 
+                  @click="generateBackup" 
+                  :disabled="generatingBackup"
+                  class="bg-brand-orange text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all gap-2 px-6"
+                >
+                  <Loader2 v-if="generatingBackup" class="w-4 h-4 animate-spin" />
+                  <Save v-else class="w-4 h-4" />
+                  {{ generatingBackup ? 'Memproses Backup...' : 'Generate Backup Sekarang' }}
+                </Button>
+              </div>
+
+              <!-- Divider -->
+              <hr class="my-8 border-t-2 border-black border-dashed" />
+              
+              <div class="space-y-4">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-stone-900 flex items-center gap-2">
+                  <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                  Restore Dari Backup
+                </h3>
+                <p class="text-[10px] md:text-sm font-body text-stone-500">
+                  Untuk memulihkan sistem dari kondisi sebelumnya, unggah file backup berektensi <code class="bg-stone-200 px-1 py-0.5 rounded text-black font-mono">.zip</code>. <br/> 
+                  <span class="text-brand-red font-bold">PERINGATAN:</span> Tindakan ini akan menimpa seluruh data (database & uploads) saat ini secara permanen!
+                </p>
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                  <input 
+                    type="file" 
+                    accept=".zip" 
+                    ref="fileInput"
+                    @change="handleFileSelect"
+                    class="block text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-2 file:border-black file:text-xs file:font-bold file:uppercase file:bg-stone-100 file:text-black hover:file:bg-brand-teal hover:file:text-white transition-colors cursor-pointer w-full md:max-w-md" 
+                  />
+                  <Button 
+                    @click="restoreBackup" 
+                    :disabled="restoringBackup || !selectedFile"
+                    class="bg-brand-red text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all gap-2 px-6 shrink-0 w-full md:w-auto disabled:opacity-50"
+                  >
+                    <Loader2 v-if="restoringBackup" class="w-4 h-4 animate-spin" />
+                    <Save v-else class="w-4 h-4" />
+                    {{ restoringBackup ? 'Memulihkan...' : 'Restore Sekarang' }}
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

@@ -11,10 +11,11 @@ export function useVoting() {
   const isLoading = ref(false)
   const { isLoggedIn } = useAuth()
 
-  const fetchFilms = async () => {
-    // Optional: caching strategy. For now, fetch every time if not initialized or forced?
-    // Let's fetch every time for fresh data, but use initialized to show loading state only once if we wanted.
-    // But since votes change, we should probably fetch.
+  const fetchFilms = async (forceRefresh = false) => {
+    // If we've already fetched and don't need a force refresh, use cached singleton state
+    if (initialized.value && !forceRefresh) {
+      return
+    }
     
     isLoading.value = true
     try {
@@ -63,7 +64,7 @@ export function useVoting() {
         votes: parseInt(f.vote_count || 0),
         category: f.category?.category_id,
         categoryName: f.category?.nama_kategori || 'Uncategorized',
-        image: f.gambar_poster || 'https://placehold.co/300x450/1c1917/f5f5f4?text=No+Image',
+        image: f.gambar_poster || '/images/placeholder-poster.png', // Replaced external placeholder with internal
         hasVoted: myVotes.includes(f.film_id)
       }))
 
@@ -97,11 +98,55 @@ export function useVoting() {
     }
   }
 
+  const unvoteFilm = async (filmId) => {
+    if (!isLoggedIn.value) {
+        return { success: false, error: 'unauthorized', message: 'Please login to unvote' }
+    }
+
+    try {
+      const res = await api.delete(`/api/votes/${filmId}`)
+      if (res.success) {
+        const film = films.value.find(f => f.id === filmId)
+        if (film) {
+          film.votes = res.data.vote_count
+          film.hasVoted = false
+        }
+        return { success: true }
+      }
+      return { success: false, message: res.message }
+    } catch (error) {
+      return { success: false, error, message: error.message || 'Failed to unvote' }
+    }
+  }
+
+  const toggleVoteFilm = async (filmId) => {
+    if (!isLoggedIn.value) {
+      return { success: false, error: 'unauthorized', message: 'Please login to vote' }
+    }
+
+    try {
+      const res = await api.post(`/api/votes/${filmId}/toggle`)
+      if (res.success) {
+        const film = films.value.find(f => f.id === filmId)
+        if (film) {
+          film.votes = res.data.vote_count
+          film.hasVoted = res.data.voted
+        }
+        return { success: true, voted: res.data.voted }
+      }
+      return { success: false, message: res.message }
+    } catch (error) {
+      return { success: false, error, message: error.message || 'Failed to toggle vote' }
+    }
+  }
+
   return {
     films,
     categories,
     isLoading,
     fetchFilms,
-    voteFilm
+    voteFilm,
+    unvoteFilm,
+    toggleVoteFilm
   }
 }

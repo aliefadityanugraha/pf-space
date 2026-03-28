@@ -54,6 +54,18 @@ export class DiscussionController {
   }
 
   /**
+   * Public: Get single comment by ID
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getOne(request, reply) {
+    const { id } = request.params;
+    const comment = await discussionService.getById(id);
+    if (!comment) return ApiResponse.notFound(reply, 'Komentar tidak ditemukan');
+    return ApiResponse.success(reply, comment);
+  }
+
+  /**
    * User: Post a new comment or reply to an existing one
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
@@ -96,6 +108,35 @@ export class DiscussionController {
     });
 
     const created = await discussionService.getById(comment.diskusi_id);
+
+    // Notify appropriate user
+    const { notificationService } = await import('../services/index.js');
+    try {
+      if (parent_id) {
+        // Find parent commenter
+        const parent = await discussionService.getById(parent_id);
+        if (parent && parent.user_id !== request.user.id) {
+          await notificationService.create({
+            user_id: parent.user_id,
+            type: 'reply',
+            title: 'Komentar Anda dibalas',
+            message: `${request.user.name} membalas komentar Anda di film "${film.judul}".`,
+            data: { film_id: film.film_id, slug: film.slug, parent_id }
+          });
+        }
+      } else if (film.user_id !== request.user.id) {
+        // Notify film creator
+        await notificationService.create({
+          user_id: film.user_id,
+          type: 'comment',
+          title: 'Komentar baru di karya Anda',
+          message: `${request.user.name} mengomentari karya "${film.judul}" Anda.`,
+          data: { film_id: film.film_id, slug: film.slug }
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send notification:', err.message);
+    }
 
     return ApiResponse.success(reply, created, parent_id ? 'Reply posted successfully' : 'Comment posted successfully', 201);
   }

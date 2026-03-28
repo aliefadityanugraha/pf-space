@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ContentSection from '@/components/ContentSection.vue'
 import CommentItem from '@/components/CommentItem.vue'
@@ -12,6 +12,7 @@ import {
   Loader2,
   Send,
 } from 'lucide-vue-next'
+import { assetUrl } from '@/lib/format'
 
 const props = defineProps({
   film: { type: Object, required: true },
@@ -31,6 +32,7 @@ const emit = defineEmits([
   'update:newComment',
   'submit-comment',
   'delete-comment',
+  'report-content'
 ])
 
 const router = useRouter()
@@ -39,6 +41,8 @@ const localComment = computed({
   get: () => props.newComment,
   set: (val) => emit('update:newComment', val),
 })
+
+const imageError = ref(false)
 </script>
 
 <template>
@@ -55,7 +59,7 @@ const localComment = computed({
         >
           <img
             v-if="film.gambar_poster"
-            :src="film.gambar_poster"
+            :src="assetUrl(film.gambar_poster)"
             :alt="film.judul"
             class="w-full h-full object-cover"
           />
@@ -165,52 +169,45 @@ const localComment = computed({
     </ContentSection>
 
     <!-- Comments Section -->
-    <ContentSection title="Diskusi" color="red">
-      <div class="flex items-center gap-2 mb-4">
-        <MessageCircle class="w-5 h-5 shrink-0" />
-        <span
-          class="text-sm text-stone-500 font-bold font-mono tracking-tight uppercase"
-          >{{ totalCommentCount }} KOMENTAR</span
-        >
-      </div>
-
+    <ContentSection :title="`Ruang Diskusi (${totalCommentCount} Komentar)`" color="red">
+      
       <div
         v-if="isLoggedIn"
-        class="mb-6 p-3 md:p-4 bg-white border-2 border-slate-900 shadow-brutal relative"
+        class="mb-6 md:mb-10 p-3 md:p-6 bg-white border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal relative group"
       >
-        <!-- Decoration Dots -->
-        <div class="absolute top-2 right-2 flex gap-1">
-          <div class="w-1.5 h-1.5 bg-stone-200 rounded-full"></div>
-          <div class="w-1.5 h-1.5 bg-stone-200 rounded-full"></div>
-        </div>
+        <!-- Background Accent -->
+        <div class="absolute -z-10 inset-0 bg-stone-50 translate-x-1 translate-y-1 md:translate-x-2 md:translate-y-2 group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform"></div>
 
-        <div class="flex gap-3 md:gap-4">
+        <div class="flex gap-3 md:gap-6">
           <div
-            class="w-9 h-9 md:w-10 md:h-10 bg-brand-orange border-2 border-slate-900 shadow-brutal-xs flex items-center justify-center text-stone-900 font-bold flex-shrink-0 rounded-full overflow-hidden"
+            class="hidden sm:flex w-10 h-10 md:w-12 md:h-12 bg-brand-orange border-2 border-black shadow-brutal-xs items-center justify-center text-stone-900 font-bold flex-shrink-0 rounded-full overflow-hidden"
           >
-            <img v-if="user?.image" :src="user.image" class="w-full h-full object-cover" />
-            <span v-else>{{ user?.name?.charAt(0) || 'U' }}</span>
+            <img v-if="user?.image && !imageError" :src="assetUrl(user.image)" referrerpolicy="no-referrer" class="w-full h-full object-cover" @error="imageError = true" />
+            <span v-else class="text-xs md:text-base">{{ user?.name?.charAt(0) || 'U' }}</span>
           </div>
           <div class="flex-1 min-w-0">
-            <textarea
-              v-model="localComment"
-              rows="2"
-              placeholder="Apa pendapatmu tentang karya ini?"
-              class="w-full p-2 md:p-3 border-2 border-slate-900 bg-stone-50 text-sm md:text-base resize-none focus:bg-white focus:ring-0 focus:outline-none mb-3 font-body transition-colors"
-            ></textarea>
+            <div class="relative">
+              <textarea
+                v-model="localComment"
+                rows="3"
+                placeholder="Apa pendapatmu?..."
+                class="w-full p-3 md:p-4 border-2 border-black bg-white text-stone-900 text-sm md:text-base resize-none focus:ring-0 focus:outline-none mb-3 md:mb-4 font-body transition-all placeholder:text-stone-400"
+              ></textarea>
+              <!-- Indicator -->
+              <div class="absolute bottom-5 right-3 md:bottom-6 md:right-4 text-[8px] md:text-[10px] font-black text-stone-300 uppercase tracking-tighter pointer-events-none hidden sm:block">
+                SHIFT + ENTER: BARIS BARU
+              </div>
+            </div>
+            
             <div class="flex justify-end">
               <Button
                 @click="emit('submit-comment')"
                 :disabled="submittingComment || !localComment.trim()"
-                class="bg-brand-red hover:bg-brand-red/90 text-white rounded-none border-2 border-slate-900 shadow-brutal-sm md:shadow-brutal hover:shadow-none hover:translate-x-[1px] md:hover:translate-x-[2px] hover:translate-y-[1px] md:hover:translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] transition-all font-bold uppercase tracking-wider h-9 md:h-10 px-5"
+                class="bg-brand-red hover:bg-brand-red/90 text-white rounded-none border-2 border-black shadow-[3px_3px_0_0_#000] md:shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all font-display font-black uppercase tracking-wider text-xs md:text-sm h-10 px-5 md:h-12 md:px-8 flex items-center justify-center gap-2 md:gap-3 w-full sm:w-auto"
               >
-                <Loader2
-                  v-if="submittingComment"
-                  class="w-4 h-4 mr-2 animate-spin"
-                />
-                <Send v-else class="w-4 h-4 mr-2" />
-                <span class="hidden sm:inline">Kirim Komentar</span>
-                <span class="sm:hidden">Kirim</span>
+                <Loader2 v-if="submittingComment" class="w-4 h-4 md:w-5 md:h-5 animate-spin" />
+                <Send v-else class="w-4 h-4 md:w-5 md:h-5" />
+                Kirim Komentar
               </Button>
             </div>
           </div>
@@ -258,8 +255,10 @@ const localComment = computed({
             :current-user="user"
             :can-moderate="canModerate"
             :deleting-comment-ids="deletingCommentIds"
+            :film-owner-id="film.user_id"
             @reply="emit('submit-comment', $event)"
             @delete="emit('delete-comment', $event)"
+            @report="emit('report-content', $event)"
           />
         </div>
       </div>

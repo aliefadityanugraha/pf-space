@@ -110,7 +110,7 @@ const handleVote = () => {
       <Transition :name="direction === 'right' ? 'hero-right' : 'hero-left'">
         <div 
           :key="activeIndex"
-          class="absolute inset-0 slide-container flex flex-col justify-center md:justify-end translate-y-0 md:translate-y-0 md:pb-32"
+          class="absolute inset-0 slide-container flex flex-col justify-end pb-24 md:pb-32"
         >
           <div class="max-w-7xl mx-auto px-3 md:px-8 w-full pointer-events-auto">
             <div class="hero-content max-w-3xl">
@@ -123,7 +123,7 @@ const handleVote = () => {
               </div> -->
 
               <!-- Title -->
-              <h1 class="hero-title text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-display font-black text-white mb-4 md:mb-6 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] leading-none">
+              <h1 class="hero-title text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-display font-black text-[#fafaf9] mb-4 md:mb-6 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] leading-none">
                 {{ slides[activeIndex].title }}
               </h1>
 
@@ -141,7 +141,7 @@ const handleVote = () => {
               <div class="hero-actions flex flex-wrap gap-2.5 md:gap-4">
                 <Button 
                   @click="handleWatchNow"
-                  class="bg-brand-red text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] h-9 md:h-12 px-3 md:px-8 text-xs sm:text-sm md:text-lg font-bold uppercase rounded-none transition-all"
+                  class="bg-brand-red text-[#fafaf9] border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] h-9 md:h-12 px-3 md:px-8 text-xs sm:text-sm md:text-lg font-bold uppercase rounded-none transition-all"
                 >
                   <Play class="w-5 h-5 mr-2 fill-current" />
                   Lihat Karya
@@ -164,13 +164,13 @@ const handleVote = () => {
     <div class="absolute bottom-10 right-4 md:right-8 z-30 flex gap-4">
       <button 
         @click="prevSlide(); resetTimer();"
-        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-brand-cream hover:bg-brand-red hover:text-white transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
+        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-brand-cream hover:bg-brand-red hover:text-[#fafaf9] transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
       >
         <ChevronLeft class="w-6 h-6 md:w-8 md:h-8" />
       </button>
       <button 
         @click="nextSlide(); resetTimer();"
-        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-brand-cream hover:bg-brand-red hover:text-white transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
+        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-brand-cream hover:bg-brand-red hover:text-[#fafaf9] transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
       >
         <ChevronRight class="w-6 h-6 md:w-8 md:h-8" />
       </button>
@@ -183,7 +183,7 @@ const handleVote = () => {
         :key="index"
         @click="goToSlide(index)"
         class="h-2 md:h-3 transition-all border border-black"
-        :class="activeIndex === index ? 'w-10 md:w-16 bg-brand-red shadow-brutal-xs' : 'w-4 md:w-6 bg-white/40'"
+        :class="activeIndex === index ? 'w-10 md:w-16 bg-brand-red shadow-brutal-xs' : 'w-4 md:w-6 bg-[#fafaf9]/40'"
       ></button>
     </div>
   </section>

@@ -1,17 +1,33 @@
 <script setup>
 import PageLayout from '@/components/PageLayout.vue'
-import SectionHeader from '@/components/SectionHeader.vue'
+import PageHeader from '@/components/PageHeader.vue'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Shield, Lock, Eye } from 'lucide-vue-next'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Kebijakan Privasi - PF Space',
+  meta: [
+    { name: 'description', content: 'Bagaimana kami mengelola dan melindungi data pribadi Anda di platform PF Space.' }
+  ]
+})
 </script>
 
 <template>
   <PageLayout>
     <div class="max-w-7xl mx-auto px-4 md:px-8">
-      <SectionHeader 
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-2 md:pt-8">
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+        <span class="text-stone-400">/</span>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Kebijakan Privasi</Badge>
+      </nav>
+
+      <PageHeader 
         title="Kebijakan Privasi" 
-        subtitle="Bagaimana kami mengelola dan melindungi data Anda."
-        :light-text="false"
+        description="Bagaimana kami mengelola dan melindungi data pribadi Anda di platform PF Space."
+        icon-color="bg-brand-teal"
       />
 
       <Card class="mt-6 md:mt-8 border-2 border-black shadow-brutal mx-0.5 md:mx-0">

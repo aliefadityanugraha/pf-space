@@ -5,8 +5,8 @@
 
 import { ref, watch } from 'vue'
 
-const DRAFT_KEY = 'film_draft'
-const DRAFT_TIMESTAMP_KEY = 'film_draft_timestamp'
+const DRAFT_KEY = 'draft-film'
+const DRAFT_TIMESTAMP_KEY = 'draft-film-timestamp'
 const DRAFT_EXPIRY_DAYS = 7 // Draft akan expired setelah 7 hari
 
 export function useFilmDraft() {

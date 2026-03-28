@@ -1,13 +1,13 @@
 <script setup>
 import { ref } from 'vue'
-import SidebarAdmin from './SidebarAdmin.vue'
+import AdminSidebar from './AdminSidebar.vue'
 
 const sidebarCollapsed = ref(false)
 </script>
 
 <template>
   <div class="min-h-screen bg-stone-100 flex">
-    <SidebarAdmin @update:collapsed="sidebarCollapsed = $event" />
+    <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
     
     <div 
       :class="[

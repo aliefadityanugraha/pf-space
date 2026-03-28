@@ -50,13 +50,14 @@ const handleNotificationClick = async (notification) => {
   
   open.value = false
   
-  if (notification.data?.film_id) {
-    // If it's a comment/reply, we might want to scroll to discussion
-    // For now just go to film detail
-    const route = { name: 'Detail', params: { slug: notification.data.film_id } } // Assuming slug or ID works
-    // Better to fetch slug if we only have ID, but router usually handles ID if configured or we rely on redirect
-    // Our Detail page handles ID or Slug.
+  if (notification.type === 'community_reply') {
+    router.push('/community')
+  } else if (notification.data?.slug) {
+    router.push(`/archive/${notification.data.slug}`)
+  } else if (notification.data?.film_id) {
     router.push(`/archive/${notification.data.film_id}`)
+  } else if (['approval', 'rejection'].includes(notification.type)) {
+    router.push('/my-archive')
   }
 }
 
@@ -66,7 +67,7 @@ const formatTime = (date) => {
 </script>
 
 <template>
-  <DropdownMenuRoot v-model:open="open" :modal="false">
+  <DropdownMenuRoot :open="open" @update:open="open = $event" :modal="false">
     <DropdownMenuTrigger as-child>
       <button 
         type="button"

@@ -1,7 +1,12 @@
 /**
  * src/schemas/film.schema.js
  * 
- * Validation schemas for film operations.
+ * Fastify JSON Schema validation for film operations.
+ * 
+ * @deprecated LEGACY — This file uses Fastify's built-in JSON Schema validation.
+ * For new features, prefer Zod schemas in `film.zod.js` and `lib/validation.js`
+ * with the `validateRequest` middleware for consistency.
+ * These schemas are kept for backward compatibility with existing routes.
  */
 
 const filmBodyProperties = {

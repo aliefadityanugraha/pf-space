@@ -40,6 +40,10 @@ async function request(endpoint, options = {}) {
     if (err.name === 'AbortError') {
       throw err;
     }
+    // Dispatch a custom event so the UI can show a fallback screen
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('api:down'));
+    }
     throw new ApiError(
       'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.',
       0,

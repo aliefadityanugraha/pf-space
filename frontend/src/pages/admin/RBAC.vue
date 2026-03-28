@@ -247,7 +247,7 @@ onMounted(() => {
             <!-- User Info -->
             <div class="lg:col-span-4 flex items-center gap-3">
               <div class="w-10 h-10 bg-stone-200 border-2 border-stone-800 shadow-brutal-sm flex items-center justify-center text-sm font-bold overflow-hidden">
-                <img v-if="user.image" :src="assetUrl(user.image)" :alt="user.name" class="w-full h-full object-cover" />
+                <img v-if="user.image" :src="assetUrl(user.image)" :alt="user.name" referrerpolicy="no-referrer" class="w-full h-full object-cover" />
                 <span v-else>{{ getAvatarInitials(user.name) }}</span>
               </div>
               <div>

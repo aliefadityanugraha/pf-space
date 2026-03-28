@@ -8,52 +8,70 @@ import { Discussion, Film, BaseModel } from '../models/index.js';
 import { notificationService } from './notification.service.js';
 
 export class DiscussionService {
-  /**
-   * Get all root comments for a film with pagination and nested replies
-   * @param {number} filmId - Film ID
-   * @param {object} options - Pagination options
-   * @returns {Promise<{comments: object[], pagination: object}>} Paginated results with nested replies
-   */
   async getByFilm(filmId, options = {}) {
     const { page = 1, limit = 20 } = options;
     const offset = (page - 1) * limit;
 
-    // Get root comments (parent_id = null)
-    const rootComments = await Discussion.query()
+    // 1 query: fetch ALL comments for this film to prevent N+1 queries
+    const allComments = await Discussion.query()
       .where('film_id', filmId)
-      .whereNull('parent_id')
       .withGraphFetched('user(selectBasic)')
-      .modifiers(BaseModel.defaultModifiers)
-      .orderBy('created_at', 'desc')
-      .limit(limit)
-      .offset(offset);
+      .modifiers(BaseModel.defaultModifiers);
 
-    // Get total count
-    const totalResult = await Discussion.query()
-      .where('film_id', filmId)
-      .whereNull('parent_id')
-      .count('diskusi_id as total')
-      .first();
+    // Build the tree in memory
+    const commentMap = new Map();
 
-    // Fetch replies for each root comment (nested)
-    const commentsWithReplies = await Promise.all(
-      rootComments.map(async (comment) => {
-        const replies = await this.getRepliesRecursive(comment.diskusi_id);
-        return {
-          ...comment,
-          replies,
-          reply_count: this.countReplies(replies)
-        };
-      })
-    );
+    // First pass: initialize the map and empty replies array for each comment
+    for (const comment of allComments) {
+      commentMap.set(comment.diskusi_id, {
+        ...comment,
+        replies: [],
+        reply_count: 0
+      });
+    }
+
+    const rootComments = [];
+    
+    // Sort all comments by created_at asc for chronological replies
+    const chronologicalComments = [...allComments].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+    // Second pass: link children to parents
+    for (const comment of chronologicalComments) {
+      const node = commentMap.get(comment.diskusi_id);
+      
+      if (comment.parent_id && commentMap.has(comment.parent_id)) {
+        // Add to parent's replies
+        commentMap.get(comment.parent_id).replies.push(node);
+      } else {
+        // It's a root comment
+        rootComments.push(node);
+      }
+    }
+
+    // Sort roots by created_at desc (newest first for root level)
+    rootComments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    // Calculate total roots for pagination
+    const totalRoots = rootComments.length;
+    
+    // Paginate root comments
+    const paginatedRoots = rootComments.slice(offset, offset + limit);
+
+    // Calculate recursive reply count for the paginated roots
+    const enhancedRoots = paginatedRoots.map(root => {
+      return {
+        ...root,
+        reply_count: this.countReplies(root.replies)
+      };
+    });
 
     return {
-      comments: commentsWithReplies,
+      comments: enhancedRoots,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        total: parseInt(totalResult.total),
-        totalPages: Math.ceil(totalResult.total / limit)
+        total: totalRoots,
+        totalPages: Math.ceil(totalRoots / limit)
       }
     };
   }

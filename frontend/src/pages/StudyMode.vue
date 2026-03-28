@@ -31,6 +31,23 @@ const saving = ref(false)
 const activeTab = ref('naskah') // 'naskah' | 'storyboard' | 'rab' | 'evaluation' | 'notes' | 'scenes'
 const showSidebar = ref(false)
 const videoPlayer = ref(null)
+const loadingVideo = ref(true)
+const loadingDoc = ref(false)
+let docTimeout = null
+
+const startDocLoading = () => {
+  if (docTimeout) clearTimeout(docTimeout)
+  loadingDoc.value = true
+  // Fallback: stop loading after 10s if load event doesn't trigger
+  docTimeout = setTimeout(() => {
+    loadingDoc.value = false
+  }, 10000)
+}
+
+const handleDocLoad = () => {
+  if (docTimeout) clearTimeout(docTimeout)
+  loadingDoc.value = false
+}
 
 // Notes State
 const notes = ref([])
@@ -130,9 +147,18 @@ const fetchFilm = async () => {
     film.value = f
     
     // Determine the initial tab based on available production assets
-    if (f.file_naskah && f.file_naskah !== assetUrl(null)) activeTab.value = 'naskah'
-    else if (f.file_storyboard && f.file_storyboard !== assetUrl(null)) activeTab.value = 'storyboard'
-    else if (f.file_rab && f.file_rab !== assetUrl(null)) activeTab.value = 'rab'
+    if (f.file_naskah && f.file_naskah !== assetUrl(null)) {
+      activeTab.value = 'naskah'
+      startDocLoading()
+    }
+    else if (f.file_storyboard && f.file_storyboard !== assetUrl(null)) {
+      activeTab.value = 'storyboard'
+      startDocLoading()
+    }
+    else if (f.file_rab && f.file_rab !== assetUrl(null)) {
+      activeTab.value = 'rab'
+      startDocLoading()
+    }
     else if (isStaff.value || isOwner.value) activeTab.value = 'evaluation'
 
     // Load evaluation if it was eager-loaded with the film
@@ -154,6 +180,15 @@ const fetchFilm = async () => {
   } finally {
     loading.value = false
   }
+}
+
+/**
+ * Returns specifically to the film detail page.
+ * Uses explicit routing instead of history.back() to avoid 
+ * unexpected behavior if the history stack contains internal states.
+ */
+const goBack = () => {
+  router.push({ name: 'ArchiveDetail', params: { slug: filmSlug } })
 }
 
 /**
@@ -378,6 +413,14 @@ const activeDocUrl = computed(() => {
 })
 
 const selectTab = (tab) => {
+  if (activeTab.value !== tab) {
+    if (['naskah', 'storyboard', 'rab'].includes(tab)) {
+      startDocLoading()
+    } else {
+      loadingDoc.value = false
+      if (docTimeout) clearTimeout(docTimeout)
+    }
+  }
   activeTab.value = tab
   showSidebar.value = false
 }
@@ -396,7 +439,7 @@ useHead({
     
     <!-- 1. MOBILE HEADER -->
     <header class="lg:hidden h-14 bg-stone-900 border-b border-white/10 flex items-center justify-between px-4 shrink-0 z-50">
-      <button @click="router.back()" class="p-2 hover:bg-white/5 rounded-full transition-colors">
+      <button @click="goBack" class="p-2 hover:bg-white/5 rounded-full transition-colors">
         <ArrowLeft class="w-5 h-5" />
       </button>
       <h1 class="text-sm font-bold truncate max-w-[200px]">{{ film?.judul || 'Mode Studi' }}</h1>
@@ -416,7 +459,7 @@ useHead({
       <div v-if="showSidebar" @click="showSidebar = false" class="lg:hidden fixed inset-0 bg-black/60 z-[-1]"></div>
 
       <div class="hidden lg:block p-6 border-b border-white/10">
-        <button @click="router.back()" class="flex items-center text-sm text-white/50 hover:text-white transition-colors mb-6 group">
+        <button @click="goBack" class="flex items-center text-sm text-white/50 hover:text-white transition-colors mb-6 group">
           <ArrowLeft class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
           Kembali
         </button>
@@ -494,14 +537,24 @@ useHead({
       <!-- Video Player Section -->
       <section class="w-full bg-black flex flex-col border-b border-black lg:border-b-2 relative shrink-0 overflow-hidden z-20 min-h-[30vh] lg:h-[50vh]">
         <ErrorBoundary name="Pemutar Video">
-          <VideoPlayer
-            ref="videoPlayer"
-            v-if="film.link_video_utama"
-            :src="film.link_video_utama"
-            :title="film.judul || 'Video'"
-            :poster="film.gambar_poster || null"
-            :storageKey="film?.film_id ? `study-${film.film_id}` : (film?.slug ? `study-${film.slug}` : '')"
-          />
+          <template v-if="film.link_video_utama">
+            <VideoPlayer
+              ref="videoPlayer"
+              :src="film.link_video_utama"
+              :title="film.judul || 'Video'"
+              :poster="film.gambar_poster || null"
+              :storageKey="film?.film_id ? `study-${film.film_id}` : (film?.slug ? `study-${film.slug}` : '')"
+              @ready="loadingVideo = false"
+            />
+            <!-- Video Loading Overlay -->
+            <div v-if="loadingVideo" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-stone-900/80 backdrop-blur-sm transition-opacity duration-500">
+               <div class="relative w-12 h-12 mb-4">
+                  <div class="absolute inset-0 border-2 border-white/10 rounded-full"></div>
+                  <div class="absolute inset-0 border-2 border-t-brand-teal rounded-full animate-spin"></div>
+               </div>
+               <p class="text-[10px] font-black uppercase tracking-[0.2em] text-brand-teal animate-pulse">Menyiapkan Pemutar...</p>
+            </div>
+          </template>
           <div v-else class="w-full h-full flex flex-col items-center justify-center bg-stone-900 text-stone-600 gap-4">
             <MonitorPlay class="w-16 h-16 opacity-10" />
             <span class="text-xs uppercase font-black tracking-widest">Video tidak tersedia</span>
@@ -852,17 +905,26 @@ useHead({
 
         <!-- Tab: Documents (Naskah/Storyboard/RAB) -->
         <div v-else class="flex-1 w-full h-full bg-stone-200 relative">
-          <div class="lg:hidden absolute top-3 left-3 z-30 pointer-events-none">
-            <div class="bg-black/80 backdrop-blur-md px-2 py-1 rounded border border-white/20 text-[9px] font-black uppercase text-brand-teal tracking-tighter">
-              {{ activeTab }}
+          <template v-if="activeDocUrl">
+            <iframe 
+              :src="activeDocUrl + '#view=FitH&scrollbar=0&toolbar=0&navpanes=0'"
+              class="absolute inset-0 w-full h-full border-0"
+              frameborder="0"
+              @load="handleDocLoad"
+            ></iframe>
+
+            <!-- Doc Loading Overlay -->
+            <div v-if="loadingDoc" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm">
+               <div class="w-16 h-16 relative mb-4">
+                  <div class="absolute inset-0 border-4 border-stone-100 rounded-full"></div>
+                  <div class="absolute inset-0 border-4 border-t-amber-400 rounded-full animate-spin"></div>
+                  <FileText class="absolute inset-0 m-auto w-6 h-6 text-stone-300" />
+               </div>
+               <p class="text-[10px] font-black uppercase tracking-widest text-stone-400 animate-pulse">Memuat Dokumen...</p>
             </div>
-          </div>
-          <iframe 
-            v-if="activeDocUrl"
-            :src="activeDocUrl + '#view=FitH&scrollbar=0&toolbar=0&navpanes=0'"
-            class="absolute inset-0 w-full h-full border-0"
-            frameborder="0"
-          ></iframe>
+          </template>
+
+          <!-- Placeholder when no doc is selected -->
           <div v-else class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-white">
             <div class="w-20 h-20 rounded-full bg-stone-100 flex items-center justify-center mb-6 animate-bounce">
               <FileText class="w-10 h-10 text-stone-300" />
@@ -885,7 +947,8 @@ useHead({
 
     <!-- Confirmation Dialog -->
     <ConfirmDialog
-      v-model:show="confirmState.show"
+      :show="confirmState.show"
+      @update:show="confirmState.show = $event"
       :title="confirmState.title"
       :message="confirmState.message"
       :loading="confirmState.loading"

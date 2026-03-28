@@ -41,7 +41,7 @@ const emit = defineEmits(['action'])
     <div class="max-w-md mx-auto px-4">
       <component 
         :is="icon" 
-        class="w-16 h-16 mx-auto mb-4 text-stone-300" 
+        class="w-16 h-16 mx-auto mb-4 text-stone-300 animate-float" 
       />
       <h3 class="text-xl md:text-2xl font-display font-bold text-stone-800 mb-2">
         {{ title }}

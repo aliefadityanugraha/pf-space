@@ -5,6 +5,8 @@ import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, AlertTriangle } from 'lucide-vue-next'
+import PageHeader from '@/components/PageHeader.vue'
+import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/composables/useToast'
 import { useFilmForm } from '@/composables/useFilmForm'
 import ArchiveUploadForm from '@/components/ArchiveUploadForm.vue'
@@ -35,17 +37,28 @@ const handleError = (message) => {
   <div class="min-h-screen flex flex-col bg-brand-cream">
     <Navbar />
 
-    <main class="w-full max-w-7xl mx-auto px-4 md:px-8 pt-28 pb-16">
+    <main class="w-full max-w-7xl mx-auto px-4 md:px-8 pt-24 pb-16">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-4">
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+        <span class="text-stone-400">/</span>
+        <router-link to="/my-archive" class="text-stone-600 hover:underline">Karya Saya</router-link>
+        <span class="text-stone-400">/</span>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Upload</Badge>
+      </nav>
+
       <!-- Header -->
-      <div class="flex items-center gap-4 mb-8">
-        <Button variant="outline" size="sm" @click="handleCancel">
-          <ArrowLeft class="w-4 h-4" />
-        </Button>
-        <div>
-          <h1 class="text-3xl md:text-4xl font-display text-stone-900">Upload Film Baru</h1>
-          <p class="text-stone-500">Film akan direview oleh admin sebelum dipublikasi.</p>
-        </div>
-      </div>
+      <PageHeader 
+        title="Upload Film Baru" 
+        description="Film akan direview oleh admin sebelum dipublikasi di PF Space."
+        icon-color="bg-brand-red"
+      >
+        <template #actions>
+          <Button variant="outline" size="sm" @click="handleCancel" class="hidden md:flex gap-2">
+            <ArrowLeft class="w-4 h-4" /> Kembali
+          </Button>
+        </template>
+      </PageHeader>
 
       <!-- Error Message -->
       <div v-if="formError" class="mb-6 p-4 bg-red-50 border-2 border-red-200 text-red-600">

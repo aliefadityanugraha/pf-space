@@ -15,6 +15,9 @@ export async function communityRoutes(fastify) {
   // Public: Get currently active topic
   fastify.get('/active', communityController.getActiveDiscussion.bind(communityController));
 
+  // Public: Get single discussion
+  fastify.get('/:id', communityController.getOne.bind(communityController));
+
   // Admin/Moderator: List all historical topics
   fastify.get('/discussions', {
     preHandler: requireModerator
@@ -83,6 +86,9 @@ export async function communityRoutes(fastify) {
   fastify.delete('/replies/:replyId', {
     preHandler: authenticate
   }, communityController.deleteReply.bind(communityController));
+  
+  // Public: Get a single reply
+  fastify.get('/replies/:replyId', communityController.getReplyById.bind(communityController));
 
   // Administrative: Moderation delete of a reply
   fastify.delete('/moderator/replies/:replyId', {

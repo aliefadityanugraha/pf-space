@@ -14,16 +14,16 @@ defineEmits(['prev', 'next'])
 
 <template>
   <div class="flex items-start justify-between mb-6">
-    <div class="flex items-start gap-3">
-      <div class="w-3 h-8 bg-brand-teal mt-1"></div>
+    <div class="flex items-start gap-4 flex-1">
+      <div class="w-2 md:w-3 h-8 md:h-10 bg-brand-teal mt-0.5 md:mt-1"></div>
       <div>
         <h2 
-          class="text-lg md:text-3xl font-display font-semibold"
-          :class="lightText ? 'text-stone-200' : 'text-slate-900'"
+          class="text-xl md:text-3xl font-display font-bold"
+          :class="lightText ? 'text-stone-200' : 'text-stone-900'"
         >
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="text-xs md:text-sm font-body font-medium text-slate-600 mt-1">
+        <p v-if="subtitle" class="text-xs md:text-sm font-body font-medium text-stone-500 mt-0.5 md:mt-1">
           {{ subtitle }}
         </p>
       </div>

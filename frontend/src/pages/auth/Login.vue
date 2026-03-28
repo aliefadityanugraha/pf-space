@@ -6,6 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import AuthCard from '@/components/AuthCard.vue'
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-vue-next'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Masuk - PF Space',
+  meta: [
+    { name: 'description', content: 'Masuk ke akun PF Space Anda.' }
+  ]
+})
 
 const router = useRouter()
 const { login, loginWithGoogle, loading } = useAuth()
@@ -27,7 +35,6 @@ const handleSubmit = async () => {
   if (result.success) {
     router.push('/')
   } else {
-    // Translate common Better Auth errors
     if (result.message === 'Unauthorized' || result.message?.toLowerCase().includes('invalid credentials')) {
       error.value = 'Email atau kata sandi salah'
     } else {
@@ -42,7 +49,11 @@ const handleGoogleLogin = () => {
 </script>
 
 <template>
-  <AuthCard>
+  <AuthCard 
+    split
+    title="Selamat datang kembali"
+    subtitle="Masuk untuk mengelola arsip dan memberikan apresiasi pada karya terbaik."
+  >
     <!-- Form -->
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <!-- Error Message -->
@@ -102,10 +113,15 @@ const handleGoogleLogin = () => {
       </div>
 
       <!-- Submit Button -->
-      <Button variant="destructive" class="w-full" size="lg" :disabled="loading">
-        <span v-if="loading">Memuat...</span>
+      <Button 
+        variant="destructive" 
+        class="w-full shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all h-12 text-sm font-bold uppercase tracking-wider" 
+        size="lg" 
+        :disabled="loading"
+      >
+        <span v-if="loading">Mengautentikasi...</span>
         <template v-else>
-          Masuk ke Arsip
+          Masuk ke Portal
           <LogIn class="w-5 h-5 ml-2" />
         </template>
       </Button>
@@ -129,12 +145,14 @@ const handleGoogleLogin = () => {
     </form>
 
     <template #footer>
-      <p class="text-stone-400 font-body mb-3">Belum punya akun?</p>
-      <router-link to="/auth/register">
-        <Button variant="outline" class="bg-stone-900 border-stone-700 text-white hover:bg-stone-800">
-          Daftar Akun
-        </Button>
-      </router-link>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-stone-400 font-body text-sm">Belum memiliki akun kurator?</p>
+        <router-link to="/auth/register">
+          <Button variant="outline" class="bg-transparent border-2 border-stone-700 text-white hover:bg-stone-700 font-bold px-6">
+            Daftar Sekarang
+          </Button>
+        </router-link>
+      </div>
     </template>
   </AuthCard>
 </template>

@@ -10,13 +10,14 @@ defineProps({
     type: String,
     default: ''
   },
+  // We keep these for compatibility, but the bar style is the new standard
   icon: {
-    type: Object, // Component
+    type: Object,
     default: null
   },
   iconColor: {
     type: String,
-    default: 'bg-brand-orange'
+    default: 'bg-brand-teal'
   },
   className: {
     type: String,
@@ -26,27 +27,21 @@ defineProps({
 </script>
 
 <template>
-  <div :class="cn('flex flex-col md:flex-row md:items-start md:justify-between gap-4 pb-6', className)">
-    <div class="flex-1">
-      <div class="flex items-center gap-3 mb-2">
-        <div 
-          v-if="icon" 
-          :class="cn(
-            'w-10 h-10 border-2 border-black flex items-center justify-center shadow-brutal-sm',
-            iconColor
-          )"
-        >
-          <component :is="icon" class="w-6 h-6 text-white" />
-        </div>
-        <h1 class="text-2xl md:text-4xl font-display font-bold text-stone-900 leading-tight">{{ title }}</h1>
+  <div :class="cn('flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8', className)">
+    <div class="flex items-start gap-4 flex-1">
+      <div :class="cn('w-1 bg-brand-orange rounded-full', iconColor, description ? 'h-16' : 'h-10')"></div>
+      <div>
+        <h1 class="font-display text-3xl md:text-4xl font-bold text-stone-900 leading-tight">
+          {{ title }}
+        </h1>
+        <p v-if="description" class="text-stone-500 font-body mt-1 max-w-2xl text-sm md:text-base">
+          {{ description }}
+        </p>
+        <slot name="extra"></slot>
       </div>
-      <p v-if="description" class="text-stone-500 font-body max-w-2xl text-sm md:text-base">
-        {{ description }}
-      </p>
-      <slot name="extra"></slot>
     </div>
     
-    <div v-if="$slots.actions" class="flex-shrink-0">
+    <div v-if="$slots.actions" class="flex items-center gap-3">
       <slot name="actions"></slot>
     </div>
   </div>

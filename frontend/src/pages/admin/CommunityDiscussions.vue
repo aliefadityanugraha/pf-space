@@ -442,9 +442,10 @@ onMounted(() => {
                   :src="assetUrl(reply.user.image)" 
                   :alt="reply.user.name"
                   class="w-full h-full object-cover"
-                  @error="(e) => e.target.style.display = 'none'"
+                  referrerpolicy="no-referrer"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                 />
-                <UserIcon v-else class="w-5 h-5 text-white" />
+                <UserIcon class="w-5 h-5 text-white" :style="reply.user?.image ? 'display: none;' : ''" />
               </div>
 
               <!-- Content -->

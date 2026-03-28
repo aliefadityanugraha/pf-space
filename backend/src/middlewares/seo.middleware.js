@@ -8,6 +8,21 @@
 import { filmService } from '../services/index.js';
 
 /**
+ * Escape HTML special characters to prevent XSS in SSR output
+ * @param {string} str - Raw string to escape
+ * @returns {string} HTML-safe string
+ */
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
  * Middleware to handle SEO for bots/crawlers.
  * Intercepts requests from known bots and provides a static HTML page 
  * with Open Graph and Twitter meta tags for better link previews.
@@ -21,11 +36,13 @@ export const seoMiddleware = async (request, reply) => {
   // List of bots/crawlers that should receive SSR meta tags
   const isBot = /bot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|discordbot|googlebot/i.test(userAgent);
 
+  // Match all detail page paths: /detail/, /archive/, /film/
+  const detailMatch = request.url.match(/\/(detail|archive|film)\/([^/?#]+)/);
+
   // If it's a bot and requesting a detail page
-  if (isBot && request.url.includes('/detail/')) {
+  if (isBot && detailMatch) {
     try {
-      // Extract segment after /detail/ (could be ID or slug)
-      const identifier = request.url.split('/detail/').pop()?.split('?')[0];
+      const identifier = detailMatch[2];
       
       if (!identifier) return;
 
@@ -36,10 +53,12 @@ export const seoMiddleware = async (request, reply) => {
       }
 
       if (film) {
-        const title = `${film.judul} | PF Space`;
-        const description = film.sinopsis ? 
-          (film.sinopsis.length > 160 ? film.sinopsis.substring(0, 157) + '...' : film.sinopsis) : 
-          'Lihat karya film siswa di PF Space.';
+        const title = escapeHtml(`${film.judul} | PF Space`);
+        const description = escapeHtml(
+          film.sinopsis 
+            ? (film.sinopsis.length > 160 ? film.sinopsis.substring(0, 157) + '...' : film.sinopsis) 
+            : 'Lihat karya film siswa di PF Space.'
+        );
         
         const apiUrl = process.env.API_URL || 'http://localhost:3000';
         const posterUrl = film.gambar_poster ? 
@@ -48,6 +67,7 @@ export const seoMiddleware = async (request, reply) => {
 
         const siteUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         const pageUrl = `${siteUrl}/detail/${film.slug || film.film_id}`;
+        const creatorName = escapeHtml(film.creator?.name || 'siswa SI');
 
         // Return minimal HTML with necessary meta tags for crawlers
         return reply.type('text/html').send(`
@@ -60,25 +80,25 @@ export const seoMiddleware = async (request, reply) => {
               
               <!-- Open Graph / Facebook -->
               <meta property="og:type" content="video.other">
-              <meta property="og:url" content="${pageUrl}">
+              <meta property="og:url" content="${escapeHtml(pageUrl)}">
               <meta property="og:title" content="${title}">
               <meta property="og:description" content="${description}">
-              <meta property="og:image" content="${posterUrl}">
+              <meta property="og:image" content="${escapeHtml(posterUrl)}">
 
               <!-- Twitter -->
               <meta property="twitter:card" content="summary_large_image">
-              <meta property="twitter:url" content="${pageUrl}">
+              <meta property="twitter:url" content="${escapeHtml(pageUrl)}">
               <meta property="twitter:title" content="${title}">
               <meta property="twitter:description" content="${description}">
-              <meta property="twitter:image" content="${posterUrl}">
+              <meta property="twitter:image" content="${escapeHtml(posterUrl)}">
 
               <!-- Additional Tags -->
-              <meta name="author" content="${film.creator?.name || 'siswa SI'}">
+              <meta name="author" content="${creatorName}">
             </head>
             <body>
-              <h1>${film.judul}</h1>
+              <h1>${title}</h1>
               <p>${description}</p>
-              <img src="${posterUrl}" alt="${film.judul}" />
+              <img src="${escapeHtml(posterUrl)}" alt="${title}" />
             </body>
           </html>
         `);
@@ -89,3 +109,4 @@ export const seoMiddleware = async (request, reply) => {
     }
   }
 };
+

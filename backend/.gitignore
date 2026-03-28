@@ -1,6 +1,8 @@
 node_modules
 .env
 *.log
+error-debug.log
+manual-debug.log
 
 # Ignore uploaded files but keep folder structure
 uploads/**

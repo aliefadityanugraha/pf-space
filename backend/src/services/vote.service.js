@@ -111,12 +111,12 @@ export class VoteService {
    */
   async getTrending(period = 'week', limit = 10) {
     let dateFilter;
-    const now = new Date();
+    const now = Date.now();
 
     if (period === 'week') {
-      dateFilter = new Date(now.setDate(now.getDate() - 7));
+      dateFilter = new Date(now - 7 * 24 * 60 * 60 * 1000);
     } else if (period === 'month') {
-      dateFilter = new Date(now.setMonth(now.getMonth() - 1));
+      dateFilter = new Date(now - 30 * 24 * 60 * 60 * 1000);
     } else {
       // all time
       dateFilter = null;

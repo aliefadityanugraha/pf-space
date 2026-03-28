@@ -2,8 +2,9 @@
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { 
-  Bold, Italic, List, ListOrdered, Heading2, 
-  Quote, Undo, Redo, Type
+  Bold, Italic, Strikethrough, Code, List, ListOrdered, 
+  Heading1, Heading2, Heading3, TextQuote, FileCode2,
+  Minus, Undo, Redo, Type
 } from 'lucide-vue-next'
 import { watch } from 'vue'
 
@@ -62,14 +63,47 @@ watch(() => props.modelValue, (value) => {
       >
         <Italic class="w-4 h-4" />
       </button>
+      <button 
+        type="button"
+        @click="editor.chain().focus().toggleStrike().run()"
+        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('strike') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        title="Strikethrough"
+      >
+        <Strikethrough class="w-4 h-4" />
+      </button>
+      <button 
+        type="button"
+        @click="editor.chain().focus().toggleCode().run()"
+        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('code') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        title="Code"
+      >
+        <Code class="w-4 h-4" />
+      </button>
       <div class="w-px h-6 bg-stone-300 mx-1"></div>
+      
+      <button 
+        type="button"
+        @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('heading', { level: 1 }) ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        title="Heading 1"
+      >
+        <Heading1 class="w-4 h-4" />
+      </button>
       <button 
         type="button"
         @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
         :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('heading', { level: 2 }) ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
-        title="Heading / New Section"
+        title="Heading 2"
       >
         <Heading2 class="w-4 h-4" />
+      </button>
+      <button 
+        type="button"
+        @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('heading', { level: 3 }) ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        title="Heading 3"
+      >
+        <Heading3 class="w-4 h-4" />
       </button>
       <button 
         type="button"
@@ -79,6 +113,7 @@ watch(() => props.modelValue, (value) => {
       >
         <Type class="w-4 h-4" />
       </button>
+
       <div class="w-px h-6 bg-stone-300 mx-1"></div>
       <button 
         type="button"
@@ -102,7 +137,23 @@ watch(() => props.modelValue, (value) => {
         :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('blockquote') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
         title="Quote"
       >
-        <Quote class="w-4 h-4" />
+        <TextQuote class="w-4 h-4" />
+      </button>
+      <button 
+        type="button"
+        @click="editor.chain().focus().toggleCodeBlock().run()"
+        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('codeBlock') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        title="Code Block"
+      >
+        <FileCode2 class="w-4 h-4" />
+      </button>
+      <button 
+        type="button"
+        @click="editor.chain().focus().setHorizontalRule().run()"
+        class="p-1.5 hover:bg-stone-200 border border-transparent transition-all text-stone-600"
+        title="Horizontal Rule"
+      >
+        <Minus class="w-4 h-4" />
       </button>
       <div class="flex-1"></div>
       <button 
@@ -141,9 +192,27 @@ watch(() => props.modelValue, (value) => {
   outline: none !important;
 }
 
+.ProseMirror h1 {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-family: 'Outfit', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+}
+
 .ProseMirror h2 {
   font-size: 1.5rem;
   font-weight: bold;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+.ProseMirror h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
   font-family: 'Outfit', sans-serif;
@@ -166,5 +235,40 @@ watch(() => props.modelValue, (value) => {
   padding-left: 1rem;
   font-style: italic;
   margin: 1rem 0;
+  background-color: #fafaf9;
+}
+
+.ProseMirror pre {
+  background: #1c1917;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border-radius: 0;
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.ProseMirror code {
+  background: #f5f5f4;
+  color: #ef4444;
+  padding: 0.2rem 0.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875em;
+  border: 1px solid #d6d3d1;
+}
+
+.ProseMirror pre code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 0.8rem;
+  border: none;
+}
+
+.ProseMirror hr {
+  border: none;
+  border-top: 4px solid #000;
+  margin: 2rem 0;
 }
 </style>

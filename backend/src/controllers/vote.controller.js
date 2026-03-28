@@ -7,6 +7,7 @@
 import { voteService } from '../services/index.js';
 import { filmService } from '../services/index.js';
 import { ApiResponse } from '../lib/response.js';
+import { FILM_STATUS } from '../config/constants.js';
 
 export class VoteController {
   /**
@@ -19,7 +20,7 @@ export class VoteController {
 
     // Check film exists and is published
     const film = await filmService.getById(filmId);
-    if (!film || film.status !== 'published') {
+    if (!film || film.status !== FILM_STATUS.PUBLISHED) {
       return ApiResponse.notFound(reply, 'Film not found');
     }
 
@@ -61,7 +62,7 @@ export class VoteController {
 
     // Check film exists and is published
     const film = await filmService.getById(filmId);
-    if (!film || film.status !== 'published') {
+    if (!film || film.status !== FILM_STATUS.PUBLISHED) {
       return ApiResponse.notFound(reply, 'Film not found');
     }
 

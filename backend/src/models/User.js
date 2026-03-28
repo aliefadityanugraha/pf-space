@@ -47,7 +47,12 @@ export class User extends BaseModel {
   }
 
   /**
-   * Hook: Auto-set createdAt and updatedAt before insert
+   * Hook: Auto-set createdAt and updatedAt before insert.
+   * 
+   * NOTE: Intentionally does NOT call super.$beforeInsert() because
+   * Better Auth uses camelCase timestamps (createdAt/updatedAt),
+   * while BaseModel uses snake_case (created_at/updated_at).
+   * Calling super would set both formats redundantly.
    */
   $beforeInsert() {
     const now = new Date();
@@ -59,7 +64,8 @@ export class User extends BaseModel {
   }
 
   /**
-   * Hook: Auto-update updatedAt before update
+   * Hook: Auto-update updatedAt before update.
+   * See $beforeInsert() note about camelCase convention.
    */
   $beforeUpdate() {
     this.updatedAt = new Date();

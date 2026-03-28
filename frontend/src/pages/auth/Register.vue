@@ -6,6 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import AuthCard from '@/components/AuthCard.vue'
 import { User, Mail, Lock, Eye, EyeOff, UserPlus, Film } from 'lucide-vue-next'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Daftar - PF Space',
+  meta: [
+    { name: 'description', content: 'Buat profil kuratormu dan mulai berkontribusi di PF Space.' }
+  ]
+})
 
 const router = useRouter()
 const { register, loginWithGoogle, loading } = useAuth()
@@ -53,8 +61,9 @@ const handleGoogleLogin = () => {
 
 <template>
   <AuthCard
+    split
     title="Gabung PF Space"
-    subtitle="Buat profil kuratormu"
+    subtitle="Buat profil kuratormu dan mulai berkontribusi dalam pengarsipan film sekolah."
   >
     <!-- Form -->
     <form @submit.prevent="handleSubmit" class="space-y-5">
@@ -127,8 +136,13 @@ const handleGoogleLogin = () => {
       </label>
 
       <!-- Submit Button -->
-      <Button variant="destructive" class="w-full" size="lg" :disabled="loading">
-        <span v-if="loading">Memuat...</span>
+      <Button 
+        variant="destructive" 
+        class="w-full shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all h-12 text-sm font-bold uppercase tracking-wider" 
+        size="lg" 
+        :disabled="loading"
+      >
+        <span v-if="loading">Memproses...</span>
         <template v-else>
           Daftar Sekarang
           <UserPlus class="w-5 h-5 ml-2" />
@@ -154,12 +168,14 @@ const handleGoogleLogin = () => {
     </form>
 
     <template #footer>
-      <p class="text-stone-400 font-body mb-3">Sudah punya akun?</p>
-      <router-link to="/auth/login">
-        <Button variant="outline" class="bg-stone-900 border-stone-700 text-white hover:bg-stone-800">
-          Masuk
-        </Button>
-      </router-link>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-stone-400 font-body text-sm">Sudah memiliki akun kurator?</p>
+        <router-link to="/auth/login">
+          <Button variant="outline" class="bg-transparent border-2 border-stone-700 text-white hover:bg-stone-700 font-bold px-6">
+            Masuk Sekarang
+          </Button>
+        </router-link>
+      </div>
     </template>
   </AuthCard>
 </template>

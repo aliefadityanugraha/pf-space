@@ -1,6 +1,14 @@
 <script setup>
 import { Film, Home, ArrowLeft, Search } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Halaman Tidak Ditemukan - PF Space',
+  meta: [
+    { name: 'description', content: 'Halaman yang Anda tuju tidak dapat ditemukan di PF Space.' }
+  ]
+})
 </script>
 
 <template>

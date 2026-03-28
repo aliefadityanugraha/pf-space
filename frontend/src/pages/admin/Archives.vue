@@ -1,7 +1,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { api } from '@/lib/api'
-import AdminSidebar from '@/components/SidebarAdmin.vue'
+import { assetUrl } from '@/lib/format'
+import AdminSidebar from '@/components/AdminSidebar.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,6 +13,7 @@ import {
 } from 'lucide-vue-next'
 import Toast from '@/components/Toast.vue'
 import { useToast } from '@/composables/useToast'
+import PageHeader from '@/components/PageHeader.vue'
 
 const sidebarCollapsed = ref(false)
 const Karyas = ref([])
@@ -186,7 +188,7 @@ onMounted(fetchKaryas)
 </script>
 
 <template>
-  <!-- <div class="min-h-screen bg-stone-100"> -->
+  <div class="min-h-screen bg-stone-100">
     <!-- <AdminSidebar @update:collapsed="sidebarCollapsed = $event" /> -->
     
     <main class="p-4 md:p-8">
@@ -200,15 +202,11 @@ onMounted(fetchKaryas)
       </nav>
 
       <!-- Header -->
-      <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-8">
-        <div class="flex items-start gap-4">
-          <div class="w-1 h-20 bg-teal-500 rounded-full"></div>
-          <div>
-            <h1 class="font-display text-4xl text-stone-900">Manajemen Arsip</h1>
-            <p class="text-stone-600 mt-2 max-w-xl">Kelola dan moderasi karya yang diunggah creator.</p>
-          </div>
-        </div>
-      </div>
+      <PageHeader 
+        title="Manajemen Arsip" 
+        description="Kelola dan moderasi karya yang diunggah creator."
+        icon-color="bg-teal-500"
+      />
 
       <!-- Filters -->
       <div class="flex flex-col md:flex-row gap-4 mb-6">
@@ -285,7 +283,7 @@ onMounted(fetchKaryas)
               <div class="lg:col-span-4 flex items-center gap-3">
                 <img 
                   v-if="Karya.gambar_poster" 
-                  :src="Karya.gambar_poster" 
+                  :src="assetUrl(Karya.gambar_poster)" 
                   :alt="Karya.judul"
                   class="w-12 h-16 object-cover border border-stone-200 rounded"
                 />
@@ -389,9 +387,10 @@ onMounted(fetchKaryas)
               </Button>
 
               <div class="flex gap-1">
-                <template v-for="p in pagination.totalPages" :key="p">
+                <template v-for="p in pagination.totalPages">
                   <Button
                     v-if="p === 1 || p === pagination.totalPages || (p >= pagination.page - 1 && p <= pagination.page + 1)"
+                    :key="`page-${p}`"
                     :variant="pagination.page === p ? 'default' : 'outline'"
                     size="sm"
                     class="w-8 h-8 p-0"
@@ -401,6 +400,7 @@ onMounted(fetchKaryas)
                   </Button>
                   <span 
                     v-else-if="p === pagination.page - 2 || p === pagination.page + 2" 
+                    :key="`dots-${p}`"
                     class="flex items-center justify-center w-8 h-8 text-stone-400"
                   >
                     ...
@@ -438,7 +438,7 @@ onMounted(fetchKaryas)
           <div class="flex gap-4">
             <img 
               v-if="selectedKarya.gambar_poster" 
-              :src="selectedKarya.gambar_poster" 
+              :src="assetUrl(selectedKarya.gambar_poster)" 
               :alt="selectedKarya.judul"
               class="w-32 h-44 object-cover border-2 border-black"
             />
@@ -587,7 +587,7 @@ onMounted(fetchKaryas)
               Preview Banner
             </label>
             <div v-if="bannerPreview" class="relative aspect-video bg-stone-100 mb-2 rounded overflow-hidden border border-stone-200">
-                <img :src="bannerPreview" class="w-full h-full object-cover">
+                <img :src="assetUrl(bannerPreview)" class="w-full h-full object-cover">
             </div>
             <div v-else class="p-8 border-2 border-dashed border-stone-300 rounded text-center bg-stone-50">
                 <ImageIcon class="w-12 h-12 mx-auto text-stone-300 mb-2" />
@@ -614,5 +614,5 @@ onMounted(fetchKaryas)
       :message="toast.message" 
       @close="toast.show = false" 
     />
-  <!-- </div> -->
+    </div>
 </template>

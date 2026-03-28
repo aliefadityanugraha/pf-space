@@ -7,10 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Plus, Pencil, Trash2, Loader2, BookOpen, X, Save, AlertTriangle, 
-  FileText, Youtube, CheckCircle, ExternalLink, Power, Upload, ArrowLeft
-} from 'lucide-vue-next'
+import { ArrowLeft, BookOpen, Plus, Pencil, Trash2, Loader2, X, Save, AlertTriangle, FileText, Youtube, CheckCircle, ExternalLink, Power, Upload } from 'lucide-vue-next'
+import PageHeader from '@/components/PageHeader.vue'
 import { useToast } from '@/composables/useToast'
 import * as tus from 'tus-js-client'
 import { useHead } from '@unhead/vue'
@@ -51,7 +49,7 @@ const { showToast } = useToast()
 const fetchMaterials = async () => {
   loading.value = true
   try {
-    const params = { owner: 'true' }
+    const params = { owner: 'true', status: 'all' }
     const res = await api.get('/api/learning-materials', { params })
     materials.value = res.data
   } catch (err) {
@@ -291,23 +289,28 @@ onMounted(fetchMaterials)
 <template>
   <PageLayout>
     <div class="w-full max-w-7xl mx-auto px-4 md:px-8">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-4">
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+        <span class="text-stone-400">/</span>
+        <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+        <span class="text-stone-400">/</span>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Materi</Badge>
+      </nav>
+
       <!-- Header -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-        <div class="flex items-center gap-4">
-          <div class="p-3 bg-brand-red border-2 border-black shadow-brutal-sm">
-            <BookOpen class="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 class="text-3xl md:text-4xl font-display font-bold text-stone-900 leading-none">Kelola Materi</h1>
-            <p class="text-stone-500 mt-2">Kelola materi pembelajaran untuk publik (PDF & Video).</p>
-          </div>
-        </div>
-        
-        <Button @click="openModal()" class="gap-2 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
-          <Plus class="w-4 h-4" />
-          Tambah Materi
-        </Button>
-      </div>
+      <PageHeader 
+        title="Kelola Materi" 
+        description="Kelola materi pembelajaran untuk publik (PDF & Video)."
+        icon-color="bg-brand-red"
+      >
+        <template #actions>
+          <Button @click="openModal()" class="gap-2 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+            <Plus class="w-4 h-4" />
+            Tambah Materi
+          </Button>
+        </template>
+      </PageHeader>
 
       <!-- Info Box mirip CreateArchive -->
       <div class="mb-8 p-4 bg-stone-50 border-2 border-black shadow-brutal-sm flex gap-3">

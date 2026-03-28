@@ -10,6 +10,14 @@ import EmptyState from '@/components/EmptyState.vue'
 import { useVoting } from '@/composables/useVoting'
 import { useToast } from '@/composables/useToast'
 import { assetUrl } from '@/lib/format'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Pilihan Komunitas - PF Space',
+  meta: [
+    { name: 'description', content: 'Pilih karya favoritmu. Bantu kami mengkurasi arsip terbaik di PF Space.' }
+  ]
+})
 
 const { films, categories, isLoading, fetchFilms, voteFilm } = useVoting()
 
@@ -74,7 +82,7 @@ const getRankBadgeClass = (index) => {
   <PageLayout>
 
     
-    <div class="max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-16">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 mt-4 md:mt-12 mb-16">
         
         <!-- Header -->
         <div class="text-center mb-8 md:mb-12">
@@ -85,7 +93,7 @@ const getRankBadgeClass = (index) => {
           <h1 class="font-heading text-3xl md:text-7xl text-stone-900 tracking-wide mb-3 md:mb-4">
             PILIH KARYA FAVORITMU
           </h1>
-          <p class="font-body text-stone-600 text-sm md:text-lg max-w-2xl mx-auto px-4 md:px-0">
+          <p class="font-body text-stone-600 text-[13px] md:text-lg max-w-2xl mx-auto px-4 md:px-0">
             Bantu kami mengkurasi arsip terbaik. Beri suara untuk karya yang layak diarsipkan dan dirayakan.
           </p>
         </div>
@@ -98,7 +106,7 @@ const getRankBadgeClass = (index) => {
             <h2 class="font-display text-2xl text-stone-900 mb-6 text-center">Peringkat Sementara</h2>
             <div class="flex flex-col md:flex-row items-end justify-center gap-4 md:gap-6">
               <!-- 2nd Place -->
-              <div v-if="topThree[1]" class="order-2 md:order-1 w-full md:w-56 max-w-[280px] md:max-w-none">
+              <div v-if="topThree[1]" class="order-2 md:order-1 w-full md:w-56 max-w-[280px] md:max-w-none mx-auto md:mx-0">
                 <div class="bg-white border-2 border-stone-900 shadow-brutal p-3 md:p-4 text-center">
                   <div class="w-10 h-10 md:w-12 md:h-12 bg-stone-400 border-2 border-stone-900 mx-auto mb-2 md:mb-3 flex items-center justify-center">
                     <span class="font-heading text-xl md:text-2xl text-stone-900">2</span>
@@ -114,7 +122,7 @@ const getRankBadgeClass = (index) => {
               </div>
               
               <!-- 1st Place -->
-              <div v-if="topThree[0]" class="order-1 md:order-2 w-full md:w-64 max-w-[320px] md:max-w-none">
+              <div v-if="topThree[0]" class="order-1 md:order-2 w-full md:w-64 max-w-[320px] md:max-w-none mx-auto md:mx-0">
                 <div class="bg-white border-2 border-stone-900 shadow-brutal-lg p-3 md:p-4 text-center relative">
                   <div class="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2">
                     <div class="w-10 h-10 md:w-14 md:h-14 bg-yellow-400 border-2 border-stone-900 shadow-brutal-xs md:shadow-brutal-sm flex items-center justify-center">
@@ -134,7 +142,7 @@ const getRankBadgeClass = (index) => {
               </div>
               
               <!-- 3rd Place -->
-              <div v-if="topThree[2]" class="order-3 w-full md:w-52 max-w-[260px] md:max-w-none">
+              <div v-if="topThree[2]" class="order-3 w-full md:w-52 max-w-[260px] md:max-w-none mx-auto md:mx-0">
                 <div class="bg-white border-2 border-stone-900 shadow-brutal p-3 md:p-4 text-center">
                   <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-600 border-2 border-stone-900 mx-auto mb-2 md:mb-3 flex items-center justify-center">
                     <span class="font-heading text-xl md:text-2xl text-white">3</span>
@@ -152,7 +160,7 @@ const getRankBadgeClass = (index) => {
           </div>
 
           <!-- Filters -->
-          <div class="flex flex-col md:flex-row gap-4 mb-8">
+          <div class="flex flex-col md:flex-row gap-4 mb-10">
             <!-- Category Filter -->
             <div class="flex flex-wrap gap-2">
               <button
@@ -160,9 +168,9 @@ const getRankBadgeClass = (index) => {
                 :key="cat.id"
                 @click="selectedCategory = cat.id"
                 :class="[
-                  'px-4 py-2 border-2 border-stone-900 font-body text-sm font-bold uppercase tracking-wide transition-all',
+                  'px-3 py-1.5 md:px-4 md:py-2 border-2 border-stone-900 font-body text-[10px] md:text-sm font-bold uppercase tracking-wider transition-all',
                   selectedCategory === cat.id 
-                    ? 'bg-brand-teal text-white shadow-brutal-sm' 
+                    ? 'bg-brand-teal text-white shadow-brutal-xs md:shadow-brutal-sm' 
                     : 'bg-white text-stone-700 hover:bg-stone-100'
                 ]"
               >
@@ -172,10 +180,10 @@ const getRankBadgeClass = (index) => {
             
             <!-- Sort -->
             <div class="flex items-center gap-2 md:ml-auto">
-              <Filter class="w-4 h-4 text-stone-500" />
+              <Filter class="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500" />
               <select 
                 v-model="sortBy"
-                class="bg-white border-2 border-stone-900 px-3 py-2 font-body text-sm font-bold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-brand-teal"
+                class="bg-white border-2 border-stone-900 px-2 py-1.5 md:px-3 md:py-2 font-body text-xs md:text-sm font-bold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-brand-teal"
               >
                 <option value="votes">Suara Terbanyak</option>
                 <option value="year">Terlama Lebih Dulu</option>
@@ -185,9 +193,9 @@ const getRankBadgeClass = (index) => {
           </div>
 
           <!-- Film Grid -->
-          <div v-if="filteredFilms.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div v-if="filteredFilms.length > 0" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             <ArchiveCard 
-              v-for="(film, index) in filteredFilms" 
+              v-for="film in filteredFilms" 
               :key="film.id"
               :archive="film"
               :subtitle="`${film.director} · ${film.year}`"
@@ -252,7 +260,7 @@ const getRankBadgeClass = (index) => {
           <p class="font-body text-[11px] md:text-base text-stone-400 mb-6 max-w-lg mx-auto">
             Ajukan karya untuk ditambahkan ke koleksi trending dan bantu memperkaya arsip.
           </p>
-          <Button class="bg-brand-orange text-stone-900 border-2 border-white shadow-brutal-white hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all px-6 py-2 md:py-3 h-9 md:h-auto text-xs md:text-base">
+          <Button class="bg-brand-orange text-stone-900 border-2 border-black shadow-brutal hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all px-6 py-2 md:py-3 h-10 md:h-12 text-xs md:text-base">
             <span class="font-body font-bold uppercase tracking-wide">Ajukan Karya</span>
           </Button>
         </div>

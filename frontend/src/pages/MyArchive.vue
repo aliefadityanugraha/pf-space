@@ -167,13 +167,20 @@ onMounted(async () => {
   <PageLayout>
 
     <main class="max-w-7xl mx-auto px-4 md:px-8 pb-16">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-2 md:pt-8">
+        <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+        <span class="text-stone-400">/</span>
+        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Karya Saya</Badge>
+      </nav>
+
       <!-- Header -->
       <PageHeader 
         title="Karya Saya" 
         description="Kelola semua karya yang sudah kamu upload."
       >
         <template #actions>
-          <Button @click="router.push('/upload')" class="gap-2">
+          <Button @click="router.push('/upload')" class="gap-2 shadow-brutal-sm h-10 md:h-12 font-bold uppercase tracking-wider text-xs px-6">
             <Plus class="w-4 h-4" />
             Upload Karya Baru
           </Button>
@@ -330,7 +337,8 @@ onMounted(async () => {
 
     <!-- Confirm Delete Dialog -->
     <ConfirmDialog
-      v-model:show="showConfirm"
+      :show="showConfirm"
+      @update:show="showConfirm = $event"
       title="Hapus Karya"
       :message="`Hapus karya '${filmToDelete?.judul}'? Aksi ini tidak dapat dibatalkan.`"
       confirm-label="Hapus"

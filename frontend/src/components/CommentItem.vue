@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { MessageCircle, Trash2, CornerDownRight, Loader2, Send } from 'lucide-vue-next'
+import { MessageCircle, Trash2, CornerDownRight, Loader2, Send, Flag } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { formatDate } from '@/lib/format'
+import { formatDate, assetUrl } from '@/lib/format'
 
 const props = defineProps({
   comment: {
@@ -33,14 +33,19 @@ const props = defineProps({
   deletingCommentIds: {
     type: Object,
     default: () => new Set()
+  },
+  filmOwnerId: {
+    type: String,
+    default: null
   }
 })
 
-const emit = defineEmits(['reply', 'delete'])
+const emit = defineEmits(['reply', 'delete', 'report'])
 
 const isReplyOpen = ref(false)
 const replyText = ref('')
 const isSubmittingReply = ref(false)
+const imageError = ref(false)
 
 const handleReplySubmit = async () => {
   if (!replyText.value.trim()) return
@@ -60,13 +65,12 @@ const handleReplySubmit = async () => {
 
 const canDelete = computed(() => {
   if (!props.isLoggedIn || !props.currentUser || !props.comment) return false;
-  
-  // If IDs match, it's the owner
   const isOwner = props.currentUser.id && props.comment.user_id && props.currentUser.id === props.comment.user_id;
-  
-  // Or if the user has moderation privileges
   return !!(isOwner || props.canModerate);
 })
+
+const isCreator = computed(() => props.filmOwnerId && props.comment.user_id === props.filmOwnerId)
+const isModerator = computed(() => props.comment.user?.role_id >= 3) // Assume 3 is moderator, 4 is admin
 </script>
 
 <template>
@@ -79,13 +83,15 @@ const canDelete = computed(() => {
     <div class="flex gap-3 md:gap-4">
       <!-- Avatar -->
       <div 
-        class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-slate-900 shadow-brutal-xs flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0 overflow-hidden bg-stone-100 relative"
+        class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-black shadow-brutal-xs flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0 overflow-hidden bg-stone-100 relative"
       >
         <img 
-          v-if="comment.user?.image" 
-          :src="comment.user.image" 
+          v-if="comment.user?.image && !imageError" 
+          :src="assetUrl(comment.user.image)" 
           :alt="comment.user.name"
+          referrerpolicy="no-referrer"
           class="w-full h-full object-cover"
+          @error="imageError = true"
         />
         <div 
           v-else 
@@ -98,13 +104,22 @@ const canDelete = computed(() => {
 
       <div class="flex-1 min-w-0">
         <!-- Header -->
-        <div class="flex items-center flex-wrap gap-2 mb-1">
-          <span class="font-display font-bold text-[13px] md:text-sm text-stone-900 capitalize tracking-tight">{{ comment.user?.name || 'Pengguna tidak dikenal' }}</span>
-          <span class="text-[9px] md:text-xs text-stone-400 font-mono font-medium">{{ formatDate(comment.created_at, true) }}</span>
+        <div class="flex items-center flex-wrap gap-x-3 gap-y-1 mb-2">
+          <div class="flex items-center gap-2">
+            <span class="font-display font-black text-sm md:text-base text-stone-900 capitalize tracking-tight">{{ comment.user?.name || 'Pengguna tidak dikenal' }}</span>
+            
+            <!-- Badges -->
+            <div v-if="isCreator" class="px-1.5 py-[3px] bg-brand-red text-white text-[8px] md:text-[9px] font-bold leading-none uppercase tracking-wider border border-black shadow-[1px_1px_0px_#000]">Kreator</div>
+            <div v-if="isModerator && !isCreator" class="px-1.5 py-[3px] bg-stone-900 text-white text-[8px] md:text-[9px] font-bold leading-none uppercase tracking-wider border border-black shadow-[1px_1px_0px_#000]">Moderator</div>
+          </div>
+          
+          <span class="text-[10px] md:text-xs text-stone-400 font-mono font-medium">{{ formatDate(comment.created_at, true) }}</span>
         </div>
 
         <!-- Body -->
-        <p class="text-[12px] md:text-[14px] text-stone-700 leading-normal md:leading-relaxed whitespace-pre-wrap mb-2 font-body">{{ comment.isi_pesan }}</p>
+        <div class="relative">
+           <p class="text-[13px] md:text-[15px] text-stone-800 leading-relaxed whitespace-pre-wrap mb-3 font-body font-medium">{{ comment.isi_pesan }}</p>
+        </div>
 
         <!-- Actions -->
         <div class="flex items-center gap-5">
@@ -127,6 +142,15 @@ const canDelete = computed(() => {
             <Trash2 v-else class="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
             <span>{{ deletingCommentIds.has(comment.diskusi_id) ? 'Menghapus...' : 'Hapus' }}</span>
           </button>
+
+          <button 
+            v-if="isLoggedIn && comment.user_id !== currentUser?.id"
+            @click="emit('report', comment)"
+            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-red-500 transition-colors"
+          >
+            <Flag class="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
+            <span>Laporkan</span>
+          </button>
         </div>
 
         <!-- Reply Form with Transition -->
@@ -135,18 +159,18 @@ const canDelete = computed(() => {
           enter-from-class="opacity-0 -translate-y-2"
           enter-to-class="opacity-100 translate-y-0"
         >
-          <div v-if="isReplyOpen" class="mt-4 p-3 md:p-4 bg-white border-2 border-slate-900 shadow-brutal-xs md:shadow-brutal relative overflow-hidden">
+          <div v-if="isReplyOpen" class="mt-4 p-3 md:p-4 bg-white border-2 border-black shadow-brutal-xs md:shadow-brutal relative overflow-hidden">
             <div class="absolute top-0 left-0 w-1 md:w-1.5 h-full bg-brand-teal"></div>
             <textarea 
               v-model="replyText"
               rows="2"
               placeholder="Tulis balasan..."
-              class="w-full p-2 md:p-3 border-2 border-slate-900 bg-stone-50 text-xs md:text-sm resize-none focus:bg-white focus:ring-0 focus:outline-none mb-2 font-body transition-colors"
+              class="w-full p-2 md:p-3 border-2 border-black bg-stone-50 text-stone-900 text-xs md:text-sm resize-none focus:bg-white focus:ring-0 focus:outline-none mb-2 font-body transition-colors placeholder:text-stone-400"
             ></textarea>
             <div class="flex justify-end">
               <Button 
                 size="sm" 
-                class="bg-brand-teal hover:bg-brand-teal/90 text-white rounded-none border-2 border-slate-900 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all font-bold uppercase tracking-wider h-8 md:h-9" 
+                class="bg-brand-teal hover:bg-brand-teal/90 text-white rounded-none border-2 border-black shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all font-bold uppercase tracking-wider h-8 md:h-9" 
                 @click="handleReplySubmit" 
                 :disabled="!replyText.trim() || isSubmittingReply"
               >
@@ -170,11 +194,24 @@ const canDelete = computed(() => {
             :current-user="currentUser"
             :can-moderate="canModerate"
             :deleting-comment-ids="deletingCommentIds"
+            :film-owner-id="filmOwnerId"
             @reply="$emit('reply', $event)"
             @delete="$emit('delete', $event)"
+            @report="$emit('report', $event)"
           />
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.comment-item {
+  animation: slide-up 0.4s ease-out forwards;
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>

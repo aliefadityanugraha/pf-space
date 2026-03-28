@@ -56,6 +56,7 @@ export const tusServer = new Server({
   }),
   // Disable tus server's built-in CORS — handled by Fastify hooks in tus.routes.js
   respectForwardedHeaders: true,
+  maxSize: 2 * 1024 * 1024 * 1024, // 2GB
   
   /**
    * Generates a unique filename for the upload.

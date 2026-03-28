@@ -113,20 +113,26 @@ export class CommunityService {
         .first()
     ]);
 
-    // Get reply count for each discussion
-    const discussionsWithCounts = await Promise.all(
-      discussions.map(async (discussion) => {
-        const replyCount = await CommunityReply.query()
-          .where('discussion_id', discussion.discussion_id)
-          .count('reply_id as count')
-          .first();
+    // Get reply count for each discussion in a single query
+    const discussionIds = discussions.map(d => d.discussion_id);
+    let countsMap = new Map();
+    
+    if (discussionIds.length > 0) {
+      const replyCounts = await CommunityReply.query()
+        .select('discussion_id')
+        .count('reply_id as count')
+        .whereIn('discussion_id', discussionIds)
+        .groupBy('discussion_id');
+        
+      countsMap = new Map(
+        replyCounts.map(rc => [rc.discussion_id, parseInt(rc.count)])
+      );
+    }
 
-        return {
-          ...discussion,
-          reply_count: parseInt(replyCount.count)
-        };
-      })
-    );
+    const discussionsWithCounts = discussions.map(discussion => ({
+      ...discussion,
+      reply_count: countsMap.get(discussion.discussion_id) || 0
+    }));
 
     return {
       discussions: discussionsWithCounts,
@@ -137,6 +143,17 @@ export class CommunityService {
         totalPages: Math.ceil(totalResult.total / limit)
       }
     };
+  }
+
+  /**
+   * Get a single community discussion by ID
+   * @param {number} discussionId - Discussion ID
+   * @returns {Promise<CommunityDiscussion|null>}
+   */
+  async getById(discussionId) {
+    return CommunityDiscussion.query()
+      .findById(discussionId)
+      .withGraphFetched('creator(selectBasic)');
   }
 
   /**
@@ -193,6 +210,18 @@ export class CommunityService {
   async deleteReplyByModerator(replyId) {
     return CommunityReply.query()
       .deleteById(replyId);
+  }
+
+  /**
+   * Get a single community reply by ID
+   * @param {number} replyId - Reply ID
+   * @returns {Promise<CommunityReply|null>}
+   */
+  async getReplyById(replyId) {
+    return CommunityReply.query()
+      .findById(replyId)
+      .withGraphFetched('user(selectBasic)')
+      .modifiers(BaseModel.defaultModifiers);
   }
 }
 

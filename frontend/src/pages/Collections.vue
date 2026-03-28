@@ -10,6 +10,7 @@ import {
   Film, Bookmark, BookmarkX, Eye, ArrowRight, Search 
 } from 'lucide-vue-next'
 import PageLayout from '@/components/PageLayout.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import CollectionCardSkeleton from '@/components/CollectionCardSkeleton.vue'
@@ -71,14 +72,19 @@ onMounted(fetchCollections)
 <template >
   <PageLayout>
   <div class="max-w-7xl mx-auto px-4 md:px-8 pb-16">
-    <div class="mb-8 md:mb-10 py-6 md:py-0">
-        <div class="flex items-center gap-3 mb-2">
-          <h1 class="text-2xl md:text-5xl font-display font-bold text-stone-900">Simpanan Saya</h1>
-        </div>
-        <p class="text-xs md:text-sm text-stone-500 font-body max-w-2xl px-1">
-          Kumpulan karya favorit yang telah Anda simpan untuk ditonton kembali atau dipelajari aset pembelajarannya.
-        </p>
-      </div>
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-2 md:pt-8">
+      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <span class="text-stone-400">/</span>
+      <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Simpanan</Badge>
+    </nav>
+
+    <!-- Header -->
+    <PageHeader 
+      title="Simpanan Saya" 
+      description="Kumpulan karya favorit yang telah Anda simpan untuk ditonton kembali atau dipelajari aset pembelajarannya."
+      icon-color="bg-brand-red"
+    />
 
     <!-- Loading State -->
     <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -105,7 +111,7 @@ onMounted(fetchCollections)
             </div>
             <!-- Category Badge -->
             <div class="absolute top-2 left-2 md:top-3 md:left-3">
-              <Badge class="bg-brand-red text-white border-2 border-black shadow-brutal-xs text-[9px] md:text-xs">
+              <Badge class="bg-brand-red text-white border-2 border-black shadow-brutal-xs text-[10px] md:text-xs">
                 {{ item.film?.category?.nama_kategori }}
               </Badge>
             </div>
@@ -114,7 +120,7 @@ onMounted(fetchCollections)
           <!-- Body -->
           <div class="p-4 md:p-5">
             <div class="flex justify-between items-start gap-2 mb-2">
-              <h3 class="text-lg md:text-xl font-display font-bold text-stone-900 line-clamp-1 group-hover:text-brand-red transition-colors">
+              <h3 class="text-base md:text-xl font-display font-bold text-stone-900 line-clamp-1 group-hover:text-brand-red transition-colors">
                 {{ item.film?.judul }}
               </h3>
               <span class="text-[10px] md:text-xs font-mono font-bold text-stone-400">{{ item.film?.tahun_karya }}</span>
@@ -127,10 +133,10 @@ onMounted(fetchCollections)
             <!-- Actions -->
             <div class="flex items-center gap-2">
               <Button 
-                class="flex-1 gap-2 shadow-brutal-xs h-9 md:h-10 text-xs md:text-sm font-bold" 
+                class="flex-1 gap-2 shadow-brutal-xs h-10 md:h-12 text-xs md:text-sm font-bold uppercase tracking-wider" 
                 @click="router.push(`/archive/${item.film?.slug}`)"
               >
-                <Eye class="w-3.5 h-3.5 md:w-4 md:h-4" /> Tonton
+                <Eye class="w-4 h-4" /> Tonton
               </Button>
               <Button 
                 variant="outline" 

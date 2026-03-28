@@ -31,6 +31,7 @@ const isDev = import.meta.env.DEV
 </script>
 
 <template>
+  <!-- eslint-disable-next-line vue/no-multiple-template-root -->
   <div v-if="error" :class="[
     'error-boundary border-2 border-black bg-white shadow-brutal p-6 flex flex-col items-center text-center gap-4',
     inline ? 'm-2' : 'my-8'
@@ -55,7 +56,7 @@ const isDev = import.meta.env.DEV
       Muat Ulang Komponen
     </Button>
   </div>
-  <slot v-else></slot>
+  <slot v-if="!error"></slot>
 </template>
 
 <style scoped>

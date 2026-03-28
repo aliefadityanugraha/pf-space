@@ -32,6 +32,11 @@ export class AuthController {
       name: user.name,
       role: user.role,
       image: user.image,
+      bio: user.bio,
+      website: user.website,
+      location: user.location,
+      instagram: user.instagram,
+      linkedin: user.linkedin,
       emailVerified: user.emailVerified,
       createdAt: user.createdAt
     });
@@ -75,7 +80,7 @@ export class AuthController {
    * @param {import('fastify').FastifyReply} reply
    */
   async updateUser(request, reply) {
-    let name;
+    let name, bio, website, location, instagram, linkedin;
     let imagePath;
 
     if (request.isMultipart && request.isMultipart()) {
@@ -84,19 +89,33 @@ export class AuthController {
       for await (const part of parts) {
         if (part.type === 'file' && part.fieldname === 'image') {
           imagePath = await saveFile(part, 'avatars');
-        } else if (part.type === 'field' && part.fieldname === 'name') {
-          name = part.value;
+        } else if (part.type === 'field') {
+          if (part.fieldname === 'name') name = part.value;
+          if (part.fieldname === 'bio') bio = part.value;
+          if (part.fieldname === 'website') website = part.value;
+          if (part.fieldname === 'location') location = part.value;
+          if (part.fieldname === 'instagram') instagram = part.value;
+          if (part.fieldname === 'linkedin') linkedin = part.value;
         }
       }
     } else if (request.body) {
-      name = request.body.name;
+      ({ name, bio, website, location, instagram, linkedin } = request.body);
     }
 
     const updateData = {};
+    const inputForValidation = {};
     
-    // Validate only if name is provided (partial update)
-    if (name !== undefined) {
-      const result = updateProfileSchema.safeParse({ name });
+    // Collect all provided fields
+    if (name !== undefined) inputForValidation.name = name;
+    if (bio !== undefined) inputForValidation.bio = bio;
+    if (website !== undefined) inputForValidation.website = website;
+    if (location !== undefined) inputForValidation.location = location;
+    if (instagram !== undefined) inputForValidation.instagram = instagram;
+    if (linkedin !== undefined) inputForValidation.linkedin = linkedin;
+
+    // Validate if any fields are provided
+    if (Object.keys(inputForValidation).length > 0) {
+      const result = updateProfileSchema.safeParse(inputForValidation);
       
       if (!result.success) {
         const errors = result.error.errors.map(err => ({
@@ -106,7 +125,7 @@ export class AuthController {
         throw new ValidationError('Validation failed', errors);
       }
       
-      updateData.name = result.data.name;
+      Object.assign(updateData, result.data);
     }
 
     if (imagePath) {

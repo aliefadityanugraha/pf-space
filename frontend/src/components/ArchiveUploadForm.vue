@@ -451,7 +451,7 @@ onUnmounted(() => {
                   class="hidden"
                 />
                </div>
-               <p class="text-xs text-stone-500 italic">Format: MP4, WebM. Max 1GB.</p>
+               <p class="text-xs text-stone-500 italic">Format: MP4 Max 2GB.</p>
             </div>
           </div>
 
@@ -488,7 +488,7 @@ onUnmounted(() => {
                   class="hidden"
                 />
                </div>
-               <p class="text-xs text-stone-500 italic">Format: MP4, WebM. Max 1GB.</p>
+               <p class="text-xs text-stone-500 italic">Format: MP4, WebM. Max 2GB.</p>
             </div>
           </div>
             
@@ -525,7 +525,7 @@ onUnmounted(() => {
                     class="hidden"
                   />
                  </div>
-                 <p class="text-xs text-stone-500 italic">Format: MP4, WebM. Max 1GB.</p>
+                 <p class="text-xs text-stone-500 italic">Format: MP4, WebM. Max 2GB.</p>
               </div>
             </div>
         </div>
