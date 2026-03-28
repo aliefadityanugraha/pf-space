@@ -1,11 +1,6 @@
-import { Model } from 'objection';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { BaseModel } from './BaseModel.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export class Setting extends Model {
+export class Setting extends BaseModel {
   static get tableName() {
     return 'settings';
   }

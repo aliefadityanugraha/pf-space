@@ -5,11 +5,6 @@
  */
 
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class Category extends BaseModel {
   /**
@@ -34,7 +29,7 @@ export class Category extends BaseModel {
     return {
       films: {
         relation: BaseModel.HasManyRelation,
-        modelClass: path.join(__dirname, 'Film.js'),
+        modelClass: 'Film',
         join: {
           from: 'categories.category_id',
           to: 'films.category_id'

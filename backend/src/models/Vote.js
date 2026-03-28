@@ -4,14 +4,9 @@
  * Model for the 'votes' table.
  */
 
-import { Model } from 'objection';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { BaseModel } from './BaseModel.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export class Vote extends Model {
+export class Vote extends BaseModel {
   /**
    * @returns {string} Table name
    */
@@ -30,6 +25,7 @@ export class Vote extends Model {
    * Hook: Auto-set created_at before insert
    */
   $beforeInsert() {
+    super.$beforeInsert();
     this.created_at = new Date();
   }
 
@@ -56,16 +52,16 @@ export class Vote extends Model {
   static get relationMappings() {
     return {
       user: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: 'User',
         join: {
           from: 'votes.user_id',
           to: 'users.id'
         }
       },
       film: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'Film.js'),
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: 'Film',
         join: {
           from: 'votes.film_id',
           to: 'films.film_id'

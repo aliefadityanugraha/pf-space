@@ -5,11 +5,6 @@
  */
 
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class Role extends BaseModel {
   /**
@@ -50,7 +45,7 @@ export class Role extends BaseModel {
     return {
       users: {
         relation: BaseModel.HasManyRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        modelClass: 'User',
         join: {
           from: 'roles.role_id',
           to: 'users.role_id'

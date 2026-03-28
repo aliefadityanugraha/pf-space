@@ -5,11 +5,6 @@
  */
 
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class Report extends BaseModel {
   static get tableName() {
@@ -43,14 +38,12 @@ export class Report extends BaseModel {
     return {
       reporter: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        modelClass: 'User',
         join: {
           from: 'reports.user_id',
           to: 'users.id'
         }
       }
-      // Note: We don't link polymorphically to targets here as Objection handles it differently,
-      // but we can add manual methods or fetch targets in controller.
     };
   }
 }

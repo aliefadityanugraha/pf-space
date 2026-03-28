@@ -5,11 +5,6 @@
  */
 
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class Collection extends BaseModel {
   /**
@@ -57,7 +52,7 @@ export class Collection extends BaseModel {
     return {
       user: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        modelClass: 'User',
         join: {
           from: 'collections.user_id',
           to: 'users.id'
@@ -65,7 +60,7 @@ export class Collection extends BaseModel {
       },
       film: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'Film.js'),
+        modelClass: 'Film',
         join: {
           from: 'collections.film_id',
           to: 'films.film_id'

@@ -3,11 +3,6 @@
  */
 
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class StudyNote extends BaseModel {
   static get tableName() {
@@ -36,7 +31,7 @@ export class StudyNote extends BaseModel {
     return {
       user: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        modelClass: 'User',
         join: {
           from: 'study_notes.user_id',
           to: 'users.id'
@@ -44,7 +39,7 @@ export class StudyNote extends BaseModel {
       },
       film: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'Film.js'),
+        modelClass: 'Film',
         join: {
           from: 'study_notes.film_id',
           to: 'films.film_id'

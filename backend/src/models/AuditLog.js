@@ -1,9 +1,4 @@
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class AuditLog extends BaseModel {
   static get tableName() {
@@ -31,7 +26,7 @@ export class AuditLog extends BaseModel {
     return {
       user: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        modelClass: 'User',
         join: {
           from: 'audit_logs.user_id',
           to: 'users.id'

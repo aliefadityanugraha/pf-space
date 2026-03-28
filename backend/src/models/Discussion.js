@@ -5,14 +5,9 @@
  * replies linked to films and users.
  */
 
-import { Model } from 'objection';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { BaseModel } from './BaseModel.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export class Discussion extends Model {
+export class Discussion extends BaseModel {
   /**
    * @returns {string} Table name
    */
@@ -31,6 +26,7 @@ export class Discussion extends Model {
    * Hook: Auto-set created_at before insert
    */
   $beforeInsert() {
+    super.$beforeInsert();
     this.created_at = new Date();
   }
 
@@ -59,32 +55,32 @@ export class Discussion extends Model {
   static get relationMappings() {
     return {
       user: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: 'User',
         join: {
           from: 'discussions.user_id',
           to: 'users.id'
         }
       },
       film: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'Film.js'),
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: 'Film',
         join: {
           from: 'discussions.film_id',
           to: 'films.film_id'
         }
       },
       parent: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: Discussion,
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: 'Discussion',
         join: {
           from: 'discussions.parent_id',
           to: 'discussions.diskusi_id'
         }
       },
       replies: {
-        relation: Model.HasManyRelation,
-        modelClass: Discussion,
+        relation: BaseModel.HasManyRelation,
+        modelClass: 'Discussion',
         join: {
           from: 'discussions.diskusi_id',
           to: 'discussions.parent_id'

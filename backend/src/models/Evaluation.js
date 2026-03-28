@@ -1,11 +1,6 @@
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export default class Evaluation extends BaseModel {
+export class Evaluation extends BaseModel {
   static get tableName() {
     return 'film_evaluations';
   }
@@ -45,7 +40,7 @@ export default class Evaluation extends BaseModel {
     return {
       film: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'Film.js'),
+        modelClass: 'Film',
         join: {
           from: 'film_evaluations.film_id',
           to: 'films.film_id'
@@ -53,7 +48,7 @@ export default class Evaluation extends BaseModel {
       },
       moderator: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        modelClass: 'User',
         join: {
           from: 'film_evaluations.moderator_id',
           to: 'users.id'

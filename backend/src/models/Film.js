@@ -6,11 +6,6 @@
  */
 
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class Film extends BaseModel {
   /**
@@ -94,7 +89,7 @@ export class Film extends BaseModel {
     return {
       creator: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        modelClass: 'User',
         join: {
           from: 'films.user_id',
           to: 'users.id'
@@ -102,7 +97,7 @@ export class Film extends BaseModel {
       },
       category: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'Category.js'),
+        modelClass: 'Category',
         join: {
           from: 'films.category_id',
           to: 'categories.category_id'
@@ -110,7 +105,7 @@ export class Film extends BaseModel {
       },
       discussions: {
         relation: BaseModel.HasManyRelation,
-        modelClass: path.join(__dirname, 'Discussion.js'),
+        modelClass: 'Discussion',
         join: {
           from: 'films.film_id',
           to: 'discussions.film_id'
@@ -118,7 +113,7 @@ export class Film extends BaseModel {
       },
       votes: {
         relation: BaseModel.HasManyRelation,
-        modelClass: path.join(__dirname, 'Vote.js'),
+        modelClass: 'Vote',
         join: {
           from: 'films.film_id',
           to: 'votes.film_id'
@@ -126,7 +121,7 @@ export class Film extends BaseModel {
       },
       evaluation: {
         relation: BaseModel.HasOneRelation,
-        modelClass: path.join(__dirname, 'Evaluation.js'),
+        modelClass: 'Evaluation',
         join: {
           from: 'films.film_id',
           to: 'film_evaluations.film_id'

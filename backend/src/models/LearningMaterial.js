@@ -5,11 +5,6 @@
  */
 
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class LearningMaterial extends BaseModel {
   /**
@@ -58,7 +53,7 @@ export class LearningMaterial extends BaseModel {
     return {
       creator: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        modelClass: 'User',
         join: {
           from: 'learning_materials.creator_id',
           to: 'users.id'

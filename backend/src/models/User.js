@@ -6,11 +6,6 @@
  */
 
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class User extends BaseModel {
   /**
@@ -79,7 +74,7 @@ export class User extends BaseModel {
     return {
       role: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'Role.js'),
+        modelClass: 'Role',
         join: {
           from: 'users.role_id',
           to: 'roles.role_id'
@@ -87,7 +82,7 @@ export class User extends BaseModel {
       },
       films: {
         relation: BaseModel.HasManyRelation,
-        modelClass: path.join(__dirname, 'Film.js'),
+        modelClass: 'Film',
         join: {
           from: 'users.id',
           to: 'films.user_id'
@@ -95,7 +90,7 @@ export class User extends BaseModel {
       },
       discussions: {
         relation: BaseModel.HasManyRelation,
-        modelClass: path.join(__dirname, 'Discussion.js'),
+        modelClass: 'Discussion',
         join: {
           from: 'users.id',
           to: 'discussions.user_id'
@@ -103,7 +98,7 @@ export class User extends BaseModel {
       },
       votes: {
         relation: BaseModel.HasManyRelation,
-        modelClass: path.join(__dirname, 'Vote.js'),
+        modelClass: 'Vote',
         join: {
           from: 'users.id',
           to: 'votes.user_id'
@@ -111,7 +106,7 @@ export class User extends BaseModel {
       },
       chatHistory: {
         relation: BaseModel.HasManyRelation,
-        modelClass: path.join(__dirname, 'ChatHistory.js'),
+        modelClass: 'ChatHistory',
         join: {
           from: 'users.id',
           to: 'chat_history.user_id'

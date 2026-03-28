@@ -5,11 +5,6 @@
  */
 
 import { BaseModel } from './BaseModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export class CommunityDiscussion extends BaseModel {
   /**
@@ -54,7 +49,7 @@ export class CommunityDiscussion extends BaseModel {
     return {
       creator: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: path.join(__dirname, 'User.js'),
+        modelClass: 'User',
         join: {
           from: 'community_discussions.user_id',
           to: 'users.id'
@@ -62,7 +57,7 @@ export class CommunityDiscussion extends BaseModel {
       },
       replies: {
         relation: BaseModel.HasManyRelation,
-        modelClass: path.join(__dirname, 'CommunityReply.js'),
+        modelClass: 'CommunityReply',
         join: {
           from: 'community_discussions.discussion_id',
           to: 'community_replies.discussion_id'

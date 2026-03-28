@@ -18,7 +18,7 @@ export { CommunityDiscussion } from './CommunityDiscussion.js';
 export { CommunityReply } from './CommunityReply.js';
 export { LearningMaterial } from './LearningMaterial.js';
 export { Setting } from './Setting.js';
-export { default as Evaluation } from './Evaluation.js';
+export { Evaluation } from './Evaluation.js';
 export { AuditLog } from './AuditLog.js';
 export { StudyNote } from './StudyNote.js';
 export { FilmScene } from './FilmScene.js';
