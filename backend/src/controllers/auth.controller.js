@@ -188,7 +188,10 @@ export class AuthController {
     });
 
     try {
-      const response = await auth.handler(req);
+      const response = await auth.handler(req, {
+        ip: request.ip,
+        userAgent: request.headers['user-agent']
+      });
       
       // Handle multiple Set-Cookie headers correctly (crucial for CSRF tokens)
       const setCookies = response.headers.getSetCookie ? response.headers.getSetCookie() : [];
@@ -283,7 +286,10 @@ export class AuthController {
     }
 
     try {
-      const response = await auth.handler(new Request(url.toString(), options));
+      const response = await auth.handler(new Request(url.toString(), options), {
+        ip: request.ip,
+        userAgent: request.headers['user-agent']
+      });
       
       // Set status code
       reply.status(response.status);

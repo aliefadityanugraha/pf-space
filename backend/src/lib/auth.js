@@ -68,8 +68,15 @@ export const auth = betterAuth({
     },
     // Enable trustProxy for Better-Auth to correctly handle X-Forwarded headers
     trustProxy: true,
-    // Add trustedProxies to suppress warnings and improve IP detection
-    trustedProxies: ['127.0.0.1', '::1']
+    // Plural form in advanced as well, some versions expect it here
+    trustedProxies: ['127.0.0.1', '::1', 'localhost'],
+    cookieOptions: {
+      // Force cookies to be secure in production even if request seems to be http
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Lax',
+      // If the domain is specified, Better Auth will use it correctly
+      domain: process.env.BETTER_AUTH_URL ? new URL(process.env.BETTER_AUTH_URL).hostname : undefined
+    }
   },
   trustedOrigins: [
     'http://localhost:3000', 
