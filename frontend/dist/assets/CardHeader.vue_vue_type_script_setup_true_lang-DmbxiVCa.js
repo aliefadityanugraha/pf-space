@@ -1,0 +1,1 @@
+import{C as o}from"./index-Cx78Rt1Z.js";import{d as r,t as l,j as n,u as t,l as c,p}from"./vendor-vue-rZuKdElp.js";const i=r({__name:"CardHeader",props:{class:{}},setup(s){const e=s;return(a,m)=>(p(),l("div",{class:n(t(o)("flex flex-col space-y-1.5 p-6",e.class))},[c(a.$slots,"default")],2))}});export{i as _};

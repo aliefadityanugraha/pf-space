@@ -156,6 +156,12 @@ const routes = [
     meta: { guestOnly: true },
   },
   {
+    // OAuth callback page — Google redirects here after login
+    path: "/auth/callback",
+    name: "OAuthCallback",
+    component: () => import("../pages/auth/OAuthCallback.vue"),
+  },
+  {
     path: "/admin",
     component: AdminLayout,
     meta: { requiresAuth: true, requiresModerator: true },

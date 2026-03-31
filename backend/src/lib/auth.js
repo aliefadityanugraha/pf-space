@@ -63,25 +63,18 @@ export const auth = betterAuth({
   },
   advanced: {
     generateId: () => crypto.randomUUID(),
-    crossSubDomainCookies: {
-      enabled: true
-    },
-    // Enable trustProxy for Better-Auth to correctly handle X-Forwarded headers
-    trustProxy: true,
-    // Plural form in advanced as well, some versions expect it here
-    trustedProxies: ['127.0.0.1', '::1', 'localhost'],
-    cookieOptions: {
-      // Force cookies to be secure in production even if request seems to be http
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Lax',
-      // If the domain is specified, Better Auth will use it correctly
-      domain: process.env.BETTER_AUTH_URL ? new URL(process.env.BETTER_AUTH_URL).hostname : undefined
-    }
+    // trustProxy agar Better Auth baca X-Forwarded-Proto dari Nginx dengan benar
+    trustProxy: true
   },
   trustedOrigins: [
-    'http://localhost:3000', 
-    'http://localhost:5173', 
+    'http://localhost:3000',
+    'http://localhost:5173',
     'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173',
+    // Local network IP
+    'http://192.168.0.144:3000',
+    'http://192.168.0.144:5173',
+    // Production domain
     'https://pfspace.aliefaditya.cloud',
     'http://pfspace.aliefaditya.cloud',
     process.env.FRONTEND_URL,

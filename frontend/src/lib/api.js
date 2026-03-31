@@ -142,9 +142,21 @@ export const authApi = {
   getSession: () => api.get('/api/auth/get-session'),
   getProfile: () => api.get('/api/auth/me'),
   
-  // Google OAuth - redirect
-  loginWithGoogle: () => {
-    window.location.href = `${BASE_URL}/api/auth/google`;
+  // Google OAuth - use Better Auth native endpoint directly (no custom proxy)
+  loginWithGoogle: async () => {
+    const callbackURL = `${window.location.origin}/auth/callback`;
+    const response = await fetch(`${BASE_URL}/api/auth/sign-in/social`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ provider: 'google', callbackURL })
+    });
+    const data = await response.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new ApiError('Gagal memulai login Google', response.status, data);
+    }
   }
 };
 

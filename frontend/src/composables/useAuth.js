@@ -102,8 +102,8 @@ export function useAuth() {
   }
 
   // Login with Google
-  function loginWithGoogle() {
-    authApi.loginWithGoogle();
+  async function loginWithGoogle() {
+    await authApi.loginWithGoogle();
   }
 
   // Logout

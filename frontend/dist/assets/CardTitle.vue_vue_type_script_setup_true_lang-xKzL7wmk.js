@@ -1,1 +1,0 @@
-import{B as t}from"./index-DVxvIt8w.js";import{d as n,t as o,j as r,u as l,l as c,p}from"./vendor-vue-DfPsvayF.js";const f=n({__name:"CardTitle",props:{class:{}},setup(s){const e=s;return(a,i)=>(p(),o("h3",{class:r(l(t)("font-heading text-2xl tracking-wide",e.class))},[c(a.$slots,"default")],2))}});export{f as _};

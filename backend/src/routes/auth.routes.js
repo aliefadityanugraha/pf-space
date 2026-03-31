@@ -42,8 +42,8 @@ export default async function authRoutes(fastify) {
     schema: updateRoleSchema
   }, authController.updateRole.bind(authController));
 
-  // Social Auth: Google
-  fastify.get('/google', authController.googleAuth.bind(authController));
+  // Social Auth: Google — handled directly by Better-Auth catch-all below
+  // fastify.get('/google', ...) — removed; frontend should call /api/auth/sign-in/social directly
 
   // Logout
   fastify.post('/logout', authController.logout.bind(authController));
