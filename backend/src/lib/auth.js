@@ -66,12 +66,17 @@ export const auth = betterAuth({
     crossSubDomainCookies: {
       enabled: true
     },
-    trustProxy: true
+    // Enable trustProxy for Better-Auth to correctly handle X-Forwarded headers
+    trustProxy: true,
+    // Add trustedProxies to suppress warnings and improve IP detection
+    trustedProxies: ['127.0.0.1', '::1']
   },
   trustedOrigins: [
     'http://localhost:3000', 
     'http://localhost:5173', 
     'http://127.0.0.1:3000',
+    'https://pfspace.aliefaditya.cloud',
+    'http://pfspace.aliefaditya.cloud',
     process.env.FRONTEND_URL,
     process.env.BETTER_AUTH_URL
   ].filter(Boolean)

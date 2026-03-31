@@ -164,19 +164,19 @@ export class AuthController {
    * @param {import('fastify').FastifyReply} reply
    */
   async googleAuth(request, reply) {
-    const baseURL = process.env.BETTER_AUTH_URL || 'http://localhost:3000';
+    const baseURL = process.env.BETTER_AUTH_URL || `${request.protocol}://${request.headers.host}`;
     const url = new URL('/api/auth/sign-in/social', baseURL);
     
     // Forward relevant headers
     const headers = new Headers();
-    const headersToForward = ['cookie', 'user-agent', 'x-forwarded-for', 'referer'];
+    const headersToForward = ['cookie', 'user-agent', 'x-forwarded-for', 'referer', 'x-real-ip'];
     for (const h of headersToForward) {
       if (request.headers[h]) {
         headers.set(h, request.headers[h]);
       }
     }
     headers.set('Content-Type', 'application/json');
-    headers.set('Origin', baseURL); // Better Auth expects this for security
+    headers.set('Origin', baseURL); // Internal Origin should match baseURL for Better Auth security checks
 
     const req = new Request(url.toString(), {
       method: 'POST',
@@ -253,9 +253,10 @@ export class AuthController {
    * @param {import('fastify').FastifyReply} reply
    */
   async handleAuth(request, reply) {
-    const protocol = request.protocol || 'http';
-    const host = request.headers.host;
-    const url = new URL(request.url, `${protocol}://${host}`);
+    // Determine the base URL from environment OR request
+    // Since trustProxy is now enabled in Fastify, request.protocol and host should be accurate
+    const baseURL = process.env.BETTER_AUTH_URL || `${request.protocol}://${request.headers.host}`;
+    const url = new URL(request.url, baseURL);
     
     // Forward ALL headers
     const headers = new Headers();
@@ -268,9 +269,8 @@ export class AuthController {
         }
       }
     }
-
-    // Set Origin and Referer for security checks
-    const baseURL = process.env.BETTER_AUTH_URL || `http://${host}`;
+    
+    // Set Origin to baseURL to satisfy Better-Auth's internal security checks
     headers.set('Origin', baseURL);
 
     const options = {

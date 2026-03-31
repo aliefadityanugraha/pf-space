@@ -30,7 +30,8 @@ import { seoMiddleware } from './middlewares/seo.middleware.js';
 import { globalErrorHandler } from './middlewares/errorHandler.js';
 
 const fastify = Fastify({
-  logger: true
+  logger: true,
+  trustProxy: true
 });
 
 // Prevent crash from internal Node.js/Undici stream issues
