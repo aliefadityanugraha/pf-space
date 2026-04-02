@@ -147,16 +147,17 @@ export class VoteService {
     const filmsWithRelations = await Film.query()
       .whereIn('film_id', filmIds)
       .withGraphFetched('[creator(selectBasic), category]')
-      .modifiers(BaseModel.defaultModifiers);
+      .modifiers(BaseModel.defaultModifiers)
+      .orderByRaw(`FIELD(film_id, ${filmIds.join(',')})`); // Preserve ordering from vote query
 
-    // Merge vote_count
+    // Merge vote_count (ordering already correct, no need to sort)
     return filmsWithRelations.map(film => {
       const voteData = films.find(f => String(f.film_id) === String(film.film_id));
       return {
         ...film,
         vote_count: parseInt(voteData?.vote_count || 0)
       };
-    }).sort((a, b) => b.vote_count - a.vote_count);
+    });
   }
 
   /**

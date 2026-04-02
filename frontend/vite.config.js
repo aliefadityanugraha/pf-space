@@ -18,7 +18,10 @@ export default defineConfig({
     globals: true
   },
   build: {
+    target: 'es2020',
     chunkSizeWarningLimit: 1000,
+    // Use esbuild for minification (faster than terser)
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -29,5 +32,9 @@ export default defineConfig({
         }
       }
     }
+  },
+  esbuild: {
+    // Strip console.log and debugger from production builds
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
   }
 })

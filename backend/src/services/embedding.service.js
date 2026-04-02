@@ -147,11 +147,20 @@ export class EmbeddingService {
     const ai = getAI();
     const queryEmbedding = await ai.generateEmbedding(queryText);
 
-    // Get all films with embeddings
+    // Safety cap: only load a reasonable number of films to avoid OOM.
+    // For large datasets, consider migrating to MySQL 9.0+ vector search or pgvector.
+    const EMBEDDING_SCAN_LIMIT = 1000;
     const films = await Film.query()
       .where('status', 'published')
       .whereNotNull('embedding')
-      .withGraphFetched('category');
+      .select('film_id', 'judul', 'slug', 'sinopsis', 'tahun_karya', 'gambar_poster', 'embedding')
+      .withGraphFetched('category')
+      .limit(EMBEDDING_SCAN_LIMIT)
+      .orderBy('created_at', 'desc'); // Prioritize recent films
+
+    if (films.length === EMBEDDING_SCAN_LIMIT) {
+      console.warn(`[EmbeddingService] Scanned max ${EMBEDDING_SCAN_LIMIT} films. Consider native vector search for larger datasets.`);
+    }
 
     // Calculate similarity scores
     const filmsWithScores = films.map(film => {
@@ -165,12 +174,10 @@ export class EmbeddingService {
     });
 
     // Filter by threshold and sort by similarity
-    const relevantFilms = filmsWithScores
+    return filmsWithScores
       .filter(film => film.similarity >= threshold)
       .sort((a, b) => b.similarity - a.similarity)
       .slice(0, limit);
-
-    return relevantFilms;
   }
 }
 

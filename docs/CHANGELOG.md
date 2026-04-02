@@ -4,6 +4,36 @@ All notable changes to PF Space project will be documented in this file.
 
 ## [Unreleased]
 
+### Optimized
+
+- **Backend Performance**: 
+  - Refaktor N+1 Query pada loop `getCommentDepth` dengan menggunakan Recursive CTE di database
+  - Refaktor sistem pengecekan *badges* (Gamification) menjadi asinkron paralel (`Promise.all`) dengan pemotongan waktu respon signifikan
+  - Perbaikan query ganda untuk pengecekan notifikasi `parent_author` pada saat penambahan komentar
+  - Urutkan `getTrending` secara native di database (`ORDER BY FIELD`) ketimbang di memori Node.js
+  - Pembatasan fetching di frontend dari 100 limit menjadi 30 film pada saat load pertama (Time-to-Interactive lebih cepat)
+  - Memory leak prevention pada *Semantic Search*: penambahan `scan limit` agar data embedding berukuran besar tidak meluap ke RAM (Mencegah OOM)
+
+### Fixed
+
+- **System Reliability**:
+  - Pool database `knexfile` diubah untuk *production* dengan limit koneksi lebih banyak (max 20) dan penambahan timeout (*idleTimeout* dan *acquireTimeout*)
+  - Migrasi *deprecated* NPM library `mysqldump` dengan implementasi native CLI via `child_process`
+  - Perbaikan `uncaughtException` pada Node.js streams dengan menggunakan fallback aman agar Fastify tidak crash premature
+  - Frontend mock tes perbaikan agar tes *Vitest* / *Happy-DOM* berjalan komprehensif tanpa crash `localStorage`
+
+### Security
+
+- **Strict Rate Limiting**:
+  - Penambahan pembatasan endpoint secara spesifik (Per-Route Rate Limit)
+  - Auth Limit: `max 15 request/menit` pada API login, register, dan proxy untuk menangkal serangan *Brute-force*
+
+### Removed
+
+- Variabel JS dead code `API_BASE` pada module authentication
+- Deprecated library `mysqldump` dihapus dari build
+- Optimasi target `es2020` dan minify via esbuild dengan removal `console.log` serta `debugger` saat Production build
+
 ### Added
 
 - **Centralized Validation**: Implementasi Zod schema untuk validasi request secara terpusat

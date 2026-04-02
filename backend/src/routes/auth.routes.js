@@ -2,6 +2,9 @@ import { authController } from '../controllers/index.js';
 import { authenticate, requireAdmin } from '../middlewares/index.js';
 import { updateProfileSchema, updateRoleSchema } from '../schemas/auth.schema.js';
 
+// Strict rate limit config for sensitive auth endpoints (anti brute-force)
+const authRateLimit = { config: { rateLimit: { max: 15, timeWindow: '1 minute' } } };
+
 /**
  * Register authentication and profile routes
  * @param {import('fastify').FastifyInstance} fastify - Fastify instance
@@ -45,9 +48,9 @@ export default async function authRoutes(fastify) {
   // Social Auth: Google — handled directly by Better-Auth catch-all below
   // fastify.get('/google', ...) — removed; frontend should call /api/auth/sign-in/social directly
 
-  // Logout
-  fastify.post('/logout', authController.logout.bind(authController));
+  // Logout — sensitive, rate limit it
+  fastify.post('/logout', authRateLimit, authController.logout.bind(authController));
 
-  // Better-Auth catch-all (proxying all internal better-auth requests)
-  fastify.all('/*', authController.handleAuth.bind(authController));
+  // Better-Auth catch-all (proxying all internal better-auth requests) — includes sign-in/sign-up
+  fastify.all('/*', authRateLimit, authController.handleAuth.bind(authController));
 }

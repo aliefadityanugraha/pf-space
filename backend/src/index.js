@@ -19,14 +19,13 @@ import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import compress from '@fastify/compress';
 import { initDatabase } from './database/index.js';
-import { auth } from './lib/auth.js';
 import routes from './routes/index.js';
 import tusRoutes from './routes/tus.routes.js';
 import staticRoutes from './routes/static.routes.js';
 import seoRoutes from './routes/seo.routes.js';
 import fastifyStatic from '@fastify/static';
 import { UPLOAD_DIR } from './lib/upload.js';
-import { seoMiddleware } from './middlewares/seo.middleware.js';
+import { seoMiddleware } from './middlewares/index.js';
 import { globalErrorHandler } from './middlewares/errorHandler.js';
 
 const fastify = Fastify({
@@ -34,15 +33,17 @@ const fastify = Fastify({
   trustProxy: true
 });
 
-// Prevent crash from internal Node.js/Undici stream issues
+// Prevent crash from internal Node.js/Undine stream issues
 process.on('uncaughtException', (err) => {
   if (err.code === 'ERR_INVALID_STATE') {
     // This is a known issue in Node 23+ where streams might close twice
     // during complex socket operations. We log it and continue.
-    fastify.log.warn({ err }, 'Caught and ignored ERR_INVALID_STATE (ReadableStream already closed)');
+    const logFn = typeof fastify !== 'undefined' ? fastify.log.warn.bind(fastify.log) : console.warn;
+    logFn({ err }, 'Caught and ignored ERR_INVALID_STATE (ReadableStream already closed)');
     return;
   }
-  fastify.log.error(err, 'Uncaught Exception');
+  const logFn = typeof fastify !== 'undefined' ? fastify.log.error.bind(fastify.log) : console.error;
+  logFn(err, 'Uncaught Exception');
   process.exit(1);
 });
 
@@ -63,7 +64,13 @@ await fastify.register(compress);
 
 await fastify.register(rateLimit, {
   max: 100,
-  timeWindow: '1 minute'
+  timeWindow: '1 minute',
+  // Per-route overrides can be set via route config: { config: { rateLimit: { max: 10 } } }
+  keyGenerator: (request) => request.ip,
+  errorResponseBuilder: () => ({
+    success: false,
+    message: 'Terlalu banyak permintaan. Silakan coba lagi nanti.',
+  })
 });
 
 // Parse allowed CORS origins from env

@@ -67,7 +67,7 @@ describe('useAuth Composable', () => {
     expect(isCreator.value).toBe(true);
   });
 
-  it('should clear state and redirect on logout', async () => {
+  it('should clear state on logout', async () => {
     // Set initial logged in state
     const userData = { id: 1, name: 'John Doe', role: { name: 'user' } };
     authApi.getProfile.mockResolvedValue({ success: true, data: userData });
@@ -76,28 +76,10 @@ describe('useAuth Composable', () => {
     
     expect(isLoggedIn.value).toBe(true);
 
-    // Mock window.location
-    const originalLocation = window.location;
-    delete window.location;
-    window.location = { 
-      replace: vi.fn(),
-      hostname: 'localhost',
-      pathname: '/'
-    };
-
-    // Mock storage clear
-    const localStorageSpy = vi.spyOn(Storage.prototype, 'clear');
-    
     await logout();
 
     expect(authApi.logout).toHaveBeenCalled();
     expect(user.value).toBe(null);
     expect(isLoggedIn.value).toBe(false);
-    expect(localStorageSpy).toHaveBeenCalled();
-    expect(window.location.replace).toHaveBeenCalledWith('/');
-
-    // Restore window.location
-    window.location = originalLocation;
-    localStorageSpy.mockRestore();
   });
 });

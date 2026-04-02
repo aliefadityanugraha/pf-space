@@ -147,24 +147,24 @@ export class DiscussionService {
 
       if (!film) return discussion;
 
+      // Fetch parent comment ONCE and reuse for both notification checks
+      const parentComment = parent_id
+        ? await Discussion.query().findById(parent_id).select('user_id')
+        : null;
+      const parentAuthorId = parentComment?.user_id ?? null;
+
       // 1. If Reply: Notify Parent Comment Author
-      if (parent_id) {
-        const parentComment = await Discussion.query().findById(parent_id).select('user_id');
-        if (parentComment && parentComment.user_id !== user_id) {
-          await notificationService.create({
-            user_id: parentComment.user_id,
-            type: 'reply',
-            title: 'Balasan Baru di Komentar Anda',
-            message: `Seseorang membalas komentar Anda di film "${film.judul}": "${isi_pesan.substring(0, 50)}${isi_pesan.length > 50 ? '...' : ''}"`,
-            data: { film_id, discussion_id: discussion.diskusi_id }
-          });
-        }
+      if (parentComment && parentAuthorId !== user_id) {
+        await notificationService.create({
+          user_id: parentAuthorId,
+          type: 'reply',
+          title: 'Balasan Baru di Komentar Anda',
+          message: `Seseorang membalas komentar Anda di film "${film.judul}": "${isi_pesan.substring(0, 50)}${isi_pesan.length > 50 ? '...' : ''}"`,
+          data: { film_id, discussion_id: discussion.diskusi_id }
+        });
       }
 
-      // 2. Notify Film Creator (if not self and not already notified as parent)
-      // If parent author is film creator, they already got reply notification, so skip.
-      const parentAuthorId = parent_id ? (await Discussion.query().findById(parent_id).select('user_id'))?.user_id : null;
-      
+      // 2. Notify Film Creator (if not self, and not already notified as parent author)
       if (film.user_id !== user_id && film.user_id !== parentAuthorId) {
         await notificationService.create({
           user_id: film.user_id,
@@ -225,15 +225,22 @@ export class DiscussionService {
    * @returns {Promise<number>} Depth level (1 based)
    */
   async getCommentDepth(id) {
-    let depth = 1;
-    let current = await Discussion.query().findById(id).select('parent_id');
-    
-    while (current && current.parent_id) {
-      depth++;
-      current = await Discussion.query().findById(current.parent_id).select('parent_id');
-    }
-    
-    return depth;
+    // Use a single Recursive CTE query instead of a loop of N queries
+    const { knex } = await import('../database/index.js');
+    const result = await knex.raw(`
+      WITH RECURSIVE ancestors AS (
+        SELECT diskusi_id, parent_id, 1 AS depth
+        FROM discussions
+        WHERE diskusi_id = ?
+        UNION ALL
+        SELECT d.diskusi_id, d.parent_id, a.depth + 1
+        FROM discussions d
+        INNER JOIN ancestors a ON d.diskusi_id = a.parent_id
+      )
+      SELECT MAX(depth) AS depth FROM ancestors
+    `, [id]);
+
+    return result[0]?.[0]?.depth ?? 1;
   }
 
   /**

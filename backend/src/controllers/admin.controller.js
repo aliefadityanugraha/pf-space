@@ -6,12 +6,10 @@
 
 import { User } from '../models/User.js';
 import { Film } from '../models/Film.js';
-import { Discussion } from '../models/Discussion.js';
 import { Category } from '../models/Category.js';
 import { AuditLog } from '../models/AuditLog.js';
 import { ApiResponse } from '../lib/response.js';
 import { getStorageStats, UPLOAD_DIR } from '../lib/upload.js';
-import mysqldump from 'mysqldump';
 import archiver from 'archiver';
 import extractZip from 'extract-zip';
 import fs from 'fs';
@@ -142,17 +140,40 @@ export class AdminController {
       const zipFileName = `backup_${timestamp}.zip`;
       const zipFilePath = path.join(backupDir, zipFileName);
 
-      // Dump DB
-      await mysqldump({
-        connection: {
-          host: process.env.DB_HOST || 'localhost',
-          user: process.env.DB_USER || 'root',
-          password: process.env.DB_PASSWORD || '',
-          database: process.env.DB_NAME || 'film',
-          port: parseInt(process.env.DB_PORT) || 3306
-        },
-        dumpToFile: sqlFilePath,
-      });
+      // Dump DB using system mysqldump CLI (safer than npm mysqldump package)
+      const { execFile } = await import('child_process');
+      const { promisify } = await import('util');
+      const execFileAsync = promisify(execFile);
+
+      const dbHost = process.env.DB_HOST || 'localhost';
+      const dbPort = String(process.env.DB_PORT || 3306);
+      const dbUser = process.env.DB_USER || 'root';
+      const dbPass = process.env.DB_PASSWORD || '';
+      const dbName = process.env.DB_NAME || 'film';
+
+      const args = [
+        `--host=${dbHost}`,
+        `--port=${dbPort}`,
+        `--user=${dbUser}`,
+        `--result-file=${sqlFilePath}`,
+        '--single-transaction', // Consistent snapshot without table locks
+        '--no-tablespaces',
+        dbName
+      ];
+
+      // Pass password via env var to avoid shell exposure
+      const env = { ...process.env };
+      if (dbPass) env.MYSQL_PWD = dbPass;
+
+      try {
+        await execFileAsync('mysqldump', args, { env });
+      } catch (dumpErr) {
+        // Provide helpful error if mysqldump CLI not in PATH
+        if (dumpErr.code === 'ENOENT') {
+          return ApiResponse.error(reply, 'mysqldump CLI tidak ditemukan di PATH server. Pastikan MySQL client tools terinstall.', 500);
+        }
+        throw dumpErr;
+      }
 
       // Create Zip
       const output = fs.createWriteStream(zipFilePath);

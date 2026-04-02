@@ -7,7 +7,6 @@ const user = ref(null);
 const loading = ref(false);
 const initialized = ref(false);
 let initPromise = null;
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 import { assetUrl } from '@/lib/format';
 

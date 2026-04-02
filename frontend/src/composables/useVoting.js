@@ -34,8 +34,8 @@ export function useVoting() {
         categories.value = [{ id: 'all', name: 'Semua Karya' }]
       }
 
-      // 2. Fetch Films (Trending/All)
-      const filmsRes = await api.get('/api/votes/trending?period=all&limit=100')
+      // 2. Fetch Films (Trending/All) — limit to 30 for faster initial load
+      const filmsRes = await api.get('/api/votes/trending?period=all&limit=30')
       let filmData = []
       if (filmsRes.success) {
         filmData = filmsRes.data

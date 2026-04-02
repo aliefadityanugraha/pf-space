@@ -9,6 +9,14 @@ const DRAFT_KEY = 'draft-film'
 const DRAFT_TIMESTAMP_KEY = 'draft-film-timestamp'
 const DRAFT_EXPIRY_DAYS = 7 // Draft akan expired setelah 7 hari
 
+/**
+ * Helper: Cek apakah timestamp draft sudah expired
+ */
+const isDraftExpired = (timestamp) => {
+  const daysDiff = (Date.now() - new Date(timestamp)) / (1000 * 60 * 60 * 24)
+  return daysDiff > DRAFT_EXPIRY_DAYS
+}
+
 export function useFilmDraft() {
   const hasDraft = ref(false)
   const draftTimestamp = ref(null)
@@ -23,7 +31,6 @@ export function useFilmDraft() {
       localStorage.setItem(DRAFT_TIMESTAMP_KEY, timestamp)
       draftTimestamp.value = timestamp
       hasDraft.value = true
-      console.log('[Draft] Saved:', timestamp)
     } catch (error) {
       console.error('[Draft] Failed to save:', error)
     }
@@ -41,13 +48,7 @@ export function useFilmDraft() {
         return null
       }
 
-      // Check if draft is expired
-      const draftDate = new Date(timestamp)
-      const now = new Date()
-      const daysDiff = (now - draftDate) / (1000 * 60 * 60 * 24)
-
-      if (daysDiff > DRAFT_EXPIRY_DAYS) {
-        console.log('[Draft] Expired, clearing...')
+      if (isDraftExpired(timestamp)) {
         clearDraft()
         return null
       }
@@ -70,7 +71,6 @@ export function useFilmDraft() {
       localStorage.removeItem(DRAFT_TIMESTAMP_KEY)
       hasDraft.value = false
       draftTimestamp.value = null
-      console.log('[Draft] Cleared')
     } catch (error) {
       console.error('[Draft] Failed to clear:', error)
     }
@@ -82,19 +82,13 @@ export function useFilmDraft() {
   const checkDraft = () => {
     const draft = localStorage.getItem(DRAFT_KEY)
     const timestamp = localStorage.getItem(DRAFT_TIMESTAMP_KEY)
-    
-    if (draft && timestamp) {
-      const draftDate = new Date(timestamp)
-      const now = new Date()
-      const daysDiff = (now - draftDate) / (1000 * 60 * 60 * 24)
 
-      if (daysDiff <= DRAFT_EXPIRY_DAYS) {
-        hasDraft.value = true
-        draftTimestamp.value = timestamp
-        return true
-      }
+    if (draft && timestamp && !isDraftExpired(timestamp)) {
+      hasDraft.value = true
+      draftTimestamp.value = timestamp
+      return true
     }
-    
+
     return false
   }
 

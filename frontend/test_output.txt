@@ -1,0 +1,237 @@
+
+> si-film-archive@0.0.0 test
+> vitest run
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mE:/Project App/pf-space/frontend[39m
+
+[90mstderr[2m | src/composables/__tests__/useFilmDraft.test.js[2m > [22m[2museFilmDraft[2m > [22m[2mshould save draft to localStorage
+[22m[39m[Draft] Failed to save: TypeError: localStorage.setItem is not a function
+    at saveDraft [90m(E:\Project App\pf-space\frontend\[39msrc\composables\useFilmDraft.js:30:20[90m)[39m
+    at [90mE:\Project App\pf-space\frontend\[39msrc\composables\__tests__\useFilmDraft.test.js:32:5
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+    at runSuite [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+[90mstderr[2m | src/composables/__tests__/useFilmDraft.test.js[2m > [22m[2museFilmDraft[2m > [22m[2mshould load draft from localStorage
+[22m[39m[Draft] Failed to save: TypeError: localStorage.setItem is not a function
+    at saveDraft [90m(E:\Project App\pf-space\frontend\[39msrc\composables\useFilmDraft.js:30:20[90m)[39m
+    at [90mE:\Project App\pf-space\frontend\[39msrc\composables\__tests__\useFilmDraft.test.js:47:5
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+    at runSuite [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+[Draft] Failed to load: TypeError: localStorage.getItem is not a function
+    at loadDraft [90m(E:\Project App\pf-space\frontend\[39msrc\composables\useFilmDraft.js:44:34[90m)[39m
+    at [90mE:\Project App\pf-space\frontend\[39msrc\composables\__tests__\useFilmDraft.test.js:48:20
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+    at runSuite [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+[90mstderr[2m | src/composables/__tests__/useFilmDraft.test.js[2m > [22m[2museFilmDraft[2m > [22m[2mshould clear draft from localStorage
+[22m[39m[Draft] Failed to save: TypeError: localStorage.setItem is not a function
+    at saveDraft [90m(E:\Project App\pf-space\frontend\[39msrc\composables\useFilmDraft.js:30:20[90m)[39m
+    at [90mE:\Project App\pf-space\frontend\[39msrc\composables\__tests__\useFilmDraft.test.js:56:5
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+    at runSuite [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+[Draft] Failed to clear: TypeError: localStorage.removeItem is not a function
+    at clearDraft [90m(E:\Project App\pf-space\frontend\[39msrc\composables\useFilmDraft.js:70:20[90m)[39m
+    at [90mE:\Project App\pf-space\frontend\[39msrc\composables\__tests__\useFilmDraft.test.js:57:5
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+    at runSuite [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+(node:12016) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+[90mstderr[2m | src/composables/__tests__/useFilmDraft.test.js[2m > [22m[2museFilmDraft[2m > [22m[2mshould format draft time correctly
+[22m[39m[Draft] Failed to save: TypeError: localStorage.setItem is not a function
+    at saveDraft [90m(E:\Project App\pf-space\frontend\[39msrc\composables\useFilmDraft.js:30:20[90m)[39m
+    at [90mE:\Project App\pf-space\frontend\[39msrc\composables\__tests__\useFilmDraft.test.js:92:5
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+    at runSuite [90m(file:///E:/Project%20App/pf-space/frontend/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+ [31m❯[39m src/composables/__tests__/useFilmDraft.test.js [2m([22m[2m7 tests[22m[2m | [22m[31m7 failed[39m[2m)[22m[32m 43[2mms[22m[39m
+[31m   [31m×[31m useFilmDraft[2m > [22mshould save draft to localStorage[39m[32m 19[2mms[22m[39m
+[31m     → window.localStorage.getItem is not a function[39m
+[31m   [31m×[31m useFilmDraft[2m > [22mshould load draft from localStorage[39m[32m 13[2mms[22m[39m
+[31m     → expected null to deeply equal { judul: 'Test Film', …(1) }[39m
+[31m   [31m×[31m useFilmDraft[2m > [22mshould clear draft from localStorage[39m[32m 2[2mms[22m[39m
+[31m     → window.localStorage.getItem is not a function[39m
+[31m   [31m×[31m useFilmDraft[2m > [22mshould check if draft exists[39m[32m 1[2mms[22m[39m
+[31m     → localStorage.getItem is not a function[39m
+[31m   [31m×[31m useFilmDraft[2m > [22mshould return null for expired draft[39m[32m 1[2mms[22m[39m
+[31m     → window.localStorage.setItem is not a function[39m
+[31m   [31m×[31m useFilmDraft[2m > [22mshould format draft time correctly[39m[32m 5[2mms[22m[39m
+[31m     → expected '' to be 'Baru saja' // Object.is equality[39m
+[31m   [31m×[31m useFilmDraft[2m > [22mshould handle localStorage errors gracefully[39m[32m 1[2mms[22m[39m
+[31m     → 'set' on proxy: trap returned falsish for property 'setItem'[39m
+ [32m✓[39m src/components/ui/button/__tests__/Button.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/__tests__/format.test.js [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+(node:17664) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [31m❯[39m src/composables/__tests__/useAuth.test.js [2m([22m[2m5 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 15[2mms[22m[39m
+   [32m✓[39m useAuth Composable[2m > [22mshould start with uninitialized state[32m 3[2mms[22m[39m
+   [32m✓[39m useAuth Composable[2m > [22mshould set user and initialized to true on successful init[32m 2[2mms[22m[39m
+   [32m✓[39m useAuth Composable[2m > [22mshould identify admin roles correctly[32m 1[2mms[22m[39m
+   [32m✓[39m useAuth Composable[2m > [22mshould identify creator roles correctly[32m 0[2mms[22m[39m
+[31m   [31m×[31m useAuth Composable[2m > [22mshould clear state and redirect on logout[39m[32m 8[2mms[22m[39m
+[31m     → expected "spy" to be called with arguments: [ '/' ][90m
+
+Number of calls: [1m0[22m
+[31m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 8 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/composables/__tests__/useAuth.test.js[2m > [22museAuth Composable[2m > [22mshould clear state and redirect on logout
+[31m[1mAssertionError[22m: expected "spy" to be called with arguments: [ '/' ][90m
+
+Number of calls: [1m0[22m
+[31m[39m
+[36m [2m❯[22m src/composables/__tests__/useAuth.test.js:[2m88:37[22m[39m
+    [90m 86| [39m    [34mexpect[39m(user[33m.[39mvalue)[33m.[39m[34mtoBe[39m([35mnull[39m)[33m;[39m
+    [90m 87| [39m    [34mexpect[39m(isLoggedIn[33m.[39mvalue)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m 88| [39m    [34mexpect[39m(window[33m.[39mlocation[33m.[39mreplace)[33m.[39m[34mtoHaveBeenCalledWith[39m([32m'/'[39m)[33m;[39m
+    [90m   | [39m                                    [31m^[39m
+    [90m 89| [39m
+    [90m 90| [39m    [90m// Restore window.location[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/composables/__tests__/useFilmDraft.test.js[2m > [22museFilmDraft[2m > [22mshould save draft to localStorage
+[31m[1mTypeError[22m: window.localStorage.getItem is not a function[39m
+[36m [2m❯[22m src/composables/__tests__/useFilmDraft.test.js:[2m34:39[22m[39m
+    [90m 32| [39m    [34msaveDraft[39m(formData)
+    [90m 33| [39m    
+    [90m 34| [39m    [35mconst[39m saved [33m=[39m window[33m.[39mlocalStorage[33m.[39m[34mgetItem[39m([32m'draft-film'[39m)
+    [90m   | [39m                                      [31m^[39m
+    [90m 35| [39m    [34mexpect[39m(saved)[33m.[39m[34mtoBeTruthy[39m()
+    [90m 36| [39m    [34mexpect[39m([33mJSON[39m[33m.[39m[34mparse[39m(saved))[33m.[39m[34mtoEqual[39m(formData)
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/composables/__tests__/useFilmDraft.test.js[2m > [22museFilmDraft[2m > [22mshould load draft from localStorage
+[31m[1mAssertionError[22m: expected null to deeply equal { judul: 'Test Film', …(1) }[39m
+
+[32m- Expected:[39m 
+{
+  "judul": "Test Film",
+  "sinopsis": "Test sinopsis",
+}
+
+[31m+ Received:[39m 
+null
+
+[36m [2m❯[22m src/composables/__tests__/useFilmDraft.test.js:[2m50:20[22m[39m
+    [90m 48| [39m    [35mconst[39m loaded [33m=[39m [34mloadDraft[39m()
+    [90m 49| [39m    
+    [90m 50| [39m    [34mexpect[39m(loaded)[33m.[39m[34mtoEqual[39m(formData)
+    [90m   | [39m                   [31m^[39m
+    [90m 51| [39m  })
+    [90m 52| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/composables/__tests__/useFilmDraft.test.js[2m > [22museFilmDraft[2m > [22mshould clear draft from localStorage
+[31m[1mTypeError[22m: window.localStorage.getItem is not a function[39m
+[36m [2m❯[22m src/composables/__tests__/useFilmDraft.test.js:[2m59:32[22m[39m
+    [90m 57| [39m    [34mclearDraft[39m()
+    [90m 58| [39m    
+    [90m 59| [39m    [34mexpect[39m(window[33m.[39mlocalStorage[33m.[39m[34mgetItem[39m([32m'draft-film'[39m))[33m.[39m[34mtoBeNull[39m()
+    [90m   | [39m                               [31m^[39m
+    [90m 60| [39m    expect(window.localStorage.getItem('draft-film-timestamp')).toBeNu…
+    [90m 61| [39m  })
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/composables/__tests__/useFilmDraft.test.js[2m > [22museFilmDraft[2m > [22mshould check if draft exists
+[31m[1mTypeError[22m: localStorage.getItem is not a function[39m
+[36m [2m❯[22m checkDraft src/composables/useFilmDraft.js:[2m83:32[22m[39m
+    [90m 81| [39m   */[39m
+    [90m 82| [39m  [35mconst[39m checkDraft [33m=[39m () [33m=>[39m {
+    [90m 83| [39m    [35mconst[39m draft [33m=[39m localStorage[33m.[39m[34mgetItem[39m([33mDRAFT_KEY[39m)
+    [90m   | [39m                               [31m^[39m
+    [90m 84| [39m    [35mconst[39m timestamp [33m=[39m localStorage[33m.[39m[34mgetItem[39m([33mDRAFT_TIMESTAMP_KEY[39m)
+    [90m 85| [39m
+[90m [2m❯[22m src/composables/__tests__/useFilmDraft.test.js:[2m66:12[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/composables/__tests__/useFilmDraft.test.js[2m > [22museFilmDraft[2m > [22mshould return null for expired draft
+[31m[1mTypeError[22m: window.localStorage.setItem is not a function[39m
+[36m [2m❯[22m src/composables/__tests__/useFilmDraft.test.js:[2m80:25[22m[39m
+    [90m 78| [39m    expiredDate[33m.[39m[34msetDate[39m(expiredDate[33m.[39m[34mgetDate[39m() [33m-[39m [34m8[39m)
+    [90m 79| [39m    
+    [90m 80| [39m    window.localStorage.setItem('draft-film', JSON.stringify({ judul: …
+    [90m   | [39m                        [31m^[39m
+    [90m 81| [39m    window.localStorage.setItem('draft-film-timestamp', expiredDate.to…
+    [90m 82| [39m    
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/composables/__tests__/useFilmDraft.test.js[2m > [22museFilmDraft[2m > [22mshould format draft time correctly
+[31m[1mAssertionError[22m: expected '' to be 'Baru saja' // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Baru saja[39m
+
+[36m [2m❯[22m src/composables/__tests__/useFilmDraft.test.js:[2m96:23[22m[39m
+    [90m 94| [39m    [35mconst[39m formatted [33m=[39m [34mformatDraftTime[39m()
+    [90m 95| [39m    
+    [90m 96| [39m    [34mexpect[39m(formatted)[33m.[39m[34mtoBe[39m([32m'Baru saja'[39m)
+    [90m   | [39m                      [31m^[39m
+    [90m 97| [39m  })
+    [90m 98| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/composables/__tests__/useFilmDraft.test.js[2m > [22museFilmDraft[2m > [22mshould handle localStorage errors gracefully
+[31m[1mTypeError[22m: 'set' on proxy: trap returned falsish for property 'setItem'[39m
+[36m [2m❯[22m src/composables/__tests__/useFilmDraft.test.js:[2m104:33[22m[39m
+    [90m102| [39m    // Override directly to avoid vi.spyOn 'does not exist' error with…
+    [90m103| [39m    [35mconst[39m originalSetItem [33m=[39m window[33m.[39mlocalStorage[33m.[39msetItem
+    [90m104| [39m    window[33m.[39mlocalStorage[33m.[39msetItem [33m=[39m () [33m=>[39m {
+    [90m   | [39m                                [31m^[39m
+    [90m105| [39m      [35mthrow[39m [35mnew[39m [33mError[39m([32m'QuotaExceededError'[39m)
+    [90m106| [39m    }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[31m8 failed[39m[22m[2m | [22m[1m[32m13 passed[39m[22m[90m (21)[39m
+[2m   Start at [22m 21:22:25
+[2m   Duration [22m 5.21s[2m (transform 552ms, setup 0ms, collect 8.75s, tests 127ms, environment 2.25s, prepare 567ms)[22m
+

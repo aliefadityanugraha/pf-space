@@ -79,21 +79,23 @@ export class GamificationService {
    * @returns {Promise<Array>} Array of earned badges
    */
   async getUserBadges(userId, stats) {
-    const earnedBadges = [];
-    
-    for (const badge of this.BADGE_DEFINITIONS) {
-      if (await badge.check(stats, userId)) {
-        earnedBadges.push({
-          id: badge.id,
-          name: badge.name,
-          description: badge.description,
-          icon: badge.icon,
-          color: badge.color
-        });
-      }
-    }
-    
-    return earnedBadges;
+    // Run all badge checks in parallel instead of sequentially
+    const results = await Promise.all(
+      this.BADGE_DEFINITIONS.map(async badge => ({
+        badge,
+        earned: await badge.check(stats, userId)
+      }))
+    );
+
+    return results
+      .filter(r => r.earned)
+      .map(r => ({
+        id: r.badge.id,
+        name: r.badge.name,
+        description: r.badge.description,
+        icon: r.badge.icon,
+        color: r.badge.color
+      }));
   }
 }
 

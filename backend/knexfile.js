@@ -49,7 +49,11 @@ export default {
     },
     pool: {
       min: 2,
-      max: 10
+      max: 20,
+      // Release idle connections after 30 seconds
+      idleTimeoutMillis: 30000,
+      // Timeout if a connection can't be acquired within 10 seconds
+      acquireTimeoutMillis: 10000
     }
   }
 };

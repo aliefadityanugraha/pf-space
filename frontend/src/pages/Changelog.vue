@@ -38,6 +38,21 @@ const typeColor = {
 
 const fallbackData = () => ([
   {
+    id: 'v1_3_1',
+    version: '1.3.1',
+    date: '2026-04-02',
+    type: 'fix',
+    title: 'Optimasi Performa Internal & Keamanan',
+    description: 'Peningkatan kecepatan respon sistem, optimasi penggunaan memori pada AI Search, serta penguatan keamanan layanan.',
+    items: [
+      'Refaktor sistem pencarian (Semantic Search) dengan limitasi memori untuk mencegah server crash (OOM)',
+      'Optimasi query database (Recursive CTE) pada sistem komentar, secara signifikan mempercepat respon server',
+      'Penerapan Strict Rate-Limiting khusus API Autentikasi untuk mengatasi upaya brute-force',
+      'Penguraian check paralel (Gamification) dan urutan native di sistem Vote mempercepat muatan film baru',
+      'Minifikasi build frontend (console dan debugger stripped) untuk file bundle yang optimal dan lebih cepat diakses via gawai'
+    ]
+  },
+  {
     id: 'v1_3_0',
     version: '1.3.0',
     date: '2026-03-04',
