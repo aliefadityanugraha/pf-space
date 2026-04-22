@@ -13,7 +13,7 @@ export class NotificationController {
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
    */
-  async getNotifications(request, reply) {
+  async getAll(request, reply) {
     const { page, limit } = request.query;
     const userId = request.user.id;
 
@@ -31,7 +31,7 @@ export class NotificationController {
     const userId = request.user.id;
 
     await notificationService.markAsRead(id, userId);
-    return ApiResponse.success(reply, { message: 'Notification marked as read' });
+    return ApiResponse.success(reply, { message: 'Notifikasi ditandai sudah dibaca' });
   }
 
   /**
@@ -43,7 +43,7 @@ export class NotificationController {
     const userId = request.user.id;
 
     await notificationService.markAllAsRead(userId);
-    return ApiResponse.success(reply, { message: 'All notifications marked as read' });
+    return ApiResponse.success(reply, { message: 'Semua notifikasi ditandai sudah dibaca' });
   }
 
   /**
@@ -51,7 +51,7 @@ export class NotificationController {
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
    */
-  async createNotification(request, reply) {
+  async create(request, reply) {
     const userId = request.user.id;
     const { type, title, message, data } = request.body;
 
@@ -63,7 +63,7 @@ export class NotificationController {
       data: data || null
     });
 
-    return ApiResponse.success(reply, notification, 'Notification created successfully', 201);
+    return ApiResponse.success(reply, notification, 'Notifikasi berhasil dibuat', 201);
   }
 }
 

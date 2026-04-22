@@ -16,44 +16,44 @@ export async function communityRoutes(fastify) {
   fastify.get('/active', communityController.getActiveDiscussion.bind(communityController));
 
   // Public: Get single discussion
-  fastify.get('/:id', communityController.getOne.bind(communityController));
+  fastify.get('/:id', communityController.getById.bind(communityController));
 
   // Admin/Moderator: List all historical topics
   fastify.get('/discussions', {
     preHandler: requireModerator
-  }, communityController.getAllDiscussions.bind(communityController));
+  }, communityController.getAll.bind(communityController));
   
   // Alias for list (used by admin frontend)
   fastify.get('/', {
     preHandler: requireModerator
-  }, communityController.getAllDiscussions.bind(communityController));
+  }, communityController.getAll.bind(communityController));
 
   // Admin/Moderator: Get replies for a specific topic
   fastify.get('/discussions/:id/replies', {
     preHandler: requireModerator
-  }, communityController.getDiscussionReplies.bind(communityController));
+  }, communityController.getReplies.bind(communityController));
   
   fastify.get('/:id/replies', {
     preHandler: requireModerator
-  }, communityController.getDiscussionReplies.bind(communityController));
+  }, communityController.getReplies.bind(communityController));
 
   // Administrative: Create new topic
   fastify.post('/discussions', {
     preHandler: requireModerator
-  }, communityController.createDiscussion.bind(communityController));
+  }, communityController.create.bind(communityController));
   
   fastify.post('/', {
     preHandler: requireModerator
-  }, communityController.createDiscussion.bind(communityController));
+  }, communityController.create.bind(communityController));
 
   // Administrative: Update topic details
   fastify.put('/discussions/:id', {
     preHandler: requireModerator
-  }, communityController.updateDiscussion.bind(communityController));
+  }, communityController.update.bind(communityController));
   
   fastify.put('/:id', {
     preHandler: requireModerator
-  }, communityController.updateDiscussion.bind(communityController));
+  }, communityController.update.bind(communityController));
 
   // Administrative: Toggle topic active status
   fastify.patch('/discussions/:id/toggle', {
@@ -67,11 +67,11 @@ export async function communityRoutes(fastify) {
   // Administrative: Delete a topic
   fastify.delete('/discussions/:id', {
     preHandler: requireModerator
-  }, communityController.deleteDiscussion.bind(communityController));
+  }, communityController.delete.bind(communityController));
   
   fastify.delete('/:id', {
     preHandler: requireModerator
-  }, communityController.deleteDiscussion.bind(communityController));
+  }, communityController.delete.bind(communityController));
 
   // User: Post a reply to the active topic
   fastify.post('/discussions/:id/replies', {

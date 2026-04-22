@@ -33,7 +33,7 @@ export class LearningMaterialController {
     return ApiResponse.success(
       reply,
       result.materials,
-      'Materials retrieved successfully',
+      'Materi berhasil diambil',
       200,
       result.pagination
     );
@@ -47,7 +47,7 @@ export class LearningMaterialController {
     const material = await learningMaterialService.getById(id);
 
     if (!material) {
-      throw new NotFoundError('Material not found');
+      throw new NotFoundError('Materi tidak ditemukan');
     }
 
     return ApiResponse.success(reply, material);
@@ -62,7 +62,7 @@ export class LearningMaterialController {
       creator_id: request.user.id
     });
 
-    return ApiResponse.success(reply, material, 'Material created successfully', 201);
+    return ApiResponse.success(reply, material, 'Materi berhasil dibuat', 201);
   }
 
   /**
@@ -73,7 +73,7 @@ export class LearningMaterialController {
     const material = await learningMaterialService.getById(id);
 
     if (!material) {
-      throw new NotFoundError('Material not found');
+      throw new NotFoundError('Materi tidak ditemukan');
     }
 
     // Security: Only owner or Admin can update
@@ -81,11 +81,11 @@ export class LearningMaterialController {
     const isOwner = request.user && material.creator_id === request.user.id;
 
     if (!isAdmin && !isOwner) {
-      throw new AuthorizationError('You do not have permission to update this material');
+      throw new AuthorizationError('Anda tidak memiliki izin untuk memperbarui materi ini');
     }
 
     const updated = await learningMaterialService.update(id, request.body);
-    return ApiResponse.success(reply, updated, 'Material updated successfully');
+    return ApiResponse.success(reply, updated, 'Materi berhasil diperbarui');
   }
 
   /**
@@ -96,7 +96,7 @@ export class LearningMaterialController {
     const material = await learningMaterialService.getById(id);
 
     if (!material) {
-      throw new NotFoundError('Material not found');
+      throw new NotFoundError('Materi tidak ditemukan');
     }
 
     // Security: Only owner or Admin can delete
@@ -104,11 +104,11 @@ export class LearningMaterialController {
     const isOwner = request.user && material.creator_id === request.user.id;
 
     if (!isAdmin && !isOwner) {
-      throw new AuthorizationError('You do not have permission to delete this material');
+      throw new AuthorizationError('Anda tidak memiliki izin untuk menghapus materi ini');
     }
 
     await learningMaterialService.delete(id);
-    return ApiResponse.success(reply, null, 'Material deleted successfully');
+    return ApiResponse.success(reply, null, 'Materi berhasil dihapus');
   }
 
   /**
@@ -119,7 +119,7 @@ export class LearningMaterialController {
     const material = await learningMaterialService.getById(id);
 
     if (!material) {
-      throw new NotFoundError('Material not found');
+      throw new NotFoundError('Materi tidak ditemukan');
     }
 
     // Security: Only owner or Admin can toggle
@@ -127,11 +127,11 @@ export class LearningMaterialController {
     const isOwner = request.user && material.creator_id === request.user.id;
 
     if (!isAdmin && !isOwner) {
-      throw new AuthorizationError('You do not have permission to modify this material');
+      throw new AuthorizationError('Anda tidak memiliki izin untuk mengubah status materi ini');
     }
 
     const updated = await learningMaterialService.toggleStatus(id);
-    return ApiResponse.success(reply, updated, `Material ${updated.is_active ? 'activated' : 'deactivated'} successfully`);
+    return ApiResponse.success(reply, updated, `Materi ${updated.is_active ? 'diaktifkan' : 'dinonaktifkan'}`);
   }
 }
 

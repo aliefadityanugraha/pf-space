@@ -18,7 +18,10 @@ import { pipeline } from 'stream/promises';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import sharp from 'sharp';
-import { execSync } from 'child_process';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -222,7 +225,7 @@ export async function getStorageStats() {
     stats.totalCount += dirStats.count;
   }
 
-  const disk = getDiskSpaceForPath(UPLOAD_DIR);
+  const disk = await getDiskSpaceForPath(UPLOAD_DIR);
   if (disk) {
     stats.disk = {
       total: disk.total,
@@ -235,21 +238,27 @@ export async function getStorageStats() {
   return stats;
 }
 
-function getDiskSpaceForPath(targetPath) {
+async function getDiskSpaceForPath(targetPath) {
   try {
     if (process.platform === 'win32') {
       const root = path.parse(targetPath).root;
       const drive = root && /^[A-Za-z]:\\?$/.test(root) ? root[0] : 'C';
       try {
-        const out = execSync(`powershell -NoProfile -Command "Get-PSDrive -Name ${drive} | Select-Object Used,Free | ConvertTo-Json -Compress"`, { stdio: ['ignore', 'pipe', 'ignore'] }).toString();
-        const obj = JSON.parse(out);
+        const { stdout } = await execAsync(
+          `powershell -NoProfile -Command "Get-PSDrive -Name ${drive} | Select-Object Used,Free | ConvertTo-Json -Compress"`,
+          { timeout: 5000 }
+        );
+        const obj = JSON.parse(stdout);
         const used = Number(obj.Used || 0);
         const free = Number(obj.Free || 0);
         const total = used + free;
         return { total, free, used };
       } catch {}
       try {
-        const wmic = execSync(`wmic logicaldisk where "DeviceID='${drive.toUpperCase()}:'" get Size,FreeSpace /format:csv`, { stdio: ['ignore', 'pipe', 'ignore'] }).toString();
+        const { stdout: wmic } = await execAsync(
+          `wmic logicaldisk where "DeviceID='${drive.toUpperCase()}:'" get Size,FreeSpace /format:csv`,
+          { timeout: 5000 }
+        );
         const line = wmic.split('\n').find(l => l.includes(':,'));
         if (line) {
           const parts = line.trim().split(',');
@@ -261,8 +270,8 @@ function getDiskSpaceForPath(targetPath) {
       } catch {}
       return null;
     } else {
-      const out = execSync(`df -Pk "${targetPath}"`, { stdio: ['ignore', 'pipe', 'ignore'] }).toString();
-      const lines = out.trim().split('\n');
+      const { stdout } = await execAsync(`df -Pk "${targetPath}"`, { timeout: 5000 });
+      const lines = stdout.trim().split('\n');
       const data = lines[lines.length - 1].trim().split(/\s+/);
       const totalKb = Number(data[1] || 0);
       const usedKb = Number(data[2] || 0);

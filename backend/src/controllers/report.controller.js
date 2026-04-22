@@ -50,7 +50,7 @@ export class ReportController {
       return ApiResponse.success(
         reply, 
         result.reports, 
-        'Reports retrieved successfully', 
+        'Laporan berhasil diambil', 
         200, 
         result.pagination
       );

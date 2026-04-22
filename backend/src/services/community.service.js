@@ -21,6 +21,7 @@ export class CommunityService {
           builder
             .withGraphFetched('user(selectBasic)')
             .orderBy('created_at', 'asc')
+            .limit(100) // Prevent returning thousands of replies at once
             .modifyGraph('user', (userBuilder) => {
               userBuilder.select('id', 'name', 'image');
             });

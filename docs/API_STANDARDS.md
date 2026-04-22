@@ -1,6 +1,6 @@
 # 📦 API Response Standards
 
-Dokumen ini menjelaskan **standar best practice response JSON API** agar:
+Dokumen ini menjelaskan **standar format response JSON API** agar:
 
 - Konsisten di seluruh endpoint
 - Mudah dikonsumsi frontend (Vue)
@@ -44,28 +44,29 @@ Dokumen ini menjelaskan **standar best practice response JSON API** agar:
 
 ## 🧩 Field Penjelasan
 
-| Field     | Tipe           | Wajib | Keterangan                      |
-| --------- | -------------- | ----- | ------------------------------- |
-| `success` | boolean        | ✅    | Status operasi (`true`/`false`) |
-| `message` | string         | ✅    | Pesan untuk user                |
-| `data`    | object / array | ❌    | Data utama (hanya saat sukses)  |
-| `errors`  | object         | ❌    | Detail error validasi           |
-| `meta`    | object         | ❌    | Informasi tambahan (pagination) |
-| `code`    | string         | ❌    | Kode error internal             |
+| Field | Tipe | Wajib | Keterangan |
+| --- | --- | --- | --- |
+| `success` | boolean | ✅ | Status operasi (`true`/`false`) |
+| `message` | string | ✅ | Pesan untuk user — **selalu Bahasa Indonesia** |
+| `data` | object / array | ❌ | Data utama (hanya saat sukses) |
+| `errors` | array of objects | ❌ | Detail error validasi (Zod) |
+| `pagination` | object | ❌ | Informasi paginasi (list endpoint) |
+| `code` | string | ❌ | Kode error internal |
 
 ---
 
 ## 🌐 HTTP Status Code
 
-| Kondisi              | Status Code                 |
-| -------------------- | --------------------------- |
-| GET sukses           | `200 OK`                    |
-| CREATE sukses        | `201 Created`               |
-| Validasi gagal       | `400 Bad Request`           |
-| Tidak login          | `401 Unauthorized`          |
-| Tidak punya akses    | `403 Forbidden`             |
-| Data tidak ditemukan | `404 Not Found`             |
-| Error server         | `500 Internal Server Error` |
+| Kondisi | Status Code |
+| --- | --- |
+| GET sukses | `200 OK` |
+| CREATE sukses | `201 Created` |
+| Validasi gagal | `400 Bad Request` |
+| Tidak login | `401 Unauthorized` |
+| Tidak punya akses | `403 Forbidden` |
+| Data tidak ditemukan | `404 Not Found` |
+| Rate limit tercapai | `429 Too Many Requests` |
+| Error server | `500 Internal Server Error` |
 
 > 📌 Jangan selalu return `200 OK`. Gunakan status code yang sesuai.
 
@@ -78,7 +79,7 @@ Dokumen ini menjelaskan **standar best practice response JSON API** agar:
 ```json
 {
   "success": true,
-  "message": "Data user berhasil diambil",
+  "message": "Data pengguna berhasil diambil",
   "data": {
     "id": 1,
     "name": "Alief",
@@ -92,7 +93,7 @@ Dokumen ini menjelaskan **standar best practice response JSON API** agar:
 ```json
 {
   "success": true,
-  "message": "List film berhasil diambil",
+  "message": "Film berhasil diambil",
   "data": [
     { "film_id": 1, "judul": "Film A" },
     { "film_id": 2, "judul": "Film B" }
@@ -111,7 +112,7 @@ Dokumen ini menjelaskan **standar best practice response JSON API** agar:
 ```json
 {
   "success": true,
-  "message": "Film berhasil dibuat",
+  "message": "Film berhasil dibuat. Menunggu persetujuan admin.",
   "data": {
     "film_id": 10,
     "judul": "Film Baru",
@@ -120,21 +121,21 @@ Dokumen ini menjelaskan **standar best practice response JSON API** agar:
 }
 ```
 
+### Validasi Gagal (Zod)
+
 ```json
 {
   "success": false,
-  "message": "Validation failed",
+  "code": "VALIDATION_ERROR",
+  "message": "Validasi input gagal",
   "errors": [
-    { "field": "judul", "message": "Required" },
-    {
-      "field": "tahun_karya",
-      "message": "Number must be greater than or equal to 1900"
-    }
+    { "field": "judul", "message": "Judul wajib diisi" },
+    { "field": "tahun_karya", "message": "Angka minimal 1900" }
   ]
 }
 ```
 
-> 📌 **Catatan**: Sejak penerapan **Zod**, field `errors` sekarang bertipe **Array of Objects** untuk mendukung multiple error pada satu field atau struktur data nested.
+> 📌 **Catatan**: Sejak penerapan **Zod**, field `errors` bertipe **Array of Objects** untuk mendukung multiple error per field atau nested data.
 
 ### Data Tidak Ditemukan
 
@@ -168,16 +169,33 @@ Dokumen ini menjelaskan **standar best practice response JSON API** agar:
 
 ---
 
-## ✍️ Konvensi Penamaan
+## 🌐 Bahasa Pesan
 
-- Gunakan **snake_case** untuk field name
+**Semua pesan user-facing (success & error) wajib dalam Bahasa Indonesia.** Ini sudah diimplementasikan di seluruh 15 controller.
+
+Contoh konsistensi:
+
+| Lama (Inggris) | Sekarang (Bahasa Indonesia) |
+| --- | --- |
+| `Film not found` | `Film tidak ditemukan` |
+| `You can only edit your own comments` | `Anda hanya dapat mengedit komentar Anda sendiri` |
+| `Vote recorded successfully` | `Suara berhasil dicatat` |
+| `Film approved and published` | `Film disetujui dan dipublikasikan` |
+| `Materials retrieved successfully` | `Materi berhasil diambil` |
+
+---
+
+## ✍️ Konvensi Penamaan Field
+
+- Gunakan **snake_case** untuk semua field name
 - Konsisten di seluruh API
 
 ```json
 {
   "film_id": 1,
-  "created_at": "2025-12-29T08:00:00Z",
-  "nama_kategori": "Film Pendek"
+  "created_at": "2026-04-18T08:00:00Z",
+  "nama_kategori": "Film Pendek",
+  "is_in_collection": true
 }
 ```
 
@@ -188,73 +206,83 @@ Dokumen ini menjelaskan **standar best practice response JSON API** agar:
 ❌ **Jangan pernah return:**
 
 - Password (termasuk hash)
-- Token rahasia
+- Token rahasia / API key
 - Internal field yang tidak diperlukan
 - Stack trace pada production
+
+✅ **Selalu:**
+
+- Sanitasi input teks dengan `sanitizePlainText()` sebelum simpan ke DB
+- Exclude field sensitif (email, password) dari profil publik
+- Gunakan `NotFoundError` daripada expose apakah resource ada/tidak ada untuk endpoint sensitif
 
 ---
 
 ## 🧠 Error Code Internal
 
-Gunakan error code untuk memudahkan debugging:
-
-| Code               | Deskripsi              |
-| ------------------ | ---------------------- |
-| `UNAUTHORIZED`     | User belum login       |
-| `FORBIDDEN`        | User tidak punya akses |
-| `DATA_NOT_FOUND`   | Data tidak ditemukan   |
-| `VALIDATION_ERROR` | Validasi input gagal   |
-| `DUPLICATE_ENTRY`  | Data duplikat          |
-| `INTERNAL_ERROR`   | Error internal server  |
-
----
-
-## 🧩 Template Response Final
-
-```json
-{
-  "success": true | false,
-  "message": "Pesan untuk user",
-  "data": {} | [],
-  "errors": {},
-  "pagination": {},
-  "code": "ERROR_CODE"
-}
-```
+| Code | Deskripsi |
+| --- | --- |
+| `UNAUTHORIZED` | User belum login |
+| `FORBIDDEN` | User tidak punya akses |
+| `DATA_NOT_FOUND` | Data tidak ditemukan |
+| `VALIDATION_ERROR` | Validasi input gagal (Zod) |
+| `DUPLICATE_ENTRY` | Data duplikat |
+| `INTERNAL_ERROR` | Error internal server |
 
 ---
 
 ## 📌 Implementasi di Backend
 
-Gunakan helper function untuk konsistensi:
+### ApiResponse Helper (`lib/response.js`)
 
 ```javascript
-// lib/response.js
-export const successResponse = (data, message = "Success", meta = {}) => ({
-  success: true,
-  message,
-  data,
-  ...meta,
+import { ApiResponse } from '../lib/response.js';
+
+// Success
+return ApiResponse.success(reply, data, 'Film berhasil diambil');
+
+// Success dengan pagination
+return ApiResponse.success(reply, films, 'Film berhasil diambil', 200, pagination);
+
+// Created
+return ApiResponse.success(reply, film, 'Film berhasil dibuat.', 201);
+
+// Not Found
+return ApiResponse.notFound(reply, 'Film tidak ditemukan');
+
+// Forbidden
+return ApiResponse.error(reply, 'Anda tidak memiliki izin', 403);
+
+// Bad Request
+return ApiResponse.badRequest(reply, 'Komentar induk tidak valid');
+```
+
+### Custom Error Classes (`lib/errors.js`)
+
+```javascript
+import { NotFoundError, AuthorizationError } from '../lib/errors.js';
+
+// Di service layer — akan ditangkap oleh Fastify error handler
+throw new NotFoundError('Film tidak ditemukan');
+throw new AuthorizationError('Anda tidak memiliki izin untuk melihat evaluasi ini');
+```
+
+### Centralized Validation dengan Zod
+
+```javascript
+// middlewares/schemas/film.schema.js
+import { z } from 'zod';
+
+export const createFilmSchema = z.object({
+  body: z.object({
+    judul: z.string().min(1, 'Judul wajib diisi'),
+    category_id: z.number().int().positive(),
+    tahun_karya: z.number().int().min(1900)
+  })
 });
 
-export const errorResponse = (message, code = null, errors = null) => ({
-  success: false,
-  message,
-  ...(code && { code }),
-  ...(errors && { errors }),
-});
-
-// Usage di controller
-reply.send(ApiResponse.success(reply, film, "Film berhasil dibuat"));
-reply.status(404).send(ApiResponse.error(reply, "Film tidak ditemukan", 404));
-
-// Centralized Validation dengan Zod
-// Route:
-fastify.post(
-  "/films",
-  {
-    preHandler: validateRequest(createFilmSchema),
-  },
-  filmController.create,
-);
+// Route dengan validation:
+fastify.post('/films', {
+  preHandler: [authenticate, validateRequest(createFilmSchema)]
+}, filmController.create.bind(filmController));
 ```

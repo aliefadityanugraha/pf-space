@@ -1,6 +1,6 @@
 # 🗄️ Database Schema
 
-Dokumentasi schema database untuk SI Film Archive.
+Dokumentasi schema database untuk PF Space.
 
 ## 📊 Entity Relationship Diagram
 

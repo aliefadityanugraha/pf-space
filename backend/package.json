@@ -1,7 +1,7 @@
 {
-  "name": "si-film-archive-backend",
+  "name": "pfspace-backend",
   "version": "1.0.0",
-  "description": "Backend API for SI Film Archive",
+  "description": "Backend API for PF Space",
   "main": "src/index.js",
   "type": "module",
   "scripts": {

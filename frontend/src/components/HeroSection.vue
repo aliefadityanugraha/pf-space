@@ -113,47 +113,54 @@ const handleVote = () => {
           class="absolute inset-0 slide-container flex flex-col justify-end pb-24 md:pb-32"
         >
           <div class="max-w-7xl mx-auto px-3 md:px-8 w-full pointer-events-auto">
-            <div class="hero-content max-w-3xl">
-              <!-- AI Summary Badge -->
-              <!-- <div class="badge-wrapper mb-3 md:mb-4">
-                <Badge class="bg-brand-teal text-white border-2 border-black shadow-brutal-sm rounded-none px-2 md:px-3 py-1 text-xs md:text-sm font-bold uppercase tracking-wider">
-                  <Sparkles class="w-4 h-4 mr-2" />
-                  AI Summary
-                </Badge>
-              </div> -->
+            <div class="hero-content max-w-3xl relative z-20 pb-8">
+              
+              <!-- Badge: Minimalist Editorial -->
+              <div class="mb-3 sm:mb-4 mt-2 sm:mt-0">
+                <div class="inline-flex items-center gap-2 bg-brand-cream px-2.5 py-1 border border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] group hover:-translate-y-0.5 transition-transform">
+                  <Sparkles class="w-3 h-3 text-brand-red" />
+                  <span class="font-bold text-stone-900 uppercase tracking-[0.2em] text-[8px] sm:text-[10px]">
+                    {{ slides[activeIndex].summary || 'Sorotan' }}
+                  </span>
+                </div>
+              </div>
 
-              <!-- Title -->
-              <h1 class="hero-title text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-display font-black text-[#fafaf9] mb-4 md:mb-6 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] leading-none">
+              <!-- Title: Cinematic typography -->
+              <h1 class="hero-title font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-5 text-[#fafaf9] leading-[1.1] tracking-tight drop-shadow-[2px_2px_0_rgba(0,0,0,1)] mix-blend-normal">
                 {{ slides[activeIndex].title }}
               </h1>
 
-              <!-- Quote Card -->
-              <div class="hero-card bg-white border-2 border-black shadow-brutal p-2 md:p-4 mb-5 md:mb-5 transform -rotate-1 transition-transform hover:rotate-0 max-w-2xl">
-                <div class="flex gap-4">
-                  <div class="w-1 bg-brand-red flex-shrink-0"></div>
-                  <p class="text-xs sm:text-base md:text-xl font-medium text-stone-900 leading-relaxed font-serif line-clamp-3 md:line-clamp-none">
-                    "{{ slides[activeIndex].quote }}"
-                  </p>
+              <!-- Quote Card: Elegant box with brand red accent -->
+              <div class="hero-card relative max-w-xl mb-6 group cursor-text">
+                <div class="bg-white border-2 border-black p-3.5 sm:p-5 shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[5px_5px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all duration-300">
+                  <div class="flex gap-3 sm:gap-4 items-start">
+                    <div class="w-1.5 h-full min-h-[2.5rem] bg-brand-red flex-shrink-0 mt-0.5"></div>
+                    <p class="text-[13px] sm:text-sm md:text-base font-medium text-stone-900 leading-[1.6] font-serif line-clamp-3 md:line-clamp-4">
+                      "{{ slides[activeIndex].quote }}"
+                    </p>
+                  </div>
                 </div>
               </div>
 
               <!-- Action Buttons -->
-              <div class="hero-actions flex flex-wrap gap-2.5 md:gap-4">
+              <div class="hero-actions flex flex-wrap gap-3 sm:gap-4 mt-4">
                 <Button 
                   @click="handleWatchNow"
-                  class="bg-brand-red text-[#fafaf9] border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] h-9 md:h-12 px-3 md:px-8 text-xs sm:text-sm md:text-lg font-bold uppercase rounded-none transition-all"
+                  class="bg-brand-red text-white border-2 border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] h-9 sm:h-10 md:h-11 px-5 sm:px-6 md:px-8 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wider rounded-none transition-all"
                 >
-                  <Play class="w-5 h-5 mr-2 fill-current" />
+                  <Play class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 fill-current" />
                   Lihat Karya
                 </Button>
+                
                 <Button 
                   @click="handleVote"
-                  class="bg-brand-cream text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] h-9 md:h-12 px-3 md:px-8 text-xs sm:text-sm md:text-lg font-bold uppercase rounded-none transition-all"
+                  class="bg-brand-cream text-stone-900 border-2 border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] h-9 sm:h-10 md:h-11 px-5 sm:px-6 md:px-8 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wider rounded-none transition-all group"
                 >
-                  <Heart class="w-5 h-5 mr-2" />
+                  <Heart class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 group-hover:text-brand-red group-hover:fill-brand-red transition-colors" />
                   Populer
                 </Button>
               </div>
+
             </div>
           </div>
         </div>

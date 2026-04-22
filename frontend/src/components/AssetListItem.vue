@@ -26,7 +26,7 @@ const currentFilmSlug = computed(() => {
 
 <template>
   <router-link 
-    :to="{ name: 'LearningAsset', params: { filmSlug: currentFilmSlug, assetSlug: assetSlug } }"
+    :to="{ name: 'AssetDetail', params: { archiveSlug: currentFilmSlug, assetSlug: assetSlug } }"
     class="block"
   >
     <div class="flex items-center justify-between p-4 bg-white border-2 border-stone-200 hover:border-stone-400 hover:shadow-md transition-all cursor-pointer group">

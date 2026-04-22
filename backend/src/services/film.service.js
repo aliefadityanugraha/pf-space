@@ -197,14 +197,22 @@ export class FilmService {
     const film = await this.getById(filmId);
     if (!film) return [];
 
-    return Film.query()
+    // Fetch more than needed then shuffle in JS — avoids MySQL RAND() full table scan
+    const candidates = await Film.query()
       .where("category_id", film.category_id)
       .where("status", FILM_STATUS.PUBLISHED)
       .whereNot("film_id", filmId)
       .withGraphFetched("[creator(selectBasic), category]")
       .modifiers(BaseModel.defaultModifiers)
-      .orderByRaw("RAND()") // Randomize related films
-      .limit(limit);
+      .orderBy("created_at", "desc")
+      .limit(limit * 3);
+
+    // Fisher-Yates shuffle for O(n) in-memory randomization
+    for (let i = candidates.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+    }
+    return candidates.slice(0, limit);
   }
 
   /**
@@ -275,11 +283,12 @@ export class FilmService {
       "file_rab",
     ];
 
-    for (const field of fileFields) {
-      if (data[field] && existing[field] && data[field] !== existing[field]) {
-        await deleteFile(existing[field]);
-      }
-    }
+    // Delete replaced files in parallel
+    await Promise.all(
+      fileFields
+        .filter(field => data[field] && existing[field] && data[field] !== existing[field])
+        .map(field => deleteFile(existing[field]))
+    );
 
     const updated = await Film.query().patchAndFetchById(id, data);
 
@@ -325,11 +334,12 @@ export class FilmService {
       "file_rab",
     ];
 
-    for (const field of fileFields) {
-      if (film[field]) {
-        await deleteFile(film[field]);
-      }
-    }
+    // Delete all associated files in parallel
+    await Promise.all(
+      fileFields
+        .filter(field => film[field])
+        .map(field => deleteFile(film[field]))
+    );
 
     return Film.query().deleteById(id);
   }

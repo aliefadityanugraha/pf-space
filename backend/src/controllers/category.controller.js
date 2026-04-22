@@ -28,7 +28,7 @@ export class CategoryController {
     const category = await categoryService.getById(id);
 
     if (!category) {
-      return ApiResponse.notFound(reply, 'Category not found');
+      return ApiResponse.notFound(reply, 'Kategori tidak ditemukan');
     }
 
     return ApiResponse.success(reply, category);
@@ -42,7 +42,7 @@ export class CategoryController {
   async create(request, reply) {
     const category = await categoryService.create(request.body);
 
-    return ApiResponse.success(reply, category, 'Category created successfully', 201);
+    return ApiResponse.success(reply, category, 'Kategori berhasil dibuat', 201);
   }
 
   /**
@@ -55,12 +55,12 @@ export class CategoryController {
     
     const existing = await categoryService.getById(id);
     if (!existing) {
-      return ApiResponse.notFound(reply, 'Category not found');
+      return ApiResponse.notFound(reply, 'Kategori tidak ditemukan');
     }
 
     const category = await categoryService.update(id, request.body);
 
-    return ApiResponse.success(reply, category, 'Category updated successfully');
+    return ApiResponse.success(reply, category, 'Kategori berhasil diperbarui');
   }
 
   /**
@@ -73,11 +73,11 @@ export class CategoryController {
 
     const existing = await categoryService.getById(id);
     if (!existing) {
-      return ApiResponse.notFound(reply, 'Category not found');
+      return ApiResponse.notFound(reply, 'Kategori tidak ditemukan');
     }
 
     await categoryService.delete(id);
-    return ApiResponse.success(reply, null, 'Category deleted successfully');
+    return ApiResponse.success(reply, null, 'Kategori berhasil dihapus');
   }
 
   /**

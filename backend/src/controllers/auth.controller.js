@@ -23,7 +23,7 @@ export class AuthController {
     const user = await authService.getUserById(request.user.id);
     
     if (!user) {
-      throw new NotFoundError('User not found');
+      throw new NotFoundError('Pengguna tidak ditemukan');
     }
 
     return ApiResponse.success(reply, {
@@ -54,7 +54,7 @@ export class AuthController {
     const user = await authService.updateUserRole(userId, request.body.role_id);
 
     if (!user) {
-      throw new NotFoundError('User not found');
+      throw new NotFoundError('Pengguna tidak ditemukan');
     }
 
     // Audit Log
@@ -71,7 +71,7 @@ export class AuthController {
       ipAddress: request.ip
     });
 
-    return ApiResponse.success(reply, user, 'Role updated successfully');
+    return ApiResponse.success(reply, user, 'Peran pengguna berhasil diperbarui');
   }
 
   /**
@@ -135,7 +135,7 @@ export class AuthController {
 
     const user = await authService.updateUser(request.user.id, updateData);
 
-    return ApiResponse.success(reply, user, 'Profile updated successfully');
+    return ApiResponse.success(reply, user, 'Profil berhasil diperbarui');
   }
 
   /**
@@ -206,10 +206,10 @@ export class AuthController {
       }
       
       console.error('Better Auth did not return a redirect URL:', data);
-      return ApiResponse.badRequest(reply, 'No redirect URL returned from auth provider');
+      return ApiResponse.badRequest(reply, 'Tidak ada URL redirect dari penyedia autentikasi');
     } catch (err) {
       console.error('Google OAuth error:', err);
-      return ApiResponse.error(reply, 'OAuth failed');
+      return ApiResponse.error(reply, 'OAuth gagal');
     }
   }
 
@@ -238,7 +238,7 @@ export class AuthController {
         reply.header('set-cookie', setCookies);
       }
 
-      return ApiResponse.success(reply, null, 'Logged out');
+      return ApiResponse.success(reply, null, 'Berhasil keluar');
     } catch (err) {
       console.error('Logout error:', err);
       // Fallback: Clear cookies manually if Better-Auth fails
@@ -246,7 +246,7 @@ export class AuthController {
         'better-auth.session_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax; Secure',
         'better-auth.session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax; Secure'
       ]);
-      return ApiResponse.success(reply, null, 'Logged out (fallback)');
+      return ApiResponse.success(reply, null, 'Berhasil keluar (fallback)');
     }
   }
 
@@ -313,7 +313,7 @@ export class AuthController {
       return reply.send(text);
     } catch (err) {
       console.error('Auth handler error:', err);
-      return ApiResponse.error(reply, 'Auth handler failed', 500, err.message);
+      return ApiResponse.error(reply, 'Penanganan autentikasi gagal', 500, err.message);
     }
   }
 }

@@ -18,7 +18,7 @@ export class EvaluationController {
       : await filmService.getBySlug(id);
 
     if (!film) {
-      throw new NotFoundError('Film not found');
+      throw new NotFoundError('Film tidak ditemukan');
     }
 
     // Auth check: Admin/Moderator can see, or the Creator of this film
@@ -27,7 +27,7 @@ export class EvaluationController {
 
     if (!isOwner && !isStaff) {
       // Forbidden but to hide existence we throw NotFound or simple Auth error
-      throw new AuthorizationError('You do not have permission to view this evaluation');
+      throw new AuthorizationError('Anda tidak memiliki izin untuk melihat evaluasi ini');
     }
 
     const evaluation = await evaluationService.getByFilmId(film.film_id);
@@ -49,7 +49,7 @@ export class EvaluationController {
       : await filmService.getBySlug(id);
 
     if (!film) {
-      throw new NotFoundError('Film not found');
+      throw new NotFoundError('Film tidak ditemukan');
     }
 
     const moderatorId = request.user.id;
@@ -81,7 +81,7 @@ export class EvaluationController {
       data: { link: `/archive/${film.slug}/study` }
     });
 
-    return ApiResponse.success(reply, evaluation, 'Evaluation saved successfully');
+    return ApiResponse.success(reply, evaluation, 'Evaluasi berhasil disimpan');
   }
 }
 

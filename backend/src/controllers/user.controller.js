@@ -19,7 +19,7 @@ export class UserController {
     const profile = await userService.getProfileById(id);
     
     if (!profile) {
-      return ApiResponse.notFound(reply, 'User not found');
+      return ApiResponse.notFound(reply, 'Pengguna tidak ditemukan');
     }
 
     return ApiResponse.success(reply, profile);
