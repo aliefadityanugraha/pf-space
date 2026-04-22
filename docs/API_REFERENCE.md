@@ -1,155 +1,64 @@
-# PF Space - Backend API
+# PF Space — Backend API Reference
 
-Backend API untuk aplikasi PF Space - platform arsip film karya siswa.
+Dokumentasi lengkap API endpoints untuk PF Space — platform arsip film karya siswa.
 
-## Tech Stack
+**Base URL:** `http://localhost:3000/api`
 
-- **Fastify** - Web framework
-- **Objection.js + Knex** - ORM dan query builder
-- **MySQL** - Database
-- **Better Auth** - Authentication (Email/Password + Google OAuth)
-- **Groq/OpenAI/Gemini** - AI Provider (pluggable)
-- **JavaScript (ESM)** - Non-TypeScript
-
-## Arsitektur
-
-Menggunakan **Model-Service-Controller (MSC)** pattern:
-
-```
-src/
-├── controllers/    # Handle request/response
-├── services/       # Business logic
-├── models/         # Objection.js models
-├── routes/         # Route definitions
-├── middlewares/    # Auth, validation
-├── lib/            # Utilities (auth, ai)
-│   └── ai/         # AI providers (pluggable)
-└── database/       # Migrations & seeds
-```
-
-## Quick Start
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Setup environment
-cp .env.example .env
-# Edit .env dengan konfigurasi database
-
-# 3. Buat database MySQL
-mysql -u root -p -e "CREATE DATABASE si_film_archive"
-
-# 4. Jalankan migration
-npm run migrate
-
-# 5. (Optional) Seed data kategori
-npm run seed
-
-# 6. Jalankan server
-npm run dev
-```
-
-## Environment Variables
-
-```env
-# Server
-PORT=3000
-HOST=0.0.0.0
-
-# Database
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=si_film_archive
-
-# Better Auth
-BETTER_AUTH_SECRET=your-secret-key-min-32-chars
-BETTER_AUTH_URL=http://localhost:3000
-
-# Google OAuth (optional)
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-
-# Frontend URL
-FRONTEND_URL=http://localhost:5173
-
-# AI Provider (groq, openai, gemini)
-AI_PROVIDER=groq
-GROQ_API_KEY=your-groq-api-key
-```
+> Semua response mengikuti format standar. Lihat [API Standards](./API_STANDARDS.md) untuk detail format.
 
 ---
 
-## Role System
+## Autentikasi
 
-| role_id | name      | Deskripsi                           |
-| ------- | --------- | ----------------------------------- |
-| 1       | user      | Default - bisa vote dan comment     |
-| 2       | creator   | Bisa upload dan manage film sendiri |
-| 3       | moderator | Bisa moderasi komentar              |
-| 4       | admin     | Full access ke semua fitur          |
+Semua endpoint yang memerlukan login menggunakan cookie `better-auth.session_token`.
 
-### Set Admin Pertama
+| Header / Cookie | Nilai |
+| --- | --- |
+| `Cookie` | `better-auth.session_token=xxx` |
+| `Origin` | `http://localhost:5173` (required untuk Better Auth) |
 
-```bash
-# Setelah register user, jalankan:
-node scripts/make-admin.js email@example.com
-```
+### Sistem Role
+
+| role_id | name | Hak Akses |
+| --- | --- | --- |
+| 1 | user | Vote, komentar, koleksi |
+| 2 | creator | Semua user + upload & kelola film sendiri |
+| 3 | moderator | Semua creator + moderasi komentar & komunitas |
+| 4 | admin | Full akses ke semua fitur |
 
 ---
 
-## API Endpoints
-
-Base URL: `http://localhost:3000/api`
-
-### Health Check
+## Health Check
 
 ```
 GET /api/health
 ```
 
-Response:
-
 ```json
 {
   "success": true,
   "message": "API is running",
-  "timestamp": "2024-12-30T10:00:00.000Z"
+  "timestamp": "2026-04-18T10:00:00.000Z"
 }
 ```
 
 ---
 
-## Authentication
+## 🔐 Auth (`/api/auth/...`)
+
+Better Auth menangani `sign-up`, `sign-in`, `sign-out`, `session`, dan Google OAuth secara built-in. Endpoint custom ada di `/api/auth/`:
 
 ### Register
 
 ```
 POST /api/auth/sign-up/email
-Origin: http://localhost:5173
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "name": "John Doe"
-}
 ```
-
-Response:
 
 ```json
 {
-  "redirect": false,
-  "token": "xxx",
-  "user": {
-    "id": "WlXaQBE3IcTcBr55dwU0tYExlMC7Onxf",
-    "email": "user@example.com",
-    "name": "John Doe",
-    "role_id": 1
-  }
+  "email": "user@example.com",
+  "password": "password123",
+  "name": "Budi Santoso"
 }
 ```
 
@@ -157,41 +66,41 @@ Response:
 
 ```
 POST /api/auth/sign-in/email
-Origin: http://localhost:5173
-Content-Type: application/json
+```
 
+```json
 {
   "email": "user@example.com",
   "password": "password123"
 }
 ```
 
-Response: Same as register + Set-Cookie header dengan session token
+### Logout
+
+```
+POST /api/auth/sign-out
+Cookie: better-auth.session_token=xxx
+```
 
 ### Get Session
 
 ```
 GET /api/auth/session
-Origin: http://localhost:5173
-Cookie: better-auth.session_token=xxx
 ```
 
-### Logout
+### Google OAuth
 
 ```
-POST /api/auth/sign-out
-Origin: http://localhost:5173
-Cookie: better-auth.session_token=xxx
+GET /api/auth/google          → redirect ke Google consent screen
+GET /api/auth/callback/google → callback handler (otomatis)
 ```
 
-### Get Profile
+### Get Profil Saya (Auth)
 
 ```
 GET /api/auth/profile
 Cookie: better-auth.session_token=xxx
 ```
-
-Response:
 
 ```json
 {
@@ -199,244 +108,114 @@ Response:
   "data": {
     "id": "WlXaQBE3IcTcBr55dwU0tYExlMC7Onxf",
     "email": "user@example.com",
-    "name": "John Doe",
+    "name": "Budi Santoso",
+    "image": null,
     "role": {
-      "role_id": 4,
-      "name": "admin",
-      "description": "Full access to all features"
-    },
-    "image": null
+      "role_id": 1,
+      "name": "user"
+    }
   }
 }
 ```
 
-### Get All Roles
+### Update Profil (Auth)
+
+```
+PUT /api/auth/profile
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{
+  "name": "Nama Baru",
+  "image": "/uploads/photo.jpg"
+}
+```
+
+### Get Semua Role (Admin)
 
 ```
 GET /api/auth/roles
-Cookie: better-auth.session_token=xxx
 ```
 
-### Get All Users (Admin)
+### Get Semua User (Admin)
 
 ```
-GET /api/auth/users
-Cookie: better-auth.session_token=xxx
+GET /api/auth/users?page=1&limit=20
 ```
 
-### Update User Role (Admin)
+### Update Role User (Admin)
 
 ```
 PATCH /api/auth/users/:userId/role
-Cookie: better-auth.session_token=xxx
-Content-Type: application/json
+```
 
-{
-  "role_id": 2
-}
+```json
+{ "role_id": 2 }
 ```
 
 ---
 
-## Categories
+## 🎬 Films (`/api/films/...`)
 
-### Get All Categories (Public)
-
-```
-GET /api/categories
-```
-
-Response:
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "category_id": 1,
-      "nama_kategori": "Film Pendek",
-      "deskripsi": "Film dengan durasi di bawah 30 menit",
-      "created_at": "2024-12-30T10:00:00.000Z"
-    }
-  ]
-}
-```
-
-### Get Categories with Film Count (Public)
-
-```
-GET /api/categories/with-count
-```
-
-### Get Single Category (Public)
-
-```
-GET /api/categories/:id
-```
-
-### Create Category (Admin)
-
-```
-POST /api/categories
-Cookie: better-auth.session_token=xxx
-Content-Type: application/json
-
-{
-  "nama_kategori": "Film Pendek",
-  "deskripsi": "Film dengan durasi di bawah 30 menit"
-}
-```
-
-Response:
-
-```json
-{
-  "success": true,
-  "message": "Category created successfully",
-  "data": {
-    "category_id": 1,
-    "nama_kategori": "Film Pendek",
-    "deskripsi": "Film dengan durasi di bawah 30 menit"
-  }
-}
-```
-
-### Update Category (Admin)
-
-```
-PUT /api/categories/:id
-Cookie: better-auth.session_token=xxx
-Content-Type: application/json
-
-{
-  "nama_kategori": "Film Pendek Updated",
-  "deskripsi": "Deskripsi baru"
-}
-```
-
-### Delete Category (Admin)
-
-```
-DELETE /api/categories/:id
-Cookie: better-auth.session_token=xxx
-```
-
----
-
-## Films
-
-### Get All Films (Public - Published Only)
+### Get Semua Film (Public)
 
 ```
 GET /api/films?page=1&limit=10&category_id=1&search=pendek&sortBy=created_at&sortOrder=desc
 ```
 
-Query Parameters:
+Query params: `page`, `limit`, `category_id`, `search`, `sortBy`, `sortOrder`
 
-- `page` - Halaman (default: 1)
-- `limit` - Jumlah per halaman (default: 10)
-- `category_id` - Filter by kategori
-- `search` - Cari by judul
-- `sortBy` - Field sorting (default: created_at)
-- `sortOrder` - asc/desc (default: desc)
-
-Response:
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "film_id": 1,
-      "judul": "Film Pendek Pertama",
-      "sinopsis": "Cerita tentang...",
-      "tahun_karya": 2024,
-      "gambar_poster": "/uploads/poster.jpg",
-      "status": "published",
-      "created_at": "2024-12-30T10:00:00.000Z",
-      "creator": {
-        "id": "xxx",
-        "name": "John Doe",
-        "image": null
-      },
-      "category": {
-        "category_id": 1,
-        "nama_kategori": "Film Pendek"
-      }
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 10,
-    "total": 50,
-    "totalPages": 5
-  }
-}
-```
-
-### Get Latest Films (Public)
+### Get Film Terbaru (Public)
 
 ```
 GET /api/films/latest?limit=10
 ```
 
+### Get Film Acak (Public)
+
+```
+GET /api/films/random?limit=6
+```
+
+> Menggunakan Fisher-Yates shuffle di level aplikasi (bukan `ORDER BY RAND()`).
+
 ### Get Single Film (Public)
 
 ```
 GET /api/films/:id
+GET /api/films/slug/:slug
 ```
 
-Response:
-
-```json
-{
-  "success": true,
-  "data": {
-    "film_id": 1,
-    "user_id": "xxx",
-    "category_id": 1,
-    "judul": "Film Pendek Pertama",
-    "sinopsis": "Cerita tentang...",
-    "tahun_karya": 2024,
-    "link_video_utama": "https://youtube.com/watch?v=xxx",
-    "link_trailer": "https://youtube.com/watch?v=yyy",
-    "gambar_poster": "/uploads/poster.jpg",
-    "filosofi_poster": "Makna dari poster...",
-    "file_naskah": "/uploads/naskah.pdf",
-    "file_storyboard": "/uploads/storyboard.pdf",
-    "file_rab": "/uploads/rab.pdf",
-    "crew": [
-      { "jabatan": "Sutradara", "anggota": ["John Doe"] },
-      { "jabatan": "Penulis", "anggota": ["Jane Doe"] }
-    ],
-    "status": "published",
-    "creator": { "id": "xxx", "name": "John Doe" },
-    "category": { "category_id": 1, "nama_kategori": "Film Pendek" }
-  }
-}
-```
-
-### Get My Films (Creator)
+### Get Film Saya (Creator/Auth)
 
 ```
 GET /api/films/my-films?page=1&limit=10&status=pending
 Cookie: better-auth.session_token=xxx
 ```
 
-### Get Pending Films (Admin)
+### Get Statistik Film Saya (Auth)
 
 ```
-GET /api/films/pending
+GET /api/films/stats
 Cookie: better-auth.session_token=xxx
 ```
 
-### Create Film (Creator/Admin)
+### Get Film Pending (Admin/Moderator)
+
+```
+GET /api/films/pending?page=1&limit=10
+Cookie: better-auth.session_token=xxx
+```
+
+### Buat Film (Creator/Admin)
 
 ```
 POST /api/films
 Cookie: better-auth.session_token=xxx
-Content-Type: application/json
+```
 
+```json
 {
   "judul": "Film Pendek Pertama",
   "category_id": 1,
@@ -450,40 +229,29 @@ Content-Type: application/json
   "file_storyboard": "/uploads/storyboard.pdf",
   "file_rab": "/uploads/rab.pdf",
   "crew": [
-    { "jabatan": "Sutradara", "anggota": ["John Doe"] },
-    { "jabatan": "Penulis", "anggota": ["Jane Doe", "Bob"] }
+    { "jabatan": "Sutradara", "anggota": ["Budi Santoso"] },
+    { "jabatan": "Penulis", "anggota": ["Ani", "Budi"] }
   ]
 }
 ```
 
 Response:
-
 ```json
 {
   "success": true,
-  "message": "Film created successfully. Waiting for admin approval.",
-  "data": {
-    "film_id": 1,
-    "judul": "Film Pendek Pertama",
-    "status": "pending"
-  }
+  "message": "Film berhasil dibuat. Menunggu persetujuan admin.",
+  "data": { "film_id": 1, "status": "pending" }
 }
 ```
 
-### Update Film (Owner)
+### Update Film (Owner/Admin)
 
 ```
 PUT /api/films/:id
 Cookie: better-auth.session_token=xxx
-Content-Type: application/json
-
-{
-  "judul": "Film Pendek Pertama (Revisi)",
-  "sinopsis": "Sinopsis yang sudah direvisi"
-}
 ```
 
-### Delete Film (Owner)
+### Hapus Film (Owner/Admin)
 
 ```
 DELETE /api/films/:id
@@ -497,19 +265,7 @@ PATCH /api/films/:id/approve
 Cookie: better-auth.session_token=xxx
 ```
 
-Response:
-
-```json
-{
-  "success": true,
-  "message": "Film approved and published",
-  "data": {
-    "film_id": 1,
-    "judul": "Film Pendek Pertama",
-    "status": "published"
-  }
-}
-```
+Response: `"Film disetujui dan dipublikasikan"`
 
 ### Reject Film (Admin)
 
@@ -518,9 +274,39 @@ PATCH /api/films/:id/reject
 Cookie: better-auth.session_token=xxx
 ```
 
+```json
+{ "rejection_reason": "Kualitas video tidak memenuhi standar." }
+```
+
+Response: `"Film ditolak"`
+
 ---
 
-## Votes (Trending System)
+## 🎞️ Film Scenes (`/api/film-scenes/...`)
+
+### Get Adegan Film (Public/Auth)
+
+```
+GET /api/film-scenes/:filmId
+```
+
+### Simpan Struktur Adegan (Owner/Admin/Moderator)
+
+```
+POST /api/film-scenes/:filmId
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+[
+  { "scene_order": 1, "title": "Opening", "description": "Adegan pembuka", "timestamp": "00:00" },
+  { "scene_order": 2, "title": "Konflik", "description": "...", "timestamp": "01:30" }
+]
+```
+
+---
+
+## 🗳️ Votes (`/api/votes/...`)
 
 ### Get Trending Films (Public)
 
@@ -528,44 +314,19 @@ Cookie: better-auth.session_token=xxx
 GET /api/votes/trending?period=week&limit=10
 ```
 
-Query Parameters:
+`period`: `week` | `month` | `all`
 
-- `period` - `week`, `month`, atau `all` (default: week)
-- `limit` - Jumlah film (default: 10)
-
-Response:
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "film_id": 1,
-      "judul": "Film Trending",
-      "vote_count": 42,
-      "creator": { "id": "xxx", "name": "John Doe" },
-      "category": { "category_id": 1, "nama_kategori": "Film Pendek" }
-    }
-  ]
-}
-```
-
-### Get Vote Count (Public/Auth)
+### Get Jumlah Vote Film (Public)
 
 ```
 GET /api/votes/film/:filmId
-Cookie: better-auth.session_token=xxx (optional - untuk has_voted)
+Cookie: better-auth.session_token=xxx  (optional — untuk field has_voted)
 ```
-
-Response:
 
 ```json
 {
   "success": true,
-  "data": {
-    "vote_count": 42,
-    "has_voted": true
-  }
+  "data": { "vote_count": 42, "has_voted": true }
 }
 ```
 
@@ -574,19 +335,13 @@ Response:
 ```
 POST /api/votes/film/:filmId
 Cookie: better-auth.session_token=xxx
-Content-Type: application/json
-
-{}
 ```
 
-Response:
+### Hapus Vote Film (Auth)
 
-```json
-{
-  "success": true,
-  "message": "Vote recorded successfully",
-  "data": { "vote_count": 43 }
-}
+```
+DELETE /api/votes/film/:filmId
+Cookie: better-auth.session_token=xxx
 ```
 
 ### Toggle Vote (Auth)
@@ -594,48 +349,33 @@ Response:
 ```
 POST /api/votes/film/:filmId/toggle
 Cookie: better-auth.session_token=xxx
-Content-Type: application/json
-
-{}
 ```
 
-Response:
-
-```json
-{
-  "success": true,
-  "message": "Vote removed",
-  "data": { "voted": false, "vote_count": 42 }
-}
-```
-
-### Unvote Film (Auth)
-
-```
-DELETE /api/votes/film/:filmId
-Cookie: better-auth.session_token=xxx
-```
-
-### Get My Votes (Auth)
+### Get Vote Saya (Auth)
 
 ```
 GET /api/votes/my-votes
 Cookie: better-auth.session_token=xxx
 ```
 
+### Reset Semua Vote (Admin)
+
+```
+DELETE /api/votes/reset
+Cookie: better-auth.session_token=xxx
+```
+
 ---
 
-## Discussions (Comments)
+## 💬 Discussions (`/api/discussions/...`)
 
-Menggunakan **Adjacency List** pattern untuk nested comments (max 5 level depth).
+Menggunakan **Adjacency List** untuk threaded comments (maks. 5 level kedalaman).
 
-### Get Comments (Public - Nested Tree)
+### Get Komentar Film (Public — Nested Tree, Paginated)
 
 ```
 GET /api/discussions/film/:filmId?page=1&limit=20
 ```
-
-Response:
 
 ```json
 {
@@ -643,28 +383,16 @@ Response:
   "data": [
     {
       "diskusi_id": 1,
-      "film_id": 1,
       "isi_pesan": "Film yang bagus!",
       "parent_id": null,
-      "created_at": "2024-12-30T10:00:00.000Z",
-      "user": { "id": "xxx", "name": "John Doe", "image": null },
+      "user": { "id": "xxx", "name": "Budi" },
       "reply_count": 2,
       "replies": [
         {
           "diskusi_id": 2,
           "isi_pesan": "Setuju!",
-          "parent_id": 1,
           "depth": 1,
-          "user": { "id": "yyy", "name": "Jane" },
-          "replies": [
-            {
-              "diskusi_id": 3,
-              "isi_pesan": "Iya bener",
-              "parent_id": 2,
-              "depth": 2,
-              "replies": []
-            }
-          ]
+          "replies": []
         }
       ]
     }
@@ -673,66 +401,55 @@ Response:
 }
 ```
 
-### Get Comment Count (Public)
+### Get Jumlah Komentar (Public)
 
 ```
 GET /api/discussions/film/:filmId/count
 ```
 
-Response:
+### Get Single Komentar (Public)
+
+```
+GET /api/discussions/:id
+```
+
+### Buat Komentar / Balasan (Auth)
+
+```
+POST /api/discussions/film/:filmId
+Cookie: better-auth.session_token=xxx
+```
 
 ```json
 {
-  "success": true,
-  "data": { "comment_count": 15 }
+  "isi_pesan": "Komentar saya",
+  "parent_id": null
 }
 ```
 
-### Post Comment (Auth)
+Untuk balasan, isi `parent_id` dengan ID komentar induk. Batas kedalaman: 5 level.
 
-```
-POST /api/discussions/film/:filmId
-Cookie: better-auth.session_token=xxx
-Content-Type: application/json
-
-{
-  "isi_pesan": "Film yang bagus!"
-}
-```
-
-### Reply to Comment (Auth)
-
-```
-POST /api/discussions/film/:filmId
-Cookie: better-auth.session_token=xxx
-Content-Type: application/json
-
-{
-  "isi_pesan": "Setuju banget!",
-  "parent_id": 1
-}
-```
-
-### Update Comment (Owner)
+### Edit Komentar (Owner)
 
 ```
 PUT /api/discussions/:id
 Cookie: better-auth.session_token=xxx
-Content-Type: application/json
-
-{
-  "isi_pesan": "Komentar yang sudah diedit"
-}
 ```
 
-### Delete Comment (Owner/Moderator/Admin)
+```json
+{ "isi_pesan": "Komentar yang sudah diedit" }
+```
+
+### Hapus Komentar (Owner/Moderator/Admin)
 
 ```
 DELETE /api/discussions/:id
 Cookie: better-auth.session_token=xxx
 ```
 
-### Get All Comments - Flat (Moderator/Admin)
+> Menghapus komentar beserta semua balasan bersarangnya menggunakan Recursive CTE (1 round-trip).
+
+### Get Semua Komentar Flat (Moderator/Admin)
 
 ```
 GET /api/discussions/all?page=1&limit=50&film_id=1
@@ -741,21 +458,425 @@ Cookie: better-auth.session_token=xxx
 
 ---
 
-## AI Chat
+## 🏘️ Community (`/api/community/...`)
 
-### Send Message (Auth)
+### Get Diskusi Aktif (Public)
+
+```
+GET /api/community/active
+```
+
+### Get Single Diskusi (Public)
+
+```
+GET /api/community/:id
+```
+
+### Get Semua Diskusi (Moderator/Admin)
+
+```
+GET /api/community?page=1&limit=20
+GET /api/community/discussions?page=1&limit=20
+Cookie: better-auth.session_token=xxx
+```
+
+### Get Balasan Diskusi (Moderator/Admin)
+
+```
+GET /api/community/:id/replies
+Cookie: better-auth.session_token=xxx
+```
+
+### Buat Diskusi (Moderator/Admin)
+
+```
+POST /api/community
+Cookie: better-auth.session_token=xxx
+```
+
+### Update Diskusi (Moderator/Admin)
+
+```
+PUT /api/community/:id
+Cookie: better-auth.session_token=xxx
+```
+
+### Toggle Aktif Diskusi (Moderator/Admin)
+
+```
+PATCH /api/community/:id/toggle
+Cookie: better-auth.session_token=xxx
+```
+
+### Hapus Diskusi (Moderator/Admin)
+
+```
+DELETE /api/community/:id
+Cookie: better-auth.session_token=xxx
+```
+
+### Tambah Balasan Diskusi (Auth)
+
+```
+POST /api/community/:id/replies
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{ "content": "Balasan saya terhadap topik ini." }
+```
+
+### Hapus Balasan (Owner)
+
+```
+DELETE /api/community/replies/:replyId
+Cookie: better-auth.session_token=xxx
+```
+
+### Hapus Balasan oleh Moderator
+
+```
+DELETE /api/community/moderator/replies/:replyId
+Cookie: better-auth.session_token=xxx
+```
+
+---
+
+## 🔖 Collections (`/api/collections/...`)
+
+### Toggle Koleksi (Auth)
+
+```
+POST /api/collections/film/:filmId
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{
+  "success": true,
+  "data": { "is_in_collection": true },
+  "message": "Film ditambahkan ke koleksi"
+}
+```
+
+### Status Koleksi (Public/Auth)
+
+```
+GET /api/collections/film/:filmId/status
+```
+
+### Koleksi Saya (Auth)
+
+```
+GET /api/collections/my?page=1&limit=10
+Cookie: better-auth.session_token=xxx
+```
+
+---
+
+## 🔔 Notifications (`/api/notifications/...`)
+
+### Get Notifikasi Saya (Auth)
+
+```
+GET /api/notifications?page=1&limit=20
+Cookie: better-auth.session_token=xxx
+```
+
+### Tandai Dibaca (Auth)
+
+```
+PATCH /api/notifications/:id/read
+Cookie: better-auth.session_token=xxx
+```
+
+### Tandai Semua Dibaca (Auth)
+
+```
+PATCH /api/notifications/read-all
+Cookie: better-auth.session_token=xxx
+```
+
+### Buat Notifikasi Sistem (Auth)
+
+```
+POST /api/notifications
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{
+  "type": "system",
+  "title": "Pengumuman penting",
+  "message": "Konten pesan notifikasi.",
+  "data": {}
+}
+```
+
+---
+
+## ⭐ Evaluations (`/api/evaluations/...`)
+
+### Get Evaluasi Film (Owner/Admin/Moderator)
+
+```
+GET /api/evaluations/film/:filmId
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{
+  "success": true,
+  "data": {
+    "script_score": 85,
+    "script_comment": "Naskah sangat terstruktur.",
+    "cinematography_score": 90,
+    "cinematography_comment": "Sinematografi sangat baik.",
+    "editing_score": 80,
+    "editing_comment": "Editing halus.",
+    "production_score": 88,
+    "production_comment": "Produksi rapi.",
+    "overall_feedback": "Karya yang sangat matang."
+  }
+}
+```
+
+### Create/Update Evaluasi (Admin/Moderator)
+
+```
+POST /api/evaluations/film/:filmId
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{
+  "script_score": 85,
+  "script_comment": "Naskah terstruktur.",
+  "cinematography_score": 90,
+  "cinematography_comment": "...",
+  "editing_score": 80,
+  "editing_comment": "...",
+  "production_score": 88,
+  "production_comment": "...",
+  "overall_feedback": "Karya yang matang."
+}
+```
+
+---
+
+## 📝 Study Notes (`/api/study-notes/...`)
+
+### Get Catatan Film Saya (Auth)
+
+```
+GET /api/study-notes/film/:filmId
+Cookie: better-auth.session_token=xxx
+```
+
+### Simpan Catatan (Auth)
+
+```
+POST /api/study-notes/film/:filmId
+Cookie: better-auth.session_token=xxx
+```
+
+### Hapus Catatan (Auth)
+
+```
+DELETE /api/study-notes/:id
+Cookie: better-auth.session_token=xxx
+```
+
+---
+
+## 📚 Learning Materials (`/api/learning-materials/...`)
+
+### Get Semua Materi (Public)
+
+```
+GET /api/learning-materials?page=1&limit=10&status=all
+```
+
+### Get Single Materi (Public)
+
+```
+GET /api/learning-materials/:id
+```
+
+### Buat Materi (Admin/Moderator)
+
+```
+POST /api/learning-materials
+Cookie: better-auth.session_token=xxx
+```
+
+### Update Materi (Owner/Admin)
+
+```
+PUT /api/learning-materials/:id
+Cookie: better-auth.session_token=xxx
+```
+
+### Hapus Materi (Owner/Admin)
+
+```
+DELETE /api/learning-materials/:id
+Cookie: better-auth.session_token=xxx
+```
+
+### Toggle Status Materi (Owner/Admin)
+
+```
+PATCH /api/learning-materials/:id/toggle
+Cookie: better-auth.session_token=xxx
+```
+
+---
+
+## 🚨 Reports (`/api/reports/...`)
+
+### Kirim Laporan (Auth)
+
+```
+POST /api/reports
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{
+  "target_type": "film",
+  "target_id": 5,
+  "reason": "Konten tidak pantas",
+  "description": "Film mengandung konten yang melanggar pedoman."
+}
+```
+
+### Get Semua Laporan (Admin)
+
+```
+GET /api/reports?page=1&limit=20&status=pending&target_type=film
+Cookie: better-auth.session_token=xxx
+```
+
+### Update Status Laporan (Admin)
+
+```
+PATCH /api/reports/:id/status
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{
+  "status": "resolved",
+  "admin_notes": "Konten telah ditinjau dan tidak melanggar pedoman."
+}
+```
+
+---
+
+## 🏷️ Categories (`/api/categories/...`)
+
+### Get Semua Kategori (Public)
+
+```
+GET /api/categories
+```
+
+### Get Kategori dengan Jumlah Film (Public)
+
+```
+GET /api/categories/with-count
+```
+
+### Get Single Kategori (Public)
+
+```
+GET /api/categories/:id
+```
+
+### Buat Kategori (Admin)
+
+```
+POST /api/categories
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{
+  "nama_kategori": "Film Dokumenter",
+  "deskripsi": "Film non-fiksi berbasis fakta."
+}
+```
+
+### Update Kategori (Admin)
+
+```
+PUT /api/categories/:id
+Cookie: better-auth.session_token=xxx
+```
+
+### Hapus Kategori (Admin)
+
+```
+DELETE /api/categories/:id
+Cookie: better-auth.session_token=xxx
+```
+
+---
+
+## 👤 Users (`/api/users/...`)
+
+### Get Profil Publik User
+
+```
+GET /api/users/:id
+```
+
+---
+
+## ⚙️ Settings (`/api/settings/...`)
+
+### Get Pengaturan Publik (Public)
+
+```
+GET /api/settings/public
+```
+
+### Get Semua Pengaturan (Admin)
+
+```
+GET /api/settings
+Cookie: better-auth.session_token=xxx
+```
+
+### Get Pengaturan by Key (Admin)
+
+```
+GET /api/settings/:key
+Cookie: better-auth.session_token=xxx
+```
+
+### Update Pengaturan (Admin)
+
+```
+PUT /api/settings/:key
+Cookie: better-auth.session_token=xxx
+```
+
+---
+
+## 🤖 AI Chat (`/api/chat/...`)
+
+### Kirim Pesan (Auth)
 
 ```
 POST /api/chat
 Cookie: better-auth.session_token=xxx
-Content-Type: application/json
-
-{
-  "message": "Rekomendasikan film pendek Indonesia yang bagus"
-}
 ```
 
-Response:
+```json
+{ "message": "Rekomendasikan film pendek Indonesia yang bagus" }
+```
 
 ```json
 {
@@ -769,112 +890,117 @@ Response:
 }
 ```
 
-### Get Chat History (Auth)
+### Get Riwayat Chat (Auth)
 
 ```
 GET /api/chat/history?page=1&limit=20
 Cookie: better-auth.session_token=xxx
 ```
 
-### Clear Chat History (Auth)
+### Hapus Semua Riwayat Chat (Auth)
 
 ```
 DELETE /api/chat/history
 Cookie: better-auth.session_token=xxx
 ```
 
----
-
-## Evaluasi & Penilaian
-
-### Get Evaluasi Film
-
-Melihat penilaian kurator untuk film tertentu.
+### Hapus Single Chat (Auth)
 
 ```
-GET /api/evaluations/film/:filmId
-```
-
-Response:
-
-```json
-{
-  "success": true,
-  "data": {
-    "script_score": 9,
-    "script_comment": "Bagus...",
-    "cinematography_score": 8,
-    "overall_feedback": "..."
-  }
-}
-```
-
-### Post/Upsert Evaluasi (Moderator/Admin)
-
-```
-POST /api/evaluations/film/:filmId
-Content-Type: application/json
-
-{
-  "script_score": 9,
-  "script_comment": "Naskah sangat solid.",
-  "cinematography_score": 8,
-  "cinematography_comment": "Visual menarik.",
-  "editing_score": 7,
-  "editing_comment": "Pace perlu diperbaiki.",
-  "production_score": 9,
-  "production_comment": "RAB sangat detail.",
-  "overall_feedback": "Karya luar biasa."
-}
+DELETE /api/chat/:id
+Cookie: better-auth.session_token=xxx
 ```
 
 ---
 
-## Notifikasi
+## 📤 Upload (`/api/upload/...` & `/api/files/...`)
 
-### Get Notifikasi User
-
-```
-GET /api/notifications
-```
-
-### Mark as Read
+### Upload Resumable via Tus.io
 
 ```
-PATCH /api/notifications/:id/read
+POST /api/files
+PATCH /api/files/:uploadId
 ```
 
-### Mark All as Read
+Header khusus Tus: `Tus-Resumable`, `Upload-Length`, `Upload-Offset`, `Content-Type: application/offset+octet-stream`
+
+### Cek Disk Space (Admin)
 
 ```
-PATCH /api/notifications/read-all
+GET /api/upload/disk-space
+Cookie: better-auth.session_token=xxx
 ```
 
 ---
 
-## Error Responses
+## 🛡️ Admin (`/api/admin/...`)
+
+### Get Statistik Sistem (Admin)
+
+```
+GET /api/admin/stats
+Cookie: better-auth.session_token=xxx
+```
+
+### Backup Database (Admin)
+
+```
+POST /api/admin/backup
+Cookie: better-auth.session_token=xxx
+```
+
+### List Backup (Admin)
+
+```
+GET /api/admin/backups
+Cookie: better-auth.session_token=xxx
+```
+
+### Restore Database (Admin)
+
+```
+POST /api/admin/restore
+Cookie: better-auth.session_token=xxx
+```
+
+### Hapus Backup (Admin)
+
+```
+DELETE /api/admin/backups/:filename
+Cookie: better-auth.session_token=xxx
+```
+
+---
+
+## ❌ Error Responses
 
 ```json
 {
   "success": false,
-  "message": "Error message here"
+  "message": "Pesan error dalam Bahasa Indonesia"
 }
 ```
 
-HTTP Status Codes:
+```json
+{
+  "success": false,
+  "code": "VALIDATION_ERROR",
+  "message": "Validasi input gagal",
+  "errors": [
+    { "field": "judul", "message": "Judul wajib diisi" }
+  ]
+}
+```
 
-- `400` - Bad Request (validation error)
-- `401` - Unauthorized (not logged in)
-- `403` - Forbidden (insufficient permissions)
-- `404` - Not Found
-- `500` - Internal Server Error
+| HTTP Status | Kondisi |
+| --- | --- |
+| `200` | Berhasil |
+| `201` | Data berhasil dibuat |
+| `400` | Bad Request / Validasi gagal |
+| `401` | Belum login |
+| `403` | Tidak memiliki izin |
+| `404` | Data tidak ditemukan |
+| `429` | Too Many Requests (rate limit) |
+| `500` | Internal Server Error |
 
----
-
-## Scripts & Database
-
-Untuk panduan pengembangan, testing, dan schema database lebih detail, silakan merujuk ke:
-
-- [DEVELOPMENT.md](./DEVELOPMENT.md)
-- [TESTING_GUIDE.md](./TESTING_GUIDE.md)
-- [DATABASE.md](./DATABASE.md)
+> **Catatan:** Semua pesan error & sukses menggunakan **Bahasa Indonesia** secara konsisten.

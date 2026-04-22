@@ -4,8 +4,7 @@
  * Controller for managing film discussions, comments, and replies.
  */
 
-import { discussionService } from '../services/index.js';
-import { filmService } from '../services/index.js';
+import { discussionService, filmService, notificationService } from '../services/index.js';
 import { ApiResponse } from '../lib/response.js';
 import { ROLES, FILM_STATUS } from '../config/constants.js';
 import { sanitizePlainText } from '../lib/sanitize.js';
@@ -24,7 +23,7 @@ export class DiscussionController {
     const film = await filmService.getById(filmId);
     
     if (!film) {
-      return ApiResponse.notFound(reply, 'Film not found');
+      return ApiResponse.notFound(reply, 'Film tidak ditemukan');
     }
 
     if (film.status !== FILM_STATUS.PUBLISHED) {
@@ -36,7 +35,7 @@ export class DiscussionController {
     return ApiResponse.success(
       reply, 
       result.comments, 
-      'Comments retrieved successfully', 
+      'Komentar berhasil diambil', 
       200, 
       result.pagination
     );
@@ -58,7 +57,7 @@ export class DiscussionController {
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
    */
-  async getOne(request, reply) {
+  async getById(request, reply) {
     const { id } = request.params;
     const comment = await discussionService.getById(id);
     if (!comment) return ApiResponse.notFound(reply, 'Komentar tidak ditemukan');
@@ -79,7 +78,7 @@ export class DiscussionController {
     const film = await filmService.getById(filmId);
     
     if (!film) {
-      return ApiResponse.notFound(reply, 'Film not found');
+      return ApiResponse.notFound(reply, 'Film tidak ditemukan');
     }
 
     if (film.status !== FILM_STATUS.PUBLISHED) {
@@ -90,13 +89,13 @@ export class DiscussionController {
     if (parent_id) {
       const parent = await discussionService.getById(parent_id);
       if (!parent || parent.film_id !== parseInt(filmId)) {
-        return ApiResponse.badRequest(reply, 'Invalid parent comment');
+        return ApiResponse.badRequest(reply, 'Komentar induk tidak valid');
       }
 
       // Check depth
       const depth = await discussionService.getCommentDepth(parent_id);
       if (depth >= 5) {
-        return ApiResponse.badRequest(reply, 'Maximum reply depth reached (max 5)');
+        return ApiResponse.badRequest(reply, 'Batas kedalaman balasan telah tercapai (maks. 5 tingkat)');
       }
     }
 
@@ -110,7 +109,6 @@ export class DiscussionController {
     const created = await discussionService.getById(comment.diskusi_id);
 
     // Notify appropriate user
-    const { notificationService } = await import('../services/index.js');
     try {
       if (parent_id) {
         // Find parent commenter
@@ -138,7 +136,7 @@ export class DiscussionController {
       console.error('Failed to send notification:', err.message);
     }
 
-    return ApiResponse.success(reply, created, parent_id ? 'Reply posted successfully' : 'Comment posted successfully', 201);
+    return ApiResponse.success(reply, created, parent_id ? 'Balasan berhasil dikirim' : 'Komentar berhasil dikirim', 201);
   }
 
   /**
@@ -151,16 +149,16 @@ export class DiscussionController {
     
     const comment = await discussionService.getById(id);
     if (!comment) {
-      return ApiResponse.notFound(reply, 'Comment not found');
+      return ApiResponse.notFound(reply, 'Komentar tidak ditemukan');
     }
 
     // Only owner can edit
     if (comment.user_id !== request.user.id) {
-      return ApiResponse.error(reply, 'You can only edit your own comments', 403);
+      return ApiResponse.error(reply, 'Anda hanya dapat mengedit komentar Anda sendiri', 403);
     }
 
     const updated = await discussionService.update(id, sanitizePlainText(request.body.isi_pesan.trim()));
-    return ApiResponse.success(reply, updated, 'Comment updated successfully');
+    return ApiResponse.success(reply, updated, 'Komentar berhasil diperbarui');
   }
 
   /**
@@ -173,7 +171,7 @@ export class DiscussionController {
 
     const comment = await discussionService.getById(id);
     if (!comment) {
-      return ApiResponse.notFound(reply, 'Comment not found');
+      return ApiResponse.notFound(reply, 'Komentar tidak ditemukan');
     }
 
     // Owner, Moderator, or Admin can delete
@@ -184,11 +182,11 @@ export class DiscussionController {
     const canDelete = isOwner || isModerator || isAdmin;
 
     if (!canDelete) {
-      return ApiResponse.error(reply, 'You do not have permission to delete this comment', 403);
+      return ApiResponse.error(reply, 'Anda tidak memiliki izin untuk menghapus komentar ini', 403);
     }
 
     await discussionService.delete(id);
-    return ApiResponse.success(reply, null, 'Comment deleted successfully');
+    return ApiResponse.success(reply, null, 'Komentar berhasil dihapus');
   }
 
   /**
@@ -203,7 +201,7 @@ export class DiscussionController {
     return ApiResponse.success(
       reply, 
       result.comments, 
-      'All comments retrieved successfully', 
+      'Semua komentar berhasil diambil', 
       200, 
       result.pagination
     );

@@ -6,63 +6,74 @@
 
 import { Discussion, Film, BaseModel } from '../models/index.js';
 import { notificationService } from './notification.service.js';
+import { knex } from '../database/index.js';
 
 export class DiscussionService {
   async getByFilm(filmId, options = {}) {
     const { page = 1, limit = 20 } = options;
     const offset = (page - 1) * limit;
 
-    // 1 query: fetch ALL comments for this film to prevent N+1 queries
-    const allComments = await Discussion.query()
-      .where('film_id', filmId)
-      .withGraphFetched('user(selectBasic)')
-      .modifiers(BaseModel.defaultModifiers);
+    // Run 3 queries in parallel: count roots, paginated root comments, all replies
+    const [countResult, rootComments, allReplies] = await Promise.all([
+      // Count only root-level comments for accurate pagination
+      Discussion.query()
+        .where('film_id', filmId)
+        .whereNull('parent_id')
+        .count('diskusi_id as total')
+        .first(),
 
-    // Build the tree in memory
-    const commentMap = new Map();
+      // DB-paginated root comments — avoids loading all roots into memory
+      Discussion.query()
+        .where('film_id', filmId)
+        .whereNull('parent_id')
+        .withGraphFetched('user(selectBasic)')
+        .modifiers(BaseModel.defaultModifiers)
+        .orderBy('created_at', 'desc')
+        .limit(limit)
+        .offset(offset),
 
-    // First pass: initialize the map and empty replies array for each comment
-    for (const comment of allComments) {
-      commentMap.set(comment.diskusi_id, {
-        ...comment,
-        replies: [],
-        reply_count: 0
-      });
+      // All replies for this film (for tree assembly)
+      Discussion.query()
+        .where('film_id', filmId)
+        .whereNotNull('parent_id')
+        .withGraphFetched('user(selectBasic)')
+        .modifiers(BaseModel.defaultModifiers)
+        .orderBy('created_at', 'asc')
+    ]);
+
+    const totalRoots = parseInt(countResult?.total || 0);
+
+    if (rootComments.length === 0) {
+      return {
+        comments: [],
+        pagination: {
+          page: parseInt(page), limit: parseInt(limit),
+          total: totalRoots, totalPages: Math.ceil(totalRoots / limit)
+        }
+      };
     }
 
-    const rootComments = [];
-    
-    // Sort all comments by created_at asc for chronological replies
-    const chronologicalComments = [...allComments].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    // Build a flat map of all nodes so we can link replies to parents in O(n)
+    const nodeMap = new Map();
+    for (const root of rootComments) {
+      nodeMap.set(root.diskusi_id, { ...root, replies: [] });
+    }
+    for (const reply of allReplies) {
+      nodeMap.set(reply.diskusi_id, { ...reply, replies: [] });
+    }
 
-    // Second pass: link children to parents
-    for (const comment of chronologicalComments) {
-      const node = commentMap.get(comment.diskusi_id);
-      
-      if (comment.parent_id && commentMap.has(comment.parent_id)) {
-        // Add to parent's replies
-        commentMap.get(comment.parent_id).replies.push(node);
-      } else {
-        // It's a root comment
-        rootComments.push(node);
+    // Link each reply to its parent
+    for (const reply of allReplies) {
+      const parent = nodeMap.get(reply.parent_id);
+      if (parent) {
+        parent.replies.push(nodeMap.get(reply.diskusi_id));
       }
     }
 
-    // Sort roots by created_at desc (newest first for root level)
-    rootComments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-    // Calculate total roots for pagination
-    const totalRoots = rootComments.length;
-    
-    // Paginate root comments
-    const paginatedRoots = rootComments.slice(offset, offset + limit);
-
-    // Calculate recursive reply count for the paginated roots
-    const enhancedRoots = paginatedRoots.map(root => {
-      return {
-        ...root,
-        reply_count: this.countReplies(root.replies)
-      };
+    // Attach recursive reply_count to each root
+    const enhancedRoots = rootComments.map(root => {
+      const node = nodeMap.get(root.diskusi_id);
+      return { ...node, reply_count: this.countReplies(node.replies) };
     });
 
     return {
@@ -197,26 +208,29 @@ export class DiscussionService {
    * @param {number} id - Comment ID
    * @returns {Promise<number>} Number of deleted rows
    */
+  /**
+   * Delete a comment and all its nested replies using a single recursive CTE query
+   * @param {number} id - Comment ID
+   * @returns {Promise<void>}
+   */
   async delete(id) {
     return Discussion.transaction(async (trx) => {
-      // Delete all nested replies first (cascade)
-      await this.deleteRepliesRecursive(id, trx);
-      return Discussion.query(trx).deleteById(id);
-    });
-  }
+      // Collect all descendant IDs in one recursive CTE — avoids N+1 per-reply queries
+      const [rows] = await knex.raw(`
+        WITH RECURSIVE subtree AS (
+          SELECT diskusi_id FROM discussions WHERE diskusi_id = ?
+          UNION ALL
+          SELECT d.diskusi_id FROM discussions d
+          INNER JOIN subtree s ON d.parent_id = s.diskusi_id
+        )
+        SELECT diskusi_id FROM subtree
+      `, [id]).transacting(trx);
 
-  /**
-   * Helper to delete all replies for a parent comment recursively
-   * @param {number} parentId - Parent comment ID
-   * @param {import('objection').Transaction} trx - Transaction object
-   */
-  async deleteRepliesRecursive(parentId, trx) {
-    const replies = await Discussion.query(trx).where('parent_id', parentId);
-    
-    for (const reply of replies) {
-      await this.deleteRepliesRecursive(reply.diskusi_id, trx);
-      await Discussion.query(trx).deleteById(reply.diskusi_id);
-    }
+      const ids = rows.map(r => r.diskusi_id);
+      if (ids.length > 0) {
+        await Discussion.query(trx).whereIn('diskusi_id', ids).delete();
+      }
+    });
   }
 
   /**

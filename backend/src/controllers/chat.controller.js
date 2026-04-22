@@ -31,7 +31,7 @@ export class ChatController {
     return ApiResponse.success(
       reply, 
       result.chats, 
-      'Chat history retrieved successfully', 
+      'Riwayat chat berhasil diambil', 
       200, 
       result.pagination
     );
@@ -44,7 +44,7 @@ export class ChatController {
    */
   async clearHistory(request, reply) {
     await chatService.clearHistory(request.user.id);
-    return ApiResponse.success(reply, null, 'Chat history cleared');
+    return ApiResponse.success(reply, null, 'Riwayat chat dihapus');
   }
 
   /**
@@ -58,10 +58,10 @@ export class ChatController {
     const deleted = await chatService.deleteChat(id, request.user.id);
 
     if (!deleted) {
-      return ApiResponse.notFound(reply, 'Chat not found');
+      return ApiResponse.notFound(reply, 'Chat tidak ditemukan');
     }
 
-    return ApiResponse.success(reply, null, 'Chat deleted');
+    return ApiResponse.success(reply, null, 'Chat berhasil dihapus');
   }
 }
 

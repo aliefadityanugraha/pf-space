@@ -4,8 +4,7 @@
  * Controller for managing film votes (likes) and community engagement metrics.
  */
 
-import { voteService } from '../services/index.js';
-import { filmService } from '../services/index.js';
+import { voteService, filmService } from '../services/index.js';
 import { ApiResponse } from '../lib/response.js';
 import { FILM_STATUS } from '../config/constants.js';
 
@@ -21,17 +20,17 @@ export class VoteController {
     // Check film exists and is published
     const film = await filmService.getById(filmId);
     if (!film || film.status !== FILM_STATUS.PUBLISHED) {
-      return ApiResponse.notFound(reply, 'Film not found');
+      return ApiResponse.notFound(reply, 'Film tidak ditemukan');
     }
 
     const result = await voteService.vote(filmId, request.user.id);
 
     if (result.alreadyVoted) {
-      return ApiResponse.badRequest(reply, 'You have already voted for this film');
+      return ApiResponse.badRequest(reply, 'Anda sudah memberikan suara untuk film ini');
     }
 
     const voteCount = await voteService.getVoteCount(filmId);
-    return ApiResponse.success(reply, { vote_count: voteCount }, 'Vote recorded successfully');
+    return ApiResponse.success(reply, { vote_count: voteCount }, 'Suara berhasil dicatat');
   }
 
   /**
@@ -45,11 +44,11 @@ export class VoteController {
     const deleted = await voteService.unvote(filmId, request.user.id);
 
     if (!deleted) {
-      return ApiResponse.badRequest(reply, 'You have not voted for this film');
+      return ApiResponse.badRequest(reply, 'Anda belum memberikan suara untuk film ini');
     }
 
     const voteCount = await voteService.getVoteCount(filmId);
-    return ApiResponse.success(reply, { vote_count: voteCount }, 'Vote removed successfully');
+    return ApiResponse.success(reply, { vote_count: voteCount }, 'Suara berhasil dihapus');
   }
 
   /**
@@ -63,7 +62,7 @@ export class VoteController {
     // Check film exists and is published
     const film = await filmService.getById(filmId);
     if (!film || film.status !== FILM_STATUS.PUBLISHED) {
-      return ApiResponse.notFound(reply, 'Film not found');
+      return ApiResponse.notFound(reply, 'Film tidak ditemukan');
     }
 
     const hasVoted = await voteService.hasVoted(filmId, request.user.id);
@@ -79,7 +78,7 @@ export class VoteController {
     return ApiResponse.success(reply, { 
       voted: !hasVoted,
       vote_count: voteCount 
-    }, hasVoted ? 'Vote removed' : 'Vote recorded');
+    }, hasVoted ? 'Suara dihapus' : 'Suara berhasil dicatat');
   }
 
   /**
@@ -111,10 +110,10 @@ export class VoteController {
   async resetVotes(request, reply) {
     try {
       await voteService.resetAllVotes();
-      return ApiResponse.success(reply, null, 'All votes have been reset successfully');
+      return ApiResponse.success(reply, null, 'Semua suara berhasil direset');
     } catch (error) {
       request.log.error(error);
-      return ApiResponse.error(reply, 'Failed to reset votes');
+      return ApiResponse.error(reply, 'Gagal mereset suara');
     }
   }
 
@@ -127,7 +126,7 @@ export class VoteController {
     const { period = 'week', limit = 10 } = request.query;
 
     if (!['week', 'month', 'all'].includes(period)) {
-      return ApiResponse.badRequest(reply, 'Invalid period. Use: week, month, or all');
+      return ApiResponse.badRequest(reply, 'Periode tidak valid. Gunakan: week, month, atau all');
     }
 
     const films = await voteService.getTrending(period, parseInt(limit));

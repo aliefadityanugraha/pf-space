@@ -14,7 +14,7 @@ export default async function discussionRoutes(fastify) {
   fastify.get('/film/:filmId/count', discussionController.getCommentCount.bind(discussionController));
 
   // Public: Get single comment
-  fastify.get('/:id', discussionController.getOne.bind(discussionController));
+  fastify.get('/:id', discussionController.getById.bind(discussionController));
 
   // Admin/Moderator: Flat list of all comments for moderation
   fastify.get('/all', {

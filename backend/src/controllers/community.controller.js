@@ -4,7 +4,7 @@
  * Controller for managing community discussions and topics.
  */
 
-import { communityService } from '../services/index.js';
+import { communityService, notificationService } from '../services/index.js';
 import { ApiResponse } from '../lib/response.js';
 import { sanitizePlainText } from '../lib/sanitize.js';
 
@@ -18,7 +18,7 @@ export class CommunityController {
     const discussion = await communityService.getActiveDiscussion();
     
     if (!discussion) {
-      return ApiResponse.success(reply, null, 'No active discussion');
+      return ApiResponse.success(reply, null, 'Tidak ada diskusi aktif');
     }
 
     return ApiResponse.success(reply, discussion);
@@ -29,12 +29,12 @@ export class CommunityController {
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
    */
-  async getOne(request, reply) {
+  async getById(request, reply) {
     const { id } = request.params;
     const discussion = await communityService.getById(id);
     
     if (!discussion) {
-      return ApiResponse.notFound(reply, 'Discussion not found');
+      return ApiResponse.notFound(reply, 'Diskusi tidak ditemukan');
     }
     
     return ApiResponse.success(reply, discussion);
@@ -45,14 +45,14 @@ export class CommunityController {
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
    */
-  async getAllDiscussions(request, reply) {
+  async getAll(request, reply) {
     const { page, limit } = request.query;
     const result = await communityService.getAllDiscussions({ page, limit });
     
     return ApiResponse.success(
       reply,
       result.discussions,
-      'Discussions retrieved successfully',
+      'Diskusi berhasil diambil',
       200,
       result.pagination
     );
@@ -63,11 +63,11 @@ export class CommunityController {
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
    */
-  async getDiscussionReplies(request, reply) {
+  async getReplies(request, reply) {
     const { id } = request.params;
     const replies = await communityService.getDiscussionReplies(id);
     
-    return ApiResponse.success(reply, replies, 'Replies retrieved successfully');
+    return ApiResponse.success(reply, replies, 'Balasan berhasil diambil');
   }
 
   /**
@@ -75,7 +75,7 @@ export class CommunityController {
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
    */
-  async createDiscussion(request, reply) {
+  async create(request, reply) {
     const discussion = await communityService.createDiscussion(
       request.user.id,
       {
@@ -84,7 +84,7 @@ export class CommunityController {
       }
     );
 
-    return ApiResponse.success(reply, discussion, 'Discussion created successfully', 201);
+    return ApiResponse.success(reply, discussion, 'Diskusi berhasil dibuat', 201);
   }
 
   /**
@@ -92,15 +92,15 @@ export class CommunityController {
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
    */
-  async updateDiscussion(request, reply) {
+  async update(request, reply) {
     const { id } = request.params;
     const discussion = await communityService.updateDiscussion(id, request.body);
 
     if (!discussion) {
-      return ApiResponse.notFound(reply, 'Discussion not found');
+      return ApiResponse.notFound(reply, 'Diskusi tidak ditemukan');
     }
 
-    return ApiResponse.success(reply, discussion, 'Discussion updated successfully');
+    return ApiResponse.success(reply, discussion, 'Diskusi berhasil diperbarui');
   }
 
   /**
@@ -115,13 +115,13 @@ export class CommunityController {
     const discussion = await communityService.toggleDiscussion(id, is_active);
 
     if (!discussion) {
-      return ApiResponse.notFound(reply, 'Discussion not found');
+      return ApiResponse.notFound(reply, 'Diskusi tidak ditemukan');
     }
 
     return ApiResponse.success(
       reply,
       discussion,
-      is_active ? 'Discussion activated' : 'Discussion deactivated'
+      is_active ? 'Diskusi diaktifkan' : 'Diskusi dinonaktifkan'
     );
   }
 
@@ -130,15 +130,15 @@ export class CommunityController {
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
    */
-  async deleteDiscussion(request, reply) {
+  async delete(request, reply) {
     const { id } = request.params;
     const deleted = await communityService.deleteDiscussion(id);
 
     if (!deleted) {
-      return ApiResponse.notFound(reply, 'Discussion not found');
+      return ApiResponse.notFound(reply, 'Diskusi tidak ditemukan');
     }
 
-    return ApiResponse.success(reply, null, 'Discussion deleted successfully');
+    return ApiResponse.success(reply, null, 'Diskusi berhasil dihapus');
   }
 
   /**
@@ -152,13 +152,13 @@ export class CommunityController {
 
     // Validate content
     if (!content || !content.trim()) {
-      return ApiResponse.badRequest(reply, 'Content is required');
+      return ApiResponse.badRequest(reply, 'Konten tidak boleh kosong');
     }
 
     // Check if discussion exists and is active
     const discussion = await communityService.getActiveDiscussion();
     if (!discussion || discussion.discussion_id !== parseInt(id)) {
-      return ApiResponse.notFound(reply, 'Discussion not found or not active');
+      return ApiResponse.notFound(reply, 'Diskusi tidak ditemukan atau tidak aktif');
     }
 
     const replyData = await communityService.addReply(
@@ -170,7 +170,6 @@ export class CommunityController {
     // Notify the discussion creator
     try {
       if (discussion.user_id && discussion.user_id !== request.user.id) {
-        const { notificationService } = await import('../services/index.js');
         await notificationService.create({
           user_id: discussion.user_id,
           type: 'community_reply',
@@ -183,7 +182,7 @@ export class CommunityController {
       console.error('Failed to send notification for community reply:', err.message);
     }
 
-    return ApiResponse.success(reply, replyData, 'Reply added successfully', 201);
+    return ApiResponse.success(reply, replyData, 'Balasan berhasil ditambahkan', 201);
   }
 
   /**
@@ -196,10 +195,10 @@ export class CommunityController {
     const deleted = await communityService.deleteReply(replyId, request.user.id);
 
     if (!deleted) {
-      return ApiResponse.notFound(reply, 'Reply not found or unauthorized');
+      return ApiResponse.notFound(reply, 'Balasan tidak ditemukan atau tidak diizinkan');
     }
 
-    return ApiResponse.success(reply, null, 'Reply deleted successfully');
+    return ApiResponse.success(reply, null, 'Balasan berhasil dihapus');
   }
 
   /**
@@ -212,10 +211,10 @@ export class CommunityController {
     const deleted = await communityService.deleteReplyByModerator(replyId);
 
     if (!deleted) {
-      return ApiResponse.notFound(reply, 'Reply not found');
+      return ApiResponse.notFound(reply, 'Balasan tidak ditemukan');
     }
 
-    return ApiResponse.success(reply, null, 'Reply deleted successfully');
+    return ApiResponse.success(reply, null, 'Balasan berhasil dihapus');
   }
 
   /**
@@ -228,7 +227,7 @@ export class CommunityController {
     const replyData = await communityService.getReplyById(replyId);
     
     if (!replyData) {
-      return ApiResponse.notFound(reply, 'Reply not found');
+      return ApiResponse.notFound(reply, 'Balasan tidak ditemukan');
     }
 
     return ApiResponse.success(reply, replyData);

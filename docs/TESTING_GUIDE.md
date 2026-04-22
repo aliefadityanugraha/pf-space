@@ -580,7 +580,7 @@ global.localStorage = {
 
 ```bash
 # Create test database
-mysql -u root -p -e "CREATE DATABASE si_film_archive_test"
+mysql -u root -p -e "CREATE DATABASE pf_space_test"
 
 # Run migrations
 NODE_ENV=test npm run migrate

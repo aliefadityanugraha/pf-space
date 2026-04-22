@@ -6,6 +6,7 @@
  */
 
 import 'dotenv/config';
+import crypto from 'crypto';
 import { validateEnv } from './config/env.js';
 
 // Validate environment variables before anything else
@@ -18,7 +19,7 @@ import multipart from '@fastify/multipart';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import compress from '@fastify/compress';
-import { initDatabase } from './database/index.js';
+import { initDatabase, knex } from './database/index.js';
 import routes from './routes/index.js';
 import tusRoutes from './routes/tus.routes.js';
 import staticRoutes from './routes/static.routes.js';
@@ -30,7 +31,10 @@ import { globalErrorHandler } from './middlewares/errorHandler.js';
 
 const fastify = Fastify({
   logger: true,
-  trustProxy: true
+  trustProxy: true,
+  // Use incoming X-Request-ID header, or generate a new UUID
+  requestIdHeader: 'x-request-id',
+  genReqId: (req) => req.headers['x-request-id'] || crypto.randomUUID()
 });
 
 // Prevent crash from internal Node.js/Undine stream issues
@@ -50,14 +54,30 @@ process.on('uncaughtException', (err) => {
 // SEO Hook for bots
 fastify.addHook('onRequest', seoMiddleware);
 
+// Reflect X-Request-ID back on every response for log tracing
+fastify.addHook('onSend', async (request, reply, payload) => {
+  reply.header('X-Request-ID', request.id);
+  return payload;
+});
+
 // Register plugins
 await fastify.register(helmet, {
   // Allow cross-origin access to static files (uploads)
   crossOriginResourcePolicy: { policy: "cross-origin" },
   // Allow iframe embedding
   frameguard: false,
-  // Disable CSP for simplicity in dev (or configure it properly if needed)
-  contentSecurityPolicy: false,
+  // Restrictive CSP for API server — frontend SPA handles its own CSP
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'none'"],
+      scriptSrc: ["'none'"],
+      imgSrc: ["'self'", "data:"],
+      mediaSrc: ["'self'"],
+      connectSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+    }
+  },
 });
 
 await fastify.register(compress);
@@ -165,8 +185,7 @@ const shutdown = async (signal) => {
     await fastify.close();
     console.log('✅ Server closed');
 
-    const { knex } = await import('./database/index.js');
-    await knex.destroy();
+    await knex.destroy(); // Use statically imported knex instance
     console.log('✅ Database connections closed');
   } catch (err) {
     console.error('Error during shutdown:', err);

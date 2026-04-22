@@ -19,7 +19,7 @@ export class CollectionController {
     // Check film exists and is published
     const film = await filmService.getById(filmId);
     if (!film || film.status !== 'published') {
-      return ApiResponse.notFound(reply, 'Film not found');
+      return ApiResponse.notFound(reply, 'Film tidak ditemukan');
     }
 
     const isInCollection = await collectionService.isInCollection(filmId, request.user.id);
@@ -32,7 +32,7 @@ export class CollectionController {
 
     return ApiResponse.success(reply, { 
       is_in_collection: !isInCollection
-    }, isInCollection ? 'Film removed from collection' : 'Film added to collection');
+    }, isInCollection ? 'Film dihapus dari koleksi' : 'Film ditambahkan ke koleksi');
   }
 
   /**
@@ -69,7 +69,7 @@ export class CollectionController {
     return ApiResponse.success(
       reply, 
       result.collections, 
-      'Collections retrieved successfully', 
+      'Koleksi berhasil diambil', 
       200, 
       result.pagination
     );

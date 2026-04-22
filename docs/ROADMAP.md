@@ -1,142 +1,147 @@
 # 🗺️ Development Roadmap
 
-Daftar fitur dan perbaikan yang akan dikembangkan untuk SI Film Archive.
+Daftar fitur dan perbaikan yang akan dikembangkan untuk PF Space.
 
 ---
 
 ## ✅ Sudah Selesai
 
-- [x] **Backend API** - Terintegrasi (Fastify + MySQL)
-- [x] **Frontend UI** - Terimplementasi (Vue 3 + Brutal Design)
-- [x] **Authentication** - Better Auth (Email/Password + Google OAuth)
-- [x] **Media Handling** - Upload & Streaming (YouTube/Local)
-- [x] **Database** - Migrations & Seeding ready
-- [x] **Voting System** - Trending films berdasarkan periode
-- [x] **Discussion System** - Nested comments (Adjacency List)
-- [x] **AI Chat** - Integrasi dengan Groq/OpenAI/Gemini
-- [x] **Collections** - Fitur bookmark/simpan film
-- [x] **Film Evaluation** - Penilaian kurator & feedback mendetail
-- [x] **Study Mode Refactor** - Split screen document viewer
-- [x] **Learning Materials List** - Improved UX for resources
+### Core Features
+
+- [x] **Backend API** — Fastify + MySQL + Objection.js
+- [x] **Frontend UI** — Vue 3 + Brutal Design System (Tailwind CSS)
+- [x] **Authentication** — Better Auth (Email/Password + Google OAuth)
+- [x] **RBAC** — Role-based access (User, Creator, Moderator, Admin)
+- [x] **Media Handling** — Hybrid (YouTube embed + Local upload via Tus.io)
+- [x] **Database** — Migrations & Seeding ready
+
+### Film System
+
+- [x] **Film Management** — Upload, edit, delete, approve/reject workflow
+- [x] **Film Evaluation** — Penilaian kurator (Naskah, Sinematografi, Editing, Produksi)
+- [x] **Film Scenes** — Struktur adegan/breakdown film
+- [x] **Study Mode** — Split-screen video player + document viewer
+- [x] **Study Notes** — Catatan pribadi dalam Study Mode
+
+### Social & Community
+
+- [x] **Voting System** — Trending films berdasarkan periode (minggu/bulan/all)
+- [x] **Discussion System** — Nested comments, Adjacency List (maks. 5 level)
+- [x] **Collections** — Bookmark/simpan film per pengguna
+- [x] **Community Forum** — Diskusi topik aktif dengan balasan
+- [x] **Notification System** — Notifikasi event-driven (komentar, evaluasi, dll.)
+
+### Admin & Moderation
+
+- [x] **Content Reports** — Pelaporan konten + antrian moderasi admin
+- [x] **Settings Management** — Konfigurasi aplikasi oleh admin
+- [x] **Admin Dashboard** — Backup/restore database, statistik sistem
+- [x] **Audit Log** — Riwayat tindakan admin (approve/reject)
+
+### Learning
+
+- [x] **Learning Materials** — Materi belajar yang dikelola kurator/moderator
+
+### AI
+
+- [x] **AI Chat** — Integrasi AI asisten (Groq/OpenAI/Gemini, pluggable)
+
+### UX & Frontend
+
+- [x] **Dashboard kreator** — Statistik, status review, dan riwayat karya
+- [x] **Alasan penolakan film** — Modal detail di MyArchive.vue
+- [x] **Panduan kurasi** — Panel standar kurasi di form upload
+- [x] **Profil pengguna & pengaturan akun** — Ganti foto, ubah password
+- [x] **Halaman 404** — NotFound.vue dengan gaya brutalist
+
+### Performance & Security (2026-04)
+
+- [x] **N+1 Query Fix** — Recursive CTE untuk penghapusan komentar bersarang
+- [x] **DB-level Pagination** — Paginasi komentar di level database
+- [x] **Fisher-Yates Shuffle** — Menggantikan `ORDER BY RAND()`
+- [x] **Static Imports** — Semua dynamic import di hot path → static
+- [x] **Promise.all** — Penghapusan file paralel menggantikan sequential loop
+- [x] **Non-blocking Exec** — `execSync` → `promisify(exec)` untuk disk check
+- [x] **CSP Header** — Content Security Policy aktif di API server
+- [x] **X-Request-ID** — Tracing header pada setiap response
+- [x] **Bahasa Indonesia** — Semua pesan error & sukses konsisten B.Indo
 
 ---
 
 ## 🚧 Dalam Pengembangan
 
-### 1. Alur & Fitur untuk Kreator
+### Notifikasi & UX
 
-- [x] **Dashboard kreator yang "hidup"**
-  - Menggunakan `Profile.vue` dan `MyArchive.vue` yang sudah terhubung dengan data asli (statistik, status review, dsb).
+- [ ] **Pusat Notifikasi** — Halaman khusus atau dropdown di navbar untuk melihat semua notifikasi
+- [ ] **Real-time Notifikasi** — WebSocket/SSE agar notifikasi muncul tanpa refresh
 
-- [x] **Alasan penolakan film**
-  - Ditambahkan tooltip dan modal detail alasan penolakan di `MyArchive.vue`.
+### Pencarian & Filter
 
-- [x] **Panduan kualitas & kriteria kurasi**
-  - Halaman/panel yang menjelaskan standar kurasi (konten, format file, resolusi, hak cipta)
-  - Muncul di sekitar form Upload/Edit
+- [ ] **Filter Lanjutan Katalog** — Filter tahun, tag tema, status arsip (saat ini: live search + filter kategori saja)
+- [ ] **Full-text Search** — Pencarian berdasarkan sinopsis, nama kru
 
----
+### AI
 
-### 2. Pengalaman Pengguna Umum
+- [ ] **Kontekstual AI Chat** — Tombol "Diskusikan film ini dengan AI" di halaman film
+- [ ] **Rate Limiting AI Chat** — Limit per user/per menit untuk endpoint `/api/chat`
 
-- [x] **Profil pengguna & pengaturan akun**
-  - Halaman "Profil saya" sudah lengkap dengan ganti foto, ubah kata sandi, dsb.
+### Security & Monitoring
 
-- [ ] **Notifikasi yang lebih jelas**
-  - Pusat notifikasi di navbar atau halaman khusus
-  - Contoh: "Film X disetujui", "Film Y ditolak", "Ada balasan di komentar Anda"
+- [ ] **Redis Rate Limiting** — Migrasi `viewStore` in-memory ke Redis untuk rate limiting terdistribusi
+- [ ] **Per-route Rate Limit** — Implementasi menyeluruh pada endpoint spam-prone (discussion, vote, chat)
 
-- [ ] **Pencarian & filter lanjutan di katalog**
-  - Sudah ada: live search, filter kategori
-  - Ditambah: filter tahun, durasi, status arsip, tag tema
+### Testing & CI/CD
 
-- [x] **Halaman 404 khusus**
-  - Telah diimplementasikan dengan `NotFound.vue` dengan gaya brutalist penuh.
+- [ ] **Unit Test Frontend** — `useVoting`, `useToast`, `useAuth`
+- [ ] **Integration Test** — Alur upload/edit film end-to-end
+- [ ] **E2E Testing** — Cypress atau Playwright
+- [ ] **CI/CD Pipeline** — GitHub Actions: lint → build → migrate → test
 
----
+### Aksesibilitas & SEO
 
-### 3. Admin & Moderasi
-
-- [ ] **Pelaporan konten oleh user**
-  - Mekanisme "Laporkan komentar/film ini" dari sisi user
-  - Admin mendapat queue laporan
-
-- [ ] **Audit log / riwayat tindakan admin**
-  - Catatan kapan film di-approve/reject oleh admin mana
-  - Penting untuk jejak kurasi
-
-- [ ] **Ekspor data**
-  - Export CSV/JSON daftar film dengan jumlah vote/komentar
-  - Untuk research/kurasi
-
----
-
-### 4. AI Chat & Fitur Pintar
-
-- [ ] **Integrasi AI Chat yang lebih dalam konteks**
-  - CTA kontekstual: tombol "Diskusikan film ini dengan AI" di halaman film
-  - Mode "asisten kurasi": bantu admin memilih film untuk diarsipkan
-
-- [ ] **Batasan & proteksi spam**
-  - Rate limiting khusus endpoint `/api/chat`
-  - Limit per user / per menit
-
----
-
-### 5. Aspek Teknis & Kualitas Kode
-
-- [ ] **Testing**
-  - Unit test untuk: `useVoting`, `useToast`, `useAuth`
-  - Integration test untuk alur upload/edit film
-  - E2E testing
-
-- [ ] **CI/CD**
-  - Setup GitHub Actions / GitLab CI
-  - Pipeline: lint, build frontend, migration, test backend
-
-- [ ] **Validasi & error handling global**
-  - Interceptor API di `api.js` untuk:
-    - Auto-handle 401 (redirect ke login)
-    - Pesan error fallback yang konsisten
-
-- [ ] **Aksesibilitas & SEO**
-  - Alt text poster yang lebih deskriptif
-  - Fokus state tombol/link untuk keyboard user
-  - Meta tags tambahan per halaman
+- [ ] **Alt text poster** — Lebih deskriptif dan kontekstual
+- [ ] **Keyboard navigation** — Fokus state tombol/link untuk keyboard user
+- [ ] **Meta tags per halaman** — OGP dan Twitter Card yang lengkap
 
 ---
 
 ## 📅 Prioritas
 
-### Phase 1 (High Priority) ✅ SELESAI
+### Phase 1 ✅ SELESAI
 
 1. ~~Dashboard kreator dengan data real~~
 2. ~~Profil pengguna & pengaturan akun~~
 3. ~~Alasan penolakan film~~
 4. ~~Halaman 404~~
+5. ~~Evaluasi film~~
+6. ~~Study Mode~~
+7. ~~Notifications~~
+8. ~~Content reports~~
+9. ~~Backend optimization (N+1, static imports, CSP, dll.)~~
 
-### Phase 2 (Medium Priority)
+### Phase 2 (Medium Priority) — Aktif
 
-1. Mode Festival (Sedang Dikerjakan)
-2. Notifikasi sistem
-3. Pelaporan konten
-4. Filter lanjutan katalog
-5. Rate limiting AI Chat
+1. Pusat Notifikasi (UI)
+2. Filter lanjutan katalog
+3. Per-route Rate Limiting (Redis)
+4. Rate Limiting AI Chat
 
-### Phase 3 (Low Priority)
+### Phase 3 (Low Priority) — Backlog
 
-1. Audit log admin
-2. Ekspor data
+1. Real-time Notifikasi (WebSocket)
+2. Kontekstual AI Chat
 3. Testing & CI/CD
-4. Aksesibilitas
+4. Aksesibilitas & SEO
 
 ---
 
 ## 💡 Ide Fitur Masa Depan
 
-- **Film Series/Playlist** - Grup film berdasarkan seri atau tema
-- **Review System** - Rating dan review detail dari pengguna
-- **Analytics Dashboard** - Dashboard analitik untuk admin
-- **Multi-language** - Dukungan bahasa Indonesia & English
-- **Dark Mode Toggle** - Pilihan tema gelap/terang
-- **PWA Support** - Progressive Web App untuk akses offline
+- **Film Series/Playlist** — Grup film berdasarkan seri atau tema
+- **Review System** — Rating dan review detail dari pengguna
+- **Analytics Dashboard** — Dashboard analitik untuk admin (grafik, tren)
+- **Multi-language** — Dukungan i18n Bahasa Indonesia & English
+- **Dark Mode Toggle** — Pilihan tema gelap/terang
+- **PWA Support** — Progressive Web App untuk akses offline
+- **Ekspor Data** — Export CSV/JSON daftar film dengan statistik
+- **Festival Mode** — Mode khusus untuk event pemutaran/festival film

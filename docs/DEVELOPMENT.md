@@ -1,6 +1,6 @@
 # 🛠️ Development Guide
 
-Panduan lengkap untuk setup dan development SI Film Archive.
+Panduan lengkap untuk setup dan development PF Space.
 
 ---
 
@@ -8,8 +8,7 @@ Panduan lengkap untuk setup dan development SI Film Archive.
 
 - **Node.js** v18+
 - **MySQL** 8.0+
-- **pnpm** (untuk frontend)
-- **npm** (untuk backend)
+- **npm** (untuk backend & frontend)
 
 ---
 
@@ -19,7 +18,7 @@ Panduan lengkap untuk setup dan development SI Film Archive.
 
 ```bash
 git clone <repository-url>
-cd si-film-archive
+cd pf-space
 ```
 
 ### 2. Setup Backend
@@ -48,7 +47,7 @@ DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=your_password
-DB_NAME=si_film_archive
+DB_NAME=pf_space
 
 # Authentication
 BETTER_AUTH_SECRET=your-secret-key-min-32-chars-long
@@ -56,13 +55,16 @@ BETTER_AUTH_URL=http://localhost:3000
 
 # Frontend URL (untuk CORS)
 FRONTEND_URL=http://localhost:5173
+
+# Trust proxy (set true jika di belakang Nginx)
+TRUST_PROXY=false
 ```
 
 ### 3. Setup Database
 
 ```bash
 # Buat database MySQL
-mysql -u root -p -e "CREATE DATABASE si_film_archive"
+mysql -u root -p -e "CREATE DATABASE pf_space"
 
 # Jalankan migration
 npm run migrate
@@ -82,10 +84,10 @@ Server berjalan di `http://localhost:3000`
 ### 5. Setup Frontend
 
 ```bash
-cd si-film-archive
+cd ../frontend
 
 # Install dependencies
-pnpm install
+npm install
 
 # Copy environment file
 cp .env.example .env
@@ -100,7 +102,7 @@ VITE_API_URL=http://localhost:3000
 ### 6. Jalankan Frontend
 
 ```bash
-pnpm dev
+npm run dev
 ```
 
 Aplikasi berjalan di `http://localhost:5173`
@@ -113,7 +115,7 @@ Aplikasi berjalan di `http://localhost:5173`
 
 1. Buka [Google Cloud Console](https://console.cloud.google.com/)
 2. Klik **Select a project** → **New Project**
-3. Isi nama project: `SI Film Archive`
+3. Isi nama project: `PF Space`
 4. Klik **Create**
 
 ### Step 2: Enable API
@@ -126,7 +128,7 @@ Aplikasi berjalan di `http://localhost:5173`
 1. Pilih **APIs & Services** → **OAuth consent screen**
 2. Pilih **External** → **Create**
 3. Isi:
-   - App name: `SI Film Archive`
+   - App name: `PF Space`
    - User support email: email kamu
    - Developer contact: email kamu
 4. Scopes: tambahkan `email`, `profile`, `openid`
@@ -138,7 +140,7 @@ Aplikasi berjalan di `http://localhost:5173`
 2. Klik **+ Create Credentials** → **OAuth client ID**
 3. Application type: **Web application**
 4. Isi:
-   - Name: `SI Film Archive Web Client`
+   - Name: `PF Space Web Client`
    - Authorized JavaScript origins:
      ```
      http://localhost:3000
@@ -204,43 +206,66 @@ node scripts/make-admin.js email@example.com
 
 ### Backend
 
-| Command                    | Deskripsi                         |
-| -------------------------- | --------------------------------- |
-| `npm run dev`              | Development server dengan nodemon |
-| `npm start`                | Production server                 |
-| `npm run migrate`          | Jalankan database migrations      |
-| `npm run migrate:rollback` | Rollback migration terakhir       |
-| `npm run seed`             | Jalankan database seeds           |
+| Command | Deskripsi |
+| --- | --- |
+| `npm run dev` | Development server dengan nodemon |
+| `npm start` | Production server |
+| `npm run migrate` | Jalankan database migrations |
+| `npm run migrate:rollback` | Rollback migration terakhir |
+| `npm run seed` | Jalankan database seeds |
+| `npm test` | Jalankan unit tests |
 
 ### Frontend
 
-| Command        | Deskripsi                |
-| -------------- | ------------------------ |
-| `pnpm dev`     | Development server       |
-| `pnpm build`   | Build untuk production   |
-| `pnpm preview` | Preview production build |
+| Command | Deskripsi |
+| --- | --- |
+| `npm run dev` | Development server |
+| `npm run build` | Build untuk production |
+| `npm run preview` | Preview production build |
 
 ---
 
 ## 📁 Project Structure
 
 ```
-si-film-archive/
+pf-space/
 ├── backend/                    # Backend API (Fastify)
 │   ├── src/
-│   │   ├── controllers/        # Request handlers
+│   │   ├── controllers/        # Request handlers (18 controllers)
+│   │   │   ├── film.controller.js
+│   │   │   ├── auth.controller.js
+│   │   │   ├── discussion.controller.js
+│   │   │   ├── community.controller.js
+│   │   │   ├── vote.controller.js
+│   │   │   ├── evaluation.controller.js
+│   │   │   ├── learningMaterial.controller.js
+│   │   │   ├── notification.controller.js
+│   │   │   ├── report.controller.js
+│   │   │   ├── collection.controller.js
+│   │   │   ├── chat.controller.js
+│   │   │   ├── filmScene.controller.js
+│   │   │   ├── studyNote.controller.js
+│   │   │   ├── setting.controller.js
+│   │   │   ├── category.controller.js
+│   │   │   ├── user.controller.js
+│   │   │   └── admin.controller.js
 │   │   ├── services/           # Business logic
 │   │   ├── models/             # Objection.js models
-│   │   ├── routes/             # Route definitions
-│   │   ├── middlewares/        # Auth, validation
+│   │   ├── routes/             # Route definitions (21 route files)
+│   │   ├── middlewares/        # Auth, validateRequest (Zod)
 │   │   ├── lib/                # Utilities
-│   │   │   └── ai/             # AI providers
+│   │   │   ├── ai/             # AI providers (Groq/OpenAI/Gemini)
+│   │   │   ├── upload.js       # Tus.io upload handler (async exec)
+│   │   │   ├── sanitize.js     # XSS sanitization
+│   │   │   ├── response.js     # ApiResponse helper
+│   │   │   ├── errors.js       # Custom error classes
+│   │   │   └── audit.js        # Audit log helper
 │   │   └── database/           # Migrations & seeds
-│   ├── scripts/                # Utility scripts
-│   ├── tests/                  # API tests
-│   └── uploads/                # Uploaded files
+│   ├── scripts/                # Utility scripts (make-admin.js)
+│   ├── tests/                  # Unit & integration tests
+│   └── uploads/                # Uploaded files (gitignored)
 │
-├── si-film-archive/            # Frontend (Vue 3)
+├── frontend/                   # Frontend (Vue 3)
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
 │   │   ├── pages/              # Application views
@@ -249,22 +274,89 @@ si-film-archive/
 │   │   └── router/             # Vue Router config
 │   └── public/                 # Static assets
 │
+├── deploy/                     # Deployment scripts & configs
+│   ├── setup.sh                # Server setup (one-time)
+│   ├── deploy.sh               # Deploy/update script
+│   ├── pf-space.nginx.conf     # Nginx config template
+│   └── DEPLOYMENT_GUIDE.md     # Deployment docs
+│
 ├── docs/                       # Project documentation
 │   ├── README.md               # Documentation index
 │   ├── API_REFERENCE.md        # API endpoints docs
-│   ├── DATABASE.md             # Database schema
 │   ├── API_STANDARDS.md        # Response standards
+│   ├── DATABASE.md             # Database schema
 │   ├── DEVELOPMENT.md          # This file
-│   └── ROADMAP.md              # Feature roadmap
+│   ├── UPLOAD_SYSTEM.md        # Upload system docs
+│   ├── CHANGELOG.md            # Version history
+│   ├── ROADMAP.md              # Feature roadmap
+│   ├── CONTRIBUTING.md         # Contribution guide
+│   └── TESTING_GUIDE.md        # Testing guide
 │
 └── README.md                   # Main project README
 ```
 
 ---
 
+## 🏗️ Arsitektur Backend
+
+### Pattern MSC (Model-Service-Controller)
+
+```
+Request → Route → Middleware (Auth/Validate) → Controller → Service → Model → DB
+```
+
+### Konvensi Penamaan
+
+Semua fungsi controller mengikuti standar REST CRUD:
+
+| Operasi | Nama Fungsi |
+| --- | --- |
+| Ambil semua | `getAll` |
+| Ambil by ID | `getById` |
+| Buat baru | `create` |
+| Update | `update` |
+| Hapus | `delete` |
+
+Pengecualian yang diizinkan karena konteks bisnis yang unik:
+- `getActiveDiscussion`, `toggleDiscussion`, `getReplies`, `addReply`, `getByFilm`, `getMyCollections`, `getStats`, dsb.
+
+### Validasi Request
+
+Menggunakan **Zod** dengan middleware `validateRequest`:
+
+```javascript
+import { validateRequest } from '../middlewares/index.js';
+import { createFilmSchema } from '../middlewares/schemas/film.schema.js';
+
+fastify.post('/films', {
+  preHandler: [authenticate, validateRequest(createFilmSchema)]
+}, filmController.create.bind(filmController));
+```
+
+### Response Format
+
+Semua response menggunakan `ApiResponse` helper yang **konsisten dalam Bahasa Indonesia**:
+
+```javascript
+import { ApiResponse } from '../lib/response.js';
+
+return ApiResponse.success(reply, data, 'Data berhasil diambil');
+return ApiResponse.notFound(reply, 'Film tidak ditemukan');
+return ApiResponse.error(reply, 'Anda tidak memiliki izin', 403);
+```
+
+---
+
 ## 🧪 Testing
 
-### Backend API Test
+### Backend Unit Test
+
+```bash
+cd backend
+npm test
+```
+
+### Backend API Test (PowerShell)
 
 ```bash
 cd backend
@@ -287,12 +379,15 @@ Error: Knex: Timeout acquiring a connection. The pool is probably full.
 
 **Solusi:** Pastikan `FRONTEND_URL` di `.env` backend sesuai dengan URL frontend.
 
-### Google OAuth Error
+### Google OAuth `state_mismatch`
 
 **Solusi:**
+1. Pastikan `TRUST_PROXY=true` jika di belakang reverse proxy
+2. Pastikan `BETTER_AUTH_URL` menggunakan domain yang sama dengan frontend
 
-1. Pastikan redirect URI sudah benar
-2. Pastikan app sudah di-publish atau email sudah ditambahkan sebagai test user
+### Upload Gagal
+
+**Solusi:** Periksa konfigurasi `client_max_body_size` di Nginx (minimal 512m untuk video).
 
 ---
 

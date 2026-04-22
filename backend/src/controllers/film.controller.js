@@ -5,7 +5,7 @@
  * editing, deletion, and approval workflows.
  */
 
-import { filmService } from '../services/index.js';
+import { filmService, notificationService, gamificationService } from '../services/index.js';
 import { ApiResponse } from '../lib/response.js';
 import { ROLES, FILM_STATUS } from '../config/constants.js';
 import { NotFoundError } from '../lib/errors.js';
@@ -45,7 +45,7 @@ export class FilmController {
     return ApiResponse.success(
       reply, 
       result.films, 
-      'Films retrieved successfully', 
+      'Film berhasil diambil', 
       200, 
       result.pagination
     );
@@ -66,13 +66,13 @@ export class FilmController {
       : await filmService.getBySlug(id);
 
     if (!film) {
-      throw new NotFoundError('Film not found');
+      throw new NotFoundError('Film tidak ditemukan');
     }
 
     // Only show published films to public, or own films to creator
     if (film.status !== FILM_STATUS.PUBLISHED) {
       if (!request.user || (request.user.id !== film.user_id && request.user.role_id !== ROLES.ADMIN)) {
-        throw new NotFoundError('Film not found');
+        throw new NotFoundError('Film tidak ditemukan');
       }
     }
 
@@ -163,7 +163,7 @@ export class FilmController {
       status: FILM_STATUS.PENDING
     });
 
-    return ApiResponse.success(reply, film, 'Film created successfully. Waiting for admin approval.', 201);
+    return ApiResponse.success(reply, film, 'Film berhasil dibuat. Menunggu persetujuan admin.', 201);
   }
 
   /**
@@ -176,12 +176,12 @@ export class FilmController {
     const film = await filmService.getById(id);
 
     if (!film) {
-      throw new NotFoundError('Film not found');
+      throw new NotFoundError('Film tidak ditemukan');
     }
 
     // Only creator or admin can update
     if (film.user_id !== request.user.id && request.user.role_id !== ROLES.ADMIN) {
-      return ApiResponse.error(reply, 'You can only update your own films', 403);
+      return ApiResponse.error(reply, 'Anda hanya dapat memperbarui film milik Anda', 403);
     }
 
     const updateData = filmService.normalizeData(request.body);
@@ -193,7 +193,7 @@ export class FilmController {
     }
 
     const updated = await filmService.update(id, updateData);
-    return ApiResponse.success(reply, updated, 'Film updated successfully');
+    return ApiResponse.success(reply, updated, 'Film berhasil diperbarui');
   }
 
   /**
@@ -206,12 +206,12 @@ export class FilmController {
     const film = await filmService.getById(id);
 
     if (!film) {
-      throw new NotFoundError('Film not found');
+      throw new NotFoundError('Film tidak ditemukan');
     }
 
     // Only creator or admin can delete
     if (film.user_id !== request.user.id && request.user.role_id !== ROLES.ADMIN) {
-      return ApiResponse.error(reply, 'You can only delete your own films', 403);
+      return ApiResponse.error(reply, 'Anda hanya dapat menghapus film milik Anda', 403);
     }
 
     await filmService.delete(id);
@@ -228,7 +228,7 @@ export class FilmController {
       });
     }
 
-    return ApiResponse.success(reply, null, 'Film deleted successfully');
+    return ApiResponse.success(reply, null, 'Film berhasil dihapus');
   }
 
   /**
@@ -249,7 +249,7 @@ export class FilmController {
     return ApiResponse.success(
       reply, 
       result.films, 
-      'My films retrieved successfully', 
+      'Film Anda berhasil diambil', 
       200, 
       result.pagination
     );
@@ -261,7 +261,6 @@ export class FilmController {
    * @param {import('fastify').FastifyReply} reply
    */
   async getStats(request, reply) {
-    const { gamificationService } = await import('../services/index.js');
     const stats = await filmService.getUserStats(request.user.id);
     const badges = await gamificationService.getUserBadges(request.user.id, stats);
     
@@ -291,13 +290,12 @@ export class FilmController {
     const film = await filmService.getById(id);
 
     if (!film) {
-      throw new NotFoundError('Film not found');
+      throw new NotFoundError('Film tidak ditemukan');
     }
 
     const updated = await filmService.updateStatus(id, FILM_STATUS.PUBLISHED, { rejection_reason: null });
     
     // Notify Creator
-    const { notificationService } = await import('../services/index.js');
     await notificationService.create({
       user_id: film.user_id,
       type: 'approval',
@@ -316,7 +314,7 @@ export class FilmController {
       ipAddress: request.ip
     });
 
-    return ApiResponse.success(reply, updated, 'Film approved and published');
+    return ApiResponse.success(reply, updated, 'Film disetujui dan dipublikasikan');
   }
 
   /**
@@ -330,7 +328,7 @@ export class FilmController {
     const film = await filmService.getById(id);
 
     if (!film) {
-      throw new NotFoundError('Film not found');
+      throw new NotFoundError('Film tidak ditemukan');
     }
 
     const updated = await filmService.updateStatus(id, FILM_STATUS.REJECTED, {
@@ -338,7 +336,6 @@ export class FilmController {
     });
 
     // Notify Creator
-    const { notificationService } = await import('../services/index.js');
     await notificationService.create({
       user_id: film.user_id,
       type: 'rejection',
@@ -357,7 +354,7 @@ export class FilmController {
       ipAddress: request.ip
     });
 
-    return ApiResponse.success(reply, updated, 'Film rejected');
+    return ApiResponse.success(reply, updated, 'Film ditolak');
   }
 }
 

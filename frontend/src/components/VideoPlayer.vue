@@ -209,7 +209,7 @@ const triggerIndicator = (dir) => {
     <!-- DRM Auto-Watermark Overlay -->
     <div class="absolute inset-0 pointer-events-none overflow-hidden z-[50]" v-if="user && !failed">
       <div class="absolute bottom-6 right-8 text-white/30 font-mono font-bold text-[10px] md:text-sm tracking-widest text-shadow-sm whitespace-nowrap">
-        {{ user.email || user.username || 'System' }} • SI Film Archive
+        {{ user.email || user.username || 'System' }} • PF Space
       </div>
     </div>
     

@@ -1,6 +1,6 @@
 import { ref, readonly } from 'vue'
 import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
+// CSS NProgress di-import terpusat di style.css
 
 // Configure NProgress with custom settings
 NProgress.configure({ showSpinner: false, minimum: 0.1, speed: 400 });

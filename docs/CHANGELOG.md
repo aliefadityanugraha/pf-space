@@ -1,161 +1,152 @@
 # Changelog
 
-All notable changes to PF Space project will be documented in this file.
-
-## [Unreleased]
-
-### Optimized
-
-- **Backend Performance**: 
-  - Refaktor N+1 Query pada loop `getCommentDepth` dengan menggunakan Recursive CTE di database
-  - Refaktor sistem pengecekan *badges* (Gamification) menjadi asinkron paralel (`Promise.all`) dengan pemotongan waktu respon signifikan
-  - Perbaikan query ganda untuk pengecekan notifikasi `parent_author` pada saat penambahan komentar
-  - Urutkan `getTrending` secara native di database (`ORDER BY FIELD`) ketimbang di memori Node.js
-  - Pembatasan fetching di frontend dari 100 limit menjadi 30 film pada saat load pertama (Time-to-Interactive lebih cepat)
-  - Memory leak prevention pada *Semantic Search*: penambahan `scan limit` agar data embedding berukuran besar tidak meluap ke RAM (Mencegah OOM)
-
-### Fixed
-
-- **System Reliability**:
-  - Pool database `knexfile` diubah untuk *production* dengan limit koneksi lebih banyak (max 20) dan penambahan timeout (*idleTimeout* dan *acquireTimeout*)
-  - Migrasi *deprecated* NPM library `mysqldump` dengan implementasi native CLI via `child_process`
-  - Perbaikan `uncaughtException` pada Node.js streams dengan menggunakan fallback aman agar Fastify tidak crash premature
-  - Frontend mock tes perbaikan agar tes *Vitest* / *Happy-DOM* berjalan komprehensif tanpa crash `localStorage`
-
-### Security
-
-- **Strict Rate Limiting**:
-  - Penambahan pembatasan endpoint secara spesifik (Per-Route Rate Limit)
-  - Auth Limit: `max 15 request/menit` pada API login, register, dan proxy untuk menangkal serangan *Brute-force*
-
-### Removed
-
-- Variabel JS dead code `API_BASE` pada module authentication
-- Deprecated library `mysqldump` dihapus dari build
-- Optimasi target `es2020` dan minify via esbuild dengan removal `console.log` serta `debugger` saat Production build
-
-### Added
-
-- **Centralized Validation**: Implementasi Zod schema untuk validasi request secara terpusat
-  - Middleware `validateRequest` untuk body, params, dan query
-  - Transformasi data otomatis (misal: ID dari string ke number)
-  - Penanganan error validasi yang konsisten
-
-- **Unit Testing**: Suite pengetesan komprehensif untuk backend
-  - Tests untuk `FilmService.normalizeData` (crew cleaning & sanitization)
-  - Tests untuk `Validation Middleware` (Zod integration)
-  - Tests untuk `Sanitization Utility` (XSS prevention)
-
-### Changed
-
-- **Refactoring Controller**: Pembersihan logika bisnis dari controller ke service layer
-  - `FilmController` sekarang lebih ramping (Thin Controller)
-  - Pembersihan data `crew` dipindahkan ke `FilmService.normalizeData`
-  - Sanitasi HTML dipindahkan ke service layer untuk konsistensi
-
-- **FilmScene Management**: Refactor `FilmSceneController` menggunakan centralized validation
-  - Penghapusan manual `parseInt` dan `isNaN` checks
-  - Proteksi rute yang lebih ketat dengan Zod
-
-### Fixed
-
-- **Data Consistency**: Penanganan field `crew` yang lebih aman dari input yang tidak valid
-- **Security**: Sanitasi HTML yang lebih merata di seluruh operasi create/update film
-- **Error Handling**: Standardisasi pesan error untuk kegagalan validasi dan otorisasi
-
-### Optimized
-
-- **Code Reuse**: Ekstraksi logika pembersihan data ke service layer mencegah duplikasi kode antara create dan update.
-
-- **Draft System**: Auto-save form data ke localStorage untuk mencegah kehilangan data
-  - Composable `useFilmDraft` untuk mengelola draft
-  - Auto-save setiap 3 detik saat form diisi
-  - Draft banner untuk restore atau discard draft
-  - Draft expiry setelah 7 hari
-  - Visual indicator untuk draft tersimpan
-
-- **Resumable Upload**: Implementasi Tus.io protocol untuk upload yang dapat dilanjutkan
-  - Support resume upload setelah koneksi terputus
-  - Progress tracking dengan visual progress bar
-  - Retry mechanism dengan exponential backoff
-  - Support file hingga 1GB untuk video
-
-- **Documentation**: Dokumentasi lengkap untuk developer
-  - `docs/PROJECT_STRUCTURE.md` - Struktur project dan arsitektur
-  - `docs/UPLOAD_SYSTEM.md` - Sistem upload dan draft management
-  - `docs/CLEANUP_GUIDE.md` - Panduan maintenance dan cleanup
-  - `docs/TESTING_GUIDE.md` - Panduan testing lengkap
-  - `QUICK_START.md` - Quick start guide untuk setup project
-  - `CONTRIBUTING.md` - Panduan kontribusi untuk developer
-  - `PROJECT_OVERVIEW.md` - Overview lengkap project
-  - `CODE_CLEANUP_REPORT.md` - Laporan cleanup backend
-  - `FRONTEND_CLEANUP_REPORT.md` - Laporan cleanup frontend
-
-- **Testing**: Unit tests untuk composable
-  - Tests untuk `useFilmDraft` composable
-  - Coverage untuk save, load, clear, dan expire draft
-
-### Changed
-
-- **FilmForm Component**: Enhanced dengan draft management
-  - Integrasi dengan `useFilmDraft` composable
-  - Draft banner notification
-  - Auto-save functionality
-  - Clear draft setelah submit berhasil
-
-### Removed
-
-- **Unused Components**: Cleanup frontend components
-  - Removed `DashboardHero.vue` (tidak digunakan)
-  - Removed `DashboardSection.vue` (tidak digunakan)
-  - Removed `CuratedFilmCard.vue` (tidak digunakan)
-  - Removed `UserProfileCard.vue` (tidak digunakan)
-- **Unused Functions**: Cleanup utility functions
-  - Removed `formatYear()` dari `lib/format.js` (tidak digunakan)
-
-### Fixed
-
-- Upload flow yang lebih robust dengan error handling
-- Validasi file type dan size sebelum upload
-- Memory leak prevention dengan cleanup di onUnmounted
-- Template structure di FilmForm.vue (missing/invalid closing tags)
-
-### Optimized
-
-- Removed unnecessary console.log dari upload progress
-- Simplified progress callback untuk non-video files
-- Reduced bundle size dengan menghapus unused code (~175 lines)
-
-## [1.0.0] - 2024-12-30
-
-### Initial Release
-
-- Backend API dengan Fastify
-- Frontend dengan Vue 3
-- Authentication dengan Better Auth
-- Film management system
-- Discussion system
-- Voting system
-- Collections/bookmark feature
-- AI chat integration
-- Admin dashboard
-- Role-based access control
+Semua perubahan penting pada project PF Space didokumentasikan di sini.
 
 ---
 
-## Version Format
+## [Unreleased] — 2026-04-18
+
+### ✅ Added
+
+- **Film Scenes**: Endpoint & controller `filmScene` untuk struktur adegan/breakdown film.
+- **Study Notes**: Endpoint & controller `studyNote` untuk catatan pribadi dalam Study Mode.
+- **Learning Materials**: Endpoint & controller `learningMaterial` untuk materi belajar yang dikelola kurator.
+- **Content Reports**: Endpoint & controller `report` untuk pelaporan konten dan antrian moderasi admin.
+- **Settings Management**: Endpoint & controller `setting` untuk konfigurasi aplikasi oleh admin.
+- **Community Forum**: Endpoint & controller `community` untuk diskusi topik aktif dengan sistem balasan.
+- **Notifications**: Endpoint & controller `notification` untuk sistem notifikasi event-driven.
+- **X-Request-ID Header**: Tracing ID pada setiap response untuk memudahkan debugging di production.
+- **Content Security Policy (CSP)**: Header CSP restriktif diaktifkan kembali untuk API server.
+
+### ⚡ Optimized (Backend Performance)
+
+- **N+1 Query Fix**: Penghapusan komentar bersarang di `DiscussionService.delete` menggunakan **Recursive CTE** (satu round-trip) menggantikan rekursi N+1.
+- **DB-level Pagination**: `DiscussionService.getByFilm` menggunakan paginasi di level database (3 parallel queries) menggantikan in-memory loading.
+- **Fisher-Yates Shuffle**: `FilmService.getRandom` menggantikan `ORDER BY RAND()` (full table scan) dengan shuffle di level aplikasi.
+- **Static Imports**: Semua `await import()` dinamis di hot path controller dipindahkan menjadi static import di atas file.
+- **Promise.all Parallelization**: Penghapusan file di `FilmService.delete` menggunakan `Promise.all` menggantikan sequential loop.
+- **Non-blocking Exec**: `getDiskSpaceForPath` di `upload.js` menggunakan `promisify(exec)` menggantikan `execSync` yang memblokir event loop.
+- **Reply Limit Guard**: `CommunityService.getReplies` diberi `.limit(100)` untuk mencegah pembebanan memori.
+
+### 🔒 Security
+
+- **Per-Route Rate Limiting**: Panduan & implementasi rate limit menggunakan `config.rateLimit` pada endpoint sensitif (auth, discussion, votes).
+- **CSP Header**: Content Security Policy dengan konfigurasi `default-src 'none'` untuk API server.
+
+### 🏷️ Refactored (Naming Consistency)
+
+Semua fungsi controller distandarisasi mengikuti konvensi REST CRUD:
+
+| Controller | Lama | Baru |
+| --- | --- | --- |
+| `discussion` | `getOne` | `getById` |
+| `community` | `getOne` | `getById` |
+| `community` | `getAllDiscussions` | `getAll` |
+| `community` | `createDiscussion` | `create` |
+| `community` | `updateDiscussion` | `update` |
+| `community` | `deleteDiscussion` | `delete` |
+| `community` | `getDiscussionReplies` | `getReplies` |
+| `notification` | `getNotifications` | `getAll` |
+| `notification` | `createNotification` | `create` |
+
+Route files diperbarui mengikuti rename di atas.
+
+### 🌐 Language Consistency (Bahasa Indonesia)
+
+Semua pesan user-facing (error, notFound, success) di seluruh 15 controller distandarisasi ke **Bahasa Indonesia**:
+
+- `film`, `discussion`, `community`, `vote`, `auth`, `notification`
+- `category`, `collection`, `evaluation`, `learningMaterial`
+- `chat`, `report`, `setting`, `user`, `filmScene`
+
+Contoh: `'Film not found'` → `'Film tidak ditemukan'`, `'You can only edit your own comments'` → `'Anda hanya dapat mengedit komentar Anda sendiri'`
+
+### 🐛 Fixed
+
+- **Double Import**: `vote.controller` memiliki 2 baris import terpisah untuk `voteService` dan `filmService`, digabung menjadi 1.
+- **Dynamic Import in Hot Path**: `discussion.controller.create` dan `community.controller.addReply` masih menggunakan `await import()` untuk `notificationService` di dalam handler — dipindahkan ke static import.
+- **Orphaned Brace**: `community.controller.addReply` kehilangan `if`-guard kondisi notifikasi akibat refactor sebelumnya — dipulihkan.
+
+---
+
+## [1.1.0] — 2026-04-02
+
+### Added
+
+- **Centralized Validation**: Implementasi Zod schema untuk validasi request secara terpusat.
+  - Middleware `validateRequest` untuk body, params, dan query.
+  - Transformasi data otomatis (misal: ID dari string ke number).
+  - Penanganan error validasi yang konsisten.
+- **Unit Testing**: Suite pengetesan komprehensif untuk backend.
+  - Tests untuk `FilmService.normalizeData` (crew cleaning & sanitization).
+  - Tests untuk Validation Middleware (Zod integration).
+  - Tests untuk Sanitization Utility (XSS prevention).
+- **Draft System**: Auto-save form data ke localStorage (composable `useFilmDraft`).
+- **Resumable Upload**: Implementasi Tus.io protocol (support hingga 1 GB, resume setelah disconnect).
+
+### Changed
+
+- **Refactoring Controller**: Business logic dipindahkan dari controller ke service layer.
+  - `FilmController` menjadi Thin Controller.
+  - Pembersihan data `crew` dipindahkan ke `FilmService.normalizeData`.
+  - Sanitasi HTML dipindahkan ke service layer untuk konsistensi.
+- **FilmScene Management**: Refactor menggunakan centralized Zod validation.
+- **Frontend → npm**: Migrasi dari `pnpm` ke `npm` untuk konsistensi package manager.
+
+### Fixed
+
+- **Data Consistency**: Penanganan field `crew` yang lebih aman dari input yang tidak valid.
+- **Security**: Sanitasi HTML yang lebih merata di seluruh operasi create/update film.
+- **Error Handling**: Standardisasi pesan error untuk kegagalan validasi dan otorisasi.
+- Pool database `knexfile` untuk production dengan limit koneksi lebih banyak (max 20).
+- Migrasi deprecated library `mysqldump` dengan native CLI via `child_process`.
+
+### Optimized
+
+- **N+1 Query** pada `getCommentDepth` dengan Recursive CTE.
+- `getTrending` menggunakan `ORDER BY FIELD` native di database.
+- Memory leak prevention pada Semantic Search dengan `scan limit`.
+- Frontend initial load dikurangi dari 100 → 30 film (Time-to-Interactive lebih cepat).
+
+### Removed
+
+- `DashboardHero.vue`, `DashboardSection.vue`, `CuratedFilmCard.vue`, `UserProfileCard.vue` (tidak digunakan).
+- Variabel `API_BASE` dead code pada module authentication.
+- Library deprecated `mysqldump` dari dependencies.
+
+---
+
+## [1.0.0] — 2024-12-30
+
+### Initial Release
+
+- Backend API dengan Fastify + Objection.js + MySQL.
+- Frontend dengan Vue 3 + Tailwind CSS (Brutal Design).
+- Authentication dengan Better Auth (Email/Password + Google OAuth).
+- Film management system (upload, approve/reject workflow).
+- Discussion system (threaded nested comments, Adjacency List).
+- Voting system (trending per periode).
+- Collections / bookmark fitur.
+- AI chat integration (Groq/OpenAI/Gemini, pluggable).
+- Admin dashboard.
+- Role-based access control (User, Creator, Moderator, Admin).
+
+---
+
+## Format Versi
 
 Format: `[MAJOR.MINOR.PATCH]`
 
 - **MAJOR**: Breaking changes
-- **MINOR**: New features (backward compatible)
+- **MINOR**: Fitur baru (backward compatible)
 - **PATCH**: Bug fixes (backward compatible)
 
-## Categories
+## Kategori Perubahan
 
-- **Added**: New features
-- **Changed**: Changes in existing functionality
-- **Deprecated**: Soon-to-be removed features
-- **Removed**: Removed features
+- **Added**: Fitur baru
+- **Changed**: Perubahan pada fitur yang ada
+- **Deprecated**: Fitur yang akan segera dihapus
+- **Removed**: Fitur yang dihapus
 - **Fixed**: Bug fixes
-- **Security**: Security improvements
+- **Security**: Perbaikan keamanan
+- **Optimized**: Peningkatan performa

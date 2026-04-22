@@ -9,7 +9,7 @@
 ```
 Internet → Nginx (port 80/443) → Frontend (static /dist)
                                → Backend API (localhost:3000)
-                               → Upload endpoint (localhost:3000)
+                               → Upload endpoint (localhost:3000/api/files)
 ```
 
 Semua file script deploy ada di folder `deploy/` di root project.
@@ -38,7 +38,9 @@ chmod +x /tmp/setup.sh
 sudo bash /tmp/setup.sh
 ```
 
-Script ini otomatis menginstall: Node.js 20, PM2, Nginx, MySQL, Certbot, pnpm.
+Script ini otomatis menginstall: Node.js 20, PM2, Nginx, MySQL, Certbot.
+
+> **Catatan:** Project sekarang menggunakan **npm** (bukan pnpm). Script `setup.sh` tidak perlu menginstall pnpm.
 
 ### 1.2 Amankan MySQL
 
@@ -50,7 +52,7 @@ sudo mysql_secure_installation
 
 ```bash
 scp deploy/db-setup.sh user@IP_SERVER:/tmp/
-nano /tmp/db-setup.sh   # ganti DB_PASSWORD
+nano /tmp/db-setup.sh   # ganti DB_PASSWORD dan DB_NAME (pf_space)
 sudo bash /tmp/db-setup.sh
 ```
 
@@ -75,12 +77,14 @@ nano .env
 **Wajib diisi:**
 
 | Variable | Nilai |
-|---|---|
+| --- | --- |
+| `DB_NAME` | `pf_space` |
 | `DB_USER` | User MySQL dari tahap 1.3 |
 | `DB_PASSWORD` | Password MySQL |
 | `BETTER_AUTH_SECRET` | Random string 32+ karakter |
 | `BETTER_AUTH_URL` | `https://yourdomain.com` atau `http://IP_SERVER` |
 | `FRONTEND_URL` | Sama dengan `BETTER_AUTH_URL` |
+| `TRUST_PROXY` | `true` (wajib di belakang Nginx) |
 
 **Generate secret:**
 ```bash
@@ -109,6 +113,8 @@ sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
+**Penting:** Tambahkan `client_max_body_size 512m;` di blok server Nginx untuk mendukung upload video besar via Tus.io.
+
 ### Aktifkan HTTPS (jika punya domain)
 
 ```bash
@@ -124,7 +130,7 @@ cd /var/www/pf-space
 bash deploy/deploy.sh
 ```
 
-Akan otomatis: git pull → npm install → migrate DB → build frontend → start PM2.
+Akan otomatis: `git pull` → `npm install` → migrate DB → build frontend → start PM2.
 
 ---
 
@@ -133,6 +139,14 @@ Akan otomatis: git pull → npm install → migrate DB → build frontend → st
 Di Google Cloud Console, tambahkan authorized redirect URI:
 ```
 https://yourdomain.com/api/auth/callback/google
+```
+
+Dan pastikan `.env` backend:
+```env
+GOOGLE_CLIENT_ID=xxx
+GOOGLE_CLIENT_SECRET=xxx
+BETTER_AUTH_URL=https://yourdomain.com
+TRUST_PROXY=true
 ```
 
 ---
@@ -151,7 +165,16 @@ cd /var/www/pf-space && bash deploy/deploy.sh
 pm2 status
 pm2 logs pfspace-backend
 pm2 restart pfspace-backend
+pm2 reload pfspace-backend   # zero-downtime reload
+
 sudo tail -f /var/log/nginx/error.log
+sudo tail -f /var/log/nginx/access.log
+
+# Cek disk space
+df -h
+
+# Cek koneksi database
+mysql -u pf_space_user -p pf_space -e "SELECT 1"
 ```
 
 ---
@@ -159,22 +182,25 @@ sudo tail -f /var/log/nginx/error.log
 ## ⚠️ Troubleshooting
 
 | Masalah | Solusi |
-|---|---|
+| --- | --- |
 | `502 Bad Gateway` | Backend belum jalan — cek `pm2 logs pfspace-backend` |
 | Auth `state_mismatch` | Pastikan `TRUST_PROXY=true` di `.env` backend |
-| Cookie tidak tersimpan | `BETTER_AUTH_URL` harus pakai domain yang sama |
-| Upload gagal | `client_max_body_size` di nginx perlu diperbesar |
+| Cookie tidak tersimpan | `BETTER_AUTH_URL` harus pakai domain yang sama dengan frontend |
+| Upload file gagal | Tambah `client_max_body_size 512m;` di konfigurasi Nginx |
 | PM2 mati setelah reboot | Jalankan `pm2 startup` dan `pm2 save` |
+| Koneksi database timeout | Cek pool config di `knexfile.js`, pastikan `max: 20` untuk production |
+| X-Request-ID tidak muncul | Tambahkan `expose-headers: X-Request-ID` di header Nginx jika diperlukan frontend |
 
 ---
 
 ## 📁 File di Folder `deploy/`
 
 | File | Fungsi |
-|---|---|
+| --- | --- |
 | `setup.sh` | Install semua dependencies server (SEKALI) |
 | `db-setup.sh` | Buat database & user MySQL (SEKALI) |
 | `deploy.sh` | Deploy/update app (setiap update) |
 | `pf-space.nginx.conf` | Template konfigurasi Nginx |
 | `backend.env.production` | Template `.env` backend production |
 | `frontend.env.production` | Template `.env` frontend production |
+| `DEPLOYMENT_GUIDE.md` | File dokumentasi ini |

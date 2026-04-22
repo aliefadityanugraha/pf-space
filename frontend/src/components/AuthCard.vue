@@ -50,13 +50,13 @@ defineProps({
               <Film class="w-10 h-10 text-brand-red" />
             </div>
             <h1 class="text-5xl font-display font-black text-white leading-tight mb-4 tracking-tighter">
-              Si Film <span class="text-brand-red">Archive</span>
+              PF <span class="text-brand-red">Space</span>
             </h1>
             <div class="w-20 h-2 bg-brand-red mb-6"></div>
           </div>
           
           <p class="text-xl text-stone-200 font-body leading-relaxed max-w-md italic">
-            "Sistem Informasi Pengarsipan Film untuk mendukung pembelajaran dan apresiasi karya sinematografi."
+            "Portal sinema dan pengarsipan untuk mendukung pembelajaran dan apresiasi karya sinematografi."
           </p>
           
           <div class="mt-12 flex items-center gap-4">
@@ -108,7 +108,7 @@ defineProps({
         <!-- Bottom Footer (Mobile/Simple view) -->
         <div v-if="!split" class="p-6 text-center border-t border-stone-700/50">
           <p class="text-[10px] text-stone-500 font-body uppercase tracking-widest">
-            © {{ new Date().getFullYear() }} SI FILM ARCHIVE. All rights reserved.
+            © {{ new Date().getFullYear() }} PF SPACE. All rights reserved.
           </p>
         </div>
       </div>
