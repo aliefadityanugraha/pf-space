@@ -117,9 +117,6 @@ useHead({
               <p class="text-[10px] md:text-xs font-bold text-brand-orange uppercase tracking-widest mb-2 md:mb-3 italic">System Architecture</p>
               <p class="text-[13px] md:text-sm text-stone-600 font-body leading-relaxed">
                 Membangun fondasi teknis yang kokoh dan skalabel, menjamin keamanan serta performa tinggi dalam pengarsipan film digital.
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates, nemo molestias et, maiores accusantium enim maxime porro quam iusto doloribus, quos qui. Quam eum inventore officia rem earum repellendus aspernatur?
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur tempore architecto quis repudiandae porro iure similique unde aut, sit est voluptatum. Reiciendis mollitia voluptatem aut nobis. Provident, numquam laboriosam. Blanditiis?
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum maxime quaerat, debitis soluta non fuga ratione reprehenderit accusamus. Dolore recusandae ut ea fuga nam autem magni optio soluta laborum molestiae?
               </p>
             </div>
 
