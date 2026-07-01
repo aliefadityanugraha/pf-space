@@ -239,8 +239,6 @@ export class DiscussionService {
    * @returns {Promise<number>} Depth level (1 based)
    */
   async getCommentDepth(id) {
-    // Use a single Recursive CTE query instead of a loop of N queries
-    const { knex } = await import('../database/index.js');
     const result = await knex.raw(`
       WITH RECURSIVE ancestors AS (
         SELECT diskusi_id, parent_id, 1 AS depth

@@ -8,6 +8,7 @@
 import 'dotenv/config';
 import crypto from 'crypto';
 import { validateEnv } from './config/env.js';
+import { parseAllowedOrigins } from './config/constants.js';
 
 // Validate environment variables before anything else
 validateEnv();
@@ -93,10 +94,7 @@ await fastify.register(rateLimit, {
   })
 });
 
-// Parse allowed CORS origins from env
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-  : [process.env.FRONTEND_URL || 'http://localhost:5173'];
+const allowedOrigins = parseAllowedOrigins();
 
 await fastify.register(cors, {
   origin: (origin, cb) => {

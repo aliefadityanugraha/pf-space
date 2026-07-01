@@ -150,11 +150,6 @@ export class CommunityController {
     const { id } = request.params;
     const { content } = request.body;
 
-    // Validate content
-    if (!content || !content.trim()) {
-      return ApiResponse.badRequest(reply, 'Konten tidak boleh kosong');
-    }
-
     // Check if discussion exists and is active
     const discussion = await communityService.getActiveDiscussion();
     if (!discussion || discussion.discussion_id !== parseInt(id)) {

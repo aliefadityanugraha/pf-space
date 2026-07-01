@@ -1,5 +1,6 @@
 <script setup>
 import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Film } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 

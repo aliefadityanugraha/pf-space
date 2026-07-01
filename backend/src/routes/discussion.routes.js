@@ -1,6 +1,6 @@
 import { discussionController } from '../controllers/index.js';
-import { authenticate, requireModerator } from '../middlewares/index.js';
-import { createCommentSchema, updateCommentSchema } from '../schemas/discussion.schema.js';
+import { authenticate, requireModerator, validateRequest } from '../middlewares/index.js';
+import { commentSchema } from '../lib/validation.js';
 
 /**
  * Register discussion routes
@@ -23,14 +23,12 @@ export default async function discussionRoutes(fastify) {
 
   // User: Post a new comment or reply
   fastify.post('/film/:filmId', {
-    preHandler: authenticate,
-    schema: createCommentSchema
+    preHandler: [authenticate, validateRequest(commentSchema, 'body')]
   }, discussionController.create.bind(discussionController));
 
   // User: Edit own comment content
   fastify.put('/:id', {
-    preHandler: authenticate,
-    schema: updateCommentSchema
+    preHandler: [authenticate, validateRequest(commentSchema, 'body')]
   }, discussionController.update.bind(discussionController));
 
   // User/Admin/Moderator: Delete a comment

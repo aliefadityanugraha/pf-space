@@ -3,6 +3,7 @@ import { useAuth, _resetAuthState } from '../useAuth';
 
 // Mock authApi
 vi.mock('@/lib/api', () => ({
+  BASE_URL: 'http://localhost:3000',
   authApi: {
     getProfile: vi.fn(),
     login: vi.fn(),

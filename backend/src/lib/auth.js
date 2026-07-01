@@ -8,6 +8,7 @@
 import { betterAuth } from 'better-auth';
 import { Kysely, MysqlDialect } from 'kysely';
 import { createPool } from 'mysql2';
+import crypto from 'crypto';
 
 // Create Kysely instance for Better Auth
 const db = new Kysely({

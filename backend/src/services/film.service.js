@@ -7,7 +7,7 @@
 
 import { Film, BaseModel, Vote, Discussion } from "../models/index.js";
 import { deleteFile } from "../lib/upload.js";
-import { FILM_STATUS, PAGINATION } from "../config/constants.js";
+import { FILM_STATUS, PAGINATION, parsePagination, buildPagination } from "../config/constants.js";
 import { embeddingService } from "./embedding.service.js";
 import { sanitizeRichText, sanitizePlainText } from "../lib/sanitize.js";
 

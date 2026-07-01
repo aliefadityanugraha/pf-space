@@ -195,9 +195,14 @@ export function useAuth() {
   };
 }
 
-// For testing purposes only
+/**
+ * @internal — ONLY for testing. Resets module-level state between tests.
+ */
 export function _resetAuthState() {
   user.value = null;
+  loading.value = false;
   initialized.value = false;
   initPromise = null;
 }
+
+

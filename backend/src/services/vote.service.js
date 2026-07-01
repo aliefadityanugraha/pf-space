@@ -100,7 +100,7 @@ export class VoteService {
    * @returns {Promise<number>} Number of deleted rows
    */
   async resetAllVotes() {
-    return await Vote.query().delete().whereRaw('1 = 1');
+    return Vote.query().delete();
   }
 
   /**

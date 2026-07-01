@@ -1,43 +1,31 @@
 import { learningMaterialController } from '../controllers/index.js';
-import { authenticate, requireModerator, optionalAuth } from '../middlewares/index.js';
-import { 
-  createMaterialSchema, 
-  updateMaterialSchema, 
-  queryMaterialSchema 
-} from '../schemas/learningMaterial.schema.js';
+import { authenticate, requireModerator, optionalAuth, validateRequest } from '../middlewares/index.js';
+import {
+  materialCreateSchema,
+  materialUpdateSchema,
+  materialQuerySchema,
+  materialIdParamSchema
+} from '../lib/validation.js';
 
-/**
- * Register learning material routes
- * @param {import('fastify').FastifyInstance} fastify - Fastify instance
- */
 export default async function learningMaterialRoutes(fastify) {
-  // Public: Get all materials
   fastify.get('/', {
-    preHandler: optionalAuth,
-    schema: queryMaterialSchema
+    preHandler: [optionalAuth, validateRequest(materialQuerySchema, 'query')]
   }, learningMaterialController.getAll.bind(learningMaterialController));
 
-  // Public: Get single material
   fastify.get('/:id', learningMaterialController.getById.bind(learningMaterialController));
 
-  // Admin/Moderator: Create material
   fastify.post('/', {
-    preHandler: requireModerator,
-    schema: createMaterialSchema
+    preHandler: [requireModerator, validateRequest(materialCreateSchema, 'body')]
   }, learningMaterialController.create.bind(learningMaterialController));
 
-  // Admin/Moderator: Update material
   fastify.put('/:id', {
-    preHandler: requireModerator,
-    schema: updateMaterialSchema
+    preHandler: [requireModerator, validateRequest(materialUpdateSchema, 'body')]
   }, learningMaterialController.update.bind(learningMaterialController));
 
-  // Admin/Moderator: Delete material
   fastify.delete('/:id', {
     preHandler: requireModerator
   }, learningMaterialController.delete.bind(learningMaterialController));
 
-  // Admin/Moderator: Toggle status
   fastify.patch('/:id/toggle', {
     preHandler: requireModerator
   }, learningMaterialController.toggleStatus.bind(learningMaterialController));

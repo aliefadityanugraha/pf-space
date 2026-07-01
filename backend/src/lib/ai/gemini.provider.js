@@ -56,11 +56,12 @@ export class GeminiProvider extends BaseAIProvider {
     };
 
     const response = await fetch(
-      `${this.baseUrl}/models/${this.model}:generateContent?key=${this.apiKey}`,
+      `${this.baseUrl}/models/${this.model}:generateContent`,
       {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-goog-api-key': this.apiKey
         },
         body: JSON.stringify({
           contents,
@@ -97,11 +98,12 @@ export class GeminiProvider extends BaseAIProvider {
     }
 
     const response = await fetch(
-      `${this.baseUrl}/models/${this.embeddingModel}:embedContent?key=${this.apiKey}`,
+      `${this.baseUrl}/models/${this.embeddingModel}:embedContent`,
       {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-goog-api-key': this.apiKey
         },
         body: JSON.stringify({
           model: `models/${this.embeddingModel}`,

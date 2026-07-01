@@ -5,16 +5,14 @@
  */
 
 import { tusServer } from '../lib/tus.js';
+import { parseAllowedOrigins } from '../config/constants.js';
 
 /**
  * Register Tus protocol routes for large file uploads
  * @param {import('fastify').FastifyInstance} fastify - Fastify instance
  */
 export default async function tusRoutes(fastify) {
-  // Parse allowed origins once
-  const allowedOrigins = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : [process.env.FRONTEND_URL || 'http://localhost:5173'];
+  const allowedOrigins = parseAllowedOrigins();
 
   /**
    * Set CORS headers on EVERY request (including 404 errors)

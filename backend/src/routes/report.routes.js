@@ -1,34 +1,17 @@
 import { reportController } from '../controllers/index.js';
-import { authenticate, requireModerator } from '../middlewares/index.js';
+import { authenticate, requireModerator, validateRequest } from '../middlewares/index.js';
+import { reportCreateSchema, reportStatusSchema } from '../lib/validation.js';
 
-/**
- * Register report-related routes
- * @param {import('fastify').FastifyInstance} fastify - Fastify instance
- */
 export default async function reportRoutes(fastify) {
-  // Protected: Submit a report
   fastify.post('/', {
-    preHandler: authenticate
+    preHandler: [authenticate, validateRequest(reportCreateSchema, 'body')]
   }, reportController.create.bind(reportController));
 
-  // Admin: List all reports
   fastify.get('/', {
-    preHandler: requireModerator,
-    schema: {
-      querystring: {
-        type: 'object',
-        properties: {
-          page: { type: 'string' },
-          limit: { type: 'string' },
-          status: { type: 'string' },
-          target_type: { type: 'string' }
-        }
-      }
-    }
+    preHandler: requireModerator
   }, reportController.getAll.bind(reportController));
 
-  // Admin: Process a report
   fastify.patch('/:id/status', {
-    preHandler: requireModerator
+    preHandler: [requireModerator, validateRequest(reportStatusSchema, 'body')]
   }, reportController.updateStatus.bind(reportController));
 }

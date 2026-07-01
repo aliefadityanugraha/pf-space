@@ -4,16 +4,18 @@ import {
   Settings, Megaphone, Save, Loader2, AlertCircle, 
   CheckCircle, Power, Edit3, Link
 } from 'lucide-vue-next'
-import { api } from '@/lib/api'
+import { api, BASE_URL } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import PageHeader from '@/components/PageHeader.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { useToast } from '@/composables/useToast'
 
 const loading = ref(true)
 const saving = ref(false)
+const showConfirmRestore = ref(false)
 const { showToast } = useToast()
 
 // Settings Data
@@ -85,8 +87,7 @@ const generateBackup = async () => {
     const download = downloadBackup.value
     
     if (download) {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-      const response = await fetch(`${apiUrl}/api/admin/backup?download=true`, {
+      const response = await fetch(`${BASE_URL}/api/admin/backup?download=true`, {
         method: 'POST',
         credentials: 'include'
       })
@@ -140,21 +141,22 @@ const handleFileSelect = (event) => {
   }
 }
 
-const restoreBackup = async () => {
+const restoreBackup = () => {
   if (!selectedFile.value) {
     showToast('Pilih file backup (.zip) terlebih dahulu', 'error')
     return
   }
-  
-  if (!confirm('Peringatan: Proses ini akan menimpa seluruh database dan file saat ini dengan data dari file backup. Lanjutkan?')) return
+  showConfirmRestore.value = true
+}
 
+const confirmRestore = async () => {
+  showConfirmRestore.value = false
   restoringBackup.value = true
   try {
     const formData = new FormData()
     formData.append('file', selectedFile.value)
 
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-    const response = await fetch(`${apiUrl}/api/admin/backup/restore`, {
+    const response = await fetch(`${BASE_URL}/api/admin/backup/restore`, {
       method: 'POST',
       body: formData,
       credentials: 'include'
@@ -440,6 +442,16 @@ onMounted(fetchSettings)
           </p>
         </div>
       </template>
+
+      <ConfirmDialog
+        :show="showConfirmRestore"
+        @update:show="showConfirmRestore = $event"
+        title="Restore Backup"
+        message="Proses ini akan menimpa seluruh database dan file saat ini dengan data dari file backup. Lanjutkan?"
+        confirm-label="Restore Sekarang"
+        variant="danger"
+        @confirm="confirmRestore"
+      />
     </div>
   </div>
 </template>

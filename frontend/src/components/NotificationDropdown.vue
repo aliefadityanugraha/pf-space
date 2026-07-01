@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Bell, Check, Loader2 } from 'lucide-vue-next'
 import { useNotifications } from '@/composables/useNotifications'
@@ -37,11 +37,15 @@ onMounted(() => {
 })
 
 // Poll for notifications every minute
-setInterval(() => {
+const pollInterval = setInterval(() => {
   if (isLoggedIn.value) {
     fetchNotifications()
   }
 }, 60000)
+
+onUnmounted(() => {
+  clearInterval(pollInterval)
+})
 
 const handleNotificationClick = async (notification) => {
   if (!notification.is_read) {

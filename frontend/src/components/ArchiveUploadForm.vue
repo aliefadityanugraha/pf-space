@@ -100,11 +100,11 @@ watch(() => props.initialData, (newData) => {
 }, { immediate: true })
 
 import * as tus from 'tus-js-client'
+import { BASE_URL } from '@/lib/api'
 
 const uploadFileTus = (file, onProgress, fieldName) => {
   return new Promise((resolve, reject) => {
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-    const endpoint = `${baseUrl}/api/files/` 
+    const endpoint = `${BASE_URL}/api/files/` 
 
     const upload = new tus.Upload(file, {
       endpoint: endpoint,

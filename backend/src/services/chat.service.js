@@ -25,9 +25,9 @@ export class ChatService {
     // Get recent chat history for context (last 5 messages)
     const history = await this.getRecentHistory(userId, 5);
     
-    // Build messages array with history
+    // Build messages array with history (chronological order)
     const messages = [];
-    for (const chat of history.reverse()) {
+    for (const chat of history.slice().reverse()) {
       messages.push({ role: 'user', content: chat.user_prompt });
       messages.push({ role: 'assistant', content: chat.ai_response });
     }

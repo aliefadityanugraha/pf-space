@@ -1,7 +1,7 @@
 import { filmController } from '../controllers/index.js';
 import { authenticate, requireModerator, requireCreator, optionalAuth, viewRateLimit, validateRequest } from '../middlewares/index.js';
-import { createFilmSchema, updateFilmSchema, rejectionSchema } from '../schemas/film.schema.js';
 import { numericIdParamSchema, filmIdParamSchema } from '../schemas/film.zod.js';
+import { filmCreateSchema, filmUpdateSchema, rejectionSchema } from '../lib/validation.js';
 
 /**
  * Register film-related routes
@@ -64,17 +64,16 @@ export default async function filmRoutes(fastify) {
 
   // Creator: Create new film
   fastify.post('/', {
-    preHandler: [requireCreator],
-    schema: createFilmSchema
+    preHandler: [requireCreator, validateRequest(filmCreateSchema, 'body')]
   }, filmController.create.bind(filmController));
 
   // Creator/Admin: Update film
   fastify.put('/:id', {
     preHandler: [
+      authenticate,
       validateRequest(numericIdParamSchema, 'params'),
-      authenticate
-    ],
-    schema: updateFilmSchema
+      validateRequest(filmUpdateSchema, 'body')
+    ]
   }, filmController.update.bind(filmController));
 
   // Creator/Admin: Delete film
@@ -89,7 +88,10 @@ export default async function filmRoutes(fastify) {
 
   // Admin/Moderator: Reject film
   fastify.patch('/:id/reject', {
-    preHandler: [validateRequest(numericIdParamSchema, 'params'), requireModerator],
-    schema: rejectionSchema
+    preHandler: [
+      requireModerator,
+      validateRequest(numericIdParamSchema, 'params'),
+      validateRequest(rejectionSchema, 'body')
+    ]
   }, filmController.reject.bind(filmController));
 }

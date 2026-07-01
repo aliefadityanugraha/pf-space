@@ -21,3 +21,4 @@ export * from './studyNote.service.js';
 export * from './filmScene.service.js';
 export * from './gamification.service.js';
 export * from './report.service.js';
+export * from './setting.service.js';

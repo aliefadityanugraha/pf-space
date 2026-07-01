@@ -1,7 +1,9 @@
+import { BASE_URL } from './api.js'
+
 /**
  * Base API URL — single source of truth for asset URL resolution.
  */
-export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+export const API_BASE = BASE_URL
 
 /**
  * Resolve a relative asset path to an absolute URL using the API base.

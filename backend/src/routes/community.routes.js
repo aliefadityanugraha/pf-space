@@ -5,7 +5,8 @@
  */
 
 import { communityController } from '../controllers/index.js';
-import { authenticate, requireModerator } from '../middlewares/index.js';
+import { authenticate, requireModerator, validateRequest } from '../middlewares/index.js';
+import { communityReplySchema } from '../lib/validation.js';
 
 /**
  * Register community discussion routes
@@ -19,83 +20,50 @@ export async function communityRoutes(fastify) {
   fastify.get('/:id', communityController.getById.bind(communityController));
 
   // Admin/Moderator: List all historical topics
-  fastify.get('/discussions', {
-    preHandler: requireModerator
-  }, communityController.getAll.bind(communityController));
-  
-  // Alias for list (used by admin frontend)
   fastify.get('/', {
     preHandler: requireModerator
   }, communityController.getAll.bind(communityController));
 
   // Admin/Moderator: Get replies for a specific topic
-  fastify.get('/discussions/:id/replies', {
-    preHandler: requireModerator
-  }, communityController.getReplies.bind(communityController));
-  
   fastify.get('/:id/replies', {
     preHandler: requireModerator
   }, communityController.getReplies.bind(communityController));
 
   // Administrative: Create new topic
-  fastify.post('/discussions', {
-    preHandler: requireModerator
-  }, communityController.create.bind(communityController));
-  
   fastify.post('/', {
     preHandler: requireModerator
   }, communityController.create.bind(communityController));
 
   // Administrative: Update topic details
-  fastify.put('/discussions/:id', {
-    preHandler: requireModerator
-  }, communityController.update.bind(communityController));
-  
   fastify.put('/:id', {
     preHandler: requireModerator
   }, communityController.update.bind(communityController));
 
   // Administrative: Toggle topic active status
-  fastify.patch('/discussions/:id/toggle', {
-    preHandler: requireModerator
-  }, communityController.toggleDiscussion.bind(communityController));
-  
   fastify.patch('/:id/toggle', {
     preHandler: requireModerator
   }, communityController.toggleDiscussion.bind(communityController));
 
   // Administrative: Delete a topic
-  fastify.delete('/discussions/:id', {
-    preHandler: requireModerator
-  }, communityController.delete.bind(communityController));
-  
   fastify.delete('/:id', {
     preHandler: requireModerator
   }, communityController.delete.bind(communityController));
 
-  // User: Post a reply to the active topic
-  fastify.post('/discussions/:id/replies', {
-    preHandler: authenticate
-  }, communityController.addReply.bind(communityController));
-  
+  // User: Post a reply to a discussion
   fastify.post('/:id/replies', {
-    preHandler: authenticate
+    preHandler: [authenticate, validateRequest(communityReplySchema, 'body')]
   }, communityController.addReply.bind(communityController));
 
   // User: Delete their own reply
   fastify.delete('/replies/:replyId', {
     preHandler: authenticate
   }, communityController.deleteReply.bind(communityController));
-  
+
   // Public: Get a single reply
   fastify.get('/replies/:replyId', communityController.getReplyById.bind(communityController));
 
   // Administrative: Moderation delete of a reply
   fastify.delete('/moderator/replies/:replyId', {
-    preHandler: requireModerator
-  }, communityController.deleteReplyByModerator.bind(communityController));
-  
-  fastify.delete('/replies/:replyId/moderate', {
     preHandler: requireModerator
   }, communityController.deleteReplyByModerator.bind(communityController));
 }

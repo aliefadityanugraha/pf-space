@@ -1,6 +1,6 @@
 import { authController } from '../controllers/index.js';
-import { authenticate, requireAdmin } from '../middlewares/index.js';
-import { updateProfileSchema, updateRoleSchema } from '../schemas/auth.schema.js';
+import { authenticate, requireAdmin, validateRequest } from '../middlewares/index.js';
+import { updateProfileSchema, updateRoleSchema } from '../lib/validation.js';
 
 // Strict rate limit config for sensitive auth endpoints (anti brute-force)
 const authRateLimit = { config: { rateLimit: { max: 15, timeWindow: '1 minute' } } };
@@ -21,12 +21,11 @@ export default async function authRoutes(fastify) {
 
   // Update user profile
   fastify.post('/update-profile', {
-    preHandler: authenticate,
-    schema: updateProfileSchema
+    preHandler: [authenticate, validateRequest(updateProfileSchema, 'body')]
   }, authController.updateUser.bind(authController));
 
   fastify.patch('/update-user', {
-    preHandler: authenticate
+    preHandler: [authenticate, validateRequest(updateProfileSchema, 'body')]
   }, authController.updateUser.bind(authController));
 
   // Admin: Get all users
@@ -41,8 +40,7 @@ export default async function authRoutes(fastify) {
 
   // Admin: Update user role
   fastify.patch('/users/:userId/role', {
-    preHandler: requireAdmin,
-    schema: updateRoleSchema
+    preHandler: [requireAdmin, validateRequest(updateRoleSchema, 'body')]
   }, authController.updateRole.bind(authController));
 
   // Social Auth: Google — handled directly by Better-Auth catch-all below

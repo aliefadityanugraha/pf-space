@@ -25,8 +25,12 @@ export default async function staticRoutes(fastify) {
     let absolutePath = path.resolve(UPLOAD_DIR, filePath);
 
     // Security check to prevent path traversal
-    if (!absolutePath.startsWith(path.resolve(UPLOAD_DIR))) {
-      return ApiResponse.error(reply, 'Forbidden', 403);
+    const resolvedUploadDir = path.resolve(UPLOAD_DIR);
+    if (!absolutePath.startsWith(resolvedUploadDir)) {
+      // On Windows, also try case-insensitive comparison
+      if (process.platform !== 'win32' || !absolutePath.toLowerCase().startsWith(resolvedUploadDir.toLowerCase())) {
+        return ApiResponse.error(reply, 'Forbidden', 403);
+      }
     }
 
     if (!fs.existsSync(absolutePath)) {

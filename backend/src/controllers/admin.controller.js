@@ -161,9 +161,14 @@ export class AdminController {
         dbName
       ];
 
-      // Pass password via env var to avoid shell exposure
+      // Pass password via temp config file to avoid shell/env exposure
+      let configFile = null;
       const env = { ...process.env };
-      if (dbPass) env.MYSQL_PWD = dbPass;
+      if (dbPass) {
+        configFile = path.join(backupDir, `.my.cnf.${process.pid}`);
+        fs.writeFileSync(configFile, `[client]\npassword=${dbPass}\n`, { mode: 0o600 });
+        args.unshift(`--defaults-extra-file=${configFile}`);
+      }
 
       try {
         await execFileAsync('mysqldump', args, { env });
@@ -194,6 +199,10 @@ export class AdminController {
 
       // Clean up the .sql file since it's already in the .zip
       fs.unlinkSync(sqlFilePath);
+      // Clean up config file if it was created
+      if (configFile && fs.existsSync(configFile)) {
+        fs.unlinkSync(configFile);
+      }
 
       // Check if user requested download via query param ?download=true
       const download = request.query.download === 'true';
@@ -250,13 +259,24 @@ export class AdminController {
         const dbName = process.env.DB_NAME || 'film';
         const dbPort = process.env.DB_PORT || '3306';
 
-        const passStr = dbPass ? `-p"${dbPass}"` : '';
-        // Note: Using child_process exec to run mysql CLI. This requires mysql to be in PATH!
-        const cmd = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} ${passStr} ${dbName} < "${sqlFilePath}"`;
+        // Pass password via temp config file to avoid shell/env exposure
+        let configFile = null;
+        const mysqlEnv = { ...process.env };
+        if (dbPass) {
+          configFile = path.join(tempDir, `.my.cnf.${process.pid}`);
+          fs.writeFileSync(configFile, `[client]\npassword=${dbPass}\n`, { mode: 0o600 });
+        }
+        const args = configFile
+          ? [`--defaults-extra-file=${configFile}`, '-h', dbHost, '-P', dbPort, '-u', dbUser, dbName]
+          : ['-h', dbHost, '-P', dbPort, '-u', dbUser, dbName];
 
-        const { exec } = await import('child_process');
-        const execPromise = promisify(exec);
-        await execPromise(cmd);
+        const { execFile } = await import('child_process');
+        const execFileAsync = promisify(execFile);
+        await execFileAsync('mysql', args, { env: mysqlEnv });
+
+        if (configFile && fs.existsSync(configFile)) {
+          fs.unlinkSync(configFile);
+        }
       }
 
       // Restore uploads folder

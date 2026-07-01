@@ -49,3 +49,6 @@ backend/uploads/
 backend/backup/
 backend/src/uploads/
 backend/.env
+
+# Frontend
+frontend/dist
