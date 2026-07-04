@@ -3,6 +3,8 @@ import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
+const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:3000';
+
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
   resolve: {
@@ -11,7 +13,21 @@ export default defineConfig({
     }
   },
   server: {
-    allowedHosts: ['103.127.96.155']
+    host: '0.0.0.0',
+    port: 5173,
+    allowedHosts: ['10.20.39.108', 'localhost', '127.0.0.1'],
+    proxy: {
+      '/api': {
+        target: apiProxyTarget,
+        changeOrigin: true,
+        secure: false
+      },
+      '/uploads': {
+        target: apiProxyTarget,
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
   test: {
     environment: 'happy-dom',

@@ -76,7 +76,8 @@ await fastify.register(helmet, {
       mediaSrc: ["'self'"],
       connectSrc: ["'self'"],
       objectSrc: ["'none'"],
-      frameAncestors: ["'none'"],
+      // Allow embedding in local frontend iframe on localhost:5173
+      frameAncestors: ["'self'", 'http://localhost:5173'],
     }
   },
 });

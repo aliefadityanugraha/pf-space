@@ -22,11 +22,19 @@ export class Vote extends BaseModel {
   }
 
   /**
-   * Hook: Auto-set created_at before insert
+   * Hook: Auto-set created_at before insert.
+   * Existing votes tables in this project do not have updated_at,
+   * so we avoid populating it here to prevent insert failures.
    */
   $beforeInsert() {
-    super.$beforeInsert();
     this.created_at = new Date();
+  }
+
+  /**
+   * No-op for updates. The current votes schema does not include updated_at.
+   */
+  $beforeUpdate() {
+    // Intentionally left blank.
   }
 
   /**

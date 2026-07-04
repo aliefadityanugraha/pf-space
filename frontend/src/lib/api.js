@@ -1,4 +1,18 @@
-export const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const getDefaultBaseUrl = () => {
+  const configuredBaseUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
+
+  if (configuredBaseUrl) {
+    return configuredBaseUrl;
+  }
+
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+
+  return 'http://localhost:3000';
+};
+
+export const BASE_URL = getDefaultBaseUrl();
 
 class ApiError extends Error {
   constructor(message, status, data) {
@@ -9,7 +23,8 @@ class ApiError extends Error {
 }
 
 async function request(endpoint, options = {}) {
-  const urlObj = new URL(endpoint, BASE_URL);
+  const baseUrl = BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+  const urlObj = new URL(endpoint, baseUrl);
   
   if (options.params) {
     Object.entries(options.params).forEach(([key, value]) => {
