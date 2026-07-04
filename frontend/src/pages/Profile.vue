@@ -76,8 +76,10 @@ watch(user, (newUser) => {
 
 const roleName = computed(() => user.value?.role?.name || 'user')
 const joinDate = computed(() => {
-  if (!user.value?.created_at) return 'Unknown'
-  return new Date(user.value.created_at).toLocaleDateString('id-ID', { 
+  if (!user.value?.createdAt && !user.value?.created_at) return 'Unknown'
+  const date = user.value?.createdAt || user.value?.created_at
+  return new Date(date).toLocaleDateString('id-ID', { 
+    day: 'numeric',
     month: 'long', 
     year: 'numeric' 
   })
@@ -271,6 +273,14 @@ onMounted(() => {
   <PageLayout>
     <div class="max-w-7xl mx-auto px-4 md:px-8 mb-16">
       
+      <input 
+        type="file" 
+        ref="fileInput" 
+        class="hidden" 
+        accept="image/*"
+        @change="handleFileChange"
+      />
+
       <!-- Compact Header (Brutal Style) -->
       <div class="flex flex-col md:flex-row items-center gap-5 md:gap-6 mb-8 p-5 md:p-6 bg-white border-2 border-white/20 shadow-brutal relative z-10">
         <!-- Decoration Dots -->
@@ -281,34 +291,23 @@ onMounted(() => {
 
         <!-- Avatar -->
         <div class="relative group flex-shrink-0">
-          <input 
-            type="file" 
-            ref="fileInput" 
-            class="hidden" 
-            accept="image/*"
-            @change="handleFileChange"
-          />
-          <div class="w-20 h-20 md:w-24 md:h-24 border-2 border-black bg-stone-200 overflow-hidden shadow-sm relative">
-             <img 
-              v-if="(previewImage || user?.image) && !imageError"
-              :src="previewImage || userImageUrl" 
-              :alt="user?.name"
-              referrerpolicy="no-referrer"
-              class="w-full h-full object-cover"
-              @error="imageError = true"
-            />
-            <div v-else class="w-full h-full flex items-center justify-center bg-brand-teal/20">
-              <User class="w-8 h-8 md:w-10 md:h-10 text-stone-900" />
-            </div>
+          <!-- Main Container with Border and Shadow -->
+          <div class="w-20 h-20 md:w-24 md:h-24 border-2 border-black bg-stone-200 shadow-brutal-sm relative">
+             <!-- Image Container with Overflow Hidden -->
+             <div class="w-full h-full overflow-hidden">
+                <img 
+                  v-if="(previewImage || user?.image) && !imageError"
+                  :src="previewImage || userImageUrl" 
+                  :alt="user?.name"
+                  referrerpolicy="no-referrer"
+                  class="w-full h-full object-cover"
+                  @error="imageError = true"
+                />
+                <div v-else class="w-full h-full flex items-center justify-center bg-brand-teal/20">
+                  <User class="w-8 h-8 md:w-10 md:h-10 text-stone-900" />
+                </div>
+             </div>
           </div>
-          
-          <button 
-            @click="triggerFileInput"
-            class="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 w-7 h-7 md:w-8 md:h-8 bg-brand-teal border-2 border-black flex items-center justify-center hover:translate-x-[1px] hover:translate-y-[1px] transition-transform cursor-pointer shadow-brutal-xs md:shadow-brutal-sm text-white"
-            title="Ganti Foto"
-          >
-            <Camera class="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-          </button>
         </div>
 
         <!-- Info -->
@@ -492,21 +491,66 @@ onMounted(() => {
              <User class="w-5 h-5" /> Informasi Dasar
            </h3>
            
-           <div class="space-y-5 md:space-y-6">
-              <div>
-                <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Nama Tampilan</label>
-                <Input v-model="editName" class="border-2 border-black shadow-brutal-xs md:shadow-brutal-sm focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all h-10 md:h-12 text-sm md:text-lg font-medium" />
-              </div>
+           <div class="space-y-6">
+              <div class="flex flex-col md:flex-row gap-6">
+                <!-- Profile Picture Box in Settings -->
+                <div class="flex-shrink-0 mx-auto md:mx-0">
+                  <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Foto Profil</label>
+                  <!-- Outer Container (Handles Shadow & Button Pop-out) -->
+                  <div class="relative w-32 h-32 md:w-40 md:h-40 group">
+                      <!-- Inner Bordered Box -->
+                      <div class="w-full h-full border-2 border-black bg-stone-50 shadow-brutal-sm overflow-hidden relative">
+                          <img 
+                            v-if="(previewImage || user?.image) && !imageError"
+                            :src="previewImage || userImageUrl" 
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            @error="imageError = true"
+                          />
+                          <div v-else class="w-full h-full flex items-center justify-center bg-brand-teal/5">
+                            <User class="w-12 h-12 md:w-16 md:h-16 text-stone-300" />
+                          </div>
+                          
+                          <!-- Hover Overlay -->
+                          <div 
+                            @click="triggerFileInput"
+                            class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center"
+                          >
+                            <div class="bg-white/90 px-3 py-1 border-2 border-black shadow-brutal-xs text-[10px] font-bold uppercase tracking-widest text-black transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                              Ganti Foto
+                            </div>
+                          </div>
+                      </div>
+                      
+                      <!-- Pop-out Button -->
+                      <button 
+                        @click="triggerFileInput"
+                        class="absolute -bottom-2 -right-2 w-8 h-8 md:w-10 md:h-10 bg-brand-teal border-2 border-black flex items-center justify-center hover:translate-x-[1px] hover:translate-y-[1px] transition-transform cursor-pointer shadow-brutal-sm text-white z-10"
+                        title="Ganti Foto"
+                      >
+                        <Camera class="w-4 h-4 md:w-5 md:h-5 text-white" />
+                      </button>
+                  </div>
+                  <p class="text-[9px] text-stone-400 mt-4 font-mono uppercase text-center md:text-left">JPG, PNG atau WebP (Maks. 2MB)</p>
+                </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                   <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Email</label>
-                   <Input :value="user?.email" disabled class="bg-stone-50 border-2 border-stone-200 text-stone-400 h-10 md:h-12 cursor-not-allowed font-mono text-xs md:text-sm" />
-                </div>
-                <div>
-                   <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Lokasi / Institusi</label>
-                   <Input v-model="editLocation" placeholder="Contoh: Jakarta, Indonesia" class="border-2 border-black shadow-brutal-xs h-10 md:h-12 text-sm" />
-                </div>
+                 <!-- Basic Fields -->
+                 <div class="flex-1 space-y-4 md:space-y-5">
+                     <div>
+                       <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Nama</label>
+                       <Input v-model="editName" class="border-2 border-black shadow-brutal-xs md:shadow-brutal-sm focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all h-10 md:h-12 text-sm md:text-lg font-medium" />
+                     </div>
+
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                           <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Email</label>
+                           <Input :model-value="user?.email" readonly class="bg-stone-50 border-2 border-stone-200 h-10 md:h-12 font-mono text-xs md:text-sm text-black pointer-events-none" />
+                        </div>
+                       <div>
+                          <label class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2">Lokasi / Institusi</label>
+                          <Input v-model="editLocation" placeholder="Contoh: Jakarta, Indonesia" class="border-2 border-black shadow-brutal-xs h-10 md:h-12 text-sm" />
+                       </div>
+                     </div>
+                 </div>
               </div>
 
               <div>

@@ -109,7 +109,7 @@ onUnmounted(() => {
         <span 
           class="text-base md:text-xl font-bold font-display block md:block transition-colors duration-500"
           :class="lightTitle ? 'text-white' : 'text-black'"
-        >PF Space</span>
+        >PF Spaces</span>
       </router-link>
 
       <!-- Search Bar -->
@@ -260,7 +260,7 @@ onUnmounted(() => {
                   class="w-full h-full object-cover"
                   @error="imageError = true"
                 />
-                <User v-else class="w-4 h-4 md:w-5 md:h-5 transition-colors" :class="lightTitle ? 'text-white' : 'text-black'" />
+                <User v-else class="w-4 h-4 md:w-5 md:h-5 transition-colors" :class="lightTitle ? 'text-black' : ''" />
               </button>
             </DropdownMenuTrigger>
             
