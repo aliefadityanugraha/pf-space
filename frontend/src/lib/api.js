@@ -1,6 +1,16 @@
 const getDefaultBaseUrl = () => {
   const configuredBaseUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
 
+  if (typeof window !== 'undefined') {
+    const isLocalhostDomain = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    // If configured API URL contains localhost but we are running on a real domain (e.g. pfspace.my.id),
+    // ignore the hardcoded localhost API URL and use relative origin!
+    if (configuredBaseUrl && configuredBaseUrl.includes('localhost') && !isLocalhostDomain) {
+      return window.location.origin;
+    }
+  }
+
   const normalizeIfHttps = (value) => {
     if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
       return value.replace(/^http:/, 'https:');
@@ -17,7 +27,7 @@ const getDefaultBaseUrl = () => {
     return normalizeIfHttps(window.location.origin);
   }
 
-  return 'http://localhost:3001';
+  return 'http://localhost:3000';
 };
 
 export const BASE_URL = getDefaultBaseUrl();
