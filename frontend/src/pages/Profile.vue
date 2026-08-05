@@ -17,9 +17,12 @@ import {
   User, Mail, Eye, EyeOff, Camera, Save, 
   Loader2, ThumbsUp, MessageCircle, Film as FilmIcon, Upload,
   LayoutDashboard, Settings, MapPin, Globe, Instagram, Linkedin,
-  Award, FileText, Star, MessageSquare
+  Award, FileText, Star, MessageSquare, X, Check
 } from 'lucide-vue-next'
 import { useHead } from '@unhead/vue'
+import Cropper from 'cropperjs'
+import 'cropperjs/dist/cropper.css'
+import { nextTick } from 'vue'
 
 const router = useRouter()
 const { user, refreshUser, initialized, isLoggedIn, isCreator } = useAuth()
@@ -27,8 +30,12 @@ const { showToast } = useToast()
 const { fetchNotifications } = useNotifications()
 const fileInput = ref(null)
 const imageError = ref(false)
+const imageVersion = ref(Date.now())
 
-const userImageUrl = computed(() => assetUrl(user.value?.image || ''))
+const userImageUrl = computed(() => {
+  if (!user.value?.image) return ''
+  return `${assetUrl(user.value.image)}?v=${imageVersion.value}`
+})
 
 // Tabs State
 const activeTab = ref('dashboard') // 'dashboard' | 'settings'
@@ -157,6 +164,12 @@ const fetchDashboardData = async () => {
 
 // --- ACTIONS ---
 
+// --- CROPPER STATE ---
+const showCropModal = ref(false)
+const cropImageSource = ref('')
+const cropperImgRef = ref(null)
+let cropperInstance = null
+
 const triggerFileInput = () => {
   fileInput.value.click()
 }
@@ -164,14 +177,68 @@ const triggerFileInput = () => {
 const handleFileChange = (event) => {
   const file = event.target.files[0]
   if (file) {
-    selectedFile.value = file
     const reader = new FileReader()
     reader.onload = (e) => {
-      previewImage.value = e.target.result
-      imageError.value = false
+      cropImageSource.value = e.target.result
+      showCropModal.value = true
+      nextTick(() => {
+        initCropper()
+      })
     }
     reader.readAsDataURL(file)
   }
+  // Clear the input so selecting the same file again works
+  if (fileInput.value) fileInput.value.value = ''
+}
+
+const initCropper = () => {
+  if (cropperInstance) {
+    cropperInstance.destroy()
+  }
+  if (cropperImgRef.value) {
+    cropperInstance = new Cropper(cropperImgRef.value, {
+      aspectRatio: 1,
+      viewMode: 1,
+      dragMode: 'move',
+      autoCropArea: 1,
+      restore: false,
+      guides: false,
+      center: false,
+      background: false,
+      highlight: false,
+      cropBoxMovable: true,
+      cropBoxResizable: true,
+      toggleDragModeOnDblclick: false,
+    })
+  }
+}
+
+const cancelCrop = () => {
+  showCropModal.value = false
+  cropImageSource.value = ''
+  if (cropperInstance) {
+    cropperInstance.destroy()
+    cropperInstance = null
+  }
+}
+
+const confirmCrop = () => {
+  if (!cropperInstance) return
+  
+  const canvas = cropperInstance.getCroppedCanvas({
+    width: 500,
+    height: 500,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: 'high',
+  })
+  
+  previewImage.value = canvas.toDataURL('image/jpeg', 0.9)
+  imageError.value = false
+  
+  canvas.toBlob((blob) => {
+    selectedFile.value = new File([blob], 'avatar.jpg', { type: 'image/jpeg' })
+    cancelCrop()
+  }, 'image/jpeg', 0.9)
 }
 
 const saveProfile = async () => {
@@ -209,6 +276,7 @@ const saveProfile = async () => {
     }
 
     await refreshUser()
+    imageVersion.value = Date.now() // Bust browser cache for new image
     showToast('Profil berhasil diperbarui!')
     await api.post('/api/notifications', { type: 'system', title: 'Profil Diperbarui', message: 'Perubahan pada profil Anda telah berhasil disimpan.' })
     fetchNotifications()
@@ -582,7 +650,7 @@ onMounted(() => {
                  <Input v-model="editLinkedin" placeholder="https://linkedin.com/in/username" class="border-2 border-black shadow-brutal-xs h-10 md:h-12 text-sm" />
               </div>
 
-              <div class="pt-2">
+              <div class="pt-2 flex justify-end">
                  <Button @click="saveProfile" :disabled="savingProfile" class="w-full sm:w-auto bg-stone-900 text-white border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] h-10 md:h-12 px-6 md:px-8 font-bold uppercase tracking-widest text-[10px] md:text-xs">
                     <Loader2 v-if="savingProfile" class="w-4 h-4 mr-2 animate-spin" />
                     Simpan Profil
@@ -621,7 +689,7 @@ onMounted(() => {
                 </div>
               </div>
 
-              <div class="pt-2">
+              <div class="pt-2 flex justify-end">
                  <Button variant="outline" @click="changePassword" :disabled="savingPassword" class="w-full sm:w-auto bg-white text-stone-900 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] h-10 md:h-12 px-6 md:px-8 font-bold uppercase tracking-widest text-[10px] md:text-xs">
                     <Loader2 v-if="savingPassword" class="w-4 h-4 mr-2 animate-spin" />
                     Perbarui Kata Sandi
@@ -633,6 +701,29 @@ onMounted(() => {
 
     </div>
 
+    <!-- Crop Modal -->
+    <div v-if="showCropModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div class="bg-white border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-fade-in">
+        <div class="p-4 border-b-4 border-black flex justify-between items-center bg-brand-cream">
+          <h3 class="font-display font-black text-xl uppercase tracking-widest text-black">Sesuaikan Foto</h3>
+          <button @click="cancelCrop" class="p-1 hover:bg-black hover:text-white transition-colors border-2 border-transparent hover:border-black cursor-pointer">
+            <X class="w-6 h-6" />
+          </button>
+        </div>
+        <div class="w-full h-[60vh] min-h-[300px] bg-stone-900 relative">
+          <img ref="cropperImgRef" :src="cropImageSource" class="max-w-full max-h-full block mx-auto" alt="Crop Source" />
+        </div>
+        <div class="p-4 border-t-4 border-black flex justify-end gap-3 bg-brand-cream">
+          <Button @click="cancelCrop" variant="outline" class="border-2 border-black font-bold uppercase hover:bg-stone-200 text-black shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
+            Batal
+          </Button>
+          <Button @click="confirmCrop" class="border-2 border-black font-bold uppercase bg-brand-teal text-white hover:bg-teal-600 shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex gap-2">
+            <Check class="w-4 h-4" />
+            Terapkan
+          </Button>
+        </div>
+      </div>
+    </div>
 
   </PageLayout>
 </template>
@@ -645,5 +736,44 @@ onMounted(() => {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(5px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sembunyikan handle tengah di border agar hanya sudut yang bisa ditarik */
+:deep(.cropper-point.point-e),
+:deep(.cropper-point.point-w),
+:deep(.cropper-point.point-s),
+:deep(.cropper-point.point-n) {
+  display: none !important;
+}
+
+:deep(.cropper-line) {
+  pointer-events: none !important;
+}
+
+/* Perbesar dan percantik titik sudut (corner handles) */
+:deep(.cropper-point.point-ne),
+:deep(.cropper-point.point-nw),
+:deep(.cropper-point.point-se),
+:deep(.cropper-point.point-sw) {
+  width: 20px !important;
+  height: 20px !important;
+  background-color: #0d9488 !important; /* brand-teal */
+  border: 2px solid white !important;
+  border-radius: 50% !important;
+  opacity: 1 !important;
+  box-shadow: 0px 0px 0px 1px black, 2px 2px 0px 0px black !important;
+}
+
+/* Penyesuaian posisi agar pas di tengah sudut */
+:deep(.cropper-point.point-ne) { top: -10px !important; right: -10px !important; }
+:deep(.cropper-point.point-nw) { top: -10px !important; left: -10px !important; }
+:deep(.cropper-point.point-se) { bottom: -10px !important; right: -10px !important; }
+:deep(.cropper-point.point-sw) { bottom: -10px !important; left: -10px !important; }
+
+/* Percantik garis crop box */
+:deep(.cropper-view-box) {
+  outline: 2px solid white !important;
+  box-shadow: 0 0 0 2px black !important;
+  border-radius: 0 !important;
 }
 </style>
