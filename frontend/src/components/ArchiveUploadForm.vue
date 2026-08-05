@@ -104,16 +104,42 @@ import { BASE_URL } from '@/lib/api'
 
 const uploadFileTus = (file, onProgress, fieldName) => {
   return new Promise((resolve, reject) => {
-    const endpoint = `${BASE_URL}/api/files/` 
+    const endpoint = typeof window !== 'undefined'
+      ? `${window.location.origin}/api/files/`
+      : `${BASE_URL.replace(/\/$/, '')}/api/files/`
 
-    const upload = new tus.Upload(file, {
-      endpoint: endpoint,
+    if (typeof window !== 'undefined') {
+      try {
+        const keys = Object.keys(localStorage).filter((key) => key.includes('tus') || key.includes('upload'));
+        keys.forEach((key) => localStorage.removeItem(key));
+      } catch (err) {
+        console.warn('[Tus] Unable to clear previous upload storage', err);
+      }
+    }
+
+    let upload
+    upload = new tus.Upload(file, {
+      endpoint,
+      chunkSize: 32 * 1024 * 1024,
       retryDelays: [0, 3000, 5000, 10000, 20000],
       metadata: {
         filename: file.name,
         filetype: file.type || 'application/octet-stream'
       },
+      onAfterResponse: (req, res) => {
+        if (typeof window !== 'undefined' && res?.getURL) {
+          const url = res.getURL();
+          console.log('[Tus] response URL:', url);
+          if (window.location.protocol === 'https:' && url && /^http:\/\//.test(url)) {
+            const httpsUrl = url.replace(/^http:\/\//, 'https://');
+            req.url = httpsUrl;
+            upload.url = httpsUrl;
+            console.log('[Tus] normalized URL:', httpsUrl);
+          }
+        }
+      },
       storeFingerprintForResuming: false,
+      uploadUrl: null,
       onError: (error) => {
         reject(error)
       },

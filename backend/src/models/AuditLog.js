@@ -5,6 +5,14 @@ export class AuditLog extends BaseModel {
     return 'audit_logs';
   }
 
+  $beforeInsert() {
+    this.created_at = new Date();
+  }
+
+  $beforeUpdate() {
+    // Audit logs are append-only, so updates are not needed.
+  }
+
   static get jsonSchema() {
     return {
       type: 'object',

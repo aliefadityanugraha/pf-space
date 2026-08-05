@@ -56,7 +56,10 @@ export function useAuth() {
   async function login(email, password) {
     loading.value = true;
     try {
-      await authApi.login(email, password);
+      const normalizedEmail = String(email || '').trim().toLowerCase();
+      const normalizedPassword = String(password || '').trim();
+
+      await authApi.login(normalizedEmail, normalizedPassword);
       const res = await authApi.getProfile();
       user.value = normalizeUser(res.data);
       try {

@@ -25,7 +25,7 @@ export default async function authRoutes(fastify) {
   }, authController.updateUser.bind(authController));
 
   fastify.patch('/update-user', {
-    preHandler: [authenticate]
+    preHandler: authenticate
   }, authController.updateUser.bind(authController));
 
   // Admin: Get all users

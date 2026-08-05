@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
-const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:3000';
+const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:3001';
 
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
@@ -15,7 +15,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    allowedHosts: ['10.20.39.108', 'localhost', '127.0.0.1'],
+    allowedHosts: ['192.168.3.229', 'localhost', '127.0.0.1', 'pfspace.my.id', 'www.pfspace.my.id'],
     proxy: {
       '/api': {
         target: apiProxyTarget,
@@ -37,8 +37,12 @@ export default defineConfig({
     target: 'es2020',
     chunkSizeWarningLimit: 1000,
     minify: 'esbuild',
+    assetsInlineLimit: 0,
     rollupOptions: {
       output: {
+        assetFileNames: 'assets/[name]-[hash][extname]?v=20260805-tus-fix',
+        chunkFileNames: 'assets/[name]-[hash].js?v=20260805-tus-fix',
+        entryFileNames: 'assets/[name]-[hash].js?v=20260805-tus-fix',
         manualChunks: {
           'vendor-vue': ['vue', 'vue-router', '@vueuse/core'],
           'vendor-editor': ['@tiptap/vue-3', '@tiptap/starter-kit'],

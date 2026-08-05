@@ -63,18 +63,43 @@ const fetchMaterials = async () => {
 // Tus Upload
 const uploadFileTus = (file, onProgress) => {
   return new Promise((resolve, reject) => {
-    const endpoint = `${API_BASE}/api/files/` 
+    const endpoint = typeof window !== 'undefined'
+      ? `${window.location.origin}/api/files/`
+      : `${API_BASE.replace(/\/$/, '')}/api/files/`
 
-    const upload = new tus.Upload(file, {
-      endpoint: endpoint,
+    if (typeof window !== 'undefined') {
+      try {
+        const keys = Object.keys(localStorage).filter((key) => key.includes('tus') || key.includes('upload'));
+        keys.forEach((key) => localStorage.removeItem(key));
+      } catch (err) {
+        console.warn('[Tus] Unable to clear previous upload storage', err);
+      }
+    }
+
+    let upload
+    upload = new tus.Upload(file, {
+      endpoint,
       retryDelays: [0, 3000, 5000, 10000, 20000],
       metadata: {
         filename: file.name,
         filetype: file.type || 'application/octet-stream'
       },
+      onAfterResponse: (req, res) => {
+        if (typeof window !== 'undefined' && res?.getURL) {
+          const url = res.getURL();
+          console.log('[Tus] response URL:', url);
+          if (window.location.protocol === 'https:' && url && /^http:\/\//.test(url)) {
+            const httpsUrl = url.replace(/^http:\/\//, 'https://');
+            req.url = httpsUrl;
+            upload.url = httpsUrl;
+            console.log('[Tus] normalized URL:', httpsUrl);
+          }
+        }
+      },
       // Disable resuming to prevent 404/CORS errors from old, invalid fingerprints in localStorage
       storeFingerprintForResuming: false,
       removeFingerprintOnSuccess: true,
+      uploadUrl: null,
       onError: (error) => {
         reject(error)
       },

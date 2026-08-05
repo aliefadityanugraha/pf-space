@@ -1,15 +1,23 @@
 const getDefaultBaseUrl = () => {
   const configuredBaseUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
 
+  const normalizeIfHttps = (value) => {
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+      return value.replace(/^http:/, 'https:');
+    }
+    return value;
+  };
+
   if (configuredBaseUrl) {
-    return configuredBaseUrl;
+    const normalized = configuredBaseUrl.trim();
+    return normalizeIfHttps(normalized);
   }
 
   if (typeof window !== 'undefined') {
-    return window.location.origin;
+    return normalizeIfHttps(window.location.origin);
   }
 
-  return 'http://localhost:3000';
+  return 'http://localhost:3001';
 };
 
 export const BASE_URL = getDefaultBaseUrl();
@@ -23,7 +31,7 @@ class ApiError extends Error {
 }
 
 async function request(endpoint, options = {}) {
-  const baseUrl = BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+  const baseUrl = BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
   const urlObj = new URL(endpoint, baseUrl);
   
   if (options.params) {
@@ -160,7 +168,7 @@ export const authApi = {
   // Google OAuth - use Better Auth native endpoint directly (no custom proxy)
   loginWithGoogle: async () => {
     const callbackURL = `${window.location.origin}/auth/callback`;
-    const response = await fetch(`${BASE_URL}/api/auth/sign-in/social`, {
+    const response = await fetch('/api/auth/sign-in/social', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

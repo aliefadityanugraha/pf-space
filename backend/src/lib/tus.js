@@ -56,6 +56,17 @@ export const tusServer = new Server({
   }),
   // Disable tus server's built-in CORS — handled by Fastify hooks in tus.routes.js
   respectForwardedHeaders: true,
+  generateUrl: (req, { host, path, id }) => {
+    const selectedHost =
+      req.headers['x-forwarded-host'] ||
+      req.headers.host ||
+      host ||
+      'pfspace.my.id';
+
+    const basePath = path && path !== '/' ? path : '/api/files';
+
+    return `https://${selectedHost}${basePath}/${id}`;
+  },
   maxSize: 2 * 1024 * 1024 * 1024, // 2GB
   
   /**
