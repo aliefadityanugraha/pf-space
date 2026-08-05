@@ -120,6 +120,7 @@ const uploadFileTus = (file, onProgress, fieldName) => {
     let upload
     upload = new tus.Upload(file, {
       endpoint,
+      chunkSize: 32 * 1024 * 1024,
       retryDelays: [0, 3000, 5000, 10000, 20000],
       metadata: {
         filename: file.name,
