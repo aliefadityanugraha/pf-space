@@ -54,7 +54,7 @@ onMounted(() => {
   </div>
 
   <!-- Normal App -->
-  <template v-else-if="initialized">
+  <div v-else-if="initialized" class="min-h-screen flex flex-col">
     <ErrorBoundary name="Halaman">
       <router-view />
     </ErrorBoundary>
@@ -70,14 +70,11 @@ onMounted(() => {
         background-size: 24px 24px;
       "
     ></div>
-    
-
-  </template>
+  </div>
   <div v-else class="min-h-screen flex items-center justify-center">
     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
   </div>
 
-  <!-- eslint-disable-next-line vue/no-multiple-template-root -->
   <Toast :show="toast.show" :type="toast.type" :message="toast.message" @close="toast.show = false" />
   
   <NetworkStatus />
