@@ -96,13 +96,19 @@ await fastify.register(rateLimit, {
 });
 
 const allowedOrigins = parseAllowedOrigins();
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+
+  return /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\.[0-9]+\.[0-9]+)(:\d+)?$/.test(origin);
+};
 
 await fastify.register(cors, {
   origin: (origin, cb) => {
     // Allow requests with no origin (mobile apps, curl, server-to-server)
     if (!origin) return cb(null, true);
-    // Check if origin is in allowed list
-    if (allowedOrigins.includes(origin)) return cb(null, true);
+    // Check if origin is in allowed list or matches local dev patterns
+    if (isAllowedOrigin(origin)) return cb(null, true);
     // Reject unknown origins
     cb(new Error('Not allowed by CORS'), false);
   },

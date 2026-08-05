@@ -13,26 +13,29 @@ describe('Format Utility', () => {
       expect(assetUrl(externalUrl)).toBe(externalUrl);
     });
 
-    it('should prepend API_BASE and /uploads/ for relative paths', () => {
+    it('should prepend the current origin and /uploads/ for relative paths', () => {
       const relativePath = 'poster.jpg';
       const result = assetUrl(relativePath);
-      
-      expect(result).toContain('http://localhost:3000');
+      const expectedPrefix = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001';
+
+      expect(result).toContain(expectedPrefix);
       expect(result).toContain('/uploads/poster.jpg');
     });
 
     it('should handle paths already starting with /uploads/', () => {
       const pathWithUploads = '/uploads/banner.png';
       const result = assetUrl(pathWithUploads);
-      
-      expect(result).toBe('http://localhost:3000/uploads/banner.png');
+      const expectedPrefix = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001';
+
+      expect(result).toBe(`${expectedPrefix}/uploads/banner.png`);
     });
 
     it('should handle paths starting with /api/', () => {
       const apiPath = '/api/files/test.pdf';
       const result = assetUrl(apiPath);
-      
-      expect(result).toBe('http://localhost:3000/api/files/test.pdf');
+      const expectedPrefix = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001';
+
+      expect(result).toBe(`${expectedPrefix}/api/files/test.pdf`);
     });
   });
 });

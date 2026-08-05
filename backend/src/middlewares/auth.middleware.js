@@ -17,8 +17,22 @@ import { AuthenticationError, AuthorizationError } from '../lib/errors.js';
  */
 export const authenticate = async (request, reply) => {
   try {
+    const headers = new Headers();
+    if (request.headers.cookie) {
+      headers.set('cookie', request.headers.cookie);
+    }
+    if (request.headers['user-agent']) {
+      headers.set('user-agent', request.headers['user-agent']);
+    }
+    if (request.headers['x-forwarded-for']) {
+      headers.set('x-forwarded-for', request.headers['x-forwarded-for']);
+    }
+    if (request.headers['x-real-ip']) {
+      headers.set('x-real-ip', request.headers['x-real-ip']);
+    }
+
     const session = await auth.api.getSession({
-      headers: request.headers
+      headers
     });
 
     if (!session) {
@@ -84,8 +98,16 @@ export const requireCreator = requireRole(ROLES.CREATOR, ROLES.MODERATOR, ROLES.
  */
 export const optionalAuth = async (request, reply) => {
   try {
+    const headers = new Headers();
+    if (request.headers.cookie) {
+      headers.set('cookie', request.headers.cookie);
+    }
+    if (request.headers['user-agent']) {
+      headers.set('user-agent', request.headers['user-agent']);
+    }
+
     const session = await auth.api.getSession({
-      headers: request.headers
+      headers
     });
     
     if (session) {

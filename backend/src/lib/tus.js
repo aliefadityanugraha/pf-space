@@ -56,6 +56,14 @@ export const tusServer = new Server({
   }),
   // Disable tus server's built-in CORS — handled by Fastify hooks in tus.routes.js
   respectForwardedHeaders: true,
+  generateUrl: (req, { proto, host, path, id }) => {
+    const forwardedProto = req?.headers?.get?.('x-forwarded-proto') || req?.headers?.['x-forwarded-proto'] || '';
+    const forwardedHost = req?.headers?.get?.('x-forwarded-host') || req?.headers?.['x-forwarded-host'] || '';
+    const selectedProto = forwardedProto.split(',')[0].trim() || proto || 'https';
+    const selectedHost = forwardedHost.split(',')[0].trim() || host || 'localhost';
+    const basePath = path && path !== '/' ? path : '/api/files';
+    return `${selectedProto}://${selectedHost}${basePath}/${id}`;
+  },
   maxSize: 2 * 1024 * 1024 * 1024, // 2GB
   
   /**

@@ -5,6 +5,13 @@ import { BASE_URL } from './api.js'
  */
 export const API_BASE = BASE_URL
 
+function getRuntimeBaseUrl() {
+  if (typeof window !== 'undefined') {
+    return window.location.origin
+  }
+  return API_BASE || 'http://localhost:3001'
+}
+
 /**
  * Resolve a relative asset path to an absolute URL using the API base.
  * Returns the original value unchanged if it's already an absolute URL or falsy.
@@ -15,7 +22,10 @@ export function assetUrl(url) {
   // Return early if it's already an absolute URL (http, https, or protocol-relative //)
   if (/^(https?:)?\/\//i.test(url)) return url
   
-  const base = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE
+  const runtimeBase = getRuntimeBaseUrl()
+  const base = (typeof window !== 'undefined' ? runtimeBase : API_BASE || runtimeBase).toString().endsWith('/')
+    ? (typeof window !== 'undefined' ? runtimeBase : API_BASE || runtimeBase).toString().slice(0, -1)
+    : (typeof window !== 'undefined' ? runtimeBase : API_BASE || runtimeBase).toString()
   let path = url.startsWith('/') ? url : `/${url}`
   
   // Auto-prepend /uploads if it's a relative path and doesn't have it

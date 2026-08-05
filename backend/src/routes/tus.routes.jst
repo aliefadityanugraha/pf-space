@@ -1,19 +1,26 @@
+/**
+ * src/routes/tus.routes.js
+ * 
+ * Routes for large file uploads using the Tus resumable protocol.
+ */
+
 import { tusServer } from '../lib/tus.js';
 import { parseAllowedOrigins } from '../config/constants.js';
 
+/**
+ * Register Tus protocol routes for large file uploads
+ * @param {import('fastify').FastifyInstance} fastify - Fastify instance
+ */
 export default async function tusRoutes(fastify) {
   const allowedOrigins = parseAllowedOrigins();
 
+  /**
+   * Set CORS headers on EVERY request (including 404 errors)
+   * This runs before the tus handler, ensuring error responses also have CORS headers
+   */
   fastify.addHook('onRequest', async (request, reply) => {
     const requestOrigin = request.headers.origin;
-    
-    // Izinkan Origin jika ada di list, atau jika request berasal dari IP lokal (192.168.x.x / 10.x.x.x / localhost)
-    let origin = allowedOrigins[0];
-    if (requestOrigin) {
-      if (allowedOrigins.includes(requestOrigin) || /^http:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|localhost|127\.0\.0\.1)(:\d+)?$/.test(requestOrigin)) {
-        origin = requestOrigin;
-      }
-    }
+    const origin = allowedOrigins.includes(requestOrigin) ? requestOrigin : allowedOrigins[0];
     
     reply.header('Access-Control-Allow-Origin', origin);
     reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD');
@@ -23,14 +30,19 @@ export default async function tusRoutes(fastify) {
     reply.header('Cache-Control', 'no-store');
     reply.header('X-Accel-Buffering', 'no');
 
+    // Handle Preflight (OPTIONS) immediately
     if (request.method === 'OPTIONS') {
       reply.code(204).send();
       return;
     }
   });
 
-  // Handler utama untuk Tus Server
-  const handleTus = async (request, reply) => {
+  /**
+   * All requests to /api/files/* are proxied to the @tus/server handler.
+   */
+  fastify.all('/*', {
+    config: { rateLimit: false }
+  }, async (request, reply) => {
     try {
       return await tusServer.handle(request.raw, reply.raw);
     } catch (error) {
@@ -41,20 +53,5 @@ export default async function tusRoutes(fastify) {
         reply.raw.end(JSON.stringify({ error: 'Upload system failed' }));
       }
     }
-  };
-
-  // Match both the upload creation endpoint and the per-resource resume endpoint.
-  fastify.route({
-    method: ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT'],
-    url: '/',
-    config: { rateLimit: false },
-    handler: handleTus,
-  });
-
-  fastify.route({
-    method: ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT'],
-    url: '/:id',
-    config: { rateLimit: false },
-    handler: handleTus,
   });
 }

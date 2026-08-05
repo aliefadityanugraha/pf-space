@@ -13,6 +13,22 @@ import { updateProfileSchema } from '../lib/validation.js';
 import { NotFoundError, ValidationError } from '../lib/errors.js';
 import { recordAuditLog } from '../lib/audit.js';
 
+const getForwardedHeaders = (request) => {
+  const headers = new Headers();
+
+  for (const [key, value] of Object.entries(request.headers)) {
+    if (!value) continue;
+
+    if (Array.isArray(value)) {
+      value.forEach(v => headers.append(key, v));
+    } else {
+      headers.set(key, value);
+    }
+  }
+
+  return headers;
+};
+
 export class AuthController {
   /**
    * Get the currently authenticated user's profile
@@ -193,10 +209,9 @@ export class AuthController {
         userAgent: request.headers['user-agent']
       });
       
-      // Handle multiple Set-Cookie headers correctly (crucial for CSRF tokens)
       const setCookies = response.headers.getSetCookie ? response.headers.getSetCookie() : [];
       if (setCookies.length > 0) {
-        reply.header('set-cookie', setCookies);
+        reply.raw.setHeader('Set-Cookie', setCookies);
       }
       
       const data = await response.json();
@@ -235,14 +250,14 @@ export class AuthController {
 
       const setCookies = response.headers.getSetCookie ? response.headers.getSetCookie() : [];
       if (setCookies.length > 0) {
-        reply.header('set-cookie', setCookies);
+        reply.raw.setHeader('set-cookie', setCookies);
       }
 
       return ApiResponse.success(reply, null, 'Berhasil keluar');
     } catch (err) {
       console.error('Logout error:', err);
       // Fallback: Clear cookies manually if Better-Auth fails
-      reply.header('set-cookie', [
+      reply.raw.setHeader('Set-Cookie', [
         'better-auth.session_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax; Secure',
         'better-auth.session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax; Secure'
       ]);
@@ -256,24 +271,14 @@ export class AuthController {
    * @param {import('fastify').FastifyReply} reply
    */
   async handleAuth(request, reply) {
-    // Determine the base URL from environment OR request
-    // Since trustProxy is now enabled in Fastify, request.protocol and host should be accurate
     const baseURL = process.env.BETTER_AUTH_URL || `${request.protocol}://${request.headers.host}`;
     const url = new URL(request.url, baseURL);
-    
-    // Forward ALL headers
-    const headers = new Headers();
-    for (const [key, value] of Object.entries(request.headers)) {
-      if (value) {
-        if (Array.isArray(value)) {
-          value.forEach(v => headers.append(key, v));
-        } else {
-          headers.set(key, value);
-        }
-      }
+
+    if (url.pathname.startsWith('/api/auth/api/auth/')) {
+      url.pathname = url.pathname.replace('/api/auth/api/auth/', '/api/auth/');
     }
-    
-    // Set Origin to baseURL to satisfy Better-Auth's internal security checks
+
+    const headers = getForwardedHeaders(request);
     headers.set('Origin', baseURL);
 
     const options = {
@@ -281,8 +286,12 @@ export class AuthController {
       headers
     };
 
-    if (!['GET', 'HEAD'].includes(request.method) && request.body) {
-      options.body = JSON.stringify(request.body);
+    if (!['GET', 'HEAD'].includes(request.method)) {
+      if (request.body && typeof request.body === 'object' && !Buffer.isBuffer(request.body)) {
+        options.body = JSON.stringify(request.body);
+      } else if (request.raw && request.raw.body) {
+        options.body = request.raw.body;
+      }
     }
 
     try {
@@ -297,8 +306,7 @@ export class AuthController {
       // Handle multiple Set-Cookie headers correctly
       const setCookies = response.headers.getSetCookie ? response.headers.getSetCookie() : [];
       if (setCookies.length > 0) {
-        // Fastify handles multiple set-cookie headers when passed as an array
-        reply.header('set-cookie', setCookies);
+        reply.raw.setHeader('Set-Cookie', setCookies);
       }
       
       // Copy other headers

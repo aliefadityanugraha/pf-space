@@ -30,7 +30,10 @@ const togglePassword = () => {
 
 const handleSubmit = async () => {
   error.value = ''
-  const result = await login(email.value, password.value)
+  const normalizedEmail = email.value.trim().toLowerCase()
+  const normalizedPassword = password.value.trim()
+
+  const result = await login(normalizedEmail, normalizedPassword)
   
   if (result.success) {
     router.push('/')

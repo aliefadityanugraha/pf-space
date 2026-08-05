@@ -84,6 +84,21 @@ describe('Tus Routes Integration', () => {
     expect(r3.statusCode).toBe(204);
   });
 
+  it('should handle HEAD resume requests for tus resources', async () => {
+    const res = await fastify.inject({
+      method: 'HEAD',
+      url: '/api/files/some-id',
+      headers: {
+        origin: 'http://localhost:5173',
+        'Tus-Resumable': '1.0.0',
+        'Upload-Offset': '0',
+      },
+    });
+
+    expect(res.statusCode).toBe(204);
+    expect(res.headers['x-mock']).toBe('ok');
+  });
+
   it('should handle CORS preflight (OPTIONS) with 204', async () => {
     const res = await fastify.inject({
       method: 'OPTIONS',
