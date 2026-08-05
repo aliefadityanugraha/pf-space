@@ -3,6 +3,7 @@
  * 
  * Main entry point for the Fastify server. Configures plugins, 
  * database initialization, static file serving, and API routes.
+ * 
  */
 
 import 'dotenv/config';
@@ -101,10 +102,13 @@ await fastify.register(cors, {
   origin: (origin, cb) => {
     // Allow requests with no origin (mobile apps, curl, server-to-server)
     if (!origin) return cb(null, true);
+    // Allow localhost and local network IPs (for development/testing)
+    const isLocalNetwork = /^(https?:\/\/)(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin);
+    if (isLocalNetwork) return cb(null, true);
     // Check if origin is in allowed list
     if (allowedOrigins.includes(origin)) return cb(null, true);
     // Reject unknown origins
-    cb(new Error('Not allowed by CORS'), false);
+    cb(new Error('Not allowed by CORS: ' + origin), false);
   },
   credentials: true,
   exposedHeaders: [
@@ -124,7 +128,6 @@ await fastify.register(cookie);
 
 // Multipart (only for avatar uploads in auth)
 await fastify.register(multipart, {
-  addToBody: true,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB (avatar only, tus handles large files)
   }

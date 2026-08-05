@@ -21,11 +21,11 @@ export default async function authRoutes(fastify) {
 
   // Update user profile
   fastify.post('/update-profile', {
-    preHandler: [authenticate, validateRequest(updateProfileSchema, 'body')]
+    preHandler: [authenticate]
   }, authController.updateUser.bind(authController));
 
   fastify.patch('/update-user', {
-    preHandler: [authenticate, validateRequest(updateProfileSchema, 'body')]
+    preHandler: [authenticate]
   }, authController.updateUser.bind(authController));
 
   // Admin: Get all users

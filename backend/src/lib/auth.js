@@ -75,6 +75,8 @@ export const auth = betterAuth({
     // Local network IP
     'http://192.168.0.144:3000',
     'http://192.168.0.144:5173',
+    'http://192.168.18.35:3000',
+    'http://192.168.18.35:5173',
     // Production domain
     'https://pfspace.aliefaditya.cloud',
     'http://pfspace.aliefaditya.cloud',
