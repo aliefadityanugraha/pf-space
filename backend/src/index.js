@@ -3,7 +3,6 @@
  * 
  * Main entry point for the Fastify server. Configures plugins, 
  * database initialization, static file serving, and API routes.
- * 
  */
 
 import 'dotenv/config';
@@ -28,6 +27,7 @@ import staticRoutes from './routes/static.routes.js';
 import seoRoutes from './routes/seo.routes.js';
 import fastifyStatic from '@fastify/static';
 import { UPLOAD_DIR } from './lib/upload.js';
+import { getClientIp } from './lib/ip.js';
 import { seoMiddleware } from './middlewares/index.js';
 import { globalErrorHandler } from './middlewares/errorHandler.js';
 
@@ -77,8 +77,7 @@ await fastify.register(helmet, {
       mediaSrc: ["'self'"],
       connectSrc: ["'self'"],
       objectSrc: ["'none'"],
-      // Allow embedding in local frontend iframe on localhost:5173
-      frameAncestors: ["'self'", 'http://localhost:5173'],
+      frameAncestors: ["'none'"],
     }
   },
 });
@@ -89,7 +88,7 @@ await fastify.register(rateLimit, {
   max: 100,
   timeWindow: '1 minute',
   // Per-route overrides can be set via route config: { config: { rateLimit: { max: 10 } } }
-  keyGenerator: (request) => request.ip,
+  keyGenerator: (request) => getClientIp(request),
   errorResponseBuilder: () => ({
     success: false,
     message: 'Terlalu banyak permintaan. Silakan coba lagi nanti.',
@@ -97,24 +96,15 @@ await fastify.register(rateLimit, {
 });
 
 const allowedOrigins = parseAllowedOrigins();
-const isAllowedOrigin = (origin) => {
-  if (!origin) return true;
-  if (allowedOrigins.includes(origin)) return true;
-
-  return /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\.[0-9]+\.[0-9]+)(:\d+)?$/.test(origin);
-};
 
 await fastify.register(cors, {
   origin: (origin, cb) => {
     // Allow requests with no origin (mobile apps, curl, server-to-server)
     if (!origin) return cb(null, true);
-    // Allow localhost and local network IPs (for development/testing)
-    const isLocalNetwork = /^(https?:\/\/)(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin);
-    if (isLocalNetwork) return cb(null, true);
     // Check if origin is in allowed list
     if (allowedOrigins.includes(origin)) return cb(null, true);
     // Reject unknown origins
-    cb(new Error('Not allowed by CORS: ' + origin), false);
+    cb(new Error('Not allowed by CORS'), false);
   },
   credentials: true,
   exposedHeaders: [
@@ -134,6 +124,7 @@ await fastify.register(cookie);
 
 // Multipart (only for avatar uploads in auth)
 await fastify.register(multipart, {
+  addToBody: true,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB (avatar only, tus handles large files)
   }

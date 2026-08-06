@@ -2,11 +2,12 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
+import seoPlugin from './src/seoPlugin.js'
 
 const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:3001';
 
 export default defineConfig({
-  plugins: [vue(), tailwindcss()],
+  plugins: [vue(), tailwindcss(), seoPlugin({ backendUrl: 'http://127.0.0.1:3001' })],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -40,9 +41,9 @@ export default defineConfig({
     assetsInlineLimit: 0,
     rollupOptions: {
       output: {
-        assetFileNames: 'assets/[name]-[hash][extname]?v=20260805-tus-fix',
-        chunkFileNames: 'assets/[name]-[hash].js?v=20260805-tus-fix',
-        entryFileNames: 'assets/[name]-[hash].js?v=20260805-tus-fix',
+        assetFileNames: 'assets/[name]-[hash][extname]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
         manualChunks: {
           'vendor-vue': ['vue', 'vue-router', '@vueuse/core'],
           'vendor-editor': ['@tiptap/vue-3', '@tiptap/starter-kit'],

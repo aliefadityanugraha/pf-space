@@ -40,48 +40,67 @@ class ApiError extends Error {
   }
 }
 
+const DEFAULT_TIMEOUT_MS = 20000;
+
 async function request(endpoint, options = {}) {
+  const { timeout = DEFAULT_TIMEOUT_MS, signal: externalSignal, params, ...rest } = options;
   const baseUrl = BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001');
   const urlObj = new URL(endpoint, baseUrl);
   
-  if (options.params) {
-    Object.entries(options.params).forEach(([key, value]) => {
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         urlObj.searchParams.append(key, String(value));
       }
     });
-    delete options.params;
   }
   
   const url = urlObj.toString();
   const config = {
-    ...options,
+    ...rest,
     credentials: 'include',
     headers: {
-      ...options.headers
+      ...rest.headers
     },
   };
 
-  if (options.body && !(options.body instanceof FormData)) {
+  if (rest.body && !(rest.body instanceof FormData)) {
     config.headers['Content-Type'] = 'application/json';
   }
 
+  // Abort the request if it exceeds the timeout so the UI never hangs forever.
+  // Combine with the caller-provided signal (if any) for cancellation support.
+  const controller = new AbortController();
+  const onExternalAbort = () => controller.abort();
+  if (externalSignal) {
+    if (externalSignal.aborted) controller.abort();
+    else externalSignal.addEventListener('abort', onExternalAbort, { once: true });
+  }
+  const timer = timeout > 0 ? setTimeout(() => controller.abort(), timeout) : null;
+
   let response;
   try {
-    response = await fetch(url, config);
+    response = await fetch(url, { ...config, signal: controller.signal });
   } catch (err) {
-    if (err.name === 'AbortError') {
+    const abortedByCaller = !!externalSignal?.aborted;
+    if (abortedByCaller) {
       throw err;
     }
-    // Dispatch a custom event so the UI can show a fallback screen
+    // Timeout or network failure — surface a fallback screen instead of hanging
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('api:down'));
     }
+    const isTimeout = controller.signal.aborted;
     throw new ApiError(
-      'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.',
+      isTimeout
+        ? 'Waktu permintaan ke server habis. Silakan coba lagi.'
+        : 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.',
       0,
       null
     );
+  } finally {
+    if (timer) clearTimeout(timer);
+    if (externalSignal) externalSignal.removeEventListener('abort', onExternalAbort);
   }
   
   if (response.status === 204) {
