@@ -10,5 +10,7 @@ defineProps({
 </script>
 
 <template>
-  <div :class="cn('animate-pulse bg-stone-200 border-2 border-black/5', className)"></div>
+  <div :class="cn('relative overflow-hidden animate-pulse bg-stone-200 border-2 border-black/5', className)">
+    <div class="skeleton-shimmer" aria-hidden="true"></div>
+  </div>
 </template>

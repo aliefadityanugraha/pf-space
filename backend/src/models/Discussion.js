@@ -2,7 +2,7 @@
  * src/models/Discussion.js
  * 
  * Model for the 'discussions' table. Represents comments and 
- * replies linked to films and users.
+ * replies linked to films (film_id) and/or production posts (post_id).
  */
 
 import { BaseModel } from './BaseModel.js';
@@ -37,10 +37,11 @@ export class Discussion extends BaseModel {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['film_id', 'user_id', 'isi_pesan'],
+      required: ['user_id', 'isi_pesan'],
       properties: {
         diskusi_id: { type: 'integer' },
-        film_id: { type: 'integer' },
+        film_id: { type: ['integer', 'null'] },
+        post_id: { type: ['integer', 'null'] },
         user_id: { type: 'string' },
         isi_pesan: { type: 'string' },
         parent_id: { type: ['integer', 'null'] }
@@ -68,6 +69,14 @@ export class Discussion extends BaseModel {
         join: {
           from: 'discussions.film_id',
           to: 'films.film_id'
+        }
+      },
+      post: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: 'ProductionPost',
+        join: {
+          from: 'discussions.post_id',
+          to: 'production_posts.post_id'
         }
       },
       parent: {

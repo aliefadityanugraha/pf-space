@@ -39,7 +39,8 @@ const scrollToTop = () => {
     <button
       v-show="isVisible"
       @click="scrollToTop"
-      class="fixed bottom-24 right-6 z-[90] p-3 bg-brand-teal text-white border-2 border-stone-900 shadow-brutal flex items-center justify-center hover:bg-teal-600 transition-all hover:-translate-y-1 hover:shadow-brutal-lg focus:outline-none cursor-pointer"
+      aria-label="Kembali ke atas halaman"
+      class="fixed bottom-24 right-6 z-[90] p-3 bg-brand-teal text-white border-2 border-stone-900 shadow-brutal flex items-center justify-center hover:bg-teal-600 transition-all hover:-translate-y-1 hover:shadow-brutal-lg cursor-pointer"
       title="Kembali ke Atas"
     >
       <ArrowUp class="w-6 h-6 stroke-[3]" />

@@ -208,4 +208,12 @@ export function _resetAuthState() {
   initPromise = null;
 }
 
+/**
+ * @internal — ONLY for testing. Sets the current user without hitting the API.
+ */
+export function _setAuthUser(nextUser) {
+  user.value = normalizeUser(nextUser);
+  initialized.value = true;
+}
+
 

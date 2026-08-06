@@ -87,8 +87,15 @@ await fastify.register(compress);
 await fastify.register(rateLimit, {
   max: 100,
   timeWindow: '1 minute',
-  // Per-route overrides can be set via route config: { config: { rateLimit: { max: 10 } } }
   keyGenerator: (request) => getClientIp(request),
+  allowList: (request) => {
+    // In development mode, bypass rate limiting for localhost / 127.0.0.1 / ::1
+    if (process.env.NODE_ENV !== 'production') {
+      const ip = getClientIp(request);
+      return ip === '127.0.0.1' || ip === '::1' || ip === 'localhost';
+    }
+    return false;
+  },
   errorResponseBuilder: () => ({
     success: false,
     message: 'Terlalu banyak permintaan. Silakan coba lagi nanti.',

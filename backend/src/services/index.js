@@ -22,3 +22,5 @@ export * from './filmScene.service.js';
 export * from './gamification.service.js';
 export * from './report.service.js';
 export * from './setting.service.js';
+export * from './productionFeed.service.js';
+export * from './productionFeed.commentAdapter.js';

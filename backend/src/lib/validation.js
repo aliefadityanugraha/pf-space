@@ -52,7 +52,7 @@ const isUrl = (v) => {
   }
 };
 
-const uploadOrUrl = z
+export const uploadOrUrl = z
   .string()
   .trim()
   .refine(

@@ -6,7 +6,7 @@ module.exports = {
       script: "src/index.js",
       instances: "max",
       exec_mode: "cluster",
-      env_file: "./.env",
+      env_file: "./backend/.env",
       env: {
         NODE_ENV: "production",
       },

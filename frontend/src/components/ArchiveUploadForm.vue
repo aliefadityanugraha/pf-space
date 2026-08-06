@@ -11,6 +11,7 @@ import {
 } from 'lucide-vue-next'
 import RichTextEditor from '@/components/RichTextEditor.vue'
 import { useFilmDraft } from '@/composables/useFilmDraft'
+import { uploadFileTus } from '@/lib/uploadFileTus'
 
 const props = defineProps({
   initialData: {
@@ -98,83 +99,6 @@ watch(() => props.initialData, (newData) => {
     }
   }
 }, { immediate: true })
-
-import * as tus from 'tus-js-client'
-import { BASE_URL } from '@/lib/api'
-
-const uploadFileTus = (file, onProgress, fieldName) => {
-  return new Promise((resolve, reject) => {
-    const endpoint = typeof window !== 'undefined'
-      ? `${window.location.origin}/api/files/`
-      : `${BASE_URL.replace(/\/$/, '')}/api/files/`
-
-    if (typeof window !== 'undefined') {
-      try {
-        const keys = Object.keys(localStorage).filter((key) => key.includes('tus') || key.includes('upload'));
-        keys.forEach((key) => localStorage.removeItem(key));
-      } catch (err) {
-        console.warn('[Tus] Unable to clear previous upload storage', err);
-      }
-    }
-
-    let upload
-    upload = new tus.Upload(file, {
-      endpoint,
-      chunkSize: 32 * 1024 * 1024,
-      retryDelays: [0, 3000, 5000, 10000, 20000],
-      metadata: {
-        filename: file.name,
-        filetype: file.type || 'application/octet-stream'
-      },
-      onAfterResponse: (req, res) => {
-        if (typeof window !== 'undefined' && res?.getURL) {
-          const url = res.getURL();
-          console.log('[Tus] response URL:', url);
-          if (window.location.protocol === 'https:' && url && /^http:\/\//.test(url)) {
-            const httpsUrl = url.replace(/^http:\/\//, 'https://');
-            req.url = httpsUrl;
-            upload.url = httpsUrl;
-            console.log('[Tus] normalized URL:', httpsUrl);
-          }
-        }
-      },
-      storeFingerprintForResuming: false,
-      uploadUrl: null,
-      onError: (error) => {
-        reject(error)
-      },
-      onProgress: (bytesUploaded, bytesTotal) => {
-        const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(0)
-        if (onProgress) onProgress(+percentage)
-      },
-      onSuccess: () => {
-        try {
-          const id = upload.url.split('/api/files/')[1]
-          if (id && id.includes('/')) {
-            resolve(`/uploads/${id}`)
-          } else {
-            let subfolder = 'documents'
-            if (file?.type?.startsWith('video/')) subfolder = 'videos'
-            else if (file?.type === 'application/pdf') subfolder = 'documents'
-            else if (file?.type?.startsWith('image/')) subfolder = 'images'
-            else {
-              if (fieldName === 'gambar_poster' || fieldName === 'banner_url') subfolder = 'images'
-              else if (['file_naskah', 'file_storyboard', 'file_rab'].includes(fieldName)) subfolder = 'documents'
-              else subfolder = 'videos'
-            }
-            resolve(id ? `/uploads/${subfolder}/${id}` : upload.url)
-          }
-        } catch (e) {
-          resolve(upload.url)
-        }
-      }
-    })
-
-    upload.start()
-  })
-}
-
-
 
 const handleFileUpload = async (event, fieldName) => {
   const file = event.target.files[0]

@@ -23,3 +23,7 @@ export { AuditLog } from './AuditLog.js';
 export { StudyNote } from './StudyNote.js';
 export { FilmScene } from './FilmScene.js';
 export { Report } from './Report.js';
+export { ProductionPost } from './ProductionPost.js';
+export { ProductionPostMedia } from './ProductionPostMedia.js';
+export { Tag } from './Tag.js';
+export { ProductionPostTag } from './ProductionPostTag.js';

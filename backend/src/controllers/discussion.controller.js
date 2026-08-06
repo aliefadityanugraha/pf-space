@@ -4,7 +4,7 @@
  * Controller for managing film discussions, comments, and replies.
  */
 
-import { discussionService, filmService, notificationService } from '../services/index.js';
+import { discussionService, filmService, notificationService, productionFeedCommentAdapter } from '../services/index.js';
 import { ApiResponse } from '../lib/response.js';
 import { ROLES, FILM_STATUS } from '../config/constants.js';
 import { sanitizePlainText } from '../lib/sanitize.js';
@@ -50,6 +50,50 @@ export class DiscussionController {
     const { filmId } = request.params;
     const count = await discussionService.getCommentCount(filmId);
     return ApiResponse.success(reply, { comment_count: count });
+  }
+
+  /**
+   * Public: List comments of a production feed post (via comment adapter)
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getCommentsByPost(request, reply) {
+    const { postId } = request.params;
+    const { page, limit } = request.query;
+    const result = await productionFeedCommentAdapter.getByPost(postId, { page, limit });
+    return ApiResponse.success(
+      reply,
+      result.comments,
+      'Komentar berhasil diambil',
+      200,
+      result.pagination
+    );
+  }
+
+  /**
+   * Public: Get total comment count for a production feed post
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getCommentCountByPost(request, reply) {
+    const { postId } = request.params;
+    const count = await productionFeedCommentAdapter.getCommentCount(postId);
+    return ApiResponse.success(reply, { comment_count: count });
+  }
+
+  /**
+   * User: Add a comment to a published public production feed post
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async addCommentToPost(request, reply) {
+    const { postId } = request.params;
+    const comment = await productionFeedCommentAdapter.addComment(
+      postId,
+      request.user.id,
+      request.body.isi_pesan
+    );
+    return ApiResponse.success(reply, comment, 'Komentar berhasil ditambahkan', 201);
   }
 
   /**

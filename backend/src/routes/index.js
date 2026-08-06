@@ -21,6 +21,7 @@ import evaluationRoutes from './evaluation.routes.js';
 import studyNoteRoutes from './studyNote.routes.js';
 import filmSceneRoutes from './filmScene.routes.js';
 import reportRoutes from './report.routes.js';
+import productionFeedRoutes from './productionFeed.routes.js';
 import { knex } from '../database/index.js';
 import os from 'os';
 
@@ -76,6 +77,9 @@ export default async function routes(fastify) {
 
   // Reporting feature
   await fastify.register(reportRoutes, { prefix: '/reports' });
+
+  // Production feed (creator posts: progress, BTS, casting, dll)
+  await fastify.register(productionFeedRoutes, { prefix: '/production-feed' });
 
   // System administration
   await fastify.register(adminRoutes, { prefix: '/admin' });

@@ -21,3 +21,4 @@ export * from './studyNote.controller.js';
 export * from './filmScene.controller.js';
 export * from './report.controller.js';
 export * from './setting.controller.js';
+export * from './productionFeed.controller.js';

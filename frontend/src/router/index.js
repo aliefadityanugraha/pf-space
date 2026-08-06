@@ -102,6 +102,28 @@ const routes = [
     component: () => import("../pages/Trending.vue"),
   },
   {
+    path: "/feed",
+    name: "Feed",
+    component: () => import("../pages/Feed.vue"),
+  },
+  {
+    path: "/feed/create",
+    name: "CreateFeed",
+    component: () => import("../pages/CreateFeed.vue"),
+    meta: { requiresAuth: true, requiresCreator: true },
+  },
+  {
+    path: "/feed/:slug",
+    name: "FeedPostDetail",
+    component: () => import("../pages/FeedPostDetail.vue"),
+  },
+  {
+    path: "/feed/:id/edit",
+    name: "EditFeed",
+    component: () => import("../pages/EditFeed.vue"),
+    meta: { requiresAuth: true, requiresCreator: true },
+  },
+  {
     path: "/voting",
     redirect: "/trending",
   },

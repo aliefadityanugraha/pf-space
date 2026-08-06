@@ -11,7 +11,7 @@ import Footer from '@/components/Footer.vue'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Film, Play, User, Calendar, Loader2, TrendingUp, Clock, ArrowRight } from 'lucide-vue-next'
+import { Film, Play, User, Calendar, Loader2, TrendingUp, Clock, ArrowRight, Newspaper } from 'lucide-vue-next'
 import { useHead } from '@unhead/vue'
 import TrendingBanner from '@/components/TrendingBanner.vue'
 import LoadingState from '@/components/LoadingState.vue'
@@ -20,6 +20,10 @@ import TrendingCardSkeleton from '@/components/TrendingCardSkeleton.vue'
 import CategoryCardSkeleton from '@/components/CategoryCardSkeleton.vue'
 import CommunityDiscussion from '@/components/CommunityDiscussion.vue'
 import ErrorBoundary from '@/components/ErrorBoundary.vue'
+import FeedCard from '@/components/production-feed/FeedCard.vue'
+import FeedCardSkeleton from '@/components/production-feed/FeedCardSkeleton.vue'
+import FeedErrorState from '@/components/production-feed/FeedErrorState.vue'
+import { useProductionFeed } from '@/modules/production-feed/useProductionFeed'
 
 
 
@@ -37,6 +41,15 @@ useHead({
 const router = useRouter()
 const heroRef = ref(null)
 const isLightTitle = ref(true)
+
+// Production Feed preview (max 6 latest posts)
+const {
+  posts: feedPosts,
+  isLoading: isFeedLoading,
+  isError: isFeedError,
+  fetchFeed,
+  retry: retryFeed
+} = useProductionFeed({ limit: 6 })
 
 // Data
 const latestFilms = ref([])
@@ -96,6 +109,7 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll)
   handleScroll()
   fetchData()
+  fetchFeed()
 })
 
 onUnmounted(() => {
@@ -144,6 +158,62 @@ onUnmounted(() => {
           />
         </div>
       </ErrorBoundary>
+    </section>
+
+    <!-- Production Feed Preview Section -->
+    <section class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 relative z-10">
+      <SectionHeader
+        title="Production Feed"
+        subtitle="Cerita terbaru dari para creator PF Space"
+        :light-text="false"
+      />
+
+      <ErrorBoundary name="Production Feed">
+        <!-- Loading -->
+        <div v-if="isFeedLoading && feedPosts.length === 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <FeedCardSkeleton v-for="n in 6" :key="n" />
+        </div>
+
+        <!-- Error -->
+        <FeedErrorState
+          v-else-if="isFeedError && feedPosts.length === 0"
+          @retry="retryFeed"
+        />
+
+        <!-- Empty -->
+        <EmptyState
+          v-else-if="feedPosts.length === 0"
+          :icon="Newspaper"
+          title="Belum Ada Postingan"
+          description="Feed produksi masih kosong. Nantikan update pertama dari para kreator."
+          variant="dashed"
+        />
+
+        <!-- Feed preview grid -->
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            v-for="(post, index) in feedPosts"
+            :key="post.postId"
+            class="opacity-0 animate-[fade-in-up_0.6s_ease-out_forwards]"
+            :class="`stagger-${(index % 6) + 1}`"
+            @animationend="$event.target.style.opacity = 1"
+          >
+            <FeedCard :post="post" />
+          </div>
+        </div>
+      </ErrorBoundary>
+
+      <!-- View All Button -->
+      <div class="text-center mt-10 md:mt-12">
+        <Button
+          variant="outline"
+          @click="router.push('/feed')"
+          class="h-10 md:h-12 px-6 gap-2 border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] font-bold uppercase tracking-wider text-xs"
+        >
+          Lihat Semua
+          <ArrowRight class="w-4 h-4" />
+        </Button>
+      </div>
     </section>
 
     <ErrorBoundary name="Promo Section">

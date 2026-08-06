@@ -76,13 +76,14 @@ export const auth = betterAuth({
     'http://127.0.0.1:3001',
     'http://127.0.0.1:5173',
     'http://127.0.0.1:5174',
+    'http://192.168.3.229',
     'http://192.168.3.229:3001',
     'http://192.168.3.229:5173',
     'http://192.168.3.229:5174',
     'https://pfspace.my.id',
     'http://pfspace.my.id',
-    'https://pfspace.aliefaditya.cloud',
-    'http://pfspace.aliefaditya.cloud',
+    'https://www.pfspace.my.id',
+    'http://www.pfspace.my.id',
     process.env.FRONTEND_URL,
     process.env.BETTER_AUTH_URL
   ].filter(Boolean)

@@ -136,6 +136,61 @@ export async function saveFile(file, subfolder) {
 }
 
 /**
+ * Resolve a public upload URL ("/uploads/<subfolder>/<file>") to an absolute
+ * path inside UPLOAD_DIR, or null when the URL is invalid or falls outside
+ * the uploads directory (path traversal guard — same rule as deleteFile).
+ * @param {string} fileUrl - e.g. "/uploads/videos/uuid.mp4"
+ * @returns {string|null} Absolute file path or null
+ */
+export function resolveUploadPath(fileUrl) {
+  if (!fileUrl) return null;
+
+  const uploadsMarker = '/uploads/';
+  const idx = fileUrl.indexOf(uploadsMarker);
+  if (idx === -1) return null;
+
+  let relativePath = fileUrl.substring(idx + uploadsMarker.length);
+  if (!relativePath) return null;
+
+  // Strip query string / fragment (never relevant for local paths)
+  relativePath = relativePath.split('?')[0].split('#')[0];
+
+  const filePath = path.resolve(UPLOAD_DIR, relativePath);
+
+  // Path traversal guard: resolved path must stay inside UPLOAD_DIR
+  const resolvedUploadDir = path.resolve(UPLOAD_DIR);
+  if (filePath !== resolvedUploadDir && !filePath.startsWith(resolvedUploadDir + path.sep)) {
+    return null;
+  }
+
+  return filePath;
+}
+
+/**
+ * Check whether an uploaded file physically exists on disk.
+ * @param {string} fileUrl - e.g. "/uploads/images/uuid.webp"
+ * @returns {boolean}
+ */
+export function fileExists(fileUrl) {
+  const resolved = resolveUploadPath(fileUrl);
+  return resolved ? fs.existsSync(resolved) : false;
+}
+
+/**
+ * Map a production media type to the upload subfolder that stores it.
+ * @param {string} mediaType - 'photo' | 'video' | 'pdf'
+ * @returns {string|null} Subfolder name (images/videos/documents) or null
+ */
+export function getSubfolderForMediaType(mediaType) {
+  const map = {
+    photo: UPLOAD_SUBDIRS.images,
+    video: UPLOAD_SUBDIRS.videos,
+    pdf: UPLOAD_SUBDIRS.documents
+  };
+  return map[mediaType] || null;
+}
+
+/**
  * Delete a file by its URL or path.
  * Also removes tus metadata (.json) file if present.
  * @param {string} fileUrl - e.g. "/uploads/videos/uuid.mp4"

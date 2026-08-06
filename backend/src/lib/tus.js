@@ -57,15 +57,48 @@ export const tusServer = new Server({
   // Disable tus server's built-in CORS — handled by Fastify hooks in tus.routes.js
   respectForwardedHeaders: true,
   generateUrl: (req, { host, path, id }) => {
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    const isEncrypted = Boolean(req.socket?.encrypted || req.headers['x-forwarded-ssl'] === 'on');
+    const origin = req.headers.origin;
+
+    let originHost = '';
+    let originProto = '';
+    if (origin) {
+      try {
+        const parsed = new URL(origin);
+        originHost = parsed.host;
+        originProto = parsed.protocol.replace(':', '');
+      } catch (e) {}
+    }
+
     const selectedHost =
       req.headers['x-forwarded-host'] ||
+      originHost ||
       req.headers.host ||
       host ||
       'pfspace.my.id';
 
+    const cleanHost = selectedHost.split(':')[0];
+    const isLocalHost =
+      cleanHost === 'localhost' ||
+      cleanHost === '127.0.0.1' ||
+      cleanHost.startsWith('192.168.') ||
+      cleanHost.startsWith('10.');
+
+    let proto = 'https';
+    if (forwardedProto) {
+      proto = forwardedProto;
+    } else if (originProto) {
+      proto = originProto;
+    } else if (isEncrypted) {
+      proto = 'https';
+    } else if (isLocalHost) {
+      proto = 'http';
+    }
+
     const basePath = path && path !== '/' ? path : '/api/files';
 
-    return `https://${selectedHost}${basePath}/${id}`;
+    return `${proto}://${selectedHost}${basePath}/${id}`;
   },
   maxSize: 2 * 1024 * 1024 * 1024, // 2GB
   

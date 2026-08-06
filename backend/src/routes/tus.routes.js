@@ -4,6 +4,11 @@ import { parseAllowedOrigins } from '../config/constants.js';
 export default async function tusRoutes(fastify) {
   const allowedOrigins = parseAllowedOrigins();
 
+  // Allow all content types on TUS endpoints so Fastify passes the raw stream directly to @tus/server
+  fastify.addContentTypeParser('*', (request, payload, done) => {
+    done(null);
+  });
+
   fastify.addHook('onRequest', async (request, reply) => {
     const requestOrigin = request.headers.origin;
     

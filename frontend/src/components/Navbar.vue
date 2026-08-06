@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import { api } from '@/lib/api'
-import { Search, User, Film, LogOut, Settings, LayoutDashboard, Upload, LogIn, Shield, Loader2, X, Bookmark, Info, BookOpen, Ticket } from 'lucide-vue-next'
+import { Search, User, Film, LogOut, Settings, LayoutDashboard, Upload, LogIn, Shield, Loader2, X, Bookmark, Info, BookOpen, Ticket, Rss } from 'lucide-vue-next'
 import NotificationDropdown from './NotificationDropdown.vue'
 import ThemeToggle from './ThemeToggle.vue'
 import { Input } from '@/components/ui/input'
@@ -227,6 +227,14 @@ onUnmounted(() => {
             <span class="hidden sm:inline">Materi</span>
           </Button>
         </router-link>
+        <router-link to="/feed">
+          <Button 
+            class="bg-brand-teal text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2"
+          >
+            <Rss class="w-3 h-3 md:w-4 md:h-4 text-white" />
+            <span class="hidden sm:inline">Feed</span>
+          </Button>
+        </router-link>
       
         <!-- Auth Buttons (Not Logged In) -->
         <div v-if="!isLoggedIn" class="flex items-center gap-1 md:gap-2">
@@ -289,6 +297,13 @@ onUnmounted(() => {
                   <router-link to="/my-archive" class="flex items-center gap-2 cursor-pointer">
                     <Film class="w-4 h-4" />
                     <span>Karya Saya</span>
+                  </router-link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem v-if="isCreator" as-child>
+                  <router-link to="/feed/create" class="flex items-center gap-2 cursor-pointer">
+                    <Rss class="w-4 h-4" />
+                    <span>Buat Post Produksi</span>
                   </router-link>
                 </DropdownMenuItem>
                 
