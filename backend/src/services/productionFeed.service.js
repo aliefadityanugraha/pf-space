@@ -515,7 +515,7 @@ export class ProductionFeedService {
     const updated = await ProductionPost.transaction(async (trx) => {
       const patch = {
         status: POST_STATUS.PUBLISHED,
-        published_at: new Date().toISOString()
+        published_at: this._formatDateTime(new Date())
       };
       // Slug generated once, following the film slug pattern
       if (!post.slug) {
@@ -597,7 +597,7 @@ export class ProductionFeedService {
     if (!post) return null;
 
     const updated = await ProductionPost.query().patchAndFetchById(id, {
-      deleted_at: new Date().toISOString()
+      deleted_at: this._formatDateTime(new Date())
     });
 
     await this._recordAudit(
