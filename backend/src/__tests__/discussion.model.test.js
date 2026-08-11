@@ -8,6 +8,6 @@ describe('Discussion model', () => {
     discussion.$beforeInsert();
 
     expect(discussion.created_at).toBeInstanceOf(Date);
-    expect(discussion.updated_at).toBeUndefined();
+    expect(discussion.updated_at).toBeInstanceOf(Date);
   });
 });

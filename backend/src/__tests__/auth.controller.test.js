@@ -3,6 +3,10 @@ import { AuthController } from '../controllers/auth.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { auth } from '../lib/auth.js';
 
+vi.mock('../database/index.js', () => ({
+  knex: {}
+}));
+
 vi.mock('../lib/auth.js', () => ({
   auth: {
     handler: vi.fn(),

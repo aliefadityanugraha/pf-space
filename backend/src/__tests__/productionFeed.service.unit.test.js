@@ -141,7 +141,7 @@ describe('ProductionFeedService — lifecycle, access control, tags', () => {
     it('inserts as a draft with default is_pinned=false', async () => {
       mockTransaction();
       const inserted = { post_id: 1, status: 'draft', is_pinned: false, judul: 'A' };
-      ProductionPost.query.mockReturnValue({ insert: vi.fn().mockResolvedValue(inserted) });
+      ProductionPost.query.mockReturnValue({ insertAndFetch: vi.fn().mockResolvedValue(inserted) });
       const post = await service.create('u1', { judul: 'A' });
       expect(post).toBe(inserted);
       expect(ProductionPost.query).toHaveBeenCalledWith({});
@@ -167,7 +167,7 @@ describe('ProductionFeedService — lifecycle, access control, tags', () => {
     it('attaches media and syncs tags', async () => {
       mockTransaction();
       const inserted = { post_id: 1, status: 'draft' };
-      ProductionPost.query.mockReturnValue({ insert: vi.fn().mockResolvedValue(inserted) });
+      ProductionPost.query.mockReturnValue({ insertAndFetch: vi.fn().mockResolvedValue(inserted) });
       const attachMedia = vi.spyOn(service, '_attachMedia').mockResolvedValue();
       const syncTags = vi.spyOn(service, '_syncTags').mockResolvedValue();
       await service.create('u1', { judul: 'A', media: [{ media_type: 'photo', file_path: '/uploads/images/x.jpg' }], tags: ['a', 'b'] });
