@@ -28,11 +28,11 @@ const staticSlides = [
     slug: "metropolis"
   },
   {
-    title: "Citizen Kane",
+    title: "The Balkan Line",
     summary: "Directorial Genius",
-    quote: "Often cited as the greatest film ever made, Orson Welles' masterpiece revolutionized cinematography, structure, and narrative.",
+    quote: "During the 1999 Kosovo conflict, Serbian soldiers race against time to secure and defend a strategic airport, protecting local civilians until Russian reinforcements can arrive.",
     image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=2000",
-    slug: "citizen-kane"
+    slug: "the-balkan-line"
   }
 ]
 

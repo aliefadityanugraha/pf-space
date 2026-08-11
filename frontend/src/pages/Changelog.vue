@@ -38,6 +38,23 @@ const typeColor = {
 
 const fallbackData = () => ([
   {
+    id: 'v1_4_0',
+    version: '1.4.0',
+    date: '2026-08-06',
+    type: 'fix',
+    title: 'Pembaruan Keamanan, Stabilitas Sistem, & Integrasi SEO',
+    description: 'Penyelesaian 18 poin bug audit (S1-S12 & R1-R8), perbaikan kontrol akses RBAC, penanganan error boundary Vue, serta integrasi otomatis Sitemap XML.',
+    items: [
+      'Penambahan fitur Feed Production untuk pemantauan alur dan aktivitas produksi karya film',
+      'Perbaikan keamanan RBAC: pencegahan penurunan peran admin terakhir dan penyesuaian hak akses hapus komentar (Admin & Pemilik)',
+      'Penanganan pembersihan timer dan animasi secara otomatis saat unmount komponen untuk mencegah kebocoran memori',
+      'Perbaikan bug format tanggal dan penanganan token expired/missing pada reset password dan callback OAuth',
+      'Peningkatan komponen UI AssetListItem & ArchiveCard (fallback gambar, pencegahan URL kosong, slugify aman)',
+      'Integrasi Vite SEO Plugin untuk menyajikan sitemap.xml dan robots.txt dinamis secara langsung dari frontend',
+      'Perbaikan pembungkusan ErrorBoundary.vue dengan elemen root terstruktur untuk mencegah crash rendering slot di Vue 3'
+    ]
+  },
+  {
     id: 'v1_3_1',
     version: '1.3.1',
     date: '2026-04-02',
