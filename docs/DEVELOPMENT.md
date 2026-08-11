@@ -6,7 +6,7 @@ Panduan lengkap untuk setup dan development PF Space.
 
 ## 📋 Prerequisites
 
-- **Node.js** v18+
+- **Node.js** v23+
 - **MySQL** 8.0+
 - **npm** (untuk backend & frontend)
 

@@ -171,7 +171,7 @@ Dokumen ini menjelaskan **standar format response JSON API** agar:
 
 ## 🌐 Bahasa Pesan
 
-**Semua pesan user-facing (success & error) wajib dalam Bahasa Indonesia.** Ini sudah diimplementasikan di seluruh 15 controller.
+**Semua pesan user-facing (success & error) wajib dalam Bahasa Indonesia.** Ini sudah diimplementasikan di seluruh 19 controller.
 
 Contoh konsistensi:
 

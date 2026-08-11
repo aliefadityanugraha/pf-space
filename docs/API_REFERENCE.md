@@ -733,6 +733,118 @@ Cookie: better-auth.session_token=xxx
 
 ---
 
+
+---
+
+## 🎬 Production Feed (`/api/production-feed/...`)
+
+Sistem pemantauan alur dan aktivitas produksi karya film.
+
+### Get Semua Post (Public/Auth)
+
+```
+GET /api/production-feed?page=1&limit=10&status=published&tipe=progress&film_id=1&tag=casting
+Cookie: better-auth.session_token=xxx  (optional — untuk field has_voted)
+```
+
+Query params: `page`, `limit`, `status`, `tipe`, `film_id`, `tag`
+
+`tipe`: `progress`, `behind_the_scenes`, `casting`, `announcement`, `wrap`
+
+### Get Tags (Public)
+
+```
+GET /api/production-feed/tags
+```
+
+### Buat Tag (Moderator/Admin)
+
+```
+POST /api/production-feed/tags
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{ "name": "casting" }
+```
+
+### Update Tag (Moderator/Admin)
+
+```
+PUT /api/production-feed/tags/:tagId
+Cookie: better-auth.session_token=xxx
+```
+
+### Hapus Tag (Moderator/Admin)
+
+```
+DELETE /api/production-feed/tags/:tagId
+Cookie: better-auth.session_token=xxx
+```
+
+### Get Post Saya (Creator/Auth)
+
+```
+GET /api/production-feed/my?page=1&limit=10
+Cookie: better-auth.session_token=xxx
+```
+
+### Get Single Post (Public/Auth)
+
+```
+GET /api/production-feed/:id
+Cookie: better-auth.session_token=xxx  (optional)
+```
+
+### Buat Post (Creator/Admin)
+
+```
+POST /api/production-feed
+Cookie: better-auth.session_token=xxx
+```
+
+```json
+{
+  "judul": "Proses Syuting Scene 3",
+  "isi_konten": "Behind the scenes hari pertama syuting...",
+  "tipe": "behind_the_scenes",
+  "film_id": 1,
+  "status": "published",
+  "visibility": "public",
+  "tags": ["casting", "behind_the_scenes"],
+  "media": [
+    { "media_type": "photo", "url": "/uploads/bts1.jpg", "caption": "Lokasi syuting" }
+  ]
+}
+```
+
+### Update Post (Owner/Admin)
+
+```
+PUT /api/production-feed/:id
+Cookie: better-auth.session_token=xxx
+```
+
+### Hapus Post (Owner/Admin)
+
+```
+DELETE /api/production-feed/:id
+Cookie: better-auth.session_token=xxx
+```
+
+### Publish Post (Owner/Admin)
+
+```
+PATCH /api/production-feed/:id/publish
+Cookie: better-auth.session_token=xxx
+```
+
+### Archive Post (Owner/Admin)
+
+```
+PATCH /api/production-feed/:id/archive
+Cookie: better-auth.session_token=xxx
+```
 ## 🚨 Reports (`/api/reports/...`)
 
 ### Kirim Laporan (Auth)

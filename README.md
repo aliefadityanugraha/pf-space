@@ -1,144 +1,191 @@
-# PF Space
+<div align="center">
 
-Platform kearsipan film siswa untuk apresiasi, dokumentasi, dan pembelajaran karya sinematik. Menggunakan arsitektur Monorepo yang terdiri dari Frontend (Vue 3) dan Backend (Fastify).
+# 🎬 PF Space
 
-## Tech Stack
+**Platform Kearsipan Film Siswa**
 
-### Frontend (`frontend/`)
+Untuk apresiasi, dokumentasi, dan pembelajaran karya sinematik pelajar.
 
-- **Framework:** Vue 3 (Composition API `<script setup>`)
-- **Build Tool:** Vite
-- **Styling:** Tailwind CSS (Brutal Design System)
-- **UI Components:** shadcn/ui Vue (Radix Vue)
-- **Icons:** Lucide Vue
-- **Routing:** Vue Router
-- **SEO:** Unhead
+[![CI](https://github.com/aliefadityanugraha/pf-space/actions/workflows/node.js.yml/badge.svg)](https://github.com/aliefadityanugraha/pf-space/actions/workflows/node.js.yml)
+![Vue](https://img.shields.io/badge/Vue-3.5-42b883?logo=vue.js)
+![Fastify](https://img.shields.io/badge/Fastify-5-000000?logo=fastify)
+![Tailwind](https://img.shields.io/badge/Tailwind-4-06b6d4?logo=tailwindcss)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
-### Backend (`backend/`)
+</div>
 
-- **Framework:** Fastify
-- **Language:** JavaScript (ESM, Node.js)
-- **Database:** MySQL
-- **ORM/Query Builder:** Objection.js & Knex
-- **Authentication:** Better Auth (Email/Password + Google OAuth)
-- **File Handling:** Tus.io (Resumable Uploads)
-- **Validation:** Zod (Centralized Schema Validation)
-- **AI Provider:** Groq / OpenAI / Gemini (pluggable)
-- **Static Serving:** @fastify/static
+---
 
-## Project Structure
+## 📖 Tentang
+
+PF Space adalah platform web arsip film yang dibangun untuk siswa sekolah menengah (SMKN 1 Ngasem, Kediri). Platform ini memungkinkan siswa mengunggah, mendokumentasikan, dan mempelajari karya sinematik mereka — lengkap dengan sistem evaluasi, diskusi komunitas, dan mode studi interaktif.
+
+## ✨ Fitur Utama
+
+| Kategori | Fitur |
+| --- | --- |
+| 🎬 **Manajemen Karya** | Upload film (video + dokumen), review workflow, status publish/reject |
+| 📚 **Mode Studi** | Split-screen: tonton film sambil baca naskah, storyboard, atau RAB |
+| 🎯 **Evaluasi** | Penilaian kurator (Naskah, Sinematografi, Editing, Produksi) dengan feedback |
+| 💬 **Diskusi** | Threaded comments (5 level kedalaman), komunitas forum |
+| 🔖 **Koleksi & Voting** | Bookmark pribadi, voting trending (mingguan/bulanan) |
+| 🤖 **AI Chat** | Asisten AI berbasis konteks arsip film (Groq/OpenAI/Gemini) |
+| 📊 **Feed Production** | Pemantauan alur dan aktivitas produksi karya film |
+| 🔐 **RBAC** | 4 level akses: User, Creator, Moderator, Admin |
+| 📱 **Responsive** | Brutal Design System, mobile-first, dark mode |
+| 🔔 **Notifikasi** | Real-time in-app notifications |
+| 🛡️ **Keamanan** | CSP headers, rate limiting, RBAC defense-in-depth |
+| 🌐 **SEO** | Sitemap.xml & robots.txt dinamis via Vite plugin |
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+| Layer | Technology |
+| --- | --- |
+| **Frontend** | Vue 3.5 · Vite 7 · Tailwind CSS 4 · shadcn/ui · Lucide Icons |
+| **Backend** | Fastify 5 · Node.js 23 · MySQL · Knex.js · Objection.js |
+| **Auth** | Better Auth (Email/Password + Google OAuth) |
+| **Upload** | Tus.io (Resumable, hingga 2GB) |
+| **AI** | Groq · OpenAI · Gemini (pluggable) |
+| **Validation** | Zod (centralized schema) |
+| **CI/CD** | GitHub Actions · Vitest |
+
+</div>
+
+## 📁 Struktur Project
 
 ```
-.
-├── backend/                # Server-side code (API)
+pf-space/
+├── backend/                    # API Server (Fastify)
 │   ├── src/
-│   │   ├── controllers/    # Request handlers (18 controllers)
-│   │   ├── services/       # Business logic
-│   │   ├── models/         # Database models (Objection.js)
-│   │   ├── routes/         # API routes definition (21 route files)
-│   │   ├── middlewares/    # Auth, validation (Zod)
-│   │   ├── lib/            # Utilities (auth, AI, upload, sanitize)
-│   │   └── database/       # Migrations & Seeds
-│   ├── scripts/            # Utility scripts (make-admin, etc.)
-│   └── uploads/            # Uploaded files (gitignored)
+│   │   ├── controllers/        # 19 request handlers
+│   │   ├── services/           # Business logic (20 services)
+│   │   ├── models/             # Database models (24 models)
+│   │   ├── routes/             # API routes (22 files)
+│   │   ├── middlewares/        # Auth, rate-limit, view-limit
+│   │   ├── lib/                # Utilities (auth, AI, upload, SEO)
+│   │   ├── __tests__/          # Backend tests (21 files, 185 tests)
+│   │   └── database/           # Migrations & seeds
+│   └── uploads/                # Uploaded files (gitignored)
 │
-├── frontend/               # Client-side code (Vue 3)
+├── frontend/                   # SPA Client (Vue 3)
 │   ├── src/
-│   │   ├── components/     # UI components
-│   │   ├── pages/          # Page views
-│   │   ├── composables/    # Shared logic
-│   │   └── lib/            # Utilities
-│   └── ...
+│   │   ├── components/         # 68 Vue components
+│   │   ├── pages/              # 45 page views
+│   │   ├── composables/        # 9 shared composables
+│   │   ├── plugins/            # Vite plugins (SEO)
+│   │   └── lib/                # Utilities (api, format, sanitize)
+│   └── public/                 # Static assets
 │
-├── deploy/                 # Deployment scripts & configs
-│   ├── setup.sh            # Server setup (one-time)
-│   ├── deploy.sh           # Deploy/update script
-│   ├── pf-space.nginx.conf # Nginx config template
-│   └── DEPLOYMENT_GUIDE.md # Deployment documentation
+├── deploy/                     # Deployment configs
+│   ├── deploy.sh               # One-command deploy script
+│   ├── pf-space.nginx.conf     # Nginx config template
+│   └── DEPLOYMENT_GUIDE.md     # Step-by-step guide
 │
-└── docs/                   # Project documentation
+└── docs/                       # Documentation
+    ├── API_REFERENCE.md        # API endpoint docs
+    ├── DATABASE.md             # Schema & relations
+    ├── UPLOAD_SYSTEM.md        # Tus.io upload system
+    ├── DEVELOPMENT.md          # Dev setup guide
+    ├── TESTING_GUIDE.md        # Test coverage docs
+    └── ROADMAP.md              # Future features
 ```
 
-## Features
+## 🚀 Getting Started
 
-- **Authentication & Authorization**: Login, Register, dan RBAC (User, Creator, Moderator, Admin) dengan Google OAuth.
-- **Film Management**: Upload, review, approve/reject workflow dengan status `pending → published/rejected`.
-- **Film Evaluation System**: Penilaian karya oleh Kurator/Moderator (Naskah, Sinematografi, Editing, Produksi) dengan feedback mendetail.
-- **Study Mode**: Mode split-screen untuk menonton film sambil meninjau dokumen (Naskah, Storyboard, RAB).
-- **Study Notes**: Catatan pribadi pengguna saat menonton dalam Study Mode.
-- **Film Scenes**: Struktur adegan/breakdown film untuk analisis sinematografi.
-- **Hybrid Film Source**: Dukungan YouTube Embed & Direct Upload.
-- **Resumable Upload**: Upload file besar dengan protokol Tus.io (hingga 1 GB).
-- **Discussion System**: Threaded comments dengan Adjacency List (maks. 5 level kedalaman).
-- **Voting & Collection**: Sistem voting trending (per minggu/bulan/all) dan koleksi/bookmark pribadi.
-- **Community Forum**: Diskusi topik aktif dengan sistem balasan.
-- **Notification System**: Notifikasi real-time untuk komentar, balasan, evaluasi, dll.
-- **AI Chat**: Integrasi AI asisten berbasis kontext arsip film (Groq/OpenAI/Gemini).
-- **Content Reports**: Pelaporan konten dan antrian moderasi admin.
-- **Settings Management**: Pengaturan aplikasi yang dapat dikonfigurasi admin.
-- **Learning Materials**: Materi pembelajaran yang dikelola kurator/moderator.
-- **Admin Dashboard**: Backup/restore database, audit log, statistik sistem.
-- **Security**: CSP header, X-Request-ID tracing, rate limiting per-route.
+### Prerequisites
 
-## Getting Started
+- Node.js 22+
+- MySQL 8+
+- npm or pnpm
 
-### 1. Setup Backend
+### Backend
 
 ```bash
 cd backend
 npm install
-cp .env.example .env
-# Konfigurasi DB_NAME, DB_USER, DB_PASS, BETTER_AUTH_SECRET
+cp .env.example .env      # isi DB_NAME, DB_USER, DB_PASS, BETTER_AUTH_SECRET
 npm run migrate
 npm run seed
-npm run dev
+npm run dev                # http://localhost:3000
 ```
 
-### 2. Setup Frontend
+### Frontend
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev                # http://localhost:5173
 ```
 
-### 3. Set Admin Pertama
+### Set Admin Pertama
 
 ```bash
 cd backend
 node scripts/make-admin.js email@example.com
 ```
 
-## Development Status
+## 🧪 Testing
 
-- [x] **Backend API**: Fastify + MySQL integration.
-- [x] **Frontend UI**: Vue 3 + Brutal Design.
-- [x] **Authentication**: Better Auth (Email/Password + Google OAuth).
-- [x] **Film Evaluation**: Complete with curator feedback & notifications.
-- [x] **Study Mode**: Advanced video player with document integration.
-- [x] **Study Notes**: In-player note-taking for study mode.
-- [x] **Film Scenes**: Scene breakdown & structure management.
-- [x] **Media Handling**: Tus.io resumable upload.
-- [x] **Learning Materials**: Managed list-view for curated resources.
-- [x] **Community Forum**: Topic-based discussion with replies.
-- [x] **Notifications**: Event-driven notification system.
-- [x] **Content Reports**: Report & moderation queue.
-- [x] **Settings**: Admin-configurable application settings.
-- [x] **Backend Optimization**: N+1 query fixes, static imports, async I/O, Fisher-Yates shuffle, Recursive CTE.
-- [x] **Bahasa Indonesia Messages**: Semua pesan error & sukses konsisten dalam Bahasa Indonesia.
+```bash
+# Backend (185 tests)
+cd backend && npm test
 
-## 📚 Documentation
+# Frontend (84 tests)
+cd frontend && npm test
 
-Dokumentasi lengkap tersedia di folder [`docs/`](./docs/):
+# Semua test via CI
+gh run list                # lihat status GitHub Actions
+```
+
+## 📚 Dokumentasi
 
 | Dokumen | Deskripsi |
 | --- | --- |
-| [API Reference](./docs/API_REFERENCE.md) | Dokumentasi lengkap API endpoints |
-| [API Standards](./docs/API_STANDARDS.md) | Standar format response API |
-| [Database Schema](./docs/DATABASE.md) | Schema database dan relasi |
-| [Upload System](./docs/UPLOAD_SYSTEM.md) | Sistem upload resumable & draft |
-| [Development Guide](./docs/DEVELOPMENT.md) | Panduan setup dan development |
-| [Deployment Guide](./deploy/DEPLOYMENT_GUIDE.md) | Panduan deploy ke server production |
-| [Roadmap](./docs/ROADMAP.md) | Daftar fitur masa depan |
+| [API Reference](./docs/API_REFERENCE.md) | Endpoint lengkap + contoh request/response |
+| [Database Schema](./docs/DATABASE.md) | Struktur tabel dan relasi |
+| [Upload System](./docs/UPLOAD_SYSTEM.md) | Tus.io resumable upload & draft system |
+| [Development Guide](./docs/DEVELOPMENT.md) | Panduan setup local development |
+| [Testing Guide](./docs/TESTING_GUIDE.md) | Cara menulis dan menjalankan test |
+| [Deployment Guide](./deploy/DEPLOYMENT_GUIDE.md) | Deploy ke production server |
+| [Roadmap](./docs/ROADMAP.md) | Fitur masa depan |
 | [Changelog](./docs/CHANGELOG.md) | Riwayat perubahan versi |
-| [Contributing](./docs/CONTRIBUTING.md) | Panduan kontribusi |
+
+## 🔒 Security
+
+- **RBAC Defense-in-Depth**: Validasi role di controller DAN service
+- **Rate Limiting**: Per-route rate limits pada API autentikasi
+- **Input Validation**: Zod schemas + sanitization (XSS prevention)
+- **CSP Headers**: Content Security Policy untuk mencegah injection
+- **Self-Edit Prevention**: User tidak bisa mengubah role diri sendiri
+- **Last Admin Protection**: Admin terakhir tidak bisa diturunkan rolenya
+
+## 📈 Status
+
+- [x] Backend API — Fastify + MySQL
+- [x] Frontend UI — Vue 3 + Brutal Design
+- [x] Authentication — Better Auth (Email + Google OAuth)
+- [x] Film Evaluation — Kurator feedback & notifikasi
+- [x] Study Mode — Video player + dokumen split-screen
+- [x] Production Feed — Pemantauan aktivitas produksi
+- [x] Media Handling — Tus.io resumable upload (2GB)
+- [x] Community Forum — Threaded discussions
+- [x] AI Chat — Context-aware film assistant
+- [x] Learning Materials — Curated resource management
+- [x] Content Reports — Moderation queue
+- [x] SEO — Dynamic sitemap.xml & robots.txt
+- [x] CI/CD — GitHub Actions (21 backend + 16 frontend test files)
+- [x] Security Audit — 18 fixes (S1-S12, R1-R8)
+
+## 📄 License
+
+MIT License — silakan gunakan untuk projek pendidikan.
+
+---
+
+<div align="center">
+
+Dibuat dengan ❤️ untuk siswa SMKN 1 Ngasem, Kediri
+
+</div>

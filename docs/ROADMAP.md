@@ -22,6 +22,7 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk PF Space.
 - [x] **Film Scenes** — Struktur adegan/breakdown film
 - [x] **Study Mode** — Split-screen video player + document viewer
 - [x] **Study Notes** — Catatan pribadi dalam Study Mode
+- [x] **Production Feed** — Pemantauan alur produksi dan aktivitas karya film
 
 ### Social & Community
 
@@ -54,7 +55,7 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk PF Space.
 - [x] **Profil pengguna & pengaturan akun** — Ganti foto, ubah password
 - [x] **Halaman 404** — NotFound.vue dengan gaya brutalist
 
-### Performance & Security (2026-04)
+### Performance & Security (2026-04 → 2026-08)
 
 - [x] **N+1 Query Fix** — Recursive CTE untuk penghapusan komentar bersarang
 - [x] **DB-level Pagination** — Paginasi komentar di level database
@@ -65,6 +66,14 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk PF Space.
 - [x] **CSP Header** — Content Security Policy aktif di API server
 - [x] **X-Request-ID** — Tracing header pada setiap response
 - [x] **Bahasa Indonesia** — Semua pesan error & sukses konsisten B.Indo
+- [x] **Security Audit S1–S12, R1–R8** — 18 fixes: auth singleton reset, RBAC self-edit prevention, ErrorBoundary slot fix, format date guard, OAuth redirect safety, toast timer cleanup, discussion owner-only delete
+- [x] **SEO / Sitemap** — Vite plugin untuk sitemap.xml & robots.txt dinamis
+
+### Testing & CI/CD
+
+- [x] **Unit Test Backend** — 185 tests across 21 files (vi.mock, no DB required)
+- [x] **Unit Test Frontend** — 84 tests across 16 files (useAuth, useToast, useFilmDraft, format, ArchiveCard, dll.)
+- [x] **CI/CD Pipeline** — GitHub Actions: backend tests + frontend tests & build (Node 22, push/PR to main)
 
 ---
 
@@ -90,18 +99,16 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk PF Space.
 - [ ] **Redis Rate Limiting** — Migrasi `viewStore` in-memory ke Redis untuk rate limiting terdistribusi
 - [ ] **Per-route Rate Limit** — Implementasi menyeluruh pada endpoint spam-prone (discussion, vote, chat)
 
-### Testing & CI/CD
-
-- [ ] **Unit Test Frontend** — `useVoting`, `useToast`, `useAuth`
-- [ ] **Integration Test** — Alur upload/edit film end-to-end
-- [ ] **E2E Testing** — Cypress atau Playwright
-- [ ] **CI/CD Pipeline** — GitHub Actions: lint → build → migrate → test
-
 ### Aksesibilitas & SEO
 
 - [ ] **Alt text poster** — Lebih deskriptif dan kontekstual
 - [ ] **Keyboard navigation** — Fokus state tombol/link untuk keyboard user
 - [ ] **Meta tags per halaman** — OGP dan Twitter Card yang lengkap
+
+### Advanced Testing
+
+- [ ] **Integration Test** — Alur upload/edit film end-to-end
+- [ ] **E2E Testing** — Cypress atau Playwright
 
 ---
 
@@ -130,7 +137,7 @@ Daftar fitur dan perbaikan yang akan dikembangkan untuk PF Space.
 
 1. Real-time Notifikasi (WebSocket)
 2. Kontekstual AI Chat
-3. Testing & CI/CD
+3. Integration & E2E Testing
 4. Aksesibilitas & SEO
 
 ---

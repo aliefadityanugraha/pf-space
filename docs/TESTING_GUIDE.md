@@ -39,23 +39,23 @@ Panduan lengkap untuk testing PF Space project.
 
 ```bash
 cd frontend
-pnpm install
+npm install
 ```
 
 #### Run Tests
 
 ```bash
 # Run all tests
-pnpm test
+npm test
 
 # Run with coverage
-pnpm test:coverage
+npm test:coverage
 
 # Run in watch mode
-pnpm test:watch
+npm test:watch
 
 # Run specific file
-pnpm test useFilmDraft
+npm test useFilmDraft
 ```
 
 #### Test Structure
@@ -221,7 +221,7 @@ describe("Auth Integration", () => {
 
 ```bash
 cd frontend
-pnpm install -D @playwright/test
+npm install -D @playwright/test
 npx playwright install
 ```
 
@@ -229,13 +229,13 @@ npx playwright install
 
 ```bash
 # Run all E2E tests
-pnpm test:e2e
+npm test:e2e
 
 # Run in headed mode
-pnpm test:e2e --headed
+npm test:e2e --headed
 
 # Run specific test
-pnpm test:e2e upload.spec.js
+npm test:e2e upload.spec.js
 ```
 
 ### Example E2E Test
@@ -483,7 +483,7 @@ it("should create film", async () => {
 
 ```bash
 # Run with debug mode
-pnpm test:e2e --debug
+npm test:e2e --debug
 
 # Take screenshot on failure
 await page.screenshot({ path: 'error.png' })
@@ -496,7 +496,7 @@ await page.screenshot({ path: 'error.png' })
 ```bash
 # Frontend
 cd frontend
-pnpm test:coverage
+npm test:coverage
 open coverage/index.html
 
 # Backend

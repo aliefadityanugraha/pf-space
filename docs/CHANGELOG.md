@@ -4,6 +4,52 @@ Semua perubahan penting pada project PF Space didokumentasikan di sini.
 
 ---
 
+## [1.4.0] — 2026-08-06
+
+### ✅ Added
+
+- **Production Feed**: Sistem pemantauan alur dan aktivitas produksi karya film (endpoint, service, controller, validation, upload, comment adapter, routes).
+- **SEO Plugin**: Vite plugin untuk menyajikan `sitemap.xml` dan `robots.txt` dinamis langsung dari frontend tanpa konfigurasi nginx tambahan.
+- **GitHub Actions CI**: Pipeline CI/CD otomatis — backend tests (185 tests) + frontend tests & build (84 tests) pada push/PR ke `main`.
+- **Sitemap XML**: Daftar URL statis + dynamic film published, di-generate otomatis dari database.
+- **Robots.txt**: Disallow `/admin/`, `/profile/`, `/auth/`, `/api/` + Sitemap URL.
+
+### ⚡ Optimized
+
+- **Frontend Test Suite**: 84 tests across 16 files (useAuth, useToast, useFilmDraft, format, ArchiveCard, AssetListItem, ArchiveUploadForm, dll.).
+- **Backend Test Suite**: 185 tests across 21 files (termasuk productionFeed.service.unit, auth.controller, discussion.model, tus.routes, dll.).
+- **Vite Plugin Architecture**: SEO files dilayani langsung oleh Vite dev server middleware, fallback ke static files saat build.
+
+### 🔒 Security (18 Fixes — Audit S1-S12, R1-R8)
+
+- **S7**: `init()` clear stale user saat `success:false`, `login()` cek `loginRes.success` sebelum getProfile.
+- **S8**: Export `_resetNotificationsState()` & `_resetVotingState()`, `logout()` reset semua singletons.
+- **S9**: `AnnouncementModal` fetchTimer cleanup, `ScrollToTop` animationId cancel di `onUnmounted`.
+- **S10**: `useToast` global `hideTimer` clear sebelum showToast baru (cegah rapid-fire toast hilang).
+- **S11**: RBAC self-edit prevention + last-admin protection (backend & frontend).
+- **S12**: Discussion delete = owner OR admin (bukan moderator), community routes defense-in-depth role check.
+- **R1**: `isValidDate()` guard di `formatDate`/`timeAgo` — return `'-'` untuk tanggal invalid.
+- **R2**: `OAuthCallback` safeRedirect (cegah open-redirect), `ResetPassword` missingToken guard.
+- **R3**: `ArchiveCard` imageFailed fallback, `Navbar` seeAllResults safe route, `Home` computed section title (fix template literal parse error).
+- **R4**: `ChatSidebar` messageSeq/nextMid keys, errorTimer cleanup, historyFetchInFlight dedupe.
+- **R5**: `RichTextEditor` null-guard watcher, `ConfirmDialog` loading-block dismiss.
+- **R6**: `AssetListItem` safe slugify, `fileUrl` prop, download via `window.open` (noopener).
+- **R8**: `useFilmForm` parseYear helper — `Number.isNaN ? null : parsed`.
+
+### 🐛 Fixed
+
+- **ErrorBoundary.vue**: Wrap `<slot>` dalam `<div style="display: contents;">` — fix Vue 3 `renderSlot` crash (`Cannot read properties of null (reading 'ce')`).
+- **Sitemap empty response**: Tambah `Accept-Encoding: identity` header pada fetch plugin — fix Node.js native fetch menerima gzip tanpa dekompresi.
+- **Deployment path**: `seoPlugin` dipindah ke `src/seoPlugin.js` agar dapat ditulis di server deployment (permission `www` user).
+
+### 🏷️ Changed
+
+- **Discussion model test**: Update assertion `updated_at` — `BaseModel.$beforeInsert()` memang meng-set `updated_at`.
+- **ProductionFeed test**: Mock `insertAndFetch` (bukan `insert`) — sesuai service implementation.
+- **Auth controller test**: Tambah mock `database/index.js` — cegah knex init tanpa DB config di test environment.
+
+---
+
 ## [Unreleased] — 2026-04-18
 
 ### ✅ Added

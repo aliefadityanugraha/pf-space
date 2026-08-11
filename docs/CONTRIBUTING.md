@@ -8,13 +8,14 @@ Terima kasih atas minat Anda untuk berkontribusi pada project PF Space! Dokumen 
 - [Setup Development](#setup-development)
 - [Workflow Branching](#workflow-branching)
 - [Standar Kode](#standar-kode)
+- [Testing](#testing)
 - [Proses Pull Request](#proses-pull-request)
 
 ## 🚀 Prasyarat
 
-- Node.js >= 18.x
+- Node.js >= 23.x
 - MySQL >= 8.0
-- pnpm (untuk frontend)
+- npm
 - Git
 
 ## 🛠️ Setup Development
@@ -42,9 +43,9 @@ npm run dev
 
 ```bash
 cd frontend
-pnpm install
+npm install
 cp .env.example .env
-pnpm run dev
+npm run dev
 ```
 
 ## 🔄 Workflow Branching
@@ -72,6 +73,25 @@ git checkout -b feature/nama-fitur
 - Penamaan file `PascalCase` untuk Vue components dan `camelCase` untuk composables/utils.
 - Semua pesan error & sukses API menggunakan **Bahasa Indonesia**.
 
+## 🧪 Testing
+
+### Backend (185 tests)
+
+```bash
+cd backend
+npm test                # vitest run
+npm run test:coverage   # vitest run --coverage
+```
+
+### Frontend (84 tests)
+
+```bash
+cd frontend
+npm test                # vitest run
+```
+
+Pastikan semua test lulus sebelum push.
+
 ## 📦 Panduan Commit
 
 Gunakan format [Conventional Commits](https://www.conventionalcommits.org/):
@@ -92,7 +112,15 @@ Contoh: `feat(film): tambahkan fitur upload naskah`
 2. Push branch ke fork Anda: `git push origin feature/nama-fitur`
 3. Buka Pull Request ke branch `develop`.
 4. Buka Pull Request detail dengan deskripsi yang memadai. Tambahkan screenshot jika mengubah UI/Frontend.
-5. Reviewer akan mengecek dan me-merge Pull Request Anda jika memenuhi syarat.
+5. **CI akan otomatis berjalan** (GitHub Actions) — backend tests + frontend tests & build harus lulus.
+6. Reviewer akan mengecek dan me-merge Pull Request Anda jika memenuhi syarat.
+
+## 🔄 CI/CD
+
+GitHub Actions akan otomatis menjalankan pada push/PR ke `main`:
+
+- **Backend Tests** — `npx vitest run` (185 tests, 21 files)
+- **Frontend Tests & Build** — `npm test && npm run build` (84 tests, 16 files)
 
 ## 💬 Pertanyaan?
 
