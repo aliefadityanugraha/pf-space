@@ -1,37 +1,39 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Newspaper, Rss, Loader2, PenLine } from 'lucide-vue-next'
-import { useIntersectionObserver } from '@vueuse/core'
-import { useHead } from '@unhead/vue'
-import PageLayout from '@/components/PageLayout.vue'
-import PageHeader from '@/components/PageHeader.vue'
-import EmptyState from '@/components/EmptyState.vue'
-import { Button } from '@/components/ui/button'
-import FeedCard from '@/components/production-feed/FeedCard.vue'
-import FeedCardSkeleton from '@/components/production-feed/FeedCardSkeleton.vue'
-import FeedErrorState from '@/components/production-feed/FeedErrorState.vue'
-import { useProductionFeed } from '@/modules/production-feed/useProductionFeed'
-import { useAuth } from '@/composables/useAuth'
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { Newspaper, Rss, Loader2, PenLine } from "lucide-vue-next";
+import { useIntersectionObserver } from "@vueuse/core";
+import { useHead } from "@unhead/vue";
+import PageLayout from "@/components/PageLayout.vue";
+import PageHeader from "@/components/PageHeader.vue";
+import EmptyState from "@/components/EmptyState.vue";
+import { Button } from "@/components/ui/button";
+import FeedCard from "@/components/production-feed/FeedCard.vue";
+import FeedCardSkeleton from "@/components/production-feed/FeedCardSkeleton.vue";
+import FeedErrorState from "@/components/production-feed/FeedErrorState.vue";
+import { useProductionFeed } from "@/modules/production-feed/useProductionFeed";
+import { useAuth } from "@/composables/useAuth";
 
 useHead({
-  title: 'Feed Produksi - PF Space',
+  title: "Feed Produksi - PF Space",
   meta: [
     {
-      name: 'description',
-      content: 'Ikuti perkembangan produksi film dari para kreator di PF Space.'
+      name: "description",
+      content:
+        "Ikuti perkembangan produksi film dari para kreator di PF Space.",
     },
-    { property: 'og:type', content: 'website' },
-    { property: 'og:site_name', content: 'PF Space' },
-    { property: 'og:title', content: 'Feed Produksi - PF Space' },
+    { property: "og:type", content: "website" },
+    { property: "og:site_name", content: "PF Space" },
+    { property: "og:title", content: "Feed Produksi - PF Space" },
     {
-      property: 'og:description',
-      content: 'Ikuti perkembangan produksi film dari para kreator di PF Space.'
+      property: "og:description",
+      content:
+        "Ikuti perkembangan produksi film dari para kreator di PF Space.",
     },
-    { name: 'twitter:card', content: 'summary' }
-  ]
-})
+    { name: "twitter:card", content: "summary" },
+  ],
+});
 
-const { isCreator } = useAuth()
+const { isCreator } = useAuth();
 
 const {
   posts,
@@ -43,30 +45,36 @@ const {
   fetchFeed,
   loadMore,
   retry,
-  restoreCache
-} = useProductionFeed({ limit: 10 })
+  restoreCache,
+} = useProductionFeed({ limit: 10 });
 
 const errorMessage = computed(
-  () => error.value?.message || 'Gagal memuat feed produksi. Silakan coba lagi.'
-)
+  () =>
+    error.value?.message || "Gagal memuat feed produksi. Silakan coba lagi.",
+);
 
-const sentinel = ref(null)
+const sentinel = ref(null);
 const { stop } = useIntersectionObserver(
   sentinel,
   ([entry]) => {
-    if (entry.isIntersecting && hasMore.value && !isLoading.value && !isLoadingMore.value) {
-      loadMore()
+    if (
+      entry.isIntersecting &&
+      hasMore.value &&
+      !isLoading.value &&
+      !isLoadingMore.value
+    ) {
+      loadMore();
     }
   },
-  { rootMargin: '200px' }
-)
+  { rootMargin: "200px" },
+);
 
 onMounted(() => {
-  restoreCache()
-  fetchFeed()
-})
+  restoreCache();
+  fetchFeed();
+});
 
-onUnmounted(() => stop())
+onUnmounted(() => stop());
 </script>
 
 <template>
@@ -78,7 +86,9 @@ onUnmounted(() => stop())
       >
         <template #extra>
           <div class="mt-3 flex items-center gap-3">
-            <span class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-400">
+            <span
+              class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-400"
+            >
               <Rss class="w-3.5 h-3.5" />
               Semua Postingan
             </span>
@@ -117,12 +127,21 @@ onUnmounted(() => stop())
       />
 
       <!-- Feed list (gallery grid) -->
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+      <div
+        v-else
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+      >
         <FeedCard v-for="post in posts" :key="post.postId" :post="post" />
 
         <!-- Infinite scroll sentinel -->
-        <div ref="sentinel" class="flex items-center justify-center py-6 min-h-16 col-span-full">
-          <Loader2 v-if="isLoadingMore" class="w-6 h-6 animate-spin text-brand-teal" />
+        <div
+          ref="sentinel"
+          class="flex items-center justify-center py-6 min-h-16 col-span-full"
+        >
+          <Loader2
+            v-if="isLoadingMore"
+            class="w-6 h-6 animate-spin text-brand-teal"
+          />
           <p
             v-else-if="!hasMore"
             class="font-body text-xs uppercase tracking-widest text-stone-400 text-center"

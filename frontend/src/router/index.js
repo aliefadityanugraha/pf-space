@@ -102,6 +102,11 @@ const routes = [
     component: () => import("../pages/Trending.vue"),
   },
   {
+    path: "/films",
+    name: "Films",
+    component: () => import("../pages/Films.vue"),
+  },
+  {
     path: "/feed",
     name: "Feed",
     component: () => import("../pages/Feed.vue"),

@@ -95,13 +95,19 @@ const imageError = ref(false)
           <Badge variant="default" class="bg-stone-800 shrink-0">
             {{ film.tahun_karya || '-' }}
           </Badge>
-          <Badge
+          <router-link
             v-if="film.category"
-            variant="outline"
-            class="bg-white shrink-0"
+            :to="{ path: '/films', query: { category_id: film.category.category_id } }"
+            class="shrink-0"
+            :aria-label="`Lihat semua karya kategori ${film.category.nama_kategori}`"
           >
-            {{ film.category.nama_kategori }}
-          </Badge>
+            <Badge
+              variant="outline"
+              class="bg-white hover:bg-brand-teal hover:text-white hover:border-brand-teal transition-colors cursor-pointer"
+            >
+              {{ film.category.nama_kategori }}
+            </Badge>
+          </router-link>
         </div>
         <h3 class="font-display font-semibold text-stone-900 text-lg mb-2">Sinopsis</h3>
         <p class="text-sm md:text-base text-stone-600 break-words leading-normal md:leading-relaxed">

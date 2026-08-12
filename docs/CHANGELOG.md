@@ -83,17 +83,17 @@ Semua perubahan penting pada project PF Space didokumentasikan di sini.
 
 Semua fungsi controller distandarisasi mengikuti konvensi REST CRUD:
 
-| Controller | Lama | Baru |
-| --- | --- | --- |
-| `discussion` | `getOne` | `getById` |
-| `community` | `getOne` | `getById` |
-| `community` | `getAllDiscussions` | `getAll` |
-| `community` | `createDiscussion` | `create` |
-| `community` | `updateDiscussion` | `update` |
-| `community` | `deleteDiscussion` | `delete` |
-| `community` | `getDiscussionReplies` | `getReplies` |
-| `notification` | `getNotifications` | `getAll` |
-| `notification` | `createNotification` | `create` |
+| Controller     | Lama                   | Baru         |
+| -------------- | ---------------------- | ------------ |
+| `discussion`   | `getOne`               | `getById`    |
+| `community`    | `getOne`               | `getById`    |
+| `community`    | `getAllDiscussions`    | `getAll`     |
+| `community`    | `createDiscussion`     | `create`     |
+| `community`    | `updateDiscussion`     | `update`     |
+| `community`    | `deleteDiscussion`     | `delete`     |
+| `community`    | `getDiscussionReplies` | `getReplies` |
+| `notification` | `getNotifications`     | `getAll`     |
+| `notification` | `createNotification`   | `create`     |
 
 Route files diperbarui mengikuti rename di atas.
 

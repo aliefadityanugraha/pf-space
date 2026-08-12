@@ -97,12 +97,12 @@ GROQ_API_KEY=your-groq-api-key
 
 ## Role System
 
-| role_id | name | Deskripsi |
-| --- | --- | --- |
-| 1 | user | Default — bisa vote, komentar, koleksi |
-| 2 | creator | Bisa upload dan manage film sendiri |
-| 3 | moderator | Bisa moderasi komentar & komunitas |
-| 4 | admin | Full access ke semua fitur |
+| role_id | name      | Deskripsi                              |
+| ------- | --------- | -------------------------------------- |
+| 1       | user      | Default — bisa vote, komentar, koleksi |
+| 2       | creator   | Bisa upload dan manage film sendiri    |
+| 3       | moderator | Bisa moderasi komentar & komunitas     |
+| 4       | admin     | Full access ke semua fitur             |
 
 ### Set Admin Pertama
 
@@ -116,13 +116,13 @@ node scripts/make-admin.js email@example.com
 
 Semua fungsi controller mengikuti standar REST CRUD:
 
-| Operasi | Nama Fungsi |
-| --- | --- |
-| Ambil semua | `getAll` |
-| Ambil by ID | `getById` |
-| Buat baru | `create` |
-| Update | `update` |
-| Hapus | `delete` |
+| Operasi     | Nama Fungsi |
+| ----------- | ----------- |
+| Ambil semua | `getAll`    |
+| Ambil by ID | `getById`   |
+| Buat baru   | `create`    |
+| Update      | `update`    |
+| Hapus       | `delete`    |
 
 Spesifik per domain diizinkan: `getByFilm`, `toggleDiscussion`, `getReplies`, `addReply`, `getActiveDiscussion`, `getStats`, dll.
 
@@ -133,12 +133,16 @@ Spesifik per domain diizinkan: `getByFilm`, `toggleDiscussion`, `getReplies`, `a
 Menggunakan **Zod** dengan middleware `validateRequest`:
 
 ```javascript
-import { validateRequest } from '../middlewares/index.js';
-import { createFilmSchema } from '../middlewares/schemas/film.schema.js';
+import { validateRequest } from "../middlewares/index.js";
+import { createFilmSchema } from "../middlewares/schemas/film.schema.js";
 
-fastify.post('/films', {
-  preHandler: [authenticate, validateRequest(createFilmSchema)]
-}, filmController.create.bind(filmController));
+fastify.post(
+  "/films",
+  {
+    preHandler: [authenticate, validateRequest(createFilmSchema)],
+  },
+  filmController.create.bind(filmController),
+);
 ```
 
 ---
@@ -173,9 +177,7 @@ Semua response menggunakan `ApiResponse` helper. Pesan **selalu dalam Bahasa Ind
   "success": false,
   "code": "VALIDATION_ERROR",
   "message": "Validasi input gagal",
-  "errors": [
-    { "field": "judul", "message": "Judul wajib diisi" }
-  ]
+  "errors": [{ "field": "judul", "message": "Judul wajib diisi" }]
 }
 ```
 
@@ -203,42 +205,42 @@ Lihat dokumentasi lengkap di [`docs/API_REFERENCE.md`](../docs/API_REFERENCE.md)
 
 Ringkasan route prefix:
 
-| Prefix | Modul |
-| --- | --- |
-| `/api/auth/...` | Authentication & User management |
-| `/api/films/...` | Film CRUD + approval workflow |
-| `/api/film-scenes/...` | Struktur adegan film |
-| `/api/votes/...` | Voting & trending |
-| `/api/discussions/...` | Komentar bersarang |
-| `/api/community/...` | Forum diskusi topik |
-| `/api/collections/...` | Koleksi/bookmark |
-| `/api/notifications/...` | Notifikasi |
-| `/api/evaluations/...` | Penilaian kurator |
-| `/api/study-notes/...` | Catatan Study Mode |
-| `/api/learning-materials/...` | Materi pembelajaran |
-| `/api/reports/...` | Pelaporan konten |
-| `/api/categories/...` | Kategori film |
-| `/api/users/...` | Profil publik pengguna |
-| `/api/settings/...` | Pengaturan aplikasi |
-| `/api/chat/...` | AI Chat |
-| `/api/files/...` | Upload (Tus.io) |
-| `/api/upload/...` | Upload utilities |
-| `/api/admin/...` | Admin (backup, statistik) |
+| Prefix                        | Modul                            |
+| ----------------------------- | -------------------------------- |
+| `/api/auth/...`               | Authentication & User management |
+| `/api/films/...`              | Film CRUD + approval workflow    |
+| `/api/film-scenes/...`        | Struktur adegan film             |
+| `/api/votes/...`              | Voting & trending                |
+| `/api/discussions/...`        | Komentar bersarang               |
+| `/api/community/...`          | Forum diskusi topik              |
+| `/api/collections/...`        | Koleksi/bookmark                 |
+| `/api/notifications/...`      | Notifikasi                       |
+| `/api/evaluations/...`        | Penilaian kurator                |
+| `/api/study-notes/...`        | Catatan Study Mode               |
+| `/api/learning-materials/...` | Materi pembelajaran              |
+| `/api/reports/...`            | Pelaporan konten                 |
+| `/api/categories/...`         | Kategori film                    |
+| `/api/users/...`              | Profil publik pengguna           |
+| `/api/settings/...`           | Pengaturan aplikasi              |
+| `/api/chat/...`               | AI Chat                          |
+| `/api/files/...`              | Upload (Tus.io)                  |
+| `/api/upload/...`             | Upload utilities                 |
+| `/api/admin/...`              | Admin (backup, statistik)        |
 
 ---
 
 ## HTTP Status Codes
 
-| Code | Kondisi |
-| --- | --- |
-| `200` | Berhasil |
-| `201` | Data berhasil dibuat |
+| Code  | Kondisi                      |
+| ----- | ---------------------------- |
+| `200` | Berhasil                     |
+| `201` | Data berhasil dibuat         |
 | `400` | Bad Request / Validasi gagal |
-| `401` | Belum login |
-| `403` | Tidak memiliki izin |
-| `404` | Data tidak ditemukan |
-| `429` | Too Many Requests |
-| `500` | Internal Server Error |
+| `401` | Belum login                  |
+| `403` | Tidak memiliki izin          |
+| `404` | Data tidak ditemukan         |
+| `429` | Too Many Requests            |
+| `500` | Internal Server Error        |
 
 ---
 
@@ -246,16 +248,16 @@ Ringkasan route prefix:
 
 Beberapa implementasi performa penting:
 
-| Fitur | Implementasi |
-| --- | --- |
-| Hapus komentar bersarang | Recursive CTE (1 DB round-trip) |
-| Paginasi komentar | DB-level pagination (3 parallel queries) |
-| Film acak | Fisher-Yates shuffle (bukan `ORDER BY RAND()`) |
-| Penghapusan file | `Promise.all` (paralel, bukan sequential loop) |
-| Disk space check | `promisify(exec)` async (bukan `execSync`) |
-| Dynamic import | Semua static import di atas file controller |
-| Request tracking | `X-Request-ID` header pada semua response |
-| Security | CSP header aktif + per-route rate limiting |
+| Fitur                    | Implementasi                                   |
+| ------------------------ | ---------------------------------------------- |
+| Hapus komentar bersarang | Recursive CTE (1 DB round-trip)                |
+| Paginasi komentar        | DB-level pagination (3 parallel queries)       |
+| Film acak                | Fisher-Yates shuffle (bukan `ORDER BY RAND()`) |
+| Penghapusan file         | `Promise.all` (paralel, bukan sequential loop) |
+| Disk space check         | `promisify(exec)` async (bukan `execSync`)     |
+| Dynamic import           | Semua static import di atas file controller    |
+| Request tracking         | `X-Request-ID` header pada semua response      |
+| Security                 | CSP header aktif + per-route rate limiting     |
 
 ---
 

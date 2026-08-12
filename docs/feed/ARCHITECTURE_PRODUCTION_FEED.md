@@ -29,12 +29,12 @@ Contoh konten Post:
 
 ## 2. Module Responsibility
 
-| Aspek | Definisi |
-|---|---|
-| **Purpose** | Mengelola Post produksi film: publish, list, filter, cari, moderasi, komentar, dan media. |
-| **Owner** | Module baru `productionFeed` (model, service, controller, route, schema sendiri). |
-| **Bukan tanggung jawab** | Status approval karya jadi (milik `Film`), voting/trending arsip (milik `Vote`), forum diskusi topik (milik `Community`), notifikasi global (milik `Notification`), file storage (milik `Upload`/`tus`). |
-| **Relasi lintas context** | Hanya *read*: validasi eksistensi Film (bila `film_id` diisi) dan mengambil judul/slug film untuk ditampilkan di feed. |
+| Aspek                     | Definisi                                                                                                                                                                                                 |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Purpose**               | Mengelola Post produksi film: publish, list, filter, cari, moderasi, komentar, dan media.                                                                                                                |
+| **Owner**                 | Module baru `productionFeed` (model, service, controller, route, schema sendiri).                                                                                                                        |
+| **Bukan tanggung jawab**  | Status approval karya jadi (milik `Film`), voting/trending arsip (milik `Vote`), forum diskusi topik (milik `Community`), notifikasi global (milik `Notification`), file storage (milik `Upload`/`tus`). |
+| **Relasi lintas context** | Hanya _read_: validasi eksistensi Film (bila `film_id` diisi) dan mengambil judul/slug film untuk ditampilkan di feed.                                                                                   |
 
 ### Prinsip batasan
 
@@ -84,19 +84,19 @@ Registrasi wajib mengikuti barrel export existing (tanpa mengubah isi module lai
 
 Mengikuti konvensi database: `snake_case`, PK auto-increment, timestamp otomatis dari `BaseModel.$beforeInsert`.
 
-| Field | Tipe | Keterangan |
-|---|---|---|
-| `post_id` | Integer (PK) | Auto increment |
-| `user_id` | Varchar(36) (FK) | Penulis post (FK `users.id`) |
-| `film_id` | Integer (FK, **Nullable**) | **Relasi optional** ke `films.film_id` |
-| `judul` | Varchar(255) | Judul post |
-| `isi_konten` | Text | Isi konten (disanitasi) |
-| `tipe` | Enum | `progress` / `behind_the_scenes` / `casting` / `announcement` / `wrap` |
-| `media` | JSON | Array path `/uploads/...` (nullable) |
-| `status` | Enum | `draft` / `published` / `archived` (default `draft`) |
-| `is_pinned` | Boolean | Post disematkan di atas feed (default `false`) |
-| `created_at` | Timestamp | Otomatis |
-| `updated_at` | Timestamp | Otomatis |
+| Field        | Tipe                       | Keterangan                                                             |
+| ------------ | -------------------------- | ---------------------------------------------------------------------- |
+| `post_id`    | Integer (PK)               | Auto increment                                                         |
+| `user_id`    | Varchar(36) (FK)           | Penulis post (FK `users.id`)                                           |
+| `film_id`    | Integer (FK, **Nullable**) | **Relasi optional** ke `films.film_id`                                 |
+| `judul`      | Varchar(255)               | Judul post                                                             |
+| `isi_konten` | Text                       | Isi konten (disanitasi)                                                |
+| `tipe`       | Enum                       | `progress` / `behind_the_scenes` / `casting` / `announcement` / `wrap` |
+| `media`      | JSON                       | Array path `/uploads/...` (nullable)                                   |
+| `status`     | Enum                       | `draft` / `published` / `archived` (default `draft`)                   |
+| `is_pinned`  | Boolean                    | Post disematkan di atas feed (default `false`)                         |
+| `created_at` | Timestamp                  | Otomatis                                                               |
+| `updated_at` | Timestamp                  | Otomatis                                                               |
 
 **Catatan desain:**
 
@@ -108,8 +108,8 @@ Mengikuti konvensi database: `snake_case`, PK auto-increment, timestamp otomatis
 
 Komentar **tidak memakai tabel baru**. Komentar Post disimpan di tabel `discussions` existing melalui kolom adapter `post_id` (nullable) yang ditambahkan oleh migration `20260807000000_add_post_id_to_discussions.js`.
 
-| Kolom adapter (baru) | Tipe | Keterangan |
-|---|---|---|
+| Kolom adapter (baru)  | Tipe                       | Keterangan                                                                                            |
+| --------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `discussions.post_id` | Integer (FK, **Nullable**) | Menunjuk `production_posts.post_id` bila baris adalah komentar Post; `NULL` untuk komentar film biasa |
 
 - Komentar film (existing) tetap memakai `film_id`; komentar Post memakai `post_id`. Keduanya saling eksklusif dan tidak mengubah perilaku komentar film.
@@ -142,10 +142,10 @@ Komentar **tidak memakai tabel baru**. Komentar Post disimpan di tabel `discussi
 
 **Trigger yang diusulkan (event feed):**
 
-| Event | Penerima | `type` | Payload `data` |
-|---|---|---|---|
-| Komentar baru di post saya | Penulis post (jika bukan diri sendiri) | `production_comment` | `{ post_id, discussion_id }` |
-| Post baru terhubung ke film saya | Pemilik film (jika post `film_id` diisi & bukan diri sendiri) | `production_post` | `{ post_id, film_id, slug }` |
+| Event                                   | Penerima                                                            | `type`               | Payload `data`               |
+| --------------------------------------- | ------------------------------------------------------------------- | -------------------- | ---------------------------- |
+| Komentar baru di post saya              | Penulis post (jika bukan diri sendiri)                              | `production_comment` | `{ post_id, discussion_id }` |
+| Post baru terhubung ke film saya        | Pemilik film (jika post `film_id` diisi & bukan diri sendiri)       | `production_post`    | `{ post_id, film_id, slug }` |
 | Nama saya disebut (`@Nama`) di komentar | Setiap user yang namanya cocok di `users.name` (kecuali komentator) | `production_mention` | `{ post_id, discussion_id }` |
 
 > Detail lengkap ketiga event (trigger, payload, batasan, non-goal) ada di `NOTIFICATIONS_PRODUCTION_FEED.md`.
@@ -172,11 +172,11 @@ Komentar **tidak memakai tabel baru**. Komentar Post disimpan di tabel `discussi
 
 **Keputusan desain penting — tiga opsi:**
 
-| Opsi | Deskripsi | Konsekuensi |
-|---|---|---|
-| A. Generalisasi `Discussions` menjadi polymorphic (`target_type` + `film_id` nullable) | Mengubah struktur `discussions` secara besar dan memodifikasi `discussion.service`/`controller`/`routes` untuk semua kasus | ❌ Menyentuh logika module existing yang melayani komentar film berjalan; risiko regresi tinggi; **meningkatkan coupling**. |
-| B. Entitas komentar milik feed (`production_post_comments`) | Komentar sederhana satu level di dalam context feed, tabel baru | ⚠️ Konsisten preseden (`CommunityReply`), tetapi **menduplikasi** struktur komentar yang sudah ada (`discussions`) dan memecah moderasi komentar menjadi dua tempat. |
-| C. **Adapter di atas `discussions` existing** (kolom `post_id` nullable + handler di module Discussion) | Komentar Post memakai tabel/struktur/endpoint `discussions`; aturan domain feed dijaga di adapter | ✅ **Keputusan final.** Satu sistem komentar untuk semua; tanpa tabel duplikat; perubahan `discussions` minimal (1 kolom nullable + handler read) tanpa menyentuh perilaku komentar film; moderasi komentar terpusat di satu tempat. |
+| Opsi                                                                                                    | Deskripsi                                                                                                                  | Konsekuensi                                                                                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| A. Generalisasi `Discussions` menjadi polymorphic (`target_type` + `film_id` nullable)                  | Mengubah struktur `discussions` secara besar dan memodifikasi `discussion.service`/`controller`/`routes` untuk semua kasus | ❌ Menyentuh logika module existing yang melayani komentar film berjalan; risiko regresi tinggi; **meningkatkan coupling**.                                                                                                          |
+| B. Entitas komentar milik feed (`production_post_comments`)                                             | Komentar sederhana satu level di dalam context feed, tabel baru                                                            | ⚠️ Konsisten preseden (`CommunityReply`), tetapi **menduplikasi** struktur komentar yang sudah ada (`discussions`) dan memecah moderasi komentar menjadi dua tempat.                                                                 |
+| C. **Adapter di atas `discussions` existing** (kolom `post_id` nullable + handler di module Discussion) | Komentar Post memakai tabel/struktur/endpoint `discussions`; aturan domain feed dijaga di adapter                          | ✅ **Keputusan final.** Satu sistem komentar untuk semua; tanpa tabel duplikat; perubahan `discussions` minimal (1 kolom nullable + handler read) tanpa menyentuh perilaku komentar film; moderasi komentar terpusat di satu tempat. |
 
 **Alasan keputusan (C):**
 
@@ -209,25 +209,25 @@ Komentar **tidak memakai tabel baru**. Komentar Post disimpan di tabel `discussi
 
 Prefix: `/api/production-feed`. Nama handler mengikuti konvensi REST CRUD project.
 
-| Method | Path | Auth | Handler | Deskripsi |
-|---|---|---|---|---|
-| GET | `/` | `optionalAuth` | `getAll` | List feed published (filter: `user_id`, `film_id`, `tipe`, `search`, `page`, `limit`, `is_pinned`) |
-| GET | `/:id` | `optionalAuth` | `getById` | Detail post (draft hanya untuk owner/admin) |
-| GET | `/my` | `requireCreator` | `getMyPosts` | Post milik user (analog `getMyFilms`) |
-| POST | `/` | `requireCreator` | `create` | Buat post (validasi `productionPostSchema`) |
-| PUT | `/:id` | `authenticate` | `update` | Update post (ownership check) |
-| DELETE | `/:id` | `authenticate` | `delete` | Hapus post + media (komentar ikut via FK CASCADE) |
-| PATCH | `/:id/publish` | `authenticate` | `publish` | Terbitkan post (`draft → published`) |
-| PATCH | `/:id/archive` | `authenticate` | `archive` | Arsipkan post |
+| Method | Path           | Auth             | Handler      | Deskripsi                                                                                          |
+| ------ | -------------- | ---------------- | ------------ | -------------------------------------------------------------------------------------------------- |
+| GET    | `/`            | `optionalAuth`   | `getAll`     | List feed published (filter: `user_id`, `film_id`, `tipe`, `search`, `page`, `limit`, `is_pinned`) |
+| GET    | `/:id`         | `optionalAuth`   | `getById`    | Detail post (draft hanya untuk owner/admin)                                                        |
+| GET    | `/my`          | `requireCreator` | `getMyPosts` | Post milik user (analog `getMyFilms`)                                                              |
+| POST   | `/`            | `requireCreator` | `create`     | Buat post (validasi `productionPostSchema`)                                                        |
+| PUT    | `/:id`         | `authenticate`   | `update`     | Update post (ownership check)                                                                      |
+| DELETE | `/:id`         | `authenticate`   | `delete`     | Hapus post + media (komentar ikut via FK CASCADE)                                                  |
+| PATCH  | `/:id/publish` | `authenticate`   | `publish`    | Terbitkan post (`draft → published`)                                                               |
+| PATCH  | `/:id/archive` | `authenticate`   | `archive`    | Arsipkan post                                                                                      |
 
 **Komentar Post tidak ada di prefix `/production-feed`** (hindari endpoint duplikat). Komentar Post diakses lewat prefix `/api/discussions`:
 
-| Method | Path | Auth | Handler | Deskripsi |
-|---|---|---|---|---|
-| GET | `/post/:postId` | public | `getCommentsByPost` | Komentar post (flat, paginated) |
-| GET | `/post/:postId/count` | public | `getCommentCountByPost` | Jumlah komentar post |
-| POST | `/post/:postId` | `authenticate` (rate limited) | `addCommentToPost` | Tambah komentar (lewat adapter) |
-| DELETE | `/:id` | `authenticate` | `delete` | Hapus komentar (existing, owner/moderator/admin) |
+| Method | Path                  | Auth                          | Handler                 | Deskripsi                                        |
+| ------ | --------------------- | ----------------------------- | ----------------------- | ------------------------------------------------ |
+| GET    | `/post/:postId`       | public                        | `getCommentsByPost`     | Komentar post (flat, paginated)                  |
+| GET    | `/post/:postId/count` | public                        | `getCommentCountByPost` | Jumlah komentar post                             |
+| POST   | `/post/:postId`       | `authenticate` (rate limited) | `addCommentToPost`      | Tambah komentar (lewat adapter)                  |
+| DELETE | `/:id`                | `authenticate`                | `delete`                | Hapus komentar (existing, owner/moderator/admin) |
 
 **Rate limit per-route**: endpoint komentar & buat post diberi `config: { rateLimit: {...} }` (pola `auth.routes.js`) untuk cegah spam.
 
@@ -388,4 +388,3 @@ Daftar lengkap temuan & perbaikan: [PRODUCTION_READY_REVIEW.md](PRODUCTION_READY
 - **Empty & Error State** — sudah ada (`FeedErrorState`, `EmptyState`) dan kini konsisten; `RelatedFeed` menambah error state + tombol "Coba Lagi" (sebelumnya error di-swallow jadi list kosong).
 - **Responsive & Brutal Design System** — seluruh perubahan memakai token yang ada (`shadow-brutal-*`, `border-2 border-black`, `bg-white`, `font-display/heading/body`, kontainer `max-w-7xl`/`max-w-5xl`); tidak ada utility baru yang melenceng; responsive breakpoint mengikuti pola yang ada.
 - Verifikasi: suite frontend **140 test pass**, `npm run build` sukses; probe headless (playwright-core + Chrome) memverifikasi OG/canonical, tombol share, 6 kartu feed, dan `loading="lazy"`; screenshot: `docs/feed/production-feed-detail-review.png` & `production-feed-list-review.png`.
-

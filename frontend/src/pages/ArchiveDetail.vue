@@ -12,7 +12,7 @@ import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import { Loader2, Flag } from "lucide-vue-next";
 import ErrorBoundary from "@/components/ErrorBoundary.vue";
-import ReportModal from '@/components/ReportModal.vue';
+import ReportModal from "@/components/ReportModal.vue";
 
 // Sub-components (extracted from this file)
 import DetailVideoSection from "@/components/detail/DetailVideoSection.vue";
@@ -35,7 +35,10 @@ const isLightTitle = ref(true);
 
 const handleScroll = () => {
   if (videoSectionRef.value) {
-    const sectionHeight = videoSectionRef.value.$el?.offsetHeight || videoSectionRef.value.offsetHeight || 500;
+    const sectionHeight =
+      videoSectionRef.value.$el?.offsetHeight ||
+      videoSectionRef.value.offsetHeight ||
+      500;
     // Switch to dark text/white bg when scrolled past video section
     isLightTitle.value = window.scrollY < sectionHeight - 80;
   } else {
@@ -88,8 +91,7 @@ const fetchVoteData = async () => {
     const d = res.data || {};
     voteData.value = {
       vote_count: d.vote_count ?? 0,
-      has_voted:
-        typeof d.has_voted !== "undefined" ? !!d.has_voted : !!d.voted,
+      has_voted: typeof d.has_voted !== "undefined" ? !!d.has_voted : !!d.voted,
     };
   } catch (err) {
     console.error("Failed to fetch votes:", err);
@@ -126,8 +128,7 @@ const fetchCollectionStatus = async () => {
   if (!filmId.value || !isLoggedIn.value) return;
   try {
     const res = await api.get(`/api/collections/${filmId.value}/status`);
-    collectionState.value.isInCollection =
-      res.data?.is_in_collection || false;
+    collectionState.value.isInCollection = res.data?.is_in_collection || false;
   } catch (err) {
     console.error("Failed to fetch collection status:", err);
   }
@@ -152,9 +153,7 @@ const handleToggleCollection = async () => {
     }
 
     collectionState.value.isInCollection = inCollection;
-    showToast(
-      inCollection ? "Ditambahkan ke koleksi" : "Dihapus dari koleksi",
-    );
+    showToast(inCollection ? "Ditambahkan ke koleksi" : "Dihapus dari koleksi");
   } catch (err) {
     collectionState.value.isInCollection = previous;
     showToast(err.message || "Gagal mengubah koleksi", "error");
@@ -171,11 +170,13 @@ const handleShare = async () => {
   } catch (err) {
     if (navigator.share) {
       // Fallback for strict environments like iOS Safari if clipboard fails
-      await navigator.share({
-        title: film.value?.judul || "PF Space Archive",
-        text: `Lihat karya ${film.value?.judul} di PF Space`,
-        url: window.location.href,
-      }).catch(() => {});
+      await navigator
+        .share({
+          title: film.value?.judul || "PF Space Archive",
+          text: `Lihat karya ${film.value?.judul} di PF Space`,
+          url: window.location.href,
+        })
+        .catch(() => {});
     } else {
       showToast("Gagal menyalin tautan", "error");
     }
@@ -218,16 +219,19 @@ const handleReportContent = (target) => {
     showToast("Silakan login untuk melaporkan konten", "error");
     return;
   }
-  
+
   // If target has diskusi_id, it's a comment
   if (target.diskusi_id) {
     reportType.value = "comment";
-    reportTarget.value = { id: target.diskusi_id, name: `Komentar oleh ${target.user?.name}` };
+    reportTarget.value = {
+      id: target.diskusi_id,
+      name: `Komentar oleh ${target.user?.name}`,
+    };
   } else {
     reportType.value = "film";
     reportTarget.value = { id: film.value.film_id, name: film.value.judul };
   }
-  
+
   showReportModal.value = true;
 };
 
@@ -278,9 +282,8 @@ const deletingCommentIds = ref(new Set());
 
 const deleteComment = async (id) => {
   if (deletingCommentIds.value.has(id)) return;
-  
-  if (!confirm("Hapus komentar ini? Semua balasan juga akan terhapus."))
-    return;
+
+  if (!confirm("Hapus komentar ini? Semua balasan juga akan terhapus.")) return;
 
   deletingCommentIds.value.add(id);
   try {
@@ -315,7 +318,12 @@ const canAccessStudy = computed(() => {
     film.value?.file_rab
   );
   // Allow if has assets OR if user is staff/owner (to see/give evaluations)
-  return hasAssets || isAdmin.value || isModerator.value || (user.value && user.value.id === film.value?.user_id);
+  return (
+    hasAssets ||
+    isAdmin.value ||
+    isModerator.value ||
+    (user.value && user.value.id === film.value?.user_id)
+  );
 });
 
 // ─── Parsed description sections ────────────────────────
@@ -465,63 +473,104 @@ onUnmounted(() => {
         <div class="flex-1 w-full">
           <div class="aspect-video bg-stone-800 animate-pulse w-full"></div>
           <!-- Action Bar Skeleton -->
-          <div class="h-16 md:h-20 bg-stone-900 border-t border-[#fafaf9]/5 px-4 flex items-center justify-between animate-pulse">
-             <div class="h-6 bg-stone-800 w-1/3 rounded"></div>
-             <div class="flex gap-2 hidden md:flex">
-               <div class="h-8 w-20 bg-stone-800 rounded"></div>
-               <div class="h-8 w-24 bg-stone-800 rounded"></div>
-             </div>
+          <div
+            class="h-16 md:h-20 bg-stone-900 border-t border-[#fafaf9]/5 px-4 flex items-center justify-between animate-pulse"
+          >
+            <div class="h-6 bg-stone-800 w-1/3 rounded"></div>
+            <div class="flex gap-2 hidden md:flex">
+              <div class="h-8 w-20 bg-stone-800 rounded"></div>
+              <div class="h-8 w-24 bg-stone-800 rounded"></div>
+            </div>
           </div>
         </div>
         <!-- Right Sidebar Skeleton -->
-        <div class="w-full lg:w-80 xl:w-96 shrink-0 bg-[#292524] p-4 flex flex-col gap-3 animate-pulse">
+        <div
+          class="w-full lg:w-80 xl:w-96 shrink-0 bg-[#292524] p-4 flex flex-col gap-3 animate-pulse"
+        >
           <div class="w-24 h-4 bg-stone-700 rounded mb-2"></div>
-          <div v-for="i in 3" :key="i" class="w-full h-16 md:h-20 bg-stone-700 rounded-lg"></div>
+          <div
+            v-for="i in 3"
+            :key="i"
+            class="w-full h-16 md:h-20 bg-stone-700 rounded-lg"
+          ></div>
         </div>
       </div>
-      
+
       <!-- Content Area Skeleton -->
       <div class="flex-1 bg-brand-cream p-4 md:p-8">
         <div class="max-w-7xl mx-auto space-y-4 animate-pulse">
-           <div class="h-8 md:h-12 w-2/3 md:w-1/2 bg-stone-300"></div>
-           <div class="flex gap-4 mb-8">
-             <div class="h-4 w-20 bg-stone-300"></div>
-             <div class="h-4 w-20 bg-stone-300"></div>
-             <div class="h-4 w-24 bg-stone-300"></div>
-           </div>
-           
-           <!-- Text lines -->
-           <div class="space-y-3 mt-8">
-             <div class="h-4 w-full bg-stone-200"></div>
-             <div class="h-4 w-full bg-stone-200"></div>
-             <div class="h-4 w-11/12 bg-stone-200"></div>
-             <div class="h-4 w-4/5 bg-stone-200"></div>
-             <div class="h-4 w-5/6 bg-stone-200"></div>
-           </div>
+          <div class="h-8 md:h-12 w-2/3 md:w-1/2 bg-stone-300"></div>
+          <div class="flex gap-4 mb-8">
+            <div class="h-4 w-20 bg-stone-300"></div>
+            <div class="h-4 w-20 bg-stone-300"></div>
+            <div class="h-4 w-24 bg-stone-300"></div>
+          </div>
+
+          <!-- Text lines -->
+          <div class="space-y-3 mt-8">
+            <div class="h-4 w-full bg-stone-200"></div>
+            <div class="h-4 w-full bg-stone-200"></div>
+            <div class="h-4 w-11/12 bg-stone-200"></div>
+            <div class="h-4 w-4/5 bg-stone-200"></div>
+            <div class="h-4 w-5/6 bg-stone-200"></div>
+          </div>
         </div>
       </div>
     </div>
 
     <template v-else-if="film">
       <!-- Moderation Status Banner -->
-      <div v-if="film.status !== 'published' && isLoggedIn" class="w-full bg-stone-900 border-b border-white/10 py-3 px-4 md:px-8">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div
+        v-if="film.status !== 'published' && isLoggedIn"
+        class="w-full bg-stone-900 border-b border-white/10 py-3 px-4 md:px-8"
+      >
+        <div
+          class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3"
+        >
           <div class="flex items-center gap-3">
-             <div :class="['w-2 h-2 rounded-full animate-pulse', film.status === 'pending' ? 'bg-amber-500' : 'bg-red-500']"></div>
-             <div>
-                <p class="text-[10px] md:text-xs font-black uppercase tracking-widest" :class="film.status === 'pending' ? 'text-amber-500' : 'text-red-500'">
-                   Status: {{ film.status === 'pending' ? 'Menunggu Kurasi' : 'Karya Perlu Perbaikan' }}
-                </p>
-                <p v-if="film.status === 'rejected' && film.rejection_reason" class="text-xs text-stone-400 mt-1 italic font-medium">
-                  Catatan curator: "{{ film.rejection_reason }}"
-                </p>
-                <p v-else-if="film.status === 'pending'" class="text-[9px] md:text-xs text-stone-500 mt-0.5">
-                  Karya Anda sedang dalam antrean review oleh moderator. Hanya Anda yang dapat melihat halaman ini.
-                </p>
-             </div>
+            <div
+              :class="[
+                'w-2 h-2 rounded-full animate-pulse',
+                film.status === 'pending' ? 'bg-amber-500' : 'bg-red-500',
+              ]"
+            ></div>
+            <div>
+              <p
+                class="text-[10px] md:text-xs font-black uppercase tracking-widest"
+                :class="
+                  film.status === 'pending' ? 'text-amber-500' : 'text-red-500'
+                "
+              >
+                Status:
+                {{
+                  film.status === "pending"
+                    ? "Menunggu Kurasi"
+                    : "Karya Perlu Perbaikan"
+                }}
+              </p>
+              <p
+                v-if="film.status === 'rejected' && film.rejection_reason"
+                class="text-xs text-stone-400 mt-1 italic font-medium"
+              >
+                Catatan curator: "{{ film.rejection_reason }}"
+              </p>
+              <p
+                v-else-if="film.status === 'pending'"
+                class="text-[9px] md:text-xs text-stone-500 mt-0.5"
+              >
+                Karya Anda sedang dalam antrean review oleh moderator. Hanya
+                Anda yang dapat melihat halaman ini.
+              </p>
+            </div>
           </div>
           <div class="flex gap-2">
-            <Button v-if="user?.id === film.user_id" size="sm" variant="outline" class="h-8 text-[10px] border-white/20 text-white hover:bg-white/10" @click="router.push(`/archive/${film.slug}/edit`)">
+            <Button
+              v-if="user?.id === film.user_id"
+              size="sm"
+              variant="outline"
+              class="h-8 text-[10px] border-white/20 text-white hover:bg-white/10"
+              @click="router.push(`/archive/${film.slug}/edit`)"
+            >
               Perbaiki Karya
             </Button>
             <!-- Flag Report -->
@@ -531,14 +580,16 @@ onUnmounted(() => {
               @click="openReport"
             >
               <Flag class="w-4 h-4" />
-              <span class="text-xs font-bold uppercase tracking-tight">Laporkan</span>
+              <span class="text-xs font-bold uppercase tracking-tight"
+                >Laporkan</span
+              >
             </Button>
           </div>
         </div>
       </div>
 
       <!-- Report Modal -->
-      <ReportModal 
+      <ReportModal
         v-if="film"
         :show="showReportModal"
         @update:show="showReportModal = $event"

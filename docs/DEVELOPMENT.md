@@ -206,21 +206,21 @@ node scripts/make-admin.js email@example.com
 
 ### Backend
 
-| Command | Deskripsi |
-| --- | --- |
-| `npm run dev` | Development server dengan nodemon |
-| `npm start` | Production server |
-| `npm run migrate` | Jalankan database migrations |
-| `npm run migrate:rollback` | Rollback migration terakhir |
-| `npm run seed` | Jalankan database seeds |
-| `npm test` | Jalankan unit tests |
+| Command                    | Deskripsi                         |
+| -------------------------- | --------------------------------- |
+| `npm run dev`              | Development server dengan nodemon |
+| `npm start`                | Production server                 |
+| `npm run migrate`          | Jalankan database migrations      |
+| `npm run migrate:rollback` | Rollback migration terakhir       |
+| `npm run seed`             | Jalankan database seeds           |
+| `npm test`                 | Jalankan unit tests               |
 
 ### Frontend
 
-| Command | Deskripsi |
-| --- | --- |
-| `npm run dev` | Development server |
-| `npm run build` | Build untuk production |
+| Command           | Deskripsi                |
+| ----------------- | ------------------------ |
+| `npm run dev`     | Development server       |
+| `npm run build`   | Build untuk production   |
 | `npm run preview` | Preview production build |
 
 ---
@@ -309,15 +309,16 @@ Request → Route → Middleware (Auth/Validate) → Controller → Service → 
 
 Semua fungsi controller mengikuti standar REST CRUD:
 
-| Operasi | Nama Fungsi |
-| --- | --- |
-| Ambil semua | `getAll` |
-| Ambil by ID | `getById` |
-| Buat baru | `create` |
-| Update | `update` |
-| Hapus | `delete` |
+| Operasi     | Nama Fungsi |
+| ----------- | ----------- |
+| Ambil semua | `getAll`    |
+| Ambil by ID | `getById`   |
+| Buat baru   | `create`    |
+| Update      | `update`    |
+| Hapus       | `delete`    |
 
 Pengecualian yang diizinkan karena konteks bisnis yang unik:
+
 - `getActiveDiscussion`, `toggleDiscussion`, `getReplies`, `addReply`, `getByFilm`, `getMyCollections`, `getStats`, dsb.
 
 ### Validasi Request
@@ -325,12 +326,16 @@ Pengecualian yang diizinkan karena konteks bisnis yang unik:
 Menggunakan **Zod** dengan middleware `validateRequest`:
 
 ```javascript
-import { validateRequest } from '../middlewares/index.js';
-import { createFilmSchema } from '../middlewares/schemas/film.schema.js';
+import { validateRequest } from "../middlewares/index.js";
+import { createFilmSchema } from "../middlewares/schemas/film.schema.js";
 
-fastify.post('/films', {
-  preHandler: [authenticate, validateRequest(createFilmSchema)]
-}, filmController.create.bind(filmController));
+fastify.post(
+  "/films",
+  {
+    preHandler: [authenticate, validateRequest(createFilmSchema)],
+  },
+  filmController.create.bind(filmController),
+);
 ```
 
 ### Response Format
@@ -338,11 +343,11 @@ fastify.post('/films', {
 Semua response menggunakan `ApiResponse` helper yang **konsisten dalam Bahasa Indonesia**:
 
 ```javascript
-import { ApiResponse } from '../lib/response.js';
+import { ApiResponse } from "../lib/response.js";
 
-return ApiResponse.success(reply, data, 'Data berhasil diambil');
-return ApiResponse.notFound(reply, 'Film tidak ditemukan');
-return ApiResponse.error(reply, 'Anda tidak memiliki izin', 403);
+return ApiResponse.success(reply, data, "Data berhasil diambil");
+return ApiResponse.notFound(reply, "Film tidak ditemukan");
+return ApiResponse.error(reply, "Anda tidak memiliki izin", 403);
 ```
 
 ---
@@ -382,6 +387,7 @@ Error: Knex: Timeout acquiring a connection. The pool is probably full.
 ### Google OAuth `state_mismatch`
 
 **Solusi:**
+
 1. Pastikan `TRUST_PROXY=true` jika di belakang reverse proxy
 2. Pastikan `BETTER_AUTH_URL` menggunakan domain yang sama dengan frontend
 

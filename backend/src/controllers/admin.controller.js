@@ -8,6 +8,8 @@ import { User } from '../models/User.js';
 import { Film } from '../models/Film.js';
 import { Category } from '../models/Category.js';
 import { AuditLog } from '../models/AuditLog.js';
+import { Report } from '../models/Report.js';
+import { Vote } from '../models/Vote.js';
 import { ApiResponse } from '../lib/response.js';
 import { getStorageStats, UPLOAD_DIR } from '../lib/upload.js';
 import archiver from 'archiver';
@@ -78,6 +80,9 @@ export class AdminController {
         pendingFilms,
         totalCategories,
         newCategories,
+        pendingReports,
+        totalVotes,
+        storageStats,
         recentPendingFilms,
         recentActivities
       ] = await Promise.all([
@@ -88,6 +93,9 @@ export class AdminController {
         Film.query().where('status', 'pending').resultSize(),
         Category.query().resultSize(),
         Category.query().where('created_at', '>=', thirtyDaysAgo).resultSize(),
+        Report.query().where('status', 'pending').resultSize().catch(() => 0),
+        Vote.query().resultSize().catch(() => 0),
+        getStorageStats().catch(() => null),
         Film.query()
           .where('status', 'pending')
           .withGraphFetched('creator')
@@ -107,6 +115,9 @@ export class AdminController {
         pendingFilms,
         totalCategories,
         newCategories,
+        pendingReports,
+        totalVotes,
+        storageStats,
         recentPendingFilms,
         recentActivities: recentActivities.map(f => ({
           user: f.creator?.name || 'Unknown',

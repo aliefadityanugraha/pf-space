@@ -1,46 +1,61 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { api } from '@/lib/api'
-import { assetUrl } from '@/lib/format'
-import Navbar from '@/components/Navbar.vue'
-import HeroSection from '@/components/HeroSection.vue'
-import SectionHeader from '@/components/SectionHeader.vue'
-import ArchiveCarousel from '@/components/ArchiveCarousel.vue'
-import Footer from '@/components/Footer.vue'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Film, Play, User, Calendar, Loader2, TrendingUp, Clock, ArrowRight, Newspaper } from 'lucide-vue-next'
-import { useHead } from '@unhead/vue'
-import TrendingBanner from '@/components/TrendingBanner.vue'
-import LoadingState from '@/components/LoadingState.vue'
-import EmptyState from '@/components/EmptyState.vue'
-import TrendingCardSkeleton from '@/components/TrendingCardSkeleton.vue'
-import CategoryCardSkeleton from '@/components/CategoryCardSkeleton.vue'
-import CommunityDiscussion from '@/components/CommunityDiscussion.vue'
-import ErrorBoundary from '@/components/ErrorBoundary.vue'
-import FeedCard from '@/components/production-feed/FeedCard.vue'
-import FeedCardSkeleton from '@/components/production-feed/FeedCardSkeleton.vue'
-import FeedErrorState from '@/components/production-feed/FeedErrorState.vue'
-import { useProductionFeed } from '@/modules/production-feed/useProductionFeed'
-
-
+import { ref, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { api } from "@/lib/api";
+import { assetUrl } from "@/lib/format";
+import Navbar from "@/components/Navbar.vue";
+import HeroSection from "@/components/HeroSection.vue";
+import SectionHeader from "@/components/SectionHeader.vue";
+import ArchiveCarousel from "@/components/ArchiveCarousel.vue";
+import Footer from "@/components/Footer.vue";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Film,
+  Play,
+  User,
+  Calendar,
+  Loader2,
+  TrendingUp,
+  Clock,
+  ArrowRight,
+  Newspaper,
+} from "lucide-vue-next";
+import { useHead } from "@unhead/vue";
+import TrendingBanner from "@/components/TrendingBanner.vue";
+import LoadingState from "@/components/LoadingState.vue";
+import EmptyState from "@/components/EmptyState.vue";
+import TrendingCardSkeleton from "@/components/TrendingCardSkeleton.vue";
+import CategoryCardSkeleton from "@/components/CategoryCardSkeleton.vue";
+import CommunityDiscussion from "@/components/CommunityDiscussion.vue";
+import ErrorBoundary from "@/components/ErrorBoundary.vue";
+import FeedCard from "@/components/production-feed/FeedCard.vue";
+import FeedCardSkeleton from "@/components/production-feed/FeedCardSkeleton.vue";
+import FeedErrorState from "@/components/production-feed/FeedErrorState.vue";
+import { useProductionFeed } from "@/modules/production-feed/useProductionFeed";
 
 useHead({
-  title: 'PF Space - Eksplorasi Arsip Karya Siswa',
+  title: "PF Space - Eksplorasi Arsip Karya Siswa",
   meta: [
-    { name: 'description', content: 'Platform kearsipan karya siswa untuk apresiasi, dokumentasi, dan pembelajaran karya sinematik.' },
-    { property: 'og:title', content: 'PF Space - Arsip Karya' },
-    { property: 'og:description', content: 'Eksplorasi mahakarya siswa dan akses aset pembelajarannya.' },
-    { property: 'og:image', content: '/banner.jpg' },
-    { name: 'twitter:card', content: 'summary_large_image' }
-  ]
-})
+    {
+      name: "description",
+      content:
+        "Platform kearsipan karya siswa untuk apresiasi, dokumentasi, dan pembelajaran karya sinematik.",
+    },
+    { property: "og:title", content: "PF Space - Arsip Karya" },
+    {
+      property: "og:description",
+      content: "Eksplorasi mahakarya siswa dan akses aset pembelajarannya.",
+    },
+    { property: "og:image", content: "/banner.jpg" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ],
+});
 
-const router = useRouter()
-const heroRef = ref(null)
-const isLightTitle = ref(true)
+const router = useRouter();
+const heroRef = ref(null);
+const isLightTitle = ref(true);
 
 // Production Feed preview (max 6 latest posts)
 const {
@@ -48,73 +63,74 @@ const {
   isLoading: isFeedLoading,
   isError: isFeedError,
   fetchFeed,
-  retry: retryFeed
-} = useProductionFeed({ limit: 6 })
+  retry: retryFeed,
+} = useProductionFeed({ limit: 6 });
 
 // Data
-const latestFilms = ref([])
-const trendingFilms = ref([])
-const categories = ref([])
-const loading = ref(true)
+const latestFilms = ref([]);
+const trendingFilms = ref([]);
+const categories = ref([]);
+const loading = ref(true);
 
 const handleScroll = () => {
   if (heroRef.value) {
-    const heroHeight = heroRef.value.$el?.offsetHeight || heroRef.value.offsetHeight || 600
-    isLightTitle.value = window.scrollY < heroHeight - 80
+    const heroHeight =
+      heroRef.value.$el?.offsetHeight || heroRef.value.offsetHeight || 600;
+    isLightTitle.value = window.scrollY < heroHeight - 80;
   }
-}
+};
 
 // Fetch data
 const fetchData = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const results = await Promise.allSettled([
-      api.get('/api/films/latest?limit=10'),
-      api.get('/api/votes/trending?period=week&limit=6'),
-      api.get('/api/categories/with-count')
-    ])
-    
+      api.get("/api/films/latest?limit=10"),
+      api.get("/api/votes/trending?period=week&limit=6"),
+      api.get("/api/categories/with-count"),
+    ]);
+
     // Handle Latest Films
-    if (results[0].status === 'fulfilled') {
-      latestFilms.value = results[0].value.data || []
+    if (results[0].status === "fulfilled") {
+      latestFilms.value = results[0].value.data || [];
     } else {
-      console.error('Failed to fetch latest films:', results[0].reason)
+      console.error("Failed to fetch latest films:", results[0].reason);
     }
 
     // Handle Trending Films
-    if (results[1].status === 'fulfilled') {
-      trendingFilms.value = results[1].value.data || []
+    if (results[1].status === "fulfilled") {
+      trendingFilms.value = results[1].value.data || [];
     } else {
-      console.error('Failed to fetch trending films:', results[1].reason)
+      console.error("Failed to fetch trending films:", results[1].reason);
     }
 
     // Handle Categories
-    if (results[2].status === 'fulfilled') {
-      categories.value = results[2].value.data || []
+    if (results[2].status === "fulfilled") {
+      categories.value = results[2].value.data || [];
     } else {
-      console.error('Failed to fetch categories:', results[2].reason)
+      console.error("Failed to fetch categories:", results[2].reason);
     }
   } catch (err) {
-    console.error('Unexpected error during data fetch:', err)
+    console.error("Unexpected error during data fetch:", err);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const goToDetail = (slug) => {
-  router.push(`/archive/${slug}`)
-}
+  router.push(`/archive/${slug}`);
+};
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-  handleScroll()
-  fetchData()
-  fetchFeed()
-})
+  window.addEventListener("scroll", handleScroll);
+  handleScroll();
+  fetchData();
+  fetchFeed();
+});
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>
 
 <template>
@@ -125,224 +141,306 @@ onUnmounted(() => {
     </ErrorBoundary>
 
     <div class="relative bg-brand-cream overflow-hidden">
-      <!-- Decorative background elements -->
-      <!-- <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-yellow-400/20 rounded-full blur-[100px] pointer-events-none"></div> -->
-      <!-- <div class="absolute bottom-40 left-0 w-[400px] h-[400px] bg-brand-orange/10 rounded-full blur-[80px] pointer-events-none"></div> -->
-      <!-- <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-stone-200/50 to-transparent pointer-events-none"></div> -->
-
       <!-- Scratched/Texture Overlay Base -->
-      <div class="absolute inset-0 opacity-[0.03] z-0 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
+      <div
+        class="absolute inset-0 opacity-[0.03] z-0 pointer-events-none"
+        style="
+          background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E&quot;);
+        "
+      ></div>
 
       <!-- Global Loading removed in favor of section-based skeletons -->
 
       <!-- Latest Films Section -->
-      <section class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 relative z-10">
-      <SectionHeader 
-        title="Karya Terbaru" 
-        subtitle="Eksplorasi karya terbaru dari para kontributor"
-        :light-text="false"
-      />
-      
-      <ErrorBoundary name="Karya Terbaru">
-        <!-- Archive Carousel -->
-        <div v-if="!loading && latestFilms.length === 0" class="w-full">
-          <EmptyState 
-            title="Belum ada karya yang dipublikasi"
-            description="Silahkan unggah karya pertamamu."
-          />
-        </div>
-        <div v-else class="w-full">
-          <ArchiveCarousel 
-            :items="latestFilms" 
-            :loading="loading" 
-          />
-        </div>
-      </ErrorBoundary>
-    </section>
-
-    <!-- Production Feed Preview Section -->
-    <section class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 relative z-10">
-      <SectionHeader
-        title="Production Feed"
-        subtitle="Cerita terbaru dari para creator PF Space"
-        :light-text="false"
-      />
-
-      <ErrorBoundary name="Production Feed">
-        <!-- Loading -->
-        <div v-if="isFeedLoading && feedPosts.length === 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <FeedCardSkeleton v-for="n in 6" :key="n" />
-        </div>
-
-        <!-- Error -->
-        <FeedErrorState
-          v-else-if="isFeedError && feedPosts.length === 0"
-          @retry="retryFeed"
-        />
-
-        <!-- Empty -->
-        <EmptyState
-          v-else-if="feedPosts.length === 0"
-          :icon="Newspaper"
-          title="Belum Ada Postingan"
-          description="Feed produksi masih kosong. Nantikan update pertama dari para kreator."
-          variant="dashed"
-        />
-
-        <!-- Feed preview grid -->
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div
-            v-for="(post, index) in feedPosts"
-            :key="post.postId"
-            class="opacity-0 animate-[fade-in-up_0.6s_ease-out_forwards]"
-            :class="`stagger-${(index % 6) + 1}`"
-            @animationend="$event.target.style.opacity = 1"
-          >
-            <FeedCard :post="post" />
-          </div>
-        </div>
-      </ErrorBoundary>
-
-      <!-- View All Button -->
-      <div class="text-center mt-10 md:mt-12">
-        <Button
-          variant="outline"
-          @click="router.push('/feed')"
-          class="h-10 md:h-12 px-6 gap-2 border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] font-bold uppercase tracking-wider text-xs"
-        >
-          Lihat Semua
-          <ArrowRight class="w-4 h-4" />
-        </Button>
-      </div>
-    </section>
-
-    <ErrorBoundary name="Promo Section">
-      <div class="relative z-10">
-        <TrendingBanner />
-      </div>
-    </ErrorBoundary>
-
-    <!-- Trending Section -->
-    <section v-if="loading || trendingFilms.length > 0" class="w-full py-16 md:py-24 relative z-10">
-      <!-- Background Pattern for Trending -->
-      <div class="absolute inset-0 opacity-[0.05] pointer-events-none" style="background-image: radial-gradient(#1c1917 2px, transparent 2px); background-size: 32px 32px;"></div>
-      
-      <div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
-        <SectionHeader 
-          title="Trending" 
-          subtitle="Karya dengan apresiasi terbanyak"
+      <section class="max-w-7xl mx-auto px-4 md:px-8 py-0 relative z-10">
+        <SectionHeader
+          title="Karya Terbaru"
+          subtitle="Eksplorasi karya terbaru dari para kontributor"
           :light-text="false"
         />
-        
-        <ErrorBoundary name="Trending Cards" :inline="true">
-          <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <TrendingCardSkeleton v-for="i in 3" :key="i" />
+
+        <ErrorBoundary name="Karya Terbaru">
+          <!-- Archive Carousel -->
+          <div v-if="!loading && latestFilms.length === 0" class="w-full">
+            <EmptyState
+              title="Belum ada karya yang dipublikasi"
+              description="Silahkan unggah karya pertamamu."
+            />
           </div>
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card 
-              v-for="(film, index) in trendingFilms" 
-              :key="film.film_id"
-              class="overflow-hidden opacity-0 animate-[fade-in-up_0.6s_ease-out_forwards] cursor-pointer bg-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          <div v-else class="w-full">
+            <ArchiveCarousel :items="latestFilms" :loading="loading" />
+          </div>
+        </ErrorBoundary>
+      </section>
+
+      <!-- Production Feed Preview Section -->
+      <section
+        class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 relative z-10"
+      >
+        <SectionHeader
+          title="Production Feed"
+          subtitle="Cerita terbaru dari para creator PF Space"
+          :light-text="false"
+        />
+
+        <ErrorBoundary name="Production Feed">
+          <!-- Loading -->
+          <div
+            v-if="isFeedLoading && feedPosts.length === 0"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            <FeedCardSkeleton v-for="n in 6" :key="n" />
+          </div>
+
+          <!-- Error -->
+          <FeedErrorState
+            v-else-if="isFeedError && feedPosts.length === 0"
+            @retry="retryFeed"
+          />
+
+          <!-- Empty -->
+          <EmptyState
+            v-else-if="feedPosts.length === 0"
+            :icon="Newspaper"
+            title="Belum Ada Postingan"
+            description="Feed produksi masih kosong. Nantikan update pertama dari para kreator."
+            variant="dashed"
+          />
+
+          <!-- Feed preview grid -->
+          <div
+            v-else
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            <div
+              v-for="(post, index) in feedPosts"
+              :key="post.postId"
+              class="opacity-0 animate-[fade-in-up_0.6s_ease-out_forwards]"
               :class="`stagger-${(index % 6) + 1}`"
               @animationend="$event.target.style.opacity = 1"
-              @click="goToDetail(film.slug)"
             >
-              <div class="flex gap-4 p-4">
-                <!-- Rank -->
-                <div class="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-brand-red text-white text-sm md:text-base font-bold flex items-center justify-center border-2 border-black shadow-sm">
-                  {{ index + 1 }}
-                </div>
-                <!-- Poster -->
-                <div class="w-12 h-20 md:w-16 md:h-24 bg-stone-200 flex-shrink-0 overflow-hidden border-2 border-black shadow-sm relative">
-                  <!-- Crossfade Loading Placeholder -->
-                  <div class="absolute inset-0 bg-stone-300 animate-pulse flex items-center justify-center"></div>
-                  <img 
-                    v-if="film.gambar_poster" 
-                    :src="assetUrl(film.gambar_poster)" 
-                    :alt="film.judul"
-                    loading="lazy"
-                    onload="this.previousElementSibling.style.opacity = 0"
-                    class="w-full h-full object-cover transition-opacity duration-300 z-10 relative"
-                  />
-                  <div v-else class="w-full h-full flex items-center justify-center z-10 relative bg-stone-200">
-                    <Film class="w-6 h-6 text-stone-400" />
+              <FeedCard :post="post" />
+            </div>
+          </div>
+        </ErrorBoundary>
+
+        <!-- View All Button -->
+        <div class="text-center mt-10 md:mt-12">
+          <Button
+            variant="outline"
+            @click="router.push('/feed')"
+            class="h-10 md:h-12 px-6 gap-2 border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] font-bold uppercase tracking-wider text-xs"
+          >
+            Lihat Semua
+            <ArrowRight class="w-4 h-4" />
+          </Button>
+        </div>
+      </section>
+
+      <ErrorBoundary name="Promo Section">
+        <div class="relative z-10">
+          <TrendingBanner />
+        </div>
+      </ErrorBoundary>
+
+      <!-- Trending Section -->
+      <section
+        v-if="loading || trendingFilms.length > 0"
+        class="w-full py-16 md:py-24 relative z-10"
+      >
+        <!-- Background Pattern for Trending -->
+        <div
+          class="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style="
+            background-image: radial-gradient(#1c1917 2px, transparent 2px);
+            background-size: 32px 32px;
+          "
+        ></div>
+
+        <div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+          <SectionHeader
+            title="Trending"
+            subtitle="Karya dengan apresiasi terbanyak"
+            :light-text="false"
+          />
+
+          <ErrorBoundary name="Trending Cards" :inline="true">
+            <div
+              v-if="loading"
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <TrendingCardSkeleton v-for="i in 3" :key="i" />
+            </div>
+            <div
+              v-else
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <Card
+                v-for="(film, index) in trendingFilms"
+                :key="film.film_id"
+                class="overflow-hidden opacity-0 animate-[fade-in-up_0.6s_ease-out_forwards] cursor-pointer bg-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                :class="`stagger-${(index % 6) + 1}`"
+                @animationend="$event.target.style.opacity = 1"
+                @click="goToDetail(film.slug)"
+              >
+                <div class="flex gap-4 p-4">
+                  <!-- Rank -->
+                  <div
+                    class="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-brand-red text-white text-sm md:text-base font-bold flex items-center justify-center border-2 border-black shadow-sm"
+                  >
+                    {{ index + 1 }}
                   </div>
-                </div>
-                <!-- Info -->
-                <div class="flex-1 min-w-0">
-                  <h3 class="font-bold text-sm md:text-base line-clamp-1 mb-0.5 md:mb-1">{{ film.judul }}</h3>
-                  <div class="text-[10px] md:text-sm text-stone-500 mb-1.5 md:mb-2 z-10 relative">
-                    <router-link 
-                      v-if="film.creator?.id"
-                      :to="`/p/${film.creator.id}`"
-                      class="hover:text-brand-teal hover:underline"
-                      @click.stop
+                  <!-- Poster -->
+                  <div
+                    class="w-12 h-20 md:w-16 md:h-24 bg-stone-200 flex-shrink-0 overflow-hidden border-2 border-black shadow-sm relative"
+                  >
+                    <!-- Crossfade Loading Placeholder -->
+                    <div
+                      class="absolute inset-0 bg-stone-300 animate-pulse flex items-center justify-center"
+                    ></div>
+                    <img
+                      v-if="film.gambar_poster"
+                      :src="assetUrl(film.gambar_poster)"
+                      :alt="film.judul"
+                      loading="lazy"
+                      onload="this.previousElementSibling.style.opacity = 0"
+                      class="w-full h-full object-cover transition-opacity duration-300 z-10 relative"
+                    />
+                    <div
+                      v-else
+                      class="w-full h-full flex items-center justify-center z-10 relative bg-stone-200"
                     >
-                      {{ film.creator?.name || 'Tanpa Nama' }}
-                    </router-link>
-                    <span v-else>{{ film.creator?.name || 'Tanpa Nama' }}</span>
+                      <Film class="w-6 h-6 text-stone-400" />
+                    </div>
                   </div>
-                  <div class="flex items-center gap-1.5 md:gap-2">
-                    <Badge variant="secondary" class="gap-1 h-5 md:h-6 text-[10px] md:text-xs border border-stone-200">
-                      <TrendingUp class="w-2.5 h-2.5 md:w-3 md:h-3" />
-                      {{ film.vote_count }} <span class="hidden sm:inline">apresiasi</span>
-                    </Badge>
+                  <!-- Info -->
+                  <div class="flex-1 min-w-0">
+                    <h3
+                      class="font-bold text-sm md:text-base line-clamp-1 mb-0.5 md:mb-1"
+                    >
+                      {{ film.judul }}
+                    </h3>
+                    <div
+                      class="text-[10px] md:text-sm text-stone-500 mb-1.5 md:mb-2 z-10 relative"
+                    >
+                      <router-link
+                        v-if="film.creator?.id"
+                        :to="`/p/${film.creator.id}`"
+                        class="hover:text-brand-teal hover:underline"
+                        @click.stop
+                      >
+                        {{ film.creator?.name || "Tanpa Nama" }}
+                      </router-link>
+                      <span v-else>{{
+                        film.creator?.name || "Tanpa Nama"
+                      }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 md:gap-2">
+                      <Badge
+                        variant="secondary"
+                        class="gap-1 h-5 md:h-6 text-[10px] md:text-xs border border-stone-200"
+                      >
+                        <TrendingUp class="w-2.5 h-2.5 md:w-3 md:h-3" />
+                        {{ film.vote_count }}
+                        <span class="hidden sm:inline">apresiasi</span>
+                      </Badge>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Card>
+            </div>
+          </ErrorBoundary>
+
+          <!-- View All Button -->
+          <div class="text-center mt-8">
+            <Button
+              variant="outline"
+              @click="router.push('/trending')"
+              class="h-10 md:h-12 px-6 gap-2 border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] font-bold uppercase tracking-wider text-xs"
+            >
+              Lihat Semua Populer
+              <ArrowRight class="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Community Discussion Section -->
+      <ErrorBoundary name="Diskusi Komunitas">
+        <div class="relative z-10 py-12 md:py-16">
+          <CommunityDiscussion />
+        </div>
+      </ErrorBoundary>
+
+      <!-- Categories Section -->
+      <section
+        v-if="loading || categories.length > 0"
+        class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 relative z-10"
+      >
+        <SectionHeader
+          title="Jelajahi Kategori"
+          subtitle="Temukan karya berdasarkan kategori"
+          :light-text="false"
+        />
+
+        <ErrorBoundary name="Kategori">
+          <div
+            v-if="loading"
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+          >
+            <CategoryCardSkeleton v-for="i in 6" :key="i" />
+          </div>
+          <div
+            v-else
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+          >
+            <Card
+              v-for="category in categories"
+              :key="category.category_id"
+              class="cursor-pointer bg-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              @click="
+                router.push({
+                  path: '/films',
+                  query: { category_id: category.category_id },
+                })
+              "
+            >
+              <CardContent class="p-3 md:p-4 text-center">
+                <div
+                  class="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-brand-teal/10 rounded-full flex items-center justify-center border-2 border-black shadow-sm"
+                >
+                  <Film class="w-5 h-5 md:w-6 md:h-6 text-brand-teal" />
+                </div>
+                <h3
+                  class="font-bold text-xs md:text-sm mb-0.5 md:mb-1 uppercase tracking-tighter"
+                >
+                  {{ category.nama_kategori }}
+                </h3>
+                <p
+                  class="text-[10px] md:text-xs text-stone-500 font-medium uppercase tracking-widest"
+                >
+                  {{ category.film_count || 0 }} karya
+                </p>
+              </CardContent>
             </Card>
           </div>
         </ErrorBoundary>
 
         <!-- View All Button -->
         <div class="text-center mt-8">
-          <Button variant="outline" @click="router.push('/trending')" class="h-10 md:h-12 px-6 gap-2 border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] font-bold uppercase tracking-wider text-xs">
-            Lihat Semua Populer
+          <Button
+            variant="outline"
+            @click="router.push('/films')"
+            class="h-10 md:h-12 px-6 gap-2 border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] font-bold uppercase tracking-wider text-xs"
+          >
+            Lihat Semua Arsip
             <ArrowRight class="w-4 h-4" />
           </Button>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Community Discussion Section -->
-    <ErrorBoundary name="Diskusi Komunitas">
-      <div class="relative z-10 py-12 md:py-16">
-        <CommunityDiscussion />
-      </div>
-    </ErrorBoundary>
-
-    <!-- Categories Section -->
-    <section v-if="loading || categories.length > 0" class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 relative z-10">
-      <SectionHeader 
-        title="Jelajahi Kategori" 
-        subtitle="Temukan karya berdasarkan kategori"
-        :light-text="false"
-      />
-      
-      <ErrorBoundary name="Kategori">
-        <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <CategoryCardSkeleton v-for="i in 6" :key="i" />
-        </div>
-        <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <Card 
-            v-for="category in categories" 
-            :key="category.category_id"
-            class="cursor-pointer bg-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-          >
-            <CardContent class="p-3 md:p-4 text-center">
-              <div class="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 bg-brand-teal/10 rounded-full flex items-center justify-center border-2 border-black shadow-sm">
-                <Film class="w-5 h-5 md:w-6 md:h-6 text-brand-teal" />
-              </div>
-              <h3 class="font-bold text-xs md:text-sm mb-0.5 md:mb-1 uppercase tracking-tighter">{{ category.nama_kategori }}</h3>
-              <p class="text-[10px] md:text-xs text-stone-500 font-medium uppercase tracking-widest">{{ category.film_count || 0 }} karya</p>
-            </CardContent>
-          </Card>
-        </div>
-      </ErrorBoundary>
-    </section>
-
-    <!-- CTA Section -->
-    <!-- <section class="w-full bg-stone-900 py-20 md:py-32 relative z-10 border-t-8 border-brand-red overflow-hidden">
+      <!-- CTA Section -->
+      <!-- <section class="w-full bg-stone-900 py-20 md:py-32 relative z-10 border-t-8 border-brand-red overflow-hidden">
       <div class="absolute top-0 right-0 p-8 opacity-20 transform translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <svg width="400" height="400" viewBox="0 0 100 100" class="animate-[spin_20s_linear_infinite]">
           <path d="M50 0 L100 50 L50 100 L0 50 Z" fill="none" stroke="#facc15" stroke-width="2"/>

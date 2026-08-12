@@ -22,17 +22,17 @@ Request → Route → Middleware (Auth/Validate/RateLimit) → Controller → Se
 
 **Lapisan yang sudah mapan:**
 
-| Layer | Lokasi | Isi |
-|---|---|---|
-| Controllers | `controllers/` | 17 file + barrel export `controllers/index.js` |
-| Services | `services/` | 18 service + barrel export `services/index.js` |
-| Models | `models/` | 19 model Objection + barrel export `models/index.js` |
-| Routes | `routes/` | 17 file route + barrel `routes/index.js` + tus/static/seo terpisah |
-| Middlewares | `middlewares/` | `auth`, `validation`, `viewLimit`, `seo` + `errorHandler.js` |
-| Lib | `lib/` | `response.js`, `errors.js`, `sanitize.js`, `upload.js`, `tus.js`, `audit.js`, `auth.js`, `ip.js`, `validation.js`, `sitemap.js`, `ai/` |
-| Config | `config/` | `env.js` (validasi startup), `constants.js` (ROLES, FILM_STATUS, pagination helpers) |
-| Database | `database/` | knexfile + 30 migration + 1 seed |
-| Tests | `__tests__/` | 13 file unit test (Vitest) |
+| Layer       | Lokasi         | Isi                                                                                                                                    |
+| ----------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Controllers | `controllers/` | 17 file + barrel export `controllers/index.js`                                                                                         |
+| Services    | `services/`    | 18 service + barrel export `services/index.js`                                                                                         |
+| Models      | `models/`      | 19 model Objection + barrel export `models/index.js`                                                                                   |
+| Routes      | `routes/`      | 17 file route + barrel `routes/index.js` + tus/static/seo terpisah                                                                     |
+| Middlewares | `middlewares/` | `auth`, `validation`, `viewLimit`, `seo` + `errorHandler.js`                                                                           |
+| Lib         | `lib/`         | `response.js`, `errors.js`, `sanitize.js`, `upload.js`, `tus.js`, `audit.js`, `auth.js`, `ip.js`, `validation.js`, `sitemap.js`, `ai/` |
+| Config      | `config/`      | `env.js` (validasi startup), `constants.js` (ROLES, FILM_STATUS, pagination helpers)                                                   |
+| Database    | `database/`    | knexfile + 30 migration + 1 seed                                                                                                       |
+| Tests       | `__tests__/`   | 13 file unit test (Vitest)                                                                                                             |
 
 **21 route prefix** terdaftar di `routes/index.js`: `/auth`, `/films`, `/votes`, `/discussions`, `/community`, `/notifications`, `/evaluations`, `/study-notes`, `/film-scenes`, `/learning-materials`, `/reports`, `/settings`, `/collections`, `/categories`, `/users`, `/chat`, `/admin`, dst.
 
@@ -145,22 +145,22 @@ Request → Route → Middleware (Auth/Validate/RateLimit) → Controller → Se
 
 Asumsi: **Production Feed** = feed/timeline karya produksi (kemungkinan feed film yang sedang/sudah diproduksi). Tidak ada modul "feed" eksisting; komponen siap pakai:
 
-| Kebutuhan Feed | Modul Reusable | Catatan |
-|---|---|---|
-| Listing + pagination + filter | `FilmService.getAll` (`film.service.js:66`) | Sudah support `status`, `category_id`, `search`, `user_id`, `sortBy/Order`, `is_banner_active`, owner-aware |
-| Item feed (judul, poster, creator) | `Film` + `.withGraphFetched('[creator(selectBasic), category]')` | Relasi sudah lengkap |
-| Feed trending / ranking | `VoteService.getTrending` (`vote.service.js:112`) | Period week/month/all + `ORDER BY FIELD` |
-| Feed terbaru | `FilmService.getLatest`, `getRelated`, `getRandom` | |
-| Konten komentar/balasan di feed | `DiscussionService.getByFilm` | Tree nested + pagination DB-level |
-| Bookmark/koleksi item feed | `CollectionService` | `is_in_collection` sudah dipakai film |
-| Notifikasi event feed | `notificationService` | `create` + unread count |
-| Badge/status creator di feed | `gamificationService.getUserBadges` | |
-| Validasi & transform param | `validateRequest` + `schemas/film.zod.js` + `lib/validation.js` | `filmIdNumericParamSchema`, dst. |
-| Pembatasan rate feed | `@fastify/rate-limit` + `getClientIp` | |
-| Media (video/poster) feed | `lib/tus.js` + `lib/upload.js` | Upload + delete + serve range request |
-| SEO item feed | `seoMiddleware` + `lib/sitemap.js` | Pola OG/Twitter tags per item |
-| Status produksi | `FILM_STATUS` (`pending/published/rejected`) | Jika feed butuh status approval |
-| Selector field minimal | `BaseModel.defaultModifiers` | `selectBasic`/`selectFilm` |
+| Kebutuhan Feed                     | Modul Reusable                                                   | Catatan                                                                                                     |
+| ---------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Listing + pagination + filter      | `FilmService.getAll` (`film.service.js:66`)                      | Sudah support `status`, `category_id`, `search`, `user_id`, `sortBy/Order`, `is_banner_active`, owner-aware |
+| Item feed (judul, poster, creator) | `Film` + `.withGraphFetched('[creator(selectBasic), category]')` | Relasi sudah lengkap                                                                                        |
+| Feed trending / ranking            | `VoteService.getTrending` (`vote.service.js:112`)                | Period week/month/all + `ORDER BY FIELD`                                                                    |
+| Feed terbaru                       | `FilmService.getLatest`, `getRelated`, `getRandom`               |                                                                                                             |
+| Konten komentar/balasan di feed    | `DiscussionService.getByFilm`                                    | Tree nested + pagination DB-level                                                                           |
+| Bookmark/koleksi item feed         | `CollectionService`                                              | `is_in_collection` sudah dipakai film                                                                       |
+| Notifikasi event feed              | `notificationService`                                            | `create` + unread count                                                                                     |
+| Badge/status creator di feed       | `gamificationService.getUserBadges`                              |                                                                                                             |
+| Validasi & transform param         | `validateRequest` + `schemas/film.zod.js` + `lib/validation.js`  | `filmIdNumericParamSchema`, dst.                                                                            |
+| Pembatasan rate feed               | `@fastify/rate-limit` + `getClientIp`                            |                                                                                                             |
+| Media (video/poster) feed          | `lib/tus.js` + `lib/upload.js`                                   | Upload + delete + serve range request                                                                       |
+| SEO item feed                      | `seoMiddleware` + `lib/sitemap.js`                               | Pola OG/Twitter tags per item                                                                               |
+| Status produksi                    | `FILM_STATUS` (`pending/published/rejected`)                     | Jika feed butuh status approval                                                                             |
+| Selector field minimal             | `BaseModel.defaultModifiers`                                     | `selectBasic`/`selectFilm`                                                                                  |
 
 **Kesimpulan:** Modul `film`, `vote`, `notification`, `discussion`, `collection`, dan infrastruktur (`ApiResponse`, `errors`, `validateRequest`, pagination helpers, `constants`) bisa langsung direuse tanpa menulis ulang. Feed baru cukup: 1 model baru (jika butuh tabel feed terpisah), 1 service, 1 controller, 1 route file — mengikuti pola modul `film`/`learningMaterial`.
 

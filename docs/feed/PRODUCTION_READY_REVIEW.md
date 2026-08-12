@@ -13,25 +13,25 @@
 
 ## 1. Ringkasan Perubahan
 
-| # | Area | Perbaikan | File |
-|---|------|-----------|------|
-| 1 | Perf / Lazy Image | Komponen `LazyImage.vue` baru: IntersectionObserver (rootMargin 250px) → fetch gambar hanya saat mendekati viewport; fallback native `loading="lazy"` bila IO tak ada; `decoding="async"`; placeholder shimmer; fallback ikon saat gambar error/kosong. | `frontend/src/components/LazyImage.vue` (baru) |
-| 2 | Perf | Cover `FeedCard` memakai `LazyImage` (ganti `<img loading="lazy">` manual + state `imageFailed`). | `FeedCard.vue` |
-| 3 | Perf | Thumbnail galeri `FeedPostMedia` memakai `LazyImage`. | `FeedPostMedia.vue` |
-| 4 | Perf | Hero cover `FeedPostDetail` memakai `LazyImage` dengan `immediate` (hero harus langsung muncul). | `FeedPostDetail.vue` |
-| 5 | Loading | `ui/Skeleton.vue` + sweep shimmer global (`.skeleton-shimmer`, animasi dimatikan saat `prefers-reduced-motion`). | `style.css`, `ui/Skeleton.vue` |
-| 6 | Loading | Skeleton detail dipindah ke komponen baru `FeedPostDetailSkeleton.vue` (`role="status"`). | `FeedPostDetailSkeleton.vue` (baru) |
-| 7 | Loading | Skeleton `RelatedFeed` memakai `ui/Skeleton.vue` (konsisten + shimmer). | `RelatedFeed.vue` |
-| 8 | UX / Share | Bar "Bagikan" di detail: **Salin Tautan** (clipboard → fallback `execCommand` → `navigator.share`), **WhatsApp**, **X** — pola sama dgn `ArchiveDetail.vue`. | `FeedPostDetail.vue` |
-| 9 | SEO / OG | `FeedPostDetail`: `og:type=article`, `og:site_name`, `og:url`, `og:image` (cover absolut), `twitter:card=summary_large_image`, canonical link. | `FeedPostDetail.vue` |
-| 10 | SEO | `/feed`: `og:type=website`, `og:site_name`, `twitter:card=summary`. | `Feed.vue` |
-| 11 | SEO | `/feed/create` & `/feed/:id/edit`: `robots noindex, nofollow` (halaman autentik, tidak untuk indeks). | `CreateFeed.vue`, `EditFeed.vue` |
-| 12 | A11y | Global `:focus-visible` outline teal (seluruh app, keyboard users). | `style.css` |
-| 13 | A11y | Lightbox galeri: `role="dialog"` + `aria-modal="true"` + `aria-label`; focus ke tombol tutup saat terbuka; focus restore ke thumb saat tutup; scroll-lock `body`; **Tab-trap** di dalam lightbox. | `FeedPostMedia.vue` |
-| 14 | A11y | Komentar: `aria-label` pada textarea + submit dengan **Ctrl/⌘ + Enter** (hint diperbarui). | `FeedPostComments.vue` |
-| 15 | A11y | Tombol "Kembali ke Atas" diberi `aria-label` (sebelumnya hanya `title`). | `ScrollToTop.vue` |
-| 16 | Scroll Restoration | `useProductionFeed` punya cache in-memory per opsi (key: limit + initialParams) + `restoreCache()`; `Feed.vue` memanggilnya sebelum `fetchFeed()` → list langsung tampil saat back-nav (dipadukan `scrollBehavior` router yang sudah ada). | `useProductionFeed.js`, `Feed.vue` |
-| 17 | Error State | `RelatedFeed` menambah error state + tombol "Coba Lagi" (`role="alert"`) — sebelumnya error di-swallow menjadi list kosong. | `RelatedFeed.vue` |
+| #   | Area               | Perbaikan                                                                                                                                                                                                                                               | File                                           |
+| --- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1   | Perf / Lazy Image  | Komponen `LazyImage.vue` baru: IntersectionObserver (rootMargin 250px) → fetch gambar hanya saat mendekati viewport; fallback native `loading="lazy"` bila IO tak ada; `decoding="async"`; placeholder shimmer; fallback ikon saat gambar error/kosong. | `frontend/src/components/LazyImage.vue` (baru) |
+| 2   | Perf               | Cover `FeedCard` memakai `LazyImage` (ganti `<img loading="lazy">` manual + state `imageFailed`).                                                                                                                                                       | `FeedCard.vue`                                 |
+| 3   | Perf               | Thumbnail galeri `FeedPostMedia` memakai `LazyImage`.                                                                                                                                                                                                   | `FeedPostMedia.vue`                            |
+| 4   | Perf               | Hero cover `FeedPostDetail` memakai `LazyImage` dengan `immediate` (hero harus langsung muncul).                                                                                                                                                        | `FeedPostDetail.vue`                           |
+| 5   | Loading            | `ui/Skeleton.vue` + sweep shimmer global (`.skeleton-shimmer`, animasi dimatikan saat `prefers-reduced-motion`).                                                                                                                                        | `style.css`, `ui/Skeleton.vue`                 |
+| 6   | Loading            | Skeleton detail dipindah ke komponen baru `FeedPostDetailSkeleton.vue` (`role="status"`).                                                                                                                                                               | `FeedPostDetailSkeleton.vue` (baru)            |
+| 7   | Loading            | Skeleton `RelatedFeed` memakai `ui/Skeleton.vue` (konsisten + shimmer).                                                                                                                                                                                 | `RelatedFeed.vue`                              |
+| 8   | UX / Share         | Bar "Bagikan" di detail: **Salin Tautan** (clipboard → fallback `execCommand` → `navigator.share`), **WhatsApp**, **X** — pola sama dgn `ArchiveDetail.vue`.                                                                                            | `FeedPostDetail.vue`                           |
+| 9   | SEO / OG           | `FeedPostDetail`: `og:type=article`, `og:site_name`, `og:url`, `og:image` (cover absolut), `twitter:card=summary_large_image`, canonical link.                                                                                                          | `FeedPostDetail.vue`                           |
+| 10  | SEO                | `/feed`: `og:type=website`, `og:site_name`, `twitter:card=summary`.                                                                                                                                                                                     | `Feed.vue`                                     |
+| 11  | SEO                | `/feed/create` & `/feed/:id/edit`: `robots noindex, nofollow` (halaman autentik, tidak untuk indeks).                                                                                                                                                   | `CreateFeed.vue`, `EditFeed.vue`               |
+| 12  | A11y               | Global `:focus-visible` outline teal (seluruh app, keyboard users).                                                                                                                                                                                     | `style.css`                                    |
+| 13  | A11y               | Lightbox galeri: `role="dialog"` + `aria-modal="true"` + `aria-label`; focus ke tombol tutup saat terbuka; focus restore ke thumb saat tutup; scroll-lock `body`; **Tab-trap** di dalam lightbox.                                                       | `FeedPostMedia.vue`                            |
+| 14  | A11y               | Komentar: `aria-label` pada textarea + submit dengan **Ctrl/⌘ + Enter** (hint diperbarui).                                                                                                                                                              | `FeedPostComments.vue`                         |
+| 15  | A11y               | Tombol "Kembali ke Atas" diberi `aria-label` (sebelumnya hanya `title`).                                                                                                                                                                                | `ScrollToTop.vue`                              |
+| 16  | Scroll Restoration | `useProductionFeed` punya cache in-memory per opsi (key: limit + initialParams) + `restoreCache()`; `Feed.vue` memanggilnya sebelum `fetchFeed()` → list langsung tampil saat back-nav (dipadukan `scrollBehavior` router yang sudah ada).              | `useProductionFeed.js`, `Feed.vue`             |
+| 17  | Error State        | `RelatedFeed` menambah error state + tombol "Coba Lagi" (`role="alert"`) — sebelumnya error di-swallow menjadi list kosong.                                                                                                                             | `RelatedFeed.vue`                              |
 
 ---
 
@@ -57,7 +57,7 @@ state `imageFailed` sendiri-sendiri (dup logic). Sekarang ada satu komponen
 - `ui/Skeleton.vue` menambahkan layer shimmer (`.skeleton-shimmer` global di `style.css`),
   tetap memakai `animate-pulse` sehingga selector test `.animate-pulse` tidak berubah.
 - `FeedPostDetailSkeleton.vue` (baru) membungkus skeleton detail dengan `role="status"`
-  + `aria-label="Memuat postingan"` untuk screen reader.
+  - `aria-label="Memuat postingan"` untuk screen reader.
 - `prefers-reduced-motion: reduce` mematikan animasi shimmer & pulse.
 
 ### 2.3 Copy Link & Share (detail post)
@@ -65,7 +65,7 @@ state `imageFailed` sendiri-sendiri (dup logic). Sekarang ada satu komponen
 Tombol "Bagikan:" di bawah tag artikel:
 
 - **Salin Tautan** → `navigator.clipboard.writeText(url)`; bila gagal → textarea
-  + `execCommand('copy')`; bila masih gagal → `navigator.share()`; terakhir → toast error.
+  - `execCommand('copy')`; bila masih gagal → `navigator.share()`; terakhir → toast error.
 - **WhatsApp** / **X** → `window.open(intent, '_blank', 'noopener,noreferrer')`
   (share text: `Lihat update produksi <judul> di PF Space`).
 
@@ -168,12 +168,14 @@ frontend dev (`http://localhost:5173/uploads/...`) mengembalikan **500**:
 
 **Akar masalah**: `frontend/vite.config.js` me-proxy `/api` & `/uploads` ke
 `http://localhost:3001` (default lama), padahal backend berjalan di **3000**.
+
 - `/api` tetap jalan karena `src/lib/api.js` memakai `BASE_URL = http://localhost:3000`
   (langsung, tidak lewat proxy).
 - `assetUrl()` memakai `window.location.origin + /uploads/...` → lewat proxy vite →
   `3001` tidak ada yang listen → ECONNREFUSED → 500.
 
 **Perbaikan** (`frontend/vite.config.js`):
+
 - `apiProxyTarget` default `3001` → `http://localhost:3000` (tetap bisa di-override
   via env `VITE_API_PROXY_TARGET`).
 - `seoPlugin.backendUrl` ikut disamakan ke `http://127.0.0.1:3000` — efek samping

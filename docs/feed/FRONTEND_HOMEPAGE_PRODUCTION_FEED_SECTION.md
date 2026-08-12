@@ -13,6 +13,7 @@
 ## 1. Ringkasan
 
 ### Perubahan
+
 - `frontend/src/pages/Home.vue` — tambah 1 section baru **Production Feed** di antara
   "Karya Terbaru" dan "Promo Section" (tidak ada bagian lain yang disentuh):
   - **Judul**: `Production Feed`
@@ -23,14 +24,16 @@
   - **Animasi ringan**: `fade-in-up` + stagger (`stagger-1..6`) persis pola card
     Trending — menghormati `prefers-reduced-motion` (via `style.css` existing).
   - **State lengkap**: skeleton (`FeedCardSkeleton` × 6) saat loading, `FeedErrorState`
-    + retry saat gagal, `EmptyState` saat feed kosong — semua reuse komponen existing.
+    - retry saat gagal, `EmptyState` saat feed kosong — semua reuse komponen existing.
 
 ### Data
+
 - Memakai composable `useProductionFeed({ limit: 6 })` yang sudah ada →
   otomatis mendapat enrichment jumlah komentar per posting (non-blocking),
   sorting terbaru, dan status publik (endpoint default `status=published`).
 
 ### Konsistensi desain
+
 - Container `max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 relative z-10` —
   sama persis dengan section lain di homepage, dibungkus `ErrorBoundary`.
 - Tidak terlihat seperti widget tambahan: menyatu dengan alur "Karya Terbaru →
@@ -55,24 +58,26 @@
 ## 3. Checklist
 
 ### Otomatis
+
 - [x] `npm test` (frontend) — **140 test pass** (15 file) setelah penambahan section.
 - [x] `npm run build` — **sukses** (Vite build).
 - [x] Probe DOM (headless): section tampil dengan 6 kartu, judul/subtitle benar,
       tombol "Lihat Semua", tanpa skeleton setelah data dimuat.
 
 ### Manual (verifikasi di `npm run dev`)
-| # | Item | Status |
-| --- | --- | --- |
-| 1 | Section muncul di homepage dengan judul & subtitle benar | ✅ (screenshot) |
-| 2 | Maksimal 6 posting terbaru (published) ditampilkan | ✅ (screenshot) |
-| 3 | Klik judul kartu → halaman detail `/feed/:slug` | ☐ |
-| 4 | Tombol "Lihat Semua →" → halaman `/feed` | ✅ (navigasi di-uji via probe) |
-| 5 | Loading: skeleton muncul sesaat lalu berganti grid | ☐ |
-| 6 | Error: backend mati → `FeedErrorState` + retry berfungsi | ☐ |
-| 7 | Feed kosong → `EmptyState` "Belum Ada Postingan" | ☐ |
-| 8 | Animasi fade-in-up stagger halus; `prefers-reduced-motion` dihormati | ☐ |
-| 9 | Responsive: 1 kolom (mobile), 2 (sm), 3 (lg) | ☐ |
-| 10 | Struktur homepage lain tidak berubah | ✅ |
+
+| #   | Item                                                                 | Status                         |
+| --- | -------------------------------------------------------------------- | ------------------------------ |
+| 1   | Section muncul di homepage dengan judul & subtitle benar             | ✅ (screenshot)                |
+| 2   | Maksimal 6 posting terbaru (published) ditampilkan                   | ✅ (screenshot)                |
+| 3   | Klik judul kartu → halaman detail `/feed/:slug`                      | ☐                              |
+| 4   | Tombol "Lihat Semua →" → halaman `/feed`                             | ✅ (navigasi di-uji via probe) |
+| 5   | Loading: skeleton muncul sesaat lalu berganti grid                   | ☐                              |
+| 6   | Error: backend mati → `FeedErrorState` + retry berfungsi             | ☐                              |
+| 7   | Feed kosong → `EmptyState` "Belum Ada Postingan"                     | ☐                              |
+| 8   | Animasi fade-in-up stagger halus; `prefers-reduced-motion` dihormati | ☐                              |
+| 9   | Responsive: 1 kolom (mobile), 2 (sm), 3 (lg)                         | ☐                              |
+| 10  | Struktur homepage lain tidak berubah                                 | ✅                             |
 
 ---
 

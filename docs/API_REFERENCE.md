@@ -12,19 +12,19 @@ Dokumentasi lengkap API endpoints untuk PF Space — platform arsip film karya s
 
 Semua endpoint yang memerlukan login menggunakan cookie `better-auth.session_token`.
 
-| Header / Cookie | Nilai |
-| --- | --- |
-| `Cookie` | `better-auth.session_token=xxx` |
-| `Origin` | `http://localhost:5173` (required untuk Better Auth) |
+| Header / Cookie | Nilai                                                |
+| --------------- | ---------------------------------------------------- |
+| `Cookie`        | `better-auth.session_token=xxx`                      |
+| `Origin`        | `http://localhost:5173` (required untuk Better Auth) |
 
 ### Sistem Role
 
-| role_id | name | Hak Akses |
-| --- | --- | --- |
-| 1 | user | Vote, komentar, koleksi |
-| 2 | creator | Semua user + upload & kelola film sendiri |
-| 3 | moderator | Semua creator + moderasi komentar & komunitas |
-| 4 | admin | Full akses ke semua fitur |
+| role_id | name      | Hak Akses                                     |
+| ------- | --------- | --------------------------------------------- |
+| 1       | user      | Vote, komentar, koleksi                       |
+| 2       | creator   | Semua user + upload & kelola film sendiri     |
+| 3       | moderator | Semua creator + moderasi komentar & komunitas |
+| 4       | admin     | Full akses ke semua fitur                     |
 
 ---
 
@@ -236,6 +236,7 @@ Cookie: better-auth.session_token=xxx
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -299,8 +300,18 @@ Cookie: better-auth.session_token=xxx
 
 ```json
 [
-  { "scene_order": 1, "title": "Opening", "description": "Adegan pembuka", "timestamp": "00:00" },
-  { "scene_order": 2, "title": "Konflik", "description": "...", "timestamp": "01:30" }
+  {
+    "scene_order": 1,
+    "title": "Opening",
+    "description": "Adegan pembuka",
+    "timestamp": "00:00"
+  },
+  {
+    "scene_order": 2,
+    "title": "Konflik",
+    "description": "...",
+    "timestamp": "01:30"
+  }
 ]
 ```
 
@@ -733,7 +744,6 @@ Cookie: better-auth.session_token=xxx
 
 ---
 
-
 ---
 
 ## 🎬 Production Feed (`/api/production-feed/...`)
@@ -813,7 +823,11 @@ Cookie: better-auth.session_token=xxx
   "visibility": "public",
   "tags": ["casting", "behind_the_scenes"],
   "media": [
-    { "media_type": "photo", "url": "/uploads/bts1.jpg", "caption": "Lokasi syuting" }
+    {
+      "media_type": "photo",
+      "url": "/uploads/bts1.jpg",
+      "caption": "Lokasi syuting"
+    }
   ]
 }
 ```
@@ -845,6 +859,7 @@ Cookie: better-auth.session_token=xxx
 PATCH /api/production-feed/:id/archive
 Cookie: better-auth.session_token=xxx
 ```
+
 ## 🚨 Reports (`/api/reports/...`)
 
 ### Kirim Laporan (Auth)
@@ -1098,21 +1113,19 @@ Cookie: better-auth.session_token=xxx
   "success": false,
   "code": "VALIDATION_ERROR",
   "message": "Validasi input gagal",
-  "errors": [
-    { "field": "judul", "message": "Judul wajib diisi" }
-  ]
+  "errors": [{ "field": "judul", "message": "Judul wajib diisi" }]
 }
 ```
 
-| HTTP Status | Kondisi |
-| --- | --- |
-| `200` | Berhasil |
-| `201` | Data berhasil dibuat |
-| `400` | Bad Request / Validasi gagal |
-| `401` | Belum login |
-| `403` | Tidak memiliki izin |
-| `404` | Data tidak ditemukan |
-| `429` | Too Many Requests (rate limit) |
-| `500` | Internal Server Error |
+| HTTP Status | Kondisi                        |
+| ----------- | ------------------------------ |
+| `200`       | Berhasil                       |
+| `201`       | Data berhasil dibuat           |
+| `400`       | Bad Request / Validasi gagal   |
+| `401`       | Belum login                    |
+| `403`       | Tidak memiliki izin            |
+| `404`       | Data tidak ditemukan           |
+| `429`       | Too Many Requests (rate limit) |
+| `500`       | Internal Server Error          |
 
 > **Catatan:** Semua pesan error & sukses menggunakan **Bahasa Indonesia** secara konsisten.

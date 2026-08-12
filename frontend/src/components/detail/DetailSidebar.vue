@@ -107,9 +107,15 @@ const hasLearningAssets = computed(
         <div class="space-y-2.5 md:space-y-3 text-xs md:text-sm">
           <div class="flex justify-between gap-4">
             <span class="text-stone-500 shrink-0">Kategori</span>
-            <span class="font-medium text-right truncate">{{
-              film.category?.nama_kategori || '-'
-            }}</span>
+            <router-link
+              v-if="film.category"
+              :to="{ path: '/films', query: { category_id: film.category.category_id } }"
+              class="font-medium text-right truncate text-brand-teal hover:underline"
+              :aria-label="`Lihat semua karya kategori ${film.category.nama_kategori}`"
+            >
+              {{ film.category.nama_kategori }}
+            </router-link>
+            <span v-else class="font-medium text-right truncate">-</span>
           </div>
           <div class="flex justify-between gap-4">
             <span class="text-stone-500 shrink-0">Tahun</span>

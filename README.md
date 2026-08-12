@@ -22,34 +22,34 @@ PF Space adalah platform web arsip film yang dibangun untuk siswa sekolah meneng
 
 ## ✨ Fitur Utama
 
-| Kategori | Fitur |
-| --- | --- |
-| 🎬 **Manajemen Karya** | Upload film (video + dokumen), review workflow, status publish/reject |
-| 📚 **Mode Studi** | Split-screen: tonton film sambil baca naskah, storyboard, atau RAB |
-| 🎯 **Evaluasi** | Penilaian kurator (Naskah, Sinematografi, Editing, Produksi) dengan feedback |
-| 💬 **Diskusi** | Threaded comments (5 level kedalaman), komunitas forum |
-| 🔖 **Koleksi & Voting** | Bookmark pribadi, voting trending (mingguan/bulanan) |
-| 🤖 **AI Chat** | Asisten AI berbasis konteks arsip film (Groq/OpenAI/Gemini) |
-| 📊 **Feed Production** | Pemantauan alur dan aktivitas produksi karya film |
-| 🔐 **RBAC** | 4 level akses: User, Creator, Moderator, Admin |
-| 📱 **Responsive** | Brutal Design System, mobile-first, dark mode |
-| 🔔 **Notifikasi** | Real-time in-app notifications |
-| 🛡️ **Keamanan** | CSP headers, rate limiting, RBAC defense-in-depth |
-| 🌐 **SEO** | Sitemap.xml & robots.txt dinamis via Vite plugin |
+| Kategori                | Fitur                                                                        |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| 🎬 **Manajemen Karya**  | Upload film (video + dokumen), review workflow, status publish/reject        |
+| 📚 **Mode Studi**       | Split-screen: tonton film sambil baca naskah, storyboard, atau RAB           |
+| 🎯 **Evaluasi**         | Penilaian kurator (Naskah, Sinematografi, Editing, Produksi) dengan feedback |
+| 💬 **Diskusi**          | Threaded comments (5 level kedalaman), komunitas forum                       |
+| 🔖 **Koleksi & Voting** | Bookmark pribadi, voting trending (mingguan/bulanan)                         |
+| 🤖 **AI Chat**          | Asisten AI berbasis konteks arsip film (Groq/OpenAI/Gemini)                  |
+| 📊 **Feed Production**  | Pemantauan alur dan aktivitas produksi karya film                            |
+| 🔐 **RBAC**             | 4 level akses: User, Creator, Moderator, Admin                               |
+| 📱 **Responsive**       | Brutal Design System, mobile-first, dark mode                                |
+| 🔔 **Notifikasi**       | Real-time in-app notifications                                               |
+| 🛡️ **Keamanan**         | CSP headers, rate limiting, RBAC defense-in-depth                            |
+| 🌐 **SEO**              | Sitemap.xml & robots.txt dinamis via Vite plugin                             |
 
 ## 🛠️ Tech Stack
 
 <div align="center">
 
-| Layer | Technology |
-| --- | --- |
-| **Frontend** | Vue 3.5 · Vite 7 · Tailwind CSS 4 · shadcn/ui · Lucide Icons |
-| **Backend** | Fastify 5 · Node.js 23 · MySQL · Knex.js · Objection.js |
-| **Auth** | Better Auth (Email/Password + Google OAuth) |
-| **Upload** | Tus.io (Resumable, hingga 2GB) |
-| **AI** | Groq · OpenAI · Gemini (pluggable) |
-| **Validation** | Zod (centralized schema) |
-| **CI/CD** | GitHub Actions · Vitest |
+| Layer          | Technology                                                   |
+| -------------- | ------------------------------------------------------------ |
+| **Frontend**   | Vue 3.5 · Vite 7 · Tailwind CSS 4 · shadcn/ui · Lucide Icons |
+| **Backend**    | Fastify 5 · Node.js 23 · MySQL · Knex.js · Objection.js      |
+| **Auth**       | Better Auth (Email/Password + Google OAuth)                  |
+| **Upload**     | Tus.io (Resumable, hingga 2GB)                               |
+| **AI**         | Groq · OpenAI · Gemini (pluggable)                           |
+| **Validation** | Zod (centralized schema)                                     |
+| **CI/CD**      | GitHub Actions · Vitest                                      |
 
 </div>
 
@@ -141,16 +141,16 @@ gh run list                # lihat status GitHub Actions
 
 ## 📚 Dokumentasi
 
-| Dokumen | Deskripsi |
-| --- | --- |
-| [API Reference](./docs/API_REFERENCE.md) | Endpoint lengkap + contoh request/response |
-| [Database Schema](./docs/DATABASE.md) | Struktur tabel dan relasi |
-| [Upload System](./docs/UPLOAD_SYSTEM.md) | Tus.io resumable upload & draft system |
-| [Development Guide](./docs/DEVELOPMENT.md) | Panduan setup local development |
-| [Testing Guide](./docs/TESTING_GUIDE.md) | Cara menulis dan menjalankan test |
-| [Deployment Guide](./deploy/DEPLOYMENT_GUIDE.md) | Deploy ke production server |
-| [Roadmap](./docs/ROADMAP.md) | Fitur masa depan |
-| [Changelog](./docs/CHANGELOG.md) | Riwayat perubahan versi |
+| Dokumen                                          | Deskripsi                                  |
+| ------------------------------------------------ | ------------------------------------------ |
+| [API Reference](./docs/API_REFERENCE.md)         | Endpoint lengkap + contoh request/response |
+| [Database Schema](./docs/DATABASE.md)            | Struktur tabel dan relasi                  |
+| [Upload System](./docs/UPLOAD_SYSTEM.md)         | Tus.io resumable upload & draft system     |
+| [Development Guide](./docs/DEVELOPMENT.md)       | Panduan setup local development            |
+| [Testing Guide](./docs/TESTING_GUIDE.md)         | Cara menulis dan menjalankan test          |
+| [Deployment Guide](./deploy/DEPLOYMENT_GUIDE.md) | Deploy ke production server                |
+| [Roadmap](./docs/ROADMAP.md)                     | Fitur masa depan                           |
+| [Changelog](./docs/CHANGELOG.md)                 | Riwayat perubahan versi                    |
 
 ## 🔒 Security
 

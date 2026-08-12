@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHead } from "@unhead/vue";
 import {
@@ -466,7 +466,10 @@ onMounted(() => {
 
   <!-- Delete post confirm modal (at root level for proper rendering) -->
   <Teleport to="body">
-    <div v-if="showDeleteConfirm" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div
+      v-if="showDeleteConfirm"
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4"
+    >
       <div
         class="absolute inset-0 bg-black/60 backdrop-blur-sm"
         @click="showDeleteConfirm = false"
@@ -487,8 +490,8 @@ onMounted(() => {
               </h3>
               <p class="text-sm text-stone-600">
                 Apakah Anda yakin ingin menghapus postingan
-                <strong>"{{ post?.judul }}"</strong>? Tindakan ini tidak
-                dapat dibatalkan.
+                <strong>"{{ post?.judul }}"</strong>? Tindakan ini tidak dapat
+                dibatalkan.
               </p>
             </div>
           </div>
@@ -509,10 +512,7 @@ onMounted(() => {
               @click="handleDelete"
               :disabled="isDeleting"
             >
-              <Loader2
-                v-if="isDeleting"
-                class="w-4 h-4 mr-2 animate-spin"
-              />
+              <Loader2 v-if="isDeleting" class="w-4 h-4 mr-2 animate-spin" />
               <Trash2 v-else class="w-4 h-4 mr-2" />
               {{ isDeleting ? "Menghapus..." : "Ya, Hapus" }}
             </Button>

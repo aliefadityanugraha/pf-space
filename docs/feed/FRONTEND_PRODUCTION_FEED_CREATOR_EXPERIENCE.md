@@ -61,14 +61,14 @@ CreateFeed / EditFeed (page, meta requiresAuth+requiresCreator)
 
 ### Endpoint backend yang dipakai (tidak diubah)
 
-| Endpoint | Dipakai untuk |
-| --- | --- |
-| `POST /api/production-feed` | Buat post baru (draft/publish langsung). |
-| `GET /api/production-feed/:id\|:slug` | Muat detail post saat edit (oleh `post_id`). |
-| `PUT /api/production-feed/:id` | Simpan perubahan (update mengganti penuh `media` + `tags` bila dikirim; `gambar_cover` harus foto). |
+| Endpoint                                 | Dipakai untuk                                                                                                          |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/production-feed`              | Buat post baru (draft/publish langsung).                                                                               |
+| `GET /api/production-feed/:id\|:slug`    | Muat detail post saat edit (oleh `post_id`).                                                                           |
+| `PUT /api/production-feed/:id`           | Simpan perubahan (update mengganti penuh `media` + `tags` bila dikirim; `gambar_cover` harus foto).                    |
 | `PATCH /api/production-feed/:id/publish` | Terbitkan (`draft → published`); slug di-generate backend sekali (`Film.generateSlug`) — frontend tidak mengirim slug. |
-| `GET /api/production-feed/tags` | Daftar tag `{ tag_id, nama_tag, slug }`. |
-| `GET /api/production-feed/my` | Film milik creator (`res.data.films`) untuk dropdown relasi film. |
+| `GET /api/production-feed/tags`          | Daftar tag `{ tag_id, nama_tag, slug }`.                                                                               |
+| `GET /api/production-feed/my`            | Film milik creator (`res.data.films`) untuk dropdown relasi film.                                                      |
 
 > **Catatan kontrak**: `update()` mengganti penuh `media` + `tags` saat dikirim
 > → payload edit selalu mengirim daftar media & tag terkini. `gambar_cover`
@@ -110,31 +110,31 @@ CreateFeed / EditFeed (page, meta requiresAuth+requiresCreator)
 
 ## 3. Daftar File Baru
 
-| File | Deskripsi |
-| --- | --- |
-| `frontend/src/lib/uploadFileTus.js` | Helper upload TUS (hasil refactor dari `ArchiveUploadForm.vue`); `guessUploadSubfolder(file, hint)` untuk subfolder `images`/`videos`/`pdf`. |
-| `frontend/src/modules/production-feed/editor.js` | Pure helpers editor (validasi, mapping, media ops, dirty check). |
-| `frontend/src/modules/production-feed/useProductionFeedEditor.js` | Composable editor (state + upload + save/publish). |
-| `frontend/src/components/production-feed/FeedEditor.vue` | Komponen editor utama (2 kolom, modal video, guard). |
-| `frontend/src/pages/CreateFeed.vue` | Halaman `/feed/create`. |
-| `frontend/src/pages/EditFeed.vue` | Halaman `/feed/:id/edit`. |
-| `frontend/src/modules/production-feed/__tests__/editor.test.js` | 26 unit test pure helpers. |
-| `frontend/src/modules/production-feed/__tests__/useProductionFeedEditor.test.js` | 18 unit test composable (mock API + TUS + `lib/api`). |
-| `frontend/src/components/production-feed/__tests__/FeedEditor.test.js` | 10 unit test komponen (mock composable + `vue-router`). |
+| File                                                                             | Deskripsi                                                                                                                                    |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `frontend/src/lib/uploadFileTus.js`                                              | Helper upload TUS (hasil refactor dari `ArchiveUploadForm.vue`); `guessUploadSubfolder(file, hint)` untuk subfolder `images`/`videos`/`pdf`. |
+| `frontend/src/modules/production-feed/editor.js`                                 | Pure helpers editor (validasi, mapping, media ops, dirty check).                                                                             |
+| `frontend/src/modules/production-feed/useProductionFeedEditor.js`                | Composable editor (state + upload + save/publish).                                                                                           |
+| `frontend/src/components/production-feed/FeedEditor.vue`                         | Komponen editor utama (2 kolom, modal video, guard).                                                                                         |
+| `frontend/src/pages/CreateFeed.vue`                                              | Halaman `/feed/create`.                                                                                                                      |
+| `frontend/src/pages/EditFeed.vue`                                                | Halaman `/feed/:id/edit`.                                                                                                                    |
+| `frontend/src/modules/production-feed/__tests__/editor.test.js`                  | 26 unit test pure helpers.                                                                                                                   |
+| `frontend/src/modules/production-feed/__tests__/useProductionFeedEditor.test.js` | 18 unit test composable (mock API + TUS + `lib/api`).                                                                                        |
+| `frontend/src/components/production-feed/__tests__/FeedEditor.test.js`           | 10 unit test komponen (mock composable + `vue-router`).                                                                                      |
 
 ## 4. Daftar File Diubah
 
-| File | Perubahan |
-| --- | --- |
-| `frontend/src/modules/production-feed/api.js` | Tambah `fetchPostDetail`, `createFeedPost`, `updateFeedPost`, `publishFeedPost`, `fetchFeedTags`, `fetchMyFilms`. |
-| `frontend/src/modules/production-feed/types.js` | Tag mapping menerima `tag?.name || tag?.nama_tag`. |
-| `frontend/src/modules/production-feed/index.js` | Export `editor.js` + `useProductionFeedEditor`. |
-| `frontend/src/components/ArchiveUploadForm.vue` | Direfactor memakai `lib/uploadFileTus.js` (perilaku identik, duplikasi TUS dihapus, import `BASE_URL` dibersihkan). |
-| `frontend/src/router/index.js` | Routes `/feed/create` + `/feed/:id/edit` (`requiresAuth + requiresCreator`). |
-| `frontend/src/pages/Feed.vue` | Tombol **"Buat Post"** (creator-only) di header. |
-| `frontend/src/components/Navbar.vue` | Menu dropdown **"Buat Post Produksi"** (creator-only). |
-| `frontend/src/components/production-feed/FeedCard.vue` | Tombol **Edit** (owner-only) → `/feed/:id/edit`. |
-| `frontend/src/composables/useAuth.js` | Helper test internal `_setAuthUser` (pola `_resetAuthState`). |
+| File                                                   | Perubahan                                                                                                           |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- | --- | --------------- |
+| `frontend/src/modules/production-feed/api.js`          | Tambah `fetchPostDetail`, `createFeedPost`, `updateFeedPost`, `publishFeedPost`, `fetchFeedTags`, `fetchMyFilms`.   |
+| `frontend/src/modules/production-feed/types.js`        | Tag mapping menerima `tag?.name                                                                                     |     | tag?.nama_tag`. |
+| `frontend/src/modules/production-feed/index.js`        | Export `editor.js` + `useProductionFeedEditor`.                                                                     |
+| `frontend/src/components/ArchiveUploadForm.vue`        | Direfactor memakai `lib/uploadFileTus.js` (perilaku identik, duplikasi TUS dihapus, import `BASE_URL` dibersihkan). |
+| `frontend/src/router/index.js`                         | Routes `/feed/create` + `/feed/:id/edit` (`requiresAuth + requiresCreator`).                                        |
+| `frontend/src/pages/Feed.vue`                          | Tombol **"Buat Post"** (creator-only) di header.                                                                    |
+| `frontend/src/components/Navbar.vue`                   | Menu dropdown **"Buat Post Produksi"** (creator-only).                                                              |
+| `frontend/src/components/production-feed/FeedCard.vue` | Tombol **Edit** (owner-only) → `/feed/:id/edit`.                                                                    |
+| `frontend/src/composables/useAuth.js`                  | Helper test internal `_setAuthUser` (pola `_resetAuthState`).                                                       |
 
 ---
 
@@ -165,18 +165,18 @@ Suite baru / bertambah (54 test baru):
 
 ### Manual (sprint ini perlu dicek)
 
-| # | Item | Status |
-| --- | --- | --- |
-| 1 | `/feed/create` (login creator) memuat form kosong | ☐ |
-| 2 | Isi form → **Simpan Draft** → toast sukses, tombol aksi kembali normal | ☐ |
-| 3 | **Terbitkan** → post muncul di `/feed` (slug ter-generate backend) | ☐ |
-| 4 | `/feed/:id/edit` memuat detail post ke form | ☐ |
-| 5 | Edit → simpan → data berubah; publish ulang draft | ☐ |
-| 6 | Upload cover/galeri foto via TUS (progress, preview tampil) | ☐ |
-| 7 | Upload video (modal konfirmasi + progress) & PDF (inline) | ☐ |
-| 8 | Cover wajib saat publish (error jika kosong); draft tanpa cover boleh | ☐ |
-| 9 | Meninggalkan halaman dengan perubahan → dialog "perubahan belum tersimpan" | ☐ |
-| 10 | CTA: Buat Post (Feed + Navbar) & Edit (kartu milik owner saja) | ☐ |
+| #   | Item                                                                       | Status |
+| --- | -------------------------------------------------------------------------- | ------ |
+| 1   | `/feed/create` (login creator) memuat form kosong                          | ☐      |
+| 2   | Isi form → **Simpan Draft** → toast sukses, tombol aksi kembali normal     | ☐      |
+| 3   | **Terbitkan** → post muncul di `/feed` (slug ter-generate backend)         | ☐      |
+| 4   | `/feed/:id/edit` memuat detail post ke form                                | ☐      |
+| 5   | Edit → simpan → data berubah; publish ulang draft                          | ☐      |
+| 6   | Upload cover/galeri foto via TUS (progress, preview tampil)                | ☐      |
+| 7   | Upload video (modal konfirmasi + progress) & PDF (inline)                  | ☐      |
+| 8   | Cover wajib saat publish (error jika kosong); draft tanpa cover boleh      | ☐      |
+| 9   | Meninggalkan halaman dengan perubahan → dialog "perubahan belum tersimpan" | ☐      |
+| 10  | CTA: Buat Post (Feed + Navbar) & Edit (kartu milik owner saja)             | ☐      |
 
 ---
 

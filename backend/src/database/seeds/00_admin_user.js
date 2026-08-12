@@ -20,7 +20,7 @@ async function hashPassword(password) {
 export async function seed(knex) {
   const email = process.env.ADMIN_EMAIL || 'admin@pfspace.com';
   const password = process.env.ADMIN_PASSWORD || 'admin123';
-  const name = process.env.ADMIN_NAME || 'Admin PF Space';
+  const name = process.env.ADMIN_NAME || 'Admin PF Spaces';
   const role_id = 4; // admin role
 
   const hashedPassword = await hashPassword(password);
