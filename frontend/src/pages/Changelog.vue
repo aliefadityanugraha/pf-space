@@ -47,6 +47,27 @@ const typeColor = {
 
 const fallbackData = () => [
   {
+    id: "v1_6_0",
+    version: "1.6.0",
+    date: "2026-08-13",
+    type: "feature",
+    title: "Implementasi Sistem Dark Mode Global, Refinement UI Sinematik, & Engine Transisi Tema",
+    description:
+      "Rilis besar sistem Dark Mode global yang mencakup perombakan arsitektur tema (Light, Dark, System), integrasi token Tailwind CSS v4, engine transisi tema halus 350ms, serta penyempurnaan estetika sinematik.",
+    items: [
+      "Implementasi Theme Engine Global (useTheme.js) mendukung 3 mode: Light (Terang), Dark (Gelap), dan System (Otomatis mengikuti preferensi OS) dengan penyimpanan preferensi di localStorage",
+      "Komponen sakelar tema interaktif (<ThemeToggle />) pada Navbar dengan pilihan menu dropdown intuitif (Terang, Gelap, Sistem)",
+      "Pencegahan kedipan tema (Anti-Flash script) secara synchronous pada skrip HTML head saat navigasi atau muat ulang halaman",
+      "Penerapan Global Smooth Theme Transition Engine (350ms color fade) di style.css untuk pergerakan warna tema yang sangat mulus tanpa mengganggu animasi layout",
+      "Mendaftarkan seluruh pemetaan token tema semantic shadcn/ui ke direktif @theme Tailwind CSS v4 (--color-background, --color-foreground, --color-card, --color-border, dll)",
+      "Penyempurnaan tampilan Hero Section: pencahayaan foto sinematik (opacity 75%), mask overlay gelap permanen, dan gradien bawah dari-background yang menyatu tanpa garis potong",
+      "Penyempurnaan Navbar: transisi glassmorphism (bg-brand-cream/85 dark:bg-stone-900/85 backdrop-blur-md) saat di atas hero dan transisi solid saat di-scroll",
+      "Penyesuaian Footer sinematik pekat (bg-[#09090b]) yang konsisten gelap di mode terang maupun mode gelap",
+      "Perbaikan posisi tombol Scroll-To-Top (bottom-20/24) untuk mencegah bentrokan visual dengan tombol floating AI Chat Assistant",
+      "Perbaikan modal dialog konfirmasi (ConfirmDialog.vue) dengan penyesuaian header latar belakang mode gelap pada varian danger, warning, dan info",
+    ],
+  },
+  {
     id: "v1_5_0",
     version: "1.5.0",
     date: "2026-08-12",

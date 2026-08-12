@@ -42,22 +42,22 @@ const emit = defineEmits(['confirm', 'cancel', 'update:show'])
 
 const variantStyles = {
   danger: {
-    header: 'bg-red-50',
-    iconColor: 'text-red-600',
-    titleColor: 'text-red-800',
-    confirmBtn: 'bg-red-600 hover:bg-red-700'
+    header: 'bg-red-50 dark:bg-red-950/50',
+    iconColor: 'text-red-600 dark:text-red-400',
+    titleColor: 'text-red-800 dark:text-red-200',
+    confirmBtn: 'bg-red-600 hover:bg-red-700 text-white'
   },
   warning: {
-    header: 'bg-amber-50',
-    iconColor: 'text-amber-600',
-    titleColor: 'text-amber-800',
-    confirmBtn: 'bg-amber-600 hover:bg-amber-700'
+    header: 'bg-amber-50 dark:bg-amber-950/50',
+    iconColor: 'text-amber-600 dark:text-amber-400',
+    titleColor: 'text-amber-800 dark:text-amber-200',
+    confirmBtn: 'bg-amber-600 hover:bg-amber-700 text-white'
   },
   info: {
-    header: 'bg-blue-50',
-    iconColor: 'text-blue-600',
-    titleColor: 'text-blue-800',
-    confirmBtn: 'bg-blue-600 hover:bg-blue-700'
+    header: 'bg-blue-50 dark:bg-blue-950/50',
+    iconColor: 'text-blue-600 dark:text-blue-400',
+    titleColor: 'text-blue-800 dark:text-blue-200',
+    confirmBtn: 'bg-blue-600 hover:bg-blue-700 text-white'
   }
 }
 
@@ -83,12 +83,12 @@ const confirm = () => {
     >
       <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/50" @click="close"></div>
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-xs" @click="close"></div>
         
         <!-- Dialog -->
-        <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-sm">
+        <div class="relative bg-card text-card-foreground border-2 border-border shadow-brutal w-full max-w-sm">
           <!-- Header -->
-          <div :class="['flex items-center gap-3 px-6 py-4 border-b-2 border-black', variantStyles[variant].header]">
+          <div :class="['flex items-center gap-3 px-6 py-4 border-b-2 border-border', variantStyles[variant].header]">
             <component 
               :is="icon || AlertTriangle" 
               :class="['w-5 h-5', variantStyles[variant].iconColor]" 
@@ -97,13 +97,13 @@ const confirm = () => {
               {{ title }}
             </h2>
             <button @click="close" class="p-1 hover:opacity-70 rounded">
-              <X class="w-5 h-5" />
+              <X class="w-5 h-5 text-foreground" />
             </button>
           </div>
           
           <!-- Body -->
           <div class="p-6">
-            <p class="text-stone-600 mb-6">
+            <p class="text-muted-foreground mb-6">
               <slot>{{ message }}</slot>
             </p>
             

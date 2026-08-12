@@ -40,10 +40,11 @@ const scrollToTop = () => {
       v-show="isVisible"
       @click="scrollToTop"
       aria-label="Kembali ke atas halaman"
-      class="fixed bottom-24 right-6 z-[90] p-3 bg-brand-teal text-white border-2 border-stone-900 shadow-brutal flex items-center justify-center hover:bg-teal-600 transition-all hover:-translate-y-1 hover:shadow-brutal-lg cursor-pointer"
+      class="fixed bottom-20 right-6 md:bottom-24 md:right-8 z-[90] p-3 bg-brand-yellow text-stone-900 border-2 border-stone-900 shadow-brutal flex items-center justify-center gap-1.5 font-bold font-mono text-xs uppercase hover:bg-yellow-400 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer group"
       title="Kembali ke Atas"
     >
-      <ArrowUp class="w-6 h-6 stroke-[3]" />
+      <ArrowUp class="w-5 h-5 stroke-[3] group-hover:-translate-y-0.5 transition-transform" />
+      <span class="hidden sm:inline">Ke Atas</span>
     </button>
   </transition>
 </template>

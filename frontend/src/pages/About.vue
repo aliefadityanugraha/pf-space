@@ -42,7 +42,7 @@ useHead({
       />
 
       <p
-        class="text-sm md:text-lg font-body text-slate-600 mb-8 md:mb-12 leading-relaxed"
+        class="text-sm md:text-lg font-body text-muted-foreground mb-8 md:mb-12 leading-relaxed"
       >
         PF Space adalah platform digital yang didedikasikan untuk mengarsipkan
         dan menampilkan karya film siswa. Kami percaya pada kekuatan sinema
@@ -51,14 +51,14 @@ useHead({
 
       <!-- Collaboration Section -->
       <section
-        class="mb-12 md:mb-16 p-6 md:p-12 bg-white border-2 border-black shadow-brutal text-center relative overflow-hidden"
+        class="mb-12 md:mb-16 p-6 md:p-12 bg-card text-card-foreground border-2 border-border shadow-brutal text-center relative overflow-hidden"
       >
         <div
           class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-red via-brand-orange to-brand-teal"
         ></div>
 
         <h2
-          class="text-[9px] md:text-sm font-mono font-bold text-stone-500 uppercase tracking-widest mb-6 md:mb-10"
+          class="text-[9px] md:text-sm font-mono font-bold text-muted-foreground uppercase tracking-widest mb-6 md:mb-10"
         >
           Program Kreativitas Mahasiswa - Pengabdian Masyarakat Universitas Dian
           Nuswantoro
@@ -77,10 +77,10 @@ useHead({
               />
             </div>
             <div class="flex flex-col">
-              <span class="font-display font-bold text-sm text-stone-800"
+              <span class="font-display font-bold text-sm text-foreground"
                 >SMKN Ngasem</span
               >
-              <span class="text-[10px] text-stone-500 uppercase font-mono"
+              <span class="text-[10px] text-muted-foreground uppercase font-mono"
                 >Mitra Pengabdian</span
               >
             </div>
@@ -107,10 +107,10 @@ useHead({
               />
             </div>
             <div class="flex flex-col">
-              <span class="font-display font-bold text-sm text-stone-800"
+              <span class="font-display font-bold text-sm text-foreground"
                 >Produksi Film</span
               >
-              <span class="text-[10px] text-stone-500 uppercase font-mono"
+              <span class="text-[10px] text-muted-foreground uppercase font-mono"
                 >Konsultan Kreatif</span
               >
             </div>
@@ -137,10 +137,10 @@ useHead({
               />
             </div>
             <div class="flex flex-col">
-              <span class="font-display font-bold text-sm text-stone-800"
+              <span class="font-display font-bold text-sm text-foreground"
                 >UDINUS</span
               >
-              <span class="text-[10px] text-stone-500 uppercase font-mono"
+              <span class="text-[10px] text-muted-foreground uppercase font-mono"
                 >Inisiator PKM-PM</span
               >
             </div>
@@ -148,7 +148,7 @@ useHead({
         </div>
 
         <p
-          class="mt-8 md:mt-12 text-stone-600 font-body text-xs md:text-base max-w-3xl mx-auto italic leading-relaxed px-4 md:px-0"
+          class="mt-8 md:mt-12 text-muted-foreground font-body text-xs md:text-base max-w-3xl mx-auto italic leading-relaxed px-4 md:px-0"
         >
           "Platform ini merupakan wujud nyata kontribusi mahasiswa Universitas
           Dian Nuswantoro melalui Program Kreativitas Mahasiswa (PKM-PM) dalam
@@ -161,18 +161,18 @@ useHead({
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- Visi -->
           <div
-            class="bg-white border-2 border-black p-6 md:p-8 shadow-brutal hover:shadow-brutal-lg transition-all"
+            class="bg-card text-card-foreground border-2 border-border p-6 md:p-8 shadow-brutal hover:shadow-brutal-lg transition-all"
           >
             <h3
-              class="font-display font-bold text-xl md:text-2xl text-stone-900 mb-4 flex items-center gap-3"
+              class="font-display font-bold text-xl md:text-2xl text-foreground mb-4 flex items-center gap-3"
             >
               <span
-                class="w-3 h-3 bg-brand-red border border-black inline-block"
+                class="w-3 h-3 bg-brand-red border border-border inline-block"
               ></span>
               Visi Kami
             </h3>
             <p
-              class="text-stone-700 font-body text-sm md:text-base leading-relaxed"
+              class="text-muted-foreground font-body text-sm md:text-base leading-relaxed"
             >
               Menjadi wadah digital terdepan dalam melestarikan, mengapresiasi,
               dan mengembangkan potensi karya sinematik siswa sekolah menengah
@@ -182,18 +182,18 @@ useHead({
 
           <!-- Misi -->
           <div
-            class="bg-white border-2 border-black p-6 md:p-8 shadow-brutal hover:shadow-brutal-lg transition-all"
+            class="bg-card text-card-foreground border-2 border-border p-6 md:p-8 shadow-brutal hover:shadow-brutal-lg transition-all"
           >
             <h3
-              class="font-display font-bold text-xl md:text-2xl text-stone-900 mb-4 flex items-center gap-3"
+              class="font-display font-bold text-xl md:text-2xl text-foreground mb-4 flex items-center gap-3"
             >
               <span
-                class="w-3 h-3 bg-brand-teal border border-black inline-block"
+                class="w-3 h-3 bg-brand-teal border border-border inline-block"
               ></span>
               Misi Kami
             </h3>
             <ul
-              class="text-stone-700 font-body text-sm md:text-base space-y-2 list-disc list-inside leading-relaxed"
+              class="text-muted-foreground font-body text-sm md:text-base space-y-2 list-disc list-inside leading-relaxed"
             >
               <li>Mengarsipkan karya film siswa secara terstruktur dan aman</li>
               <li>Menyediakan materi pembelajaran film yang mudah diakses</li>
@@ -206,15 +206,15 @@ useHead({
 
         <!-- Latar Belakang Section -->
         <div
-          class="bg-brand-cream border-2 border-black p-6 md:p-10 shadow-brutal"
+          class="bg-card text-card-foreground border-2 border-border p-6 md:p-10 shadow-brutal"
         >
           <h2
-            class="font-display font-bold text-2xl md:text-3xl text-stone-900 mb-4"
+            class="font-display font-bold text-2xl md:text-3xl text-foreground mb-4"
           >
             Latar Belakang
           </h2>
           <div
-            class="prose prose-stone max-w-none font-body text-sm md:text-base leading-relaxed space-y-4"
+            class="prose dark:prose-invert max-w-none font-body text-sm md:text-base leading-relaxed space-y-4 text-muted-foreground"
           >
             <p>
               PF Space (Platform Kearsipan Film Digital Siswa) lahir dari
@@ -235,7 +235,7 @@ useHead({
       <!-- Founders Section -->
       <section class="mt-16 md:mt-24">
         <h2
-          class="text-xl md:text-3xl font-display font-bold text-stone-900 mb-2 tracking-tight"
+          class="text-xl md:text-3xl font-display font-bold text-foreground mb-2 tracking-tight"
         >
           Temui Pendiri Kami
         </h2>
@@ -246,7 +246,7 @@ useHead({
           <div class="group">
             <div class="relative mb-3 md:mb-4">
               <div
-                class="aspect-square bg-brand-orange border-2 border-black shadow-brutal group-hover:shadow-none group-hover:translate-x-1 group-hover:translate-y-1 transition-all flex items-center justify-center overflow-hidden"
+                class="aspect-square bg-brand-orange border-2 border-border shadow-brutal group-hover:shadow-none group-hover:translate-x-1 group-hover:translate-y-1 transition-all flex items-center justify-center overflow-hidden"
               >
                 <img
                   src="/the founders/MEET TEDO.jpg"
@@ -256,7 +256,7 @@ useHead({
               </div>
             </div>
             <h3
-              class="font-display font-bold text-lg md:text-xl text-stone-900"
+              class="font-display font-bold text-lg md:text-xl text-foreground"
             >
               Tedo Haris Candra
             </h3>
@@ -266,7 +266,7 @@ useHead({
               Business Analyst & Content Manager
             </p>
             <p
-              class="text-[13px] md:text-sm text-stone-600 font-body leading-relaxed mb-4"
+              class="text-[13px] md:text-sm text-muted-foreground font-body leading-relaxed mb-4"
             >
               Menganalisis kebutuhan alur platform dan strategi produk, serta
               mengelola struktur konten sinematik dan aset pembelajaran agar
@@ -274,14 +274,14 @@ useHead({
             </p>
             <!-- Social Links -->
             <div
-              class="flex items-center gap-2 pt-3 border-t-2 border-stone-200"
+              class="flex items-center gap-2 pt-3 border-t-2 border-border"
             >
               <a
                 href="#"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Portfolio Tedo Haris Candra"
-                class="p-2 bg-white border-2 border-stone-900 shadow-brutal-xs hover:bg-brand-teal hover:text-white hover:border-stone-900 transition-all text-stone-900 flex items-center gap-1 text-xs font-bold font-mono"
+                class="p-2 bg-card border-2 border-border shadow-brutal-xs hover:bg-brand-teal hover:text-white transition-all text-foreground flex items-center gap-1 text-xs font-bold font-mono"
               >
                 <Globe class="w-3.5 h-3.5" />
                 <span>Portfolio</span>

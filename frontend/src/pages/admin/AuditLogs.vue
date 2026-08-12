@@ -93,10 +93,10 @@ onMounted(() => {
       </template>
     </PageHeader>
 
-    <Card class="border-2 border-stone-800 shadow-brutal overflow-hidden">
-      <CardHeader class="bg-stone-50 border-b-2 border-stone-800 py-4">
+    <Card class="border-2 border-border shadow-brutal overflow-hidden bg-card text-card-foreground">
+      <CardHeader class="bg-muted border-b-2 border-border py-4">
         <div class="flex items-center justify-between">
-          <CardTitle class="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+          <CardTitle class="text-sm font-bold uppercase tracking-widest flex items-center gap-2 text-foreground">
             <ClipboardList class="w-4 h-4" />
             Daftar Aktivitas
           </CardTitle>
@@ -105,28 +105,28 @@ onMounted(() => {
       <CardContent class="p-0">
         <div v-if="loading && logs.length === 0" class="p-12 text-center">
           <Loader2 class="w-12 h-12 animate-spin text-brand-teal mx-auto mb-4" />
-          <p class="font-mono text-stone-500 uppercase tracking-widest">Memuat Log...</p>
+          <p class="font-mono text-muted-foreground uppercase tracking-widest">Memuat Log...</p>
         </div>
 
-        <div v-else-if="logs.length === 0" class="p-12 text-center text-stone-500">
+        <div v-else-if="logs.length === 0" class="p-12 text-center text-muted-foreground">
           Belum ada log aktivitas yang tercatat.
         </div>
 
         <template v-else>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
-              <thead class="bg-lime-50 border-b-2 border-stone-800 text-[10px] uppercase font-black tracking-tighter">
+              <thead class="bg-muted border-b-2 border-border text-[10px] uppercase font-black tracking-tighter text-foreground">
                 <tr>
-                  <th class="px-6 py-3 border-r border-stone-800">Waktu</th>
-                  <th class="px-6 py-3 border-r border-stone-800">Admin</th>
-                  <th class="px-6 py-3 border-r border-stone-800">Aksi</th>
-                  <th class="px-6 py-3 border-r border-stone-800">Target</th>
+                  <th class="px-6 py-3 border-r border-border">Waktu</th>
+                  <th class="px-6 py-3 border-r border-border">Admin</th>
+                  <th class="px-6 py-3 border-r border-border">Aksi</th>
+                  <th class="px-6 py-3 border-r border-border">Target</th>
                   <th class="px-6 py-3">Rincian</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-stone-200">
-                <tr v-for="log in logs" :key="log.id" class="hover:bg-stone-50 transition-colors group">
-                  <td class="px-6 py-4 whitespace-nowrap border-r border-stone-100">
+              <tbody class="divide-y divide-border">
+                <tr v-for="log in logs" :key="log.id" class="hover:bg-muted/50 transition-colors group">
+                  <td class="px-6 py-4 whitespace-nowrap border-r border-border">
                     <div class="flex items-center gap-2 text-xs font-mono">
                       <Clock class="w-3 h-3 text-stone-400" />
                       {{ formatDate(log.created_at) }}

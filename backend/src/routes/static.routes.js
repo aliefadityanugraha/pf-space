@@ -68,6 +68,7 @@ export default async function staticRoutes(fastify) {
 
     // 1. PDF Handling: Set headers to ensure browser displays them inline
     if (ext === '.pdf') {
+      reply.header('Cache-Control', 'public, max-age=31536000, immutable');
       reply.header('Content-Type', 'application/pdf');
       reply.header('Content-Disposition', 'inline');
       return reply.send(fs.createReadStream(absolutePath));
@@ -78,6 +79,8 @@ export default async function staticRoutes(fastify) {
       const fileSize = stat.size;
       const contentType = `video/${ext === '.mov' ? 'quicktime' : ext.substring(1)}`;
       const range = request.headers.range;
+
+      reply.header('Cache-Control', 'public, max-age=31536000, immutable');
 
       if (range) {
         // Parse Range header: "bytes=start-end"
@@ -116,6 +119,7 @@ export default async function staticRoutes(fastify) {
         '.avif': 'image/avif'
       };
       const contentType = mimeMap[ext] || 'image/jpeg';
+      reply.header('Cache-Control', 'public, max-age=31536000, immutable');
       reply.header('Content-Type', contentType);
       reply.header('Content-Disposition', 'inline');
       return reply.send(fs.createReadStream(absolutePath));

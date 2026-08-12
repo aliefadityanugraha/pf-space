@@ -459,7 +459,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-brand-cream">
+  <div class="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
     <Navbar :light-title="isLightTitle" />
 
     <!-- Premium Skeleton Loading State -->

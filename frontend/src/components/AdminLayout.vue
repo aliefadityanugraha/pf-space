@@ -6,7 +6,7 @@ const sidebarCollapsed = ref(false)
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-100 flex">
+  <div class="min-h-screen bg-background text-foreground flex transition-colors duration-300">
     <AdminSidebar @update:collapsed="sidebarCollapsed = $event" />
     
     <div 
@@ -15,16 +15,18 @@ const sidebarCollapsed = ref(false)
         sidebarCollapsed ? 'ml-14' : 'ml-56'
       ]"
     >
-      <router-view v-slot="{ Component, route }">
-        <Suspense>
-          <component :is="Component" :key="route.fullPath" />
-          <template #fallback>
-            <div class="flex-1 p-8 flex items-center justify-center">
-              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900"></div>
-            </div>
-          </template>
-        </Suspense>
-      </router-view>
+      <main id="main-content" class="flex-1 flex flex-col">
+        <router-view v-slot="{ Component, route }">
+          <Suspense>
+            <component :is="Component" :key="route.fullPath" />
+            <template #fallback>
+              <div class="flex-1 p-8 flex items-center justify-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground"></div>
+              </div>
+            </template>
+          </Suspense>
+        </router-view>
+      </main>
     </div>
   </div>
 </template>

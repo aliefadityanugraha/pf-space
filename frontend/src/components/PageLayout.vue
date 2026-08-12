@@ -11,7 +11,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-brand-cream">
+  <div class="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
     <Navbar :light-title="lightNavbar" />
 
     <main class="flex-1 pt-20 md:pt-28 pb-16">

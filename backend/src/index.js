@@ -26,6 +26,8 @@ import tusRoutes from './routes/tus.routes.js';
 import staticRoutes from './routes/static.routes.js';
 import seoRoutes from './routes/seo.routes.js';
 import fastifyStatic from '@fastify/static';
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUi from '@fastify/swagger-ui';
 import { UPLOAD_DIR } from './lib/upload.js';
 import { getClientIp } from './lib/ip.js';
 import { seoMiddleware } from './middlewares/index.js';
@@ -68,13 +70,13 @@ await fastify.register(helmet, {
   crossOriginResourcePolicy: { policy: "cross-origin" },
   // Allow iframe embedding
   frameguard: false,
-  // Restrictive CSP for API server — frontend SPA handles its own CSP
+  // Content Security Policy adjusted for Swagger UI & API
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'none'"],
-      scriptSrc: ["'none'"],
-      imgSrc: ["'self'", "data:"],
-      mediaSrc: ["'self'"],
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "validator.swagger.io"],
       connectSrc: ["'self'"],
       objectSrc: ["'none'"],
       frameAncestors: ["'none'"],
@@ -152,6 +154,44 @@ await fastify.register(fastifyStatic, {
 });
 
 await fastify.register(staticRoutes);
+
+// Swagger OpenAPI Documentation
+await fastify.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: 'PF Space API Documentation',
+      description: 'Dokumentasi RESTful API Platform Kearsipan Film Digital Siswa (PF Space)',
+      version: '1.5.0',
+    },
+    servers: [
+      {
+        url: `http://localhost:${process.env.PORT || 3001}`,
+        description: 'Local Development Server',
+      },
+    ],
+    tags: [
+      { name: 'Auth', description: 'Autentikasi & Pengaturan Akun' },
+      { name: 'Films', description: 'Manajemen Arsip Karya Film' },
+      { name: 'Categories', description: 'Kategori Film' },
+      { name: 'Discussions', description: 'Komentar & Diskusi Film' },
+      { name: 'Community', description: 'Forum Diskusi Komunitas' },
+      { name: 'Evaluations', description: 'Penilaian Kurator Film' },
+      { name: 'Learning Materials', description: 'Materi Pembelajaran Sinematografi' },
+      { name: 'Production Feed', description: 'Alur & Aktivitas Produksi Film' },
+      { name: 'Admin', description: 'Manajemen Sistem & Moderasi' },
+    ],
+  },
+});
+
+await fastify.register(fastifySwaggerUi, {
+  routePrefix: '/docs',
+  uiConfig: {
+    docExpansion: 'list',
+    deepLinking: true,
+  },
+  staticCSP: true,
+  transformStaticCSP: (header) => header,
+});
 
 // Register Tus routes (resumable uploads)
 await fastify.register(tusRoutes, { prefix: '/api/files' });

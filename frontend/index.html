@@ -5,13 +5,38 @@
     <link rel="icon" type="image/png" href="/logo-perfilman.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PF Space - Arsip Film</title>
-    <!-- Google Fonts -->
+    <!-- Google Fonts Preconnect & DNS-prefetch for optimal delivery -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
       rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+      />
+    </noscript>
+
+    <!-- Anti-Flash Inline Theme Initialization -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('vueuse-color-scheme') || 'auto';
+          var isDark = saved === 'dark' || (saved !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="app"></div>

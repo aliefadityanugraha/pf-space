@@ -86,17 +86,17 @@ const handleVote = () => {
 
 <template>
   <section
-    class="hero-section-container relative min-h-[500px] md:min-h-[600px] lg:min-h-[700px] overflow-hidden bg-stone-900 text-stone-900"
+    class="hero-section-container relative min-h-[500px] md:min-h-[600px] lg:min-h-[700px] overflow-hidden bg-[#09090b] text-[#ffffff]"
   >
     <!-- Layer 1: Background Images (Z-0) -->
-    <div class="absolute inset-0 z-0">
+    <div class="absolute inset-0 z-0 bg-[#09090b]">
       <Transition :name="direction === 'right' ? 'hero-right' : 'hero-left'">
         <div :key="activeIndex" class="absolute inset-0 slide-container">
           <div class="absolute inset-0 overflow-hidden">
             <img
               :src="slides[activeIndex].image"
               :alt="slides[activeIndex].title"
-              class="w-full h-full object-cover opacity-60 hero-image"
+              class="w-full h-full object-cover opacity-75 hero-image"
             />
           </div>
         </div>
@@ -104,9 +104,9 @@ const handleVote = () => {
     </div>
 
     <!-- Layer 2: Static Gradient Overlay (Z-10) -->
-    <!-- Moved outside Transition to prevent shifting/flickering during slide changes -->
+    <!-- Blends seamlessly into section background below -->
     <div
-      class="absolute bottom-0 left-0 right-0 h-[400px] z-10 bg-linear-to-t from-brand-cream via-transparent to-transparent pointer-events-none"
+      class="absolute bottom-0 left-0 right-0 h-[200px] md:h-[250px] z-10 bg-gradient-to-t from-background via-background/70 to-transparent pointer-events-none transition-colors duration-300"
     ></div>
 
     <!-- Layer 3: Content (Z-20) -->
@@ -163,7 +163,7 @@ const handleVote = () => {
               <div class="hero-actions flex flex-wrap gap-3 sm:gap-4 mt-4">
                 <Button
                   @click="handleWatchNow"
-                  class="bg-brand-red text-white border-2 border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] h-9 sm:h-10 md:h-11 px-5 sm:px-6 md:px-8 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wider rounded-none transition-all"
+                  class="bg-brand-red text-stone-950 border-2 border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] h-9 sm:h-10 md:h-11 px-5 sm:px-6 md:px-8 text-[10px] sm:text-xs md:text-sm font-extrabold uppercase tracking-wider rounded-none transition-all cursor-pointer"
                 >
                   <Play class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 fill-current" />
                   Lihat Karya
@@ -192,7 +192,9 @@ const handleVote = () => {
           prevSlide();
           resetTimer();
         "
-        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-brand-cream hover:bg-brand-red hover:text-[#fafaf9] transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
+        aria-label="Slide sebelumnya"
+        title="Slide sebelumnya"
+        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-brand-cream hover:bg-brand-red hover:text-[#fafaf9] transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none cursor-pointer"
       >
         <ChevronLeft class="w-6 h-6 md:w-8 md:h-8" />
       </button>
@@ -201,7 +203,9 @@ const handleVote = () => {
           nextSlide();
           resetTimer();
         "
-        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-brand-cream hover:bg-brand-red hover:text-[#fafaf9] transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
+        aria-label="Slide berikutnya"
+        title="Slide berikutnya"
+        class="w-7 h-7 md:w-10 md:h-10 border-2 border-black flex items-center justify-center bg-brand-cream hover:bg-brand-red hover:text-[#fafaf9] transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none cursor-pointer"
       >
         <ChevronRight class="w-6 h-6 md:w-8 md:h-8" />
       </button>
@@ -213,11 +217,13 @@ const handleVote = () => {
         v-for="(_, index) in slides"
         :key="index"
         @click="goToSlide(index)"
-        class="h-2 md:h-3 transition-all border border-black"
+        :aria-label="`Buka slide ${index + 1}`"
+        :title="`Slide ${index + 1}`"
+        class="w-3 h-3 md:w-4 md:h-4 border-2 border-black transition-all cursor-pointer"
         :class="
-          activeIndex === index
-            ? 'w-10 md:w-16 bg-brand-red shadow-brutal-xs'
-            : 'w-4 md:w-6 bg-[#fafaf9]/40'
+          index === activeIndex
+            ? 'bg-brand-teal scale-110 shadow-brutal-xs'
+            : 'bg-white hover:bg-stone-200'
         "
       ></button>
     </div>

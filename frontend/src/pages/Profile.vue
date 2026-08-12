@@ -433,7 +433,7 @@ onMounted(() => {
             class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mb-1 justify-center md:justify-start"
           >
             <h1
-              class="text-xl md:text-3xl font-display font-bold text-stone-900 uppercase tracking-wide truncate max-w-full"
+              class="text-xl md:text-3xl font-display font-bold text-foreground uppercase tracking-wide truncate max-w-full"
             >
               {{ user?.name || "User" }}
             </h1>
@@ -444,12 +444,12 @@ onMounted(() => {
             >
           </div>
           <p
-            class="text-stone-600 text-[10px] md:text-sm font-medium border-b-2 border-dashed border-stone-300 inline-block pb-0.5 mb-2 truncate max-w-full"
+            class="text-muted-foreground text-[10px] md:text-sm font-medium border-b-2 border-dashed border-border inline-block pb-0.5 mb-2 truncate max-w-full"
           >
             {{ user?.email }}
           </p>
           <div
-            class="flex items-center justify-center md:justify-start gap-2 text-[9px] md:text-xs font-bold uppercase tracking-widest text-stone-400 mt-0.5"
+            class="flex items-center justify-center md:justify-start gap-2 text-[9px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground mt-0.5"
           >
             <span>Bergabung {{ joinDate }}</span>
           </div>
@@ -458,20 +458,20 @@ onMounted(() => {
         <!-- Action / Stats Mini -->
         <div
           v-if="isCreator"
-          class="flex gap-2 border-l-2 border-black pl-6 hidden md:flex"
+          class="flex gap-2 border-l-2 border-border pl-6 hidden md:flex"
         >
           <div class="text-center px-4">
-            <div class="text-2xl font-display font-bold text-stone-900">
+            <div class="text-2xl font-display font-bold text-foreground">
               {{ summary.totalFilms }}
             </div>
             <div
-              class="text-[10px] uppercase font-bold text-stone-500 tracking-widest"
+              class="text-[10px] uppercase font-bold text-muted-foreground tracking-widest"
             >
               Karya
             </div>
           </div>
           <div
-            class="text-center px-4 border-l-2 border-dashed border-stone-300"
+            class="text-center px-4 border-l-2 border-dashed border-border"
           >
             <div class="text-2xl font-display font-bold text-stone-900">
               {{ summary.totalVotes }}

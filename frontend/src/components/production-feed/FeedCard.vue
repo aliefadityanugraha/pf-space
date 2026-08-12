@@ -49,12 +49,12 @@ const isOwner = computed(
 <template>
   <Card
     :class="cn(
-      'overflow-hidden bg-white border-2 border-black shadow-brutal transition-all hover:shadow-brutal-md',
+      'overflow-hidden bg-card text-card-foreground border-2 border-border shadow-brutal transition-all hover:shadow-brutal-md',
       post.isPinned ? 'border-brand-orange' : ''
     )"
   >
     <!-- Cover -->
-    <div class="relative bg-stone-200 border-b-2 border-black overflow-hidden">
+    <div class="relative bg-stone-200 dark:bg-stone-800 border-b-2 border-border overflow-hidden">
       <div class="aspect-[16/9] w-full">
         <LazyImage
           :src="imageSrc"
@@ -76,7 +76,7 @@ const isOwner = computed(
       <!-- Film badge -->
       <div
         v-if="post.filmId"
-        class="absolute bottom-3 left-3 z-10 bg-white text-stone-900 border-2 border-black shadow-brutal-xs px-2.5 py-1 flex items-center gap-1.5"
+        class="absolute bottom-3 left-3 z-10 bg-card text-card-foreground border-2 border-border shadow-brutal-xs px-2.5 py-1 flex items-center gap-1.5"
       >
         <Film class="w-3.5 h-3.5 text-brand-teal" />
         <span class="font-body text-[11px] font-bold uppercase tracking-wide">Terkait Film</span>
@@ -95,7 +95,7 @@ const isOwner = computed(
         </Badge>
         <span
           v-if="dateLabel"
-          class="ml-auto flex items-center gap-1.5 text-xs text-stone-500 font-body"
+          class="ml-auto flex items-center gap-1.5 text-xs text-muted-foreground font-body"
         >
           <Calendar class="w-3.5 h-3.5" />
           {{ dateLabel }}
@@ -106,7 +106,7 @@ const isOwner = computed(
         :to="`/feed/${props.post.slug || props.post.postId}`"
         class="block group/title"
       >
-        <h3 class="font-display text-xl md:text-2xl font-bold text-stone-900 leading-snug mb-2 group-hover/title:text-brand-teal transition-colors">
+        <h3 class="font-display text-xl md:text-2xl font-bold text-foreground leading-snug mb-2 group-hover/title:text-brand-teal transition-colors">
           {{ post.judul }}
         </h3>
       </router-link>

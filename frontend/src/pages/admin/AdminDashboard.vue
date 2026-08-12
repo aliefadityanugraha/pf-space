@@ -221,62 +221,62 @@ onMounted(() => {
           <CardContent class="p-4 flex flex-col justify-between h-full">
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-black uppercase tracking-wider text-stone-600 border-b-2 border-stone-900 pb-0.5">
+                <span class="text-[10px] font-black uppercase tracking-wider text-muted-foreground border-b-2 border-border pb-0.5">
                   {{ stat.label }}
                 </span>
-                <component :is="stat.icon" class="w-4 h-4 text-stone-400 group-hover:text-stone-900 transition-colors" />
+                <component :is="stat.icon" class="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
               </div>
-              <div class="text-2xl md:text-3xl font-black text-stone-900 mt-2 font-display">
+              <div class="text-2xl md:text-3xl font-black text-foreground mt-2 font-display">
                 {{ stat.value }}
               </div>
             </div>
 
-            <div class="flex items-center justify-between mt-3 pt-2 border-t border-stone-100 text-[10px]">
+            <div class="flex items-center justify-between mt-3 pt-2 border-t border-border text-[10px]">
               <span 
                 v-if="stat.isWarning && parseInt(stat.value) > 0"
-                class="font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded border border-red-200"
+                class="font-bold text-red-600 bg-red-50 dark:bg-red-950 dark:text-red-400 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800"
               >
                 Butuh Tindakan
               </span>
               <span 
                 v-else-if="stat.isPending && parseInt(stat.value) > 0"
-                class="font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200"
+                class="font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800"
               >
                 Perlu Review
               </span>
-              <span v-else class="text-stone-500 font-medium">
+              <span v-else class="text-muted-foreground font-medium">
                 {{ stat.change }}
               </span>
-              <ArrowUpRight class="w-3.5 h-3.5 text-stone-400 group-hover:text-stone-900 transition-colors" />
+              <ArrowUpRight class="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       <!-- ── System Announcement Banner Control Card ────────────────────── -->
-      <Card class="mb-8 border-2 border-stone-900 shadow-brutal overflow-hidden">
-        <div class="h-2 bg-gradient-to-r from-brand-red via-brand-orange to-brand-teal w-full border-b-2 border-stone-900"></div>
-        <CardContent class="p-4 md:p-6 bg-white">
+      <Card class="mb-8 border-2 border-border shadow-brutal overflow-hidden">
+        <div class="h-2 bg-gradient-to-r from-brand-red via-brand-orange to-brand-teal w-full border-b-2 border-border"></div>
+        <CardContent class="p-4 md:p-6 bg-card text-card-foreground">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-start gap-4 flex-1">
-              <div class="w-12 h-12 bg-brand-orange border-2 border-stone-900 shadow-brutal-xs flex items-center justify-center shrink-0">
+              <div class="w-12 h-12 bg-brand-orange border-2 border-border shadow-brutal-xs flex items-center justify-center shrink-0">
                 <Megaphone class="w-6 h-6 text-stone-900" />
               </div>
               <div class="space-y-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h3 class="font-display font-bold text-lg text-stone-900 uppercase tracking-tight">
+                  <h3 class="font-display font-bold text-lg text-foreground uppercase tracking-tight">
                     Banner Pengumuman Sistem Global
                   </h3>
                   <Badge 
-                    :class="announcementConfig.is_active ? 'bg-green-100 text-green-800 border-green-300' : 'bg-stone-100 text-stone-600 border-stone-300'"
+                    :class="announcementConfig.is_active ? 'bg-green-100 text-green-800 border-green-300 dark:bg-green-950 dark:text-green-400 dark:border-green-800' : 'bg-stone-100 text-stone-600 border-stone-300 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700'"
                     variant="outline" 
                     class="font-bold uppercase text-[10px]"
                   >
                     {{ announcementConfig.is_active ? '● Aktif Tampil di Web' : '○ Non-Aktif' }}
                   </Badge>
                 </div>
-                <p class="text-xs text-stone-600 font-body max-w-3xl leading-relaxed">
-                  <span class="font-bold text-stone-900">"{{ announcementConfig.title }}"</span>
+                <p class="text-xs text-muted-foreground font-body max-w-3xl leading-relaxed">
+                  <span class="font-bold text-foreground">"{{ announcementConfig.title }}"</span>
                   — {{ announcementConfig.content }}
                 </p>
               </div>

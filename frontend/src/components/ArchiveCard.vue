@@ -74,14 +74,14 @@ const displaySubtitle = computed(() => {
 <template>
   <Card 
     :class="cn(
-      'overflow-hidden group bg-white border-2 border-black shadow-brutal transition-all',
+      'overflow-hidden group bg-card text-card-foreground border-2 border-border shadow-brutal transition-all',
       'hover:shadow-brutal-sm', 
       className
     )"
   >
     <!-- Image Section -->
-    <div :class="[aspectClass, 'bg-stone-200 relative overflow-hidden border-b-2 border-black']">
-      <div v-show="!isImageLoaded && imageSrc" class="absolute inset-0 bg-stone-300 animate-pulse flex items-center justify-center z-10 transition-opacity duration-300" :class="isImageLoaded ? 'opacity-0' : 'opacity-100'"></div>
+    <div :class="[aspectClass, 'bg-stone-200 dark:bg-stone-800 relative overflow-hidden border-b-2 border-border']">
+      <div v-show="!isImageLoaded && imageSrc" class="absolute inset-0 bg-stone-300 dark:bg-stone-700 animate-pulse flex items-center justify-center z-10 transition-opacity duration-300" :class="isImageLoaded ? 'opacity-0' : 'opacity-100'"></div>
       <img 
         v-if="imageSrc" 
         :src="imageSrc" 
@@ -92,7 +92,7 @@ const displaySubtitle = computed(() => {
         :class="isImageLoaded ? 'opacity-100 scale-100 group-hover:scale-105' : 'opacity-0 scale-105'"
       />
       <div v-else class="w-full h-full flex items-center justify-center">
-        <Film class="w-12 h-12 text-stone-400" />
+        <Film class="w-12 h-12 text-stone-400 dark:text-stone-500" />
       </div>
 
       <!-- Overlays/Badges Slot -->
@@ -107,8 +107,8 @@ const displaySubtitle = computed(() => {
     <!-- Content Section -->
     <CardContent :class="cn('p-3 md:p-4', contentClass)">
       <slot name="content">
-        <h3 class="font-bold text-base md:text-lg text-stone-900 line-clamp-1 mb-1">{{ displayTitle }}</h3>
-        <p v-if="displaySubtitle" class="text-xs md:text-sm text-stone-500 mb-1 flex items-center gap-1 z-10 relative">
+        <h3 class="font-bold text-base md:text-lg text-foreground line-clamp-1 mb-1">{{ displayTitle }}</h3>
+        <p v-if="displaySubtitle" class="text-xs md:text-sm text-muted-foreground mb-1 flex items-center gap-1 z-10 relative">
           <slot name="subtitle-icon"></slot>
           <router-link 
             v-if="archive?.creator?.id && displaySubtitle === archive.creator.name"
@@ -124,7 +124,7 @@ const displaySubtitle = computed(() => {
       </slot>
       
       <!-- Footer/Actions Slot -->
-      <div v-if="$slots.actions" class="mt-4 pt-4 border-t-2 border-stone-100 flex gap-2">
+      <div v-if="$slots.actions" class="mt-4 pt-4 border-t-2 border-border flex gap-2">
         <slot name="actions"></slot>
       </div>
     </CardContent>

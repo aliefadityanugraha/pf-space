@@ -121,7 +121,7 @@ onUnmounted(() => {
     :class="
       lightTitle
         ? 'bg-transparent backdrop-blur-md border-b-2 border-white/20'
-        : 'bg-brand-cream border-b-1 border-white/20 shadow-[0_2px_0_rgba(28,25,23,1)]'
+        : 'bg-background border-b-2 border-border shadow-brutal'
     "
   >
     <div
@@ -136,7 +136,7 @@ onUnmounted(() => {
         />
         <span
           class="text-base md:text-xl font-bold font-display block md:block transition-colors duration-500"
-          :class="lightTitle ? 'text-white' : 'text-black'"
+          :class="lightTitle ? 'text-white' : 'text-foreground'"
           >PF Space</span
         >
       </router-link>
@@ -286,26 +286,41 @@ onUnmounted(() => {
       </div>
 
       <div class="flex items-center gap-1.5 md:gap-3">
-        <!-- <ThemeToggle /> -->
-        <router-link v-if="showFestivalMode" to="/festival">
+        <!-- Theme Switcher -->
+        <ThemeToggle />
+
+        <!-- Navigation Quick Links -->
+        <router-link
+          v-if="showFestivalMode"
+          to="/festival"
+          aria-label="Halaman Festival"
+        >
           <Button
-            class="bg-yellow-400 text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2 mr-1"
+            aria-label="Festival"
+            title="Festival"
+            class="bg-yellow-400 text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2 mr-1 cursor-pointer"
           >
             <Ticket class="w-3 h-3 md:w-4 md:h-4 text-stone-900" />
             <span class="hidden sm:inline">Festival</span>
           </Button>
         </router-link>
-        <router-link to="/materi">
+
+        <router-link to="/materi" aria-label="Halaman Materi Belajar">
           <Button
-            class="bg-brand-orange text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2"
+            aria-label="Materi Belajar"
+            title="Materi Belajar"
+            class="bg-brand-orange text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2 cursor-pointer"
           >
             <BookOpen class="w-3 h-3 md:w-4 md:h-4 text-stone-900" />
             <span class="hidden sm:inline">Materi</span>
           </Button>
         </router-link>
-        <router-link to="/feed">
+
+        <router-link to="/feed" aria-label="Halaman Production Feed">
           <Button
-            class="bg-brand-teal text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2"
+            aria-label="Production Feed"
+            title="Production Feed"
+            class="bg-brand-teal text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-2 text-[10px] sm:h-8 sm:px-3 sm:text-xs md:h-10 md:px-4 md:text-sm flex items-center gap-1.5 md:gap-2 cursor-pointer"
           >
             <Rss class="w-3 h-3 md:w-4 md:h-4 text-white" />
             <span class="hidden sm:inline">Feed</span>
@@ -314,16 +329,18 @@ onUnmounted(() => {
 
         <!-- Auth Buttons (Not Logged In) -->
         <div v-if="!isLoggedIn" class="flex items-center gap-1 md:gap-2">
-          <router-link to="/auth/login">
+          <router-link to="/auth/login" aria-label="Halaman Masuk">
             <Button
-              class="bg-white text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-3 text-[10px] sm:h-8 sm:px-4 sm:text-xs md:h-10 md:px-6 md:text-sm"
+              aria-label="Masuk ke Akun"
+              class="bg-white text-stone-900 border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-3 text-[10px] sm:h-8 sm:px-4 sm:text-xs md:h-10 md:px-6 md:text-sm cursor-pointer"
             >
               Masuk
             </Button>
           </router-link>
-          <router-link to="/auth/register">
+          <router-link to="/auth/register" aria-label="Halaman Pendaftaran">
             <Button
-              class="bg-brand-red text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-3 text-[10px] sm:h-8 sm:px-4 sm:text-xs md:h-10 md:px-6 md:text-sm"
+              aria-label="Daftar Akun Baru"
+              class="bg-brand-red text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase rounded-none transition-all h-7 px-3 text-[10px] sm:h-8 sm:px-4 sm:text-xs md:h-10 md:px-6 md:text-sm cursor-pointer"
             >
               Daftar
             </Button>
@@ -341,6 +358,8 @@ onUnmounted(() => {
             <DropdownMenuTrigger as-child>
               <button
                 type="button"
+                aria-label="Menu Akun Pengguna"
+                title="Menu Pengguna"
                 class="w-9 h-9 md:w-11 md:h-11 bg-white border-2 border-black shadow-brutal flex items-center justify-center hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-all cursor-pointer overflow-hidden"
               >
                 <img

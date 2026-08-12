@@ -78,19 +78,19 @@ const isActive = (path) => route.path === path;
   <div class="fixed left-0 top-0 h-screen z-50">
     <aside
       :class="[
-        'h-full bg-brand-cream text-stone-900 border-r-2 border-black flex flex-col transition-all duration-300 ease-in-out relative',
+        'h-full bg-card text-card-foreground border-r-2 border-border flex flex-col transition-all duration-300 ease-in-out relative',
         isCollapsed ? 'w-14' : 'w-56',
       ]"
     >
       <!-- Logo Area -->
       <div
-        class="h-16 border-b-2 border-black flex items-center shrink-0 overflow-hidden transition-all duration-300"
+        class="h-16 border-b-2 border-border flex items-center shrink-0 overflow-hidden transition-all duration-300"
         :class="isCollapsed ? 'justify-center' : 'px-4 gap-2'"
       >
         <router-link to="/" class="flex items-center gap-2 shrink-0 group">
           <div
             :class="[
-              'bg-white border-2 border-black shadow-brutal-xs flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:rotate-3',
+              'bg-card border-2 border-border shadow-brutal-xs flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:rotate-3',
               isCollapsed ? 'w-9 h-9' : 'w-10 h-10',
             ]"
           >
@@ -105,7 +105,7 @@ const isActive = (path) => route.path === path;
             v-if="!isCollapsed"
             class="flex flex-col animate-in fade-in slide-in-from-left-4 duration-500"
           >
-            <span class="font-display text-lg font-bold leading-none"
+            <span class="font-display text-lg font-bold leading-none text-foreground"
               >PF Space</span
             >
             <span
@@ -119,7 +119,7 @@ const isActive = (path) => route.path === path;
       <!-- Toggle Button - Neobrutalist floating style -->
       <button
         @click="isCollapsed = !isCollapsed"
-        class="absolute -right-4 top-20 w-8 h-8 bg-white border-2 border-black flex items-center justify-center shadow-brutal-xs hover:bg-stone-50 transition-all z-20 group"
+        class="absolute -right-4 top-20 w-8 h-8 bg-card text-card-foreground border-2 border-border flex items-center justify-center shadow-brutal-xs hover:bg-muted transition-all z-20 group cursor-pointer"
         aria-label="Toggle Sidebar"
       >
         <ChevronLeft

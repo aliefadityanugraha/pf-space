@@ -10,6 +10,27 @@
   --color-brand-orange: #fdba74;
   --color-brand-cream: #f2eee3;
 
+  /* Semantic Theme Tokens (shadcn mapping for Tailwind CSS v4) */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
   /* Fonts */
   --font-display: "Playfair Display", serif;
   --font-heading: "Bebas Neue", sans-serif;
@@ -17,11 +38,11 @@
   --font-accent: "Cormorant Garamond", serif;
 
   /* Brutal Design System Shadows */
-  --shadow-brutal: var(--shadow-brutal-color, 4px 4px 0px 0px rgba(0, 0, 0, 1));
-  --shadow-brutal-lg: var(--shadow-brutal-lg-color, 10px 10px 0px 0px rgba(0, 0, 0, 1));
-  --shadow-brutal-md: var(--shadow-brutal-md-color, 6px 6px 0px 0px rgba(0, 0, 0, 1));
-  --shadow-brutal-sm: var(--shadow-brutal-sm-color, 4px 4px 0px 0px rgba(0, 0, 0, 1));
-  --shadow-brutal-xs: var(--shadow-brutal-xs-color, 2px 2px 0px 0px rgba(0, 0, 0, 1));
+  --shadow-brutal: var(--shadow-brutal-color, 2px 2px 0px 0px rgba(0, 0, 0, 1));
+  --shadow-brutal-lg: var(--shadow-brutal-lg-color, 6px 6px 0px 0px rgba(0, 0, 0, 1));
+  --shadow-brutal-md: var(--shadow-brutal-md-color, 4px 4px 0px 0px rgba(0, 0, 0, 1));
+  --shadow-brutal-sm: var(--shadow-brutal-sm-color, 2px 2px 0px 0px rgba(0, 0, 0, 1));
+  --shadow-brutal-xs: var(--shadow-brutal-xs-color, 1px 1px 0px 0px rgba(0, 0, 0, 1));
   --shadow-brutal-white: 4px 4px 0px 0px rgba(255, 255, 255, 0.1);
 
   /* Custom Spacing */
@@ -218,6 +239,37 @@
   --shadow-brutal-xs-color: 2px 2px 0px 0px rgba(0, 0, 0, 1);
 }
 
+/* Smooth Global Theme Transition Engine */
+html,
+body,
+header,
+nav,
+main,
+section,
+footer,
+aside,
+article,
+div,
+p,
+span,
+h1, h2, h3, h4, h5, h6,
+a,
+button,
+input,
+textarea,
+select,
+svg {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 350ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ensure layout & slide transform animations are preserved */
+.hero-image,
+.slide-container {
+  transition-property: transform, opacity;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -351,4 +403,21 @@ body {
   .animate-pulse {
     animation: none;
   }
+}
+
+/* Brutal Tactile Click Feedback Utility */
+.btn-brutal {
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-brutal:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: none !important;
+}
+
+
+
+/* Layout Shift & DOM Size Optimization */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 320px;
 }

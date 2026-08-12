@@ -87,7 +87,7 @@ onUnmounted(() => stop());
         <template #extra>
           <div class="mt-3 flex items-center gap-3">
             <span
-              class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-400"
+              class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-muted-foreground"
             >
               <Rss class="w-3.5 h-3.5" />
               Semua Postingan
@@ -144,7 +144,7 @@ onUnmounted(() => stop());
           />
           <p
             v-else-if="!hasMore"
-            class="font-body text-xs uppercase tracking-widest text-stone-400 text-center"
+            class="font-body text-xs uppercase tracking-widest text-muted-foreground text-center"
           >
             — Akhir Feed —
           </p>

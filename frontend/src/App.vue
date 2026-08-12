@@ -1,46 +1,51 @@
 <script setup>
-import { ref, onMounted, onErrorCaptured } from 'vue'
-import { useAuth } from '@/composables/useAuth'
-import { useToast } from '@/composables/useToast'
-import { useLoading } from '@/composables/useLoading'
-import ChatSidebar from './components/ChatSidebar.vue'
-import AnnouncementModal from './components/AnnouncementModal.vue'
-import ScrollToTop from './components/ScrollToTop.vue'
-import Toast from './components/Toast.vue'
-import ErrorBoundary from './components/ErrorBoundary.vue'
-import NetworkStatus from './components/NetworkStatus.vue'
+import { ref, onMounted, onErrorCaptured } from "vue";
+import { useAuth } from "@/composables/useAuth";
+import { useToast } from "@/composables/useToast";
+import { useLoading } from "@/composables/useLoading";
+import ChatSidebar from "./components/ChatSidebar.vue";
+import AnnouncementModal from "./components/AnnouncementModal.vue";
+import ScrollToTop from "./components/ScrollToTop.vue";
+import Toast from "./components/Toast.vue";
+import ErrorBoundary from "./components/ErrorBoundary.vue";
+import NetworkStatus from "./components/NetworkStatus.vue";
 
-const { init, initialized } = useAuth()
-const { toast } = useToast()
-const { isLoading, progress } = useLoading()
+const { init, initialized } = useAuth();
+const { toast } = useToast();
+const { isLoading, progress } = useLoading();
 
 // Global error boundary
-const hasError = ref(false)
-const errorMessage = ref('')
+const hasError = ref(false);
+const errorMessage = ref("");
 
 onErrorCaptured((err, instance, info) => {
-  console.error('[App Error Boundary]', err, info)
-  hasError.value = true
-  errorMessage.value = err?.message || 'Terjadi kesalahan yang tidak terduga'
+  console.error("[App Error Boundary]", err, info);
+  hasError.value = true;
+  errorMessage.value = err?.message || "Terjadi kesalahan yang tidak terduga";
   // Return false to prevent error from propagating further
-  return false
-})
+  return false;
+});
 
 const handleRetry = () => {
-  hasError.value = false
-  errorMessage.value = ''
-  window.location.reload()
-}
+  hasError.value = false;
+  errorMessage.value = "";
+  window.location.reload();
+};
 
 onMounted(() => {
-  init()
-})
+  init();
+});
 </script>
 
 <template>
   <!-- Error Boundary Fallback -->
-  <div v-if="hasError" class="min-h-screen flex items-center justify-center bg-background p-6">
-    <div class="max-w-md w-full text-center space-y-6 p-8 border-3 border-black bg-white shadow-[6px_6px_0px_#000]">
+  <div
+    v-if="hasError"
+    class="min-h-screen flex items-center justify-center bg-background p-6"
+  >
+    <div
+      class="max-w-md w-full text-center space-y-6 p-8 border-3 border-black bg-white shadow-[6px_6px_0px_#000]"
+    >
       <div class="text-5xl">⚠️</div>
       <h1 class="text-2xl font-black uppercase">Oops! Terjadi Kesalahan</h1>
       <p class="text-muted-foreground">{{ errorMessage }}</p>
@@ -54,29 +59,38 @@ onMounted(() => {
   </div>
 
   <!-- Normal App -->
-  <div v-else-if="initialized" class="min-h-screen flex flex-col">
+  <div v-else-if="initialized" class="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
     <ErrorBoundary name="Halaman">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <component :is="Component" />
+      </router-view>
     </ErrorBoundary>
     <ScrollToTop />
     <ChatSidebar />
     <AnnouncementModal />
-    
+
     <!-- Global Pattern Overlay -->
-    <div 
-      class="fixed inset-0 pointer-events-none z-[-1] opacity-[0.03] bg-repeat"
+    <div
+      class="fixed inset-0 pointer-events-none z-[-1] opacity-[0.03] dark:opacity-[0.07] bg-repeat"
       style="
         background-image: radial-gradient(#000 1px, transparent 1px);
         background-size: 24px 24px;
       "
     ></div>
   </div>
-  <div v-else class="min-h-screen flex items-center justify-center">
-    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+  <div v-else class="min-h-screen flex items-center justify-center bg-background text-foreground">
+    <div
+      class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"
+    ></div>
   </div>
 
-  <Toast :show="toast.show" :type="toast.type" :message="toast.message" @close="toast.show = false" />
-  
+  <Toast
+    :show="toast.show"
+    :type="toast.type"
+    :message="toast.message"
+    @close="toast.show = false"
+  />
+
   <NetworkStatus />
 </template>
 

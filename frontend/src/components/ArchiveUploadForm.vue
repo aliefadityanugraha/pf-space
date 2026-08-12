@@ -348,12 +348,21 @@ onUnmounted(() => {
           </div>
 
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold mb-2">Sinopsis</label>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-sm font-bold">Sinopsis *</label>
+              <span 
+                class="text-xs font-mono font-bold"
+                :class="(form.sinopsis || '').length > 1000 ? 'text-red-500' : 'text-stone-500'"
+              >
+                {{ (form.sinopsis || '').length }}/1000
+              </span>
+            </div>
             <textarea 
               v-model="form.sinopsis"
               rows="4"
+              maxlength="1000"
               placeholder="Ceritakan sinopsis karya..."
-              class="w-full p-3 border-2 border-black bg-white text-sm resize-none"
+              class="w-full p-3 border-2 border-black bg-white text-sm resize-none focus:outline-none focus:border-brand-teal transition-colors"
             ></textarea>
           </div>
         </div>

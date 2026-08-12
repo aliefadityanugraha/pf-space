@@ -290,7 +290,7 @@ onMounted(async () => {
          FILTER BAR
          ══════════════════════════════════════════════════════════════════════ -->
     <div
-      class="sticky top-[70px] md:top-[84px] z-20 bg-brand-cream border-b-2 border-black shadow-brutal-sm"
+      class="sticky top-[70px] md:top-[84px] z-20 bg-background border-b-2 border-border shadow-brutal-sm transition-colors duration-300"
     >
       <div
         class="max-w-7xl mx-auto px-4 md:px-8 py-3 flex flex-col sm:flex-row gap-3 items-start sm:items-center"
@@ -298,7 +298,7 @@ onMounted(async () => {
         <!-- Search -->
         <div class="relative w-full sm:w-72 lg:w-96 flex-shrink-0">
           <Search
-            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none"
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none"
           />
           <input
             id="films-search"
@@ -307,12 +307,12 @@ onMounted(async () => {
             placeholder="Cari judul atau sinopsis…"
             autocomplete="off"
             aria-label="Cari karya"
-            class="w-full pl-9 pr-8 py-2 bg-white border-2 border-stone-900 font-body text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-brand-teal transition-colors"
+            class="w-full pl-9 pr-8 py-2 bg-card border-2 border-border font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-brand-teal transition-colors"
             @input="onSearchInput"
           />
           <button
             v-if="searchQuery"
-            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
+            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal cursor-pointer"
             aria-label="Hapus pencarian"
             @click="clearSearch"
           >
@@ -332,11 +332,11 @@ onMounted(async () => {
               id="category-tab-all"
               role="radio"
               :aria-checked="selectedCategoryId === null"
-              class="flex-shrink-0 px-3.5 py-1.5 border-2 border-stone-900 font-body text-[11px] font-bold uppercase tracking-wider transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
+              class="flex-shrink-0 px-3.5 py-1.5 border-2 border-border font-body text-[11px] font-bold uppercase tracking-wider transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal cursor-pointer"
               :class="
                 selectedCategoryId === null
-                  ? 'bg-stone-900 text-white shadow-brutal-xs translate-x-[-1px] translate-y-[-1px]'
-                  : 'bg-white text-stone-600 hover:bg-stone-100 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-brutal-xs'
+                  ? 'bg-foreground text-background shadow-brutal-xs translate-x-[-1px] translate-y-[-1px]'
+                  : 'bg-card text-muted-foreground hover:text-foreground hover:bg-muted hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-brutal-xs'
               "
               @click="clearCategory"
             >
@@ -360,11 +360,11 @@ onMounted(async () => {
               :id="`category-tab-${cat.category_id}`"
               role="radio"
               :aria-checked="selectedCategoryId === cat.category_id"
-              class="flex-shrink-0 px-3.5 py-1.5 border-2 border-stone-900 font-body text-[11px] font-bold uppercase tracking-wider transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal whitespace-nowrap"
+              class="flex-shrink-0 px-3.5 py-1.5 border-2 border-border font-body text-[11px] font-bold uppercase tracking-wider transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal whitespace-nowrap cursor-pointer"
               :class="
                 selectedCategoryId === cat.category_id
                   ? 'bg-brand-teal text-white shadow-brutal-xs translate-x-[-1px] translate-y-[-1px]'
-                  : 'bg-white text-stone-600 hover:bg-stone-100 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-brutal-xs'
+                  : 'bg-card text-muted-foreground hover:text-foreground hover:bg-muted hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-brutal-xs'
               "
               @click="selectCategory(cat.category_id)"
             >
