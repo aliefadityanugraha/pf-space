@@ -382,7 +382,7 @@ onMounted(() => {
 
 <template>
   <PageLayout>
-    <div class="max-w-7xl mx-auto px-4 md:px-8 mb-16">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 pt-2 sm:pt-4 md:pt-6 mb-16">
       <input
         type="file"
         ref="fileInput"
@@ -393,19 +393,19 @@ onMounted(() => {
 
       <!-- Compact Header (Brutal Style) -->
       <div
-        class="flex flex-col md:flex-row items-center gap-5 md:gap-6 mb-8 p-5 md:p-6 bg-white border-2 border-white/20 shadow-brutal relative z-10"
+        class="flex flex-col md:flex-row items-center gap-5 md:gap-6 mb-8 p-5 md:p-6 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal relative z-10"
       >
         <!-- Decoration Dots -->
         <div class="absolute top-2 right-2 md:top-3 md:right-3 flex gap-1">
-          <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-black rounded-full"></div>
-          <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-black rounded-full"></div>
+          <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-black dark:bg-stone-100 rounded-full"></div>
+          <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-black dark:bg-stone-100 rounded-full"></div>
         </div>
 
         <!-- Avatar -->
         <div class="relative group flex-shrink-0">
           <!-- Main Container with Border and Shadow -->
           <div
-            class="w-20 h-20 md:w-24 md:h-24 border-2 border-black bg-stone-200 shadow-brutal-sm relative"
+            class="w-20 h-20 md:w-24 md:h-24 border-2 border-black dark:border-stone-100 bg-stone-200 dark:bg-stone-800 shadow-brutal-sm relative"
           >
             <!-- Image Container with Overflow Hidden -->
             <div class="w-full h-full overflow-hidden">
@@ -421,7 +421,7 @@ onMounted(() => {
                 v-else
                 class="w-full h-full flex items-center justify-center bg-brand-teal/20"
               >
-                <User class="w-8 h-8 md:w-10 md:h-10 text-stone-900" />
+                <User class="w-8 h-8 md:w-10 md:h-10 text-stone-900 dark:text-stone-100" />
               </div>
             </div>
           </div>
@@ -433,23 +433,23 @@ onMounted(() => {
             class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mb-1 justify-center md:justify-start"
           >
             <h1
-              class="text-xl md:text-3xl font-display font-bold text-foreground uppercase tracking-wide truncate max-w-full"
+              class="text-xl md:text-3xl font-display font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wide truncate max-w-full"
             >
               {{ user?.name || "User" }}
             </h1>
             <Badge
               variant="outline"
-              class="capitalize border-2 border-black bg-brand-orange text-stone-900 font-bold shadow-brutal-xs md:shadow-brutal-sm text-[10px] md:text-xs px-2 py-0.5"
+              class="capitalize border-2 border-black dark:border-stone-100 bg-brand-orange text-stone-900 font-bold shadow-brutal-xs md:shadow-brutal-sm text-[10px] md:text-xs px-2 py-0.5"
               >{{ roleName }}</Badge
             >
           </div>
           <p
-            class="text-muted-foreground text-[10px] md:text-sm font-medium border-b-2 border-dashed border-border inline-block pb-0.5 mb-2 truncate max-w-full"
+            class="text-stone-600 dark:text-stone-400 text-[10px] md:text-sm font-medium border-b-2 border-dashed border-stone-300 dark:border-stone-700 inline-block pb-0.5 mb-2 truncate max-w-full"
           >
             {{ user?.email }}
           </p>
           <div
-            class="flex items-center justify-center md:justify-start gap-2 text-[9px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground mt-0.5"
+            class="flex items-center justify-center md:justify-start gap-2 text-[9px] md:text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 mt-0.5"
           >
             <span>Bergabung {{ joinDate }}</span>
           </div>
@@ -458,26 +458,26 @@ onMounted(() => {
         <!-- Action / Stats Mini -->
         <div
           v-if="isCreator"
-          class="flex gap-2 border-l-2 border-border pl-6 hidden md:flex"
+          class="flex gap-2 border-l-2 border-stone-300 dark:border-stone-700 pl-6 hidden md:flex"
         >
           <div class="text-center px-4">
-            <div class="text-2xl font-display font-bold text-foreground">
+            <div class="text-2xl font-display font-bold text-stone-900 dark:text-stone-100">
               {{ summary.totalFilms }}
             </div>
             <div
-              class="text-[10px] uppercase font-bold text-muted-foreground tracking-widest"
+              class="text-[10px] uppercase font-bold text-stone-500 dark:text-stone-400 tracking-widest"
             >
               Karya
             </div>
           </div>
           <div
-            class="text-center px-4 border-l-2 border-dashed border-border"
+            class="text-center px-4 border-l-2 border-dashed border-stone-300 dark:border-stone-700"
           >
-            <div class="text-2xl font-display font-bold text-stone-900">
+            <div class="text-2xl font-display font-bold text-stone-900 dark:text-stone-100">
               {{ summary.totalVotes }}
             </div>
             <div
-              class="text-[10px] uppercase font-bold text-stone-500 tracking-widest"
+              class="text-[10px] uppercase font-bold text-stone-500 dark:text-stone-400 tracking-widest"
             >
               Vote
             </div>
@@ -492,10 +492,10 @@ onMounted(() => {
         <button
           @click="activeTab = 'dashboard'"
           :class="[
-            'px-4 md:px-6 py-2.5 md:py-3 font-display font-bold uppercase tracking-widest text-[10px] md:text-sm border-2 border-black transition-all shadow-brutal-xs flex items-center gap-1.5 md:gap-2 whitespace-nowrap',
+            'px-4 md:px-6 py-2.5 md:py-3 font-display font-bold uppercase tracking-widest text-[10px] md:text-sm border-2 border-black dark:border-stone-100 transition-all shadow-brutal-xs flex items-center gap-1.5 md:gap-2 whitespace-nowrap cursor-pointer',
             activeTab === 'dashboard'
               ? 'bg-brand-teal text-white translate-x-[1px] translate-y-[1px] shadow-none'
-              : 'bg-white text-stone-900',
+              : 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100',
           ]"
         >
           <LayoutDashboard class="w-3.5 h-3.5 md:w-4 md:h-4" />
@@ -581,58 +581,58 @@ onMounted(() => {
 
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-              <Card class="bg-white border-2 border-black shadow-brutal">
+              <Card class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal">
                 <CardContent
                   class="p-3 md:p-5 flex items-center md:flex-col justify-start md:justify-center text-left md:text-center gap-3"
                 >
                   <div
-                    class="w-10 h-10 md:w-12 md:h-12 bg-stone-100 border-2 border-black flex items-center justify-center shadow-sm flex-shrink-0"
+                    class="w-10 h-10 md:w-12 md:h-12 bg-stone-100 dark:bg-stone-800 border-2 border-black dark:border-stone-100 flex items-center justify-center shadow-sm flex-shrink-0"
                   >
-                    <FilmIcon class="w-5 h-5 md:w-6 md:h-6 text-stone-900" />
+                    <FilmIcon class="w-5 h-5 md:w-6 md:h-6 text-stone-900 dark:text-stone-100" />
                   </div>
                   <div>
                     <div
-                      class="text-2xl md:text-4xl font-display font-bold text-stone-900 md:mb-1"
+                      class="text-2xl md:text-4xl font-display font-bold text-stone-900 dark:text-stone-100 md:mb-1"
                     >
                       {{ summary.totalFilms }}
                     </div>
                     <div
-                      class="text-[9px] md:text-[10px] uppercase font-bold text-stone-500 tracking-widest"
+                      class="text-[9px] md:text-[10px] uppercase font-bold text-stone-500 dark:text-stone-400 tracking-widest"
                     >
                       Total Karya
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card class="bg-white border-2 border-black shadow-brutal">
+              <Card class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal">
                 <CardContent
                   class="p-3 md:p-5 flex items-center md:flex-col justify-start md:justify-center text-left md:text-center gap-3"
                 >
                   <div
-                    class="w-10 h-10 md:w-12 md:h-12 bg-brand-teal/20 border-2 border-black flex items-center justify-center shadow-sm flex-shrink-0"
+                    class="w-10 h-10 md:w-12 md:h-12 bg-brand-teal/20 border-2 border-black dark:border-stone-100 flex items-center justify-center shadow-sm flex-shrink-0"
                   >
                     <ThumbsUp class="w-5 h-5 md:w-6 md:h-6 text-brand-teal" />
                   </div>
                   <div>
                     <div
-                      class="text-2xl md:text-4xl font-display font-bold text-stone-900 md:mb-1"
+                      class="text-2xl md:text-4xl font-display font-bold text-stone-900 dark:text-stone-100 md:mb-1"
                     >
                       {{ summary.totalVotes }}
                     </div>
                     <div
-                      class="text-[9px] md:text-[10px] uppercase font-bold text-stone-500 tracking-widest"
+                      class="text-[9px] md:text-[10px] uppercase font-bold text-stone-500 dark:text-stone-400 tracking-widest"
                     >
                       Total Apresiasi
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card class="bg-white border-2 border-black shadow-brutal">
+              <Card class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal">
                 <CardContent
                   class="p-3 md:p-5 flex items-center md:flex-col justify-start md:justify-center text-left md:text-center gap-3"
                 >
                   <div
-                    class="w-10 h-10 md:w-12 md:h-12 bg-brand-orange/20 border-2 border-black flex items-center justify-center shadow-sm flex-shrink-0"
+                    class="w-10 h-10 md:w-12 md:h-12 bg-brand-orange/20 border-2 border-black dark:border-stone-100 flex items-center justify-center shadow-sm flex-shrink-0"
                   >
                     <MessageCircle
                       class="w-5 h-5 md:w-6 md:h-6 text-brand-orange"
@@ -640,12 +640,12 @@ onMounted(() => {
                   </div>
                   <div>
                     <div
-                      class="text-2xl md:text-4xl font-display font-bold text-stone-900 md:mb-1"
+                      class="text-2xl md:text-4xl font-display font-bold text-stone-900 dark:text-stone-100 md:mb-1"
                     >
                       {{ summary.totalComments }}
                     </div>
                     <div
-                      class="text-[9px] md:text-[10px] uppercase font-bold text-stone-500 tracking-widest"
+                      class="text-[9px] md:text-[10px] uppercase font-bold text-stone-500 dark:text-stone-400 tracking-widest"
                     >
                       Total Diskusi
                     </div>
@@ -657,17 +657,17 @@ onMounted(() => {
             <!-- Recent Films -->
             <div>
               <div
-                class="flex items-center justify-between mb-4 border-b-2 border-black pb-2"
+                class="flex items-center justify-between mb-4 border-b-2 border-black dark:border-stone-100 pb-2"
               >
                 <h3
-                  class="font-display font-bold text-xl text-stone-900 uppercase tracking-wide"
+                  class="font-display font-bold text-xl text-stone-900 dark:text-stone-100 uppercase tracking-wide"
                 >
                   Karya Terbaru Saya
                 </h3>
                 <Button
                   variant="outline"
                   size="sm"
-                  class="h-8 text-xs font-bold border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+                  class="h-8 text-xs font-bold border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] cursor-pointer"
                   @click="router.push('/my-archive')"
                   v-if="films.length > 0"
                 >
@@ -677,16 +677,16 @@ onMounted(() => {
 
               <div
                 v-if="films.length === 0"
-                class="text-center py-12 border-2 border-dashed border-stone-400 bg-stone-50/50"
+                class="text-center py-12 border-2 border-dashed border-stone-400 dark:border-stone-700 bg-stone-100/60 dark:bg-stone-900"
               >
-                <FilmIcon class="w-12 h-12 mx-auto text-stone-300 mb-3" />
-                <p class="font-bold text-stone-600 mb-4">
+                <FilmIcon class="w-12 h-12 mx-auto text-stone-400 dark:text-stone-500 mb-3" />
+                <p class="font-bold text-stone-700 dark:text-stone-300 mb-4">
                   Belum ada karya yang diupload.
                 </p>
                 <Button
                   size="sm"
                   @click="router.push('/upload')"
-                  class="bg-stone-900 text-white gap-2 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+                  class="bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 gap-2 border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] cursor-pointer font-bold uppercase tracking-wider"
                 >
                   <Upload class="w-4 h-4" /> Upload Karya Pertama
                 </Button>
@@ -696,10 +696,10 @@ onMounted(() => {
                 <div
                   v-for="film in films"
                   :key="film.film_id"
-                  class="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white border-2 border-black shadow-brutal hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-brutal-sm transition-all overflow-hidden"
+                  class="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-brutal-sm transition-all overflow-hidden"
                 >
                   <div
-                    class="w-10 h-14 md:w-12 md:h-16 bg-stone-200 flex-shrink-0 overflow-hidden border border-black relative"
+                    class="w-10 h-14 md:w-12 md:h-16 bg-stone-200 dark:bg-stone-800 flex-shrink-0 overflow-hidden border border-black dark:border-stone-100 relative"
                   >
                     <img
                       v-if="film.gambar_poster"
@@ -708,19 +708,19 @@ onMounted(() => {
                     />
                     <div
                       v-else
-                      class="w-full h-full flex items-center justify-center bg-stone-100"
+                      class="w-full h-full flex items-center justify-center bg-stone-100 dark:bg-stone-800"
                     >
                       <FilmIcon class="w-4 h-4 md:w-5 md:h-5 text-stone-400" />
                     </div>
                   </div>
                   <div class="flex-1 min-w-0">
                     <h4
-                      class="text-xs md:text-sm font-display font-bold text-stone-900 truncate uppercase"
+                      class="text-xs md:text-sm font-display font-bold text-stone-900 dark:text-stone-100 truncate uppercase"
                     >
                       {{ film.judul }}
                     </h4>
                     <p
-                      class="text-[9px] md:text-xs font-mono text-stone-500 mb-1.5 border-b border-dashed border-stone-200 pb-0.5 w-fit"
+                      class="text-[9px] md:text-xs font-mono text-stone-500 dark:text-stone-400 mb-1.5 border-b border-dashed border-stone-200 dark:border-stone-700 pb-0.5 w-fit"
                     >
                       {{ film.tahun_karya }} •
                       {{ film.category?.nama_kategori }}
@@ -799,14 +799,14 @@ onMounted(() => {
         class="animate-fade-in max-w-7xl mx-auto space-y-8"
       >
         <!-- Personal Information -->
-        <div class="bg-white p-6 border-2 border-black shadow-brutal relative">
+        <div class="bg-white dark:bg-stone-900 p-6 border-2 border-black dark:border-stone-100 shadow-brutal relative">
           <div
-            class="absolute top-0 right-0 w-4 h-4 bg-brand-teal border-l-2 border-b-2 border-black"
+            class="absolute top-0 right-0 w-4 h-4 bg-brand-teal border-l-2 border-b-2 border-black dark:border-stone-100"
           ></div>
           <h3
-            class="font-display font-bold text-xl text-stone-900 mb-6 border-b-2 border-black pb-2 flex items-center gap-2"
+            class="font-display font-bold text-xl text-stone-900 dark:text-stone-100 mb-6 border-b-2 border-black dark:border-stone-100 pb-2 flex items-center gap-2"
           >
-            <User class="w-5 h-5" /> Informasi Dasar
+            <User class="w-5 h-5 text-brand-teal" /> Informasi Dasar
           </h3>
 
           <div class="space-y-6">
@@ -814,14 +814,14 @@ onMounted(() => {
               <!-- Profile Picture Box in Settings -->
               <div class="flex-shrink-0 mx-auto md:mx-0">
                 <label
-                  class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                  class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                   >Foto Profil</label
                 >
                 <!-- Outer Container (Handles Shadow & Button Pop-out) -->
                 <div class="relative w-32 h-32 md:w-40 md:h-40 group">
                   <!-- Inner Bordered Box -->
                   <div
-                    class="w-full h-full border-2 border-black bg-stone-50 shadow-brutal-sm overflow-hidden relative"
+                    class="w-full h-full border-2 border-black dark:border-stone-100 bg-stone-50 dark:bg-stone-800 shadow-brutal-sm overflow-hidden relative"
                   >
                     <img
                       v-if="(previewImage || user?.image) && !imageError"
@@ -833,16 +833,16 @@ onMounted(() => {
                       v-else
                       class="w-full h-full flex items-center justify-center bg-brand-teal/5"
                     >
-                      <User class="w-12 h-12 md:w-16 md:h-16 text-stone-300" />
+                      <User class="w-12 h-12 md:w-16 md:h-16 text-stone-300 dark:text-stone-600" />
                     </div>
 
                     <!-- Hover Overlay -->
                     <div
                       @click="triggerFileInput"
-                      class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center"
+                      class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center"
                     >
                       <div
-                        class="bg-white/90 px-3 py-1 border-2 border-black shadow-brutal-xs text-[10px] font-bold uppercase tracking-widest text-black transform translate-y-4 group-hover:translate-y-0 transition-transform"
+                        class="bg-white dark:bg-stone-900 px-3 py-1 border-2 border-black dark:border-stone-100 shadow-brutal-xs text-[10px] font-bold uppercase tracking-widest text-stone-900 dark:text-stone-100 transform translate-y-4 group-hover:translate-y-0 transition-transform"
                       >
                         Ganti Foto
                       </div>
@@ -852,14 +852,14 @@ onMounted(() => {
                   <!-- Pop-out Button -->
                   <button
                     @click="triggerFileInput"
-                    class="absolute -bottom-2 -right-2 w-8 h-8 md:w-10 md:h-10 bg-brand-teal border-2 border-black flex items-center justify-center hover:translate-x-[1px] hover:translate-y-[1px] transition-transform cursor-pointer shadow-brutal-sm text-white z-10"
+                    class="absolute -bottom-2 -right-2 w-8 h-8 md:w-10 md:h-10 bg-brand-teal border-2 border-black dark:border-stone-100 flex items-center justify-center hover:translate-x-[1px] hover:translate-y-[1px] transition-transform cursor-pointer shadow-brutal-sm text-white z-10"
                     title="Ganti Foto"
                   >
                     <Camera class="w-4 h-4 md:w-5 md:h-5 text-white" />
                   </button>
                 </div>
                 <p
-                  class="text-[9px] text-stone-400 mt-4 font-mono uppercase text-center md:text-left"
+                  class="text-[9px] text-stone-500 dark:text-stone-400 mt-4 font-mono uppercase text-center md:text-left"
                 >
                   JPG, PNG atau WebP (Maks. 2MB)
                 </p>
@@ -869,36 +869,36 @@ onMounted(() => {
               <div class="flex-1 space-y-4 md:space-y-5">
                 <div>
                   <label
-                    class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                    class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                     >Nama</label
                   >
                   <Input
                     v-model="editName"
-                    class="border-2 border-black shadow-brutal-xs md:shadow-brutal-sm focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all h-10 md:h-12 text-sm md:text-lg font-medium"
+                    class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs md:shadow-brutal-sm focus:shadow-none focus:translate-x-[1px] focus:translate-y-[1px] transition-all h-10 md:h-12 text-sm md:text-lg font-medium"
                   />
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label
-                      class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                      class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                       >Email</label
                     >
                     <Input
                       :model-value="user?.email"
                       readonly
-                      class="bg-stone-50 border-2 border-stone-200 h-10 md:h-12 font-mono text-xs md:text-sm text-black pointer-events-none"
+                      class="bg-stone-100 dark:bg-stone-800/60 border-2 border-stone-300 dark:border-stone-700 h-10 md:h-12 font-mono text-xs md:text-sm text-stone-700 dark:text-stone-300 pointer-events-none"
                     />
                   </div>
                   <div>
                     <label
-                      class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                      class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                       >Lokasi / Institusi</label
                     >
                     <Input
                       v-model="editLocation"
                       placeholder="Contoh: Jakarta, Indonesia"
-                      class="border-2 border-black shadow-brutal-xs h-10 md:h-12 text-sm"
+                      class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs h-10 md:h-12 text-sm"
                     />
                   </div>
                 </div>
@@ -907,32 +907,32 @@ onMounted(() => {
 
             <div>
               <label
-                class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                 >Bio Singkat</label
               >
               <textarea
                 v-model="editBio"
                 rows="3"
                 placeholder="Ceritakan sedikit tentang diri Anda dan fokus karya Anda..."
-                class="w-full border-2 border-black p-3 text-sm font-medium focus:outline-none bg-white shadow-brutal-xs resize-none"
+                class="w-full border-2 border-black dark:border-stone-700 p-3 text-sm font-medium focus:outline-none bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 shadow-brutal-xs resize-none"
               ></textarea>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label
-                  class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                  class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                   >Website / Portofolio</label
                 >
                 <Input
                   v-model="editWebsite"
                   placeholder="https://myportfolio.com"
-                  class="border-2 border-black shadow-brutal-xs h-10 md:h-12 text-sm"
+                  class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs h-10 md:h-12 text-sm"
                 />
               </div>
               <div>
                 <label
-                  class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                  class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                   >Instagram (Username)</label
                 >
                 <div class="relative">
@@ -943,7 +943,7 @@ onMounted(() => {
                   <Input
                     v-model="editInstagram"
                     placeholder="username"
-                    class="border-2 border-black shadow-brutal-xs h-10 md:h-12 pl-8 text-sm"
+                    class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs h-10 md:h-12 pl-8 text-sm"
                   />
                 </div>
               </div>
@@ -951,13 +951,13 @@ onMounted(() => {
 
             <div>
               <label
-                class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                 >LinkedIn (URL Lengkap)</label
               >
               <Input
                 v-model="editLinkedin"
                 placeholder="https://linkedin.com/in/username"
-                class="border-2 border-black shadow-brutal-xs h-10 md:h-12 text-sm"
+                class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs h-10 md:h-12 text-sm"
               />
             </div>
 
@@ -965,7 +965,7 @@ onMounted(() => {
               <Button
                 @click="saveProfile"
                 :disabled="savingProfile"
-                class="w-full sm:w-auto bg-stone-900 text-white border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] h-10 md:h-12 px-6 md:px-8 font-bold uppercase tracking-widest text-[10px] md:text-xs"
+                class="w-full sm:w-auto bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] h-10 md:h-12 px-6 md:px-8 font-bold uppercase tracking-widest text-[10px] md:text-xs cursor-pointer"
               >
                 <Loader2
                   v-if="savingProfile"
@@ -978,33 +978,33 @@ onMounted(() => {
         </div>
 
         <!-- Change Password -->
-        <div class="bg-white p-6 border-2 border-black shadow-brutal relative">
+        <div class="bg-white dark:bg-stone-900 p-6 border-2 border-black dark:border-stone-100 shadow-brutal relative">
           <div
-            class="absolute top-0 right-0 w-4 h-4 bg-brand-red border-l-2 border-b-2 border-black"
+            class="absolute top-0 right-0 w-4 h-4 bg-brand-red border-l-2 border-b-2 border-black dark:border-stone-100"
           ></div>
           <h3
-            class="font-display font-bold text-xl text-stone-900 mb-6 border-b-2 border-black pb-2 flex items-center gap-2"
+            class="font-display font-bold text-xl text-stone-900 dark:text-stone-100 mb-6 border-b-2 border-black dark:border-stone-100 pb-2 flex items-center gap-2"
           >
-            <Settings class="w-5 h-5" /> Keamanan Akun
+            <Settings class="w-5 h-5 text-brand-red" /> Keamanan Akun
           </h3>
 
           <div class="space-y-5 md:space-y-6">
             <div>
               <label
-                class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                 >Password Saat Ini</label
               >
               <div class="relative">
                 <Input
                   v-model="currentPassword"
                   :type="showCurrentPassword ? 'text' : 'password'"
-                  class="border-2 border-black shadow-brutal-xs md:shadow-brutal-sm h-10 md:h-12 pr-12 text-sm"
+                  class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs md:shadow-brutal-sm h-10 md:h-12 pr-12 text-sm"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   @click="showCurrentPassword = !showCurrentPassword"
-                  class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-900"
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
                 >
                   <Eye
                     v-if="!showCurrentPassword"
@@ -1018,25 +1018,25 @@ onMounted(() => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
               <div>
                 <label
-                  class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                  class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                   >Password Baru</label
                 >
                 <Input
                   v-model="newPassword"
                   :type="showNewPassword ? 'text' : 'password'"
-                  class="border-2 border-black shadow-brutal-xs md:shadow-brutal-sm h-10 md:h-12 text-sm"
+                  class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs md:shadow-brutal-sm h-10 md:h-12 text-sm"
                   placeholder="••••••••"
                 />
               </div>
               <div>
                 <label
-                  class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 mb-2"
+                  class="block text-[10px] md:text-sm font-bold uppercase tracking-wide text-stone-900 dark:text-stone-100 mb-2"
                   >Konfirmasi</label
                 >
                 <Input
                   v-model="confirmPassword"
                   :type="showConfirmPassword ? 'text' : 'password'"
-                  class="border-2 border-black shadow-brutal-xs md:shadow-brutal-sm h-10 md:h-12 text-sm"
+                  class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs md:shadow-brutal-sm h-10 md:h-12 text-sm"
                   placeholder="••••••••"
                 />
               </div>
@@ -1047,7 +1047,7 @@ onMounted(() => {
                 variant="outline"
                 @click="changePassword"
                 :disabled="savingPassword"
-                class="w-full sm:w-auto bg-white text-stone-900 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] h-10 md:h-12 px-6 md:px-8 font-bold uppercase tracking-widest text-[10px] md:text-xs"
+                class="w-full sm:w-auto bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] h-10 md:h-12 px-6 md:px-8 font-bold uppercase tracking-widest text-[10px] md:text-xs cursor-pointer"
               >
                 <Loader2
                   v-if="savingPassword"

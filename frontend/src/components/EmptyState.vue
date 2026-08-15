@@ -34,19 +34,19 @@ const emit = defineEmits(['action'])
     :class="[
       'text-center py-12 md:py-20',
       variant === 'dashed' 
-        ? 'bg-white border-2 border-dashed border-stone-300' 
+        ? 'bg-white dark:bg-stone-900 border-2 border-dashed border-stone-300 dark:border-stone-700' 
         : ''
     ]"
   >
     <div class="max-w-md mx-auto px-4">
       <component 
         :is="icon" 
-        class="w-16 h-16 mx-auto mb-4 text-stone-300 animate-float" 
+        class="w-16 h-16 mx-auto mb-4 text-stone-300 dark:text-stone-600 animate-float" 
       />
-      <h3 class="text-xl md:text-2xl font-display font-bold text-stone-800 mb-2">
+      <h3 class="text-xl md:text-2xl font-display font-bold text-stone-800 dark:text-stone-100 mb-2">
         {{ title }}
       </h3>
-      <p v-if="description" class="text-stone-500 font-body mb-6">
+      <p v-if="description" class="text-stone-500 dark:text-stone-400 font-body mb-6">
         {{ description }}
       </p>
       <slot name="action">

@@ -5,9 +5,9 @@
       v-if="!isOpen"
       @click="openChat"
       aria-label="Buka Asisten AI"
-      class="fixed bottom-5 right-5 z-50 w-12 h-12 md:w-14 md:h-14 bg-brand-orange text-stone-900 border-2 border-stone-900 shadow-brutal flex items-center justify-center hover:-translate-y-1 hover:shadow-brutal-lg transition-all cursor-pointer group rounded-none"
+      class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-10 h-10 sm:w-12 sm:h-12 bg-brand-orange text-stone-900 border-2 border-stone-900 shadow-brutal-sm sm:shadow-brutal flex items-center justify-center hover:-translate-y-1 hover:shadow-brutal-lg transition-all cursor-pointer group rounded-none"
     >
-      <Bot class="w-6 h-6 md:w-7 md:h-7 group-hover:animate-bounce" />
+      <Bot class="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-bounce" />
     </button>
 
     <!-- Backdrop Overlay -->

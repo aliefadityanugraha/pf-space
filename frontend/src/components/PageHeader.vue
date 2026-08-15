@@ -31,10 +31,10 @@ defineProps({
     <div class="flex items-start gap-4 flex-1">
       <div :class="cn('w-1 bg-brand-orange rounded-full', iconColor, description ? 'h-16' : 'h-10')"></div>
       <div>
-        <h1 class="font-display text-3xl md:text-4xl font-bold text-stone-900 leading-tight">
+        <h1 class="font-display text-3xl md:text-4xl font-bold text-stone-900 dark:text-stone-100 leading-tight">
           {{ title }}
         </h1>
-        <p v-if="description" class="text-stone-500 font-body mt-1 max-w-2xl text-sm md:text-base">
+        <p v-if="description" class="text-stone-500 dark:text-stone-300 font-body mt-1 max-w-2xl text-sm md:text-base">
           {{ description }}
         </p>
         <slot name="extra"></slot>

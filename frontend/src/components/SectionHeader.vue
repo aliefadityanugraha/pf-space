@@ -19,11 +19,13 @@ defineEmits(['prev', 'next'])
       <div>
         <h2 
           class="text-xl md:text-3xl font-display font-bold"
-          :class="lightText ? 'text-stone-200' : 'text-stone-900'"
+          :class="lightText ? 'text-white' : 'text-foreground'"
         >
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="text-xs md:text-sm font-body font-medium text-stone-500 mt-0.5 md:mt-1">
+        <p v-if="subtitle" class="text-xs md:text-sm font-body font-medium mt-0.5 md:mt-1"
+           :class="lightText ? 'text-stone-300' : 'text-muted-foreground'"
+        >
           {{ subtitle }}
         </p>
       </div>

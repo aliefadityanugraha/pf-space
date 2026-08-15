@@ -27,4 +27,17 @@ Sitemap: ${baseUrl}/sitemap.xml
 `;
     reply.type('text/plain').send(content);
   });
+
+  // Catch-all detail routes for social media bots / crawlers
+  const handleDetailSeo = async (request, reply) => {
+    const { slug } = request.params;
+    if (!slug) return reply.callNotFound();
+
+    // If request reached here and wasn't handled by middleware, call middleware
+    return;
+  };
+
+  fastify.get('/archive/:slug', handleDetailSeo);
+  fastify.get('/detail/:slug', handleDetailSeo);
+  fastify.get('/film/:slug', handleDetailSeo);
 }

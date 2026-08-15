@@ -298,56 +298,65 @@ onMounted(() => {
           </div>
 
           <h1
-            class="font-display text-3xl md:text-5xl font-bold text-stone-900 leading-tight tracking-tight"
+            class="font-display text-2xl sm:text-3xl md:text-5xl font-bold text-stone-900 dark:text-stone-100 leading-tight tracking-tight break-words"
           >
             {{ post.judul }}
           </h1>
 
           <!-- Byline -->
-          <div class="flex items-center justify-center gap-3 mt-6 md:mt-8">
-            <router-link
-              v-if="post.creator?.id"
-              :to="`/p/${post.creator.id}`"
-              class="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-black shadow-brutal-xs overflow-hidden bg-brand-orange flex items-center justify-center flex-shrink-0"
-            >
-              <img
-                v-if="post.creator.image"
-                :src="assetUrl(post.creator.image)"
-                :alt="post.creator.name"
-                referrerpolicy="no-referrer"
-                class="w-full h-full object-cover"
-              />
-              <span
-                v-else
-                class="font-display font-black text-stone-900 text-sm md:text-base"
-              >
-                {{ post.creator.name?.charAt(0) || "C" }}
-              </span>
-            </router-link>
-            <div class="text-left">
+          <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 md:mt-8 border-y-2 border-black/10 dark:border-stone-800 py-4"
+          >
+            <div class="flex items-center gap-3 text-left">
               <router-link
                 v-if="post.creator?.id"
                 :to="`/p/${post.creator.id}`"
-                class="block font-body font-bold text-stone-900 text-sm md:text-base hover:text-brand-teal transition-colors"
+                class="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-black shadow-brutal-xs overflow-hidden bg-brand-orange flex items-center justify-center flex-shrink-0"
               >
-                {{ post.creator.name || "Creator" }}
+                <img
+                  v-if="post.creator.image"
+                  :src="assetUrl(post.creator.image)"
+                  :alt="post.creator.name"
+                  referrerpolicy="no-referrer"
+                  class="w-full h-full object-cover"
+                />
+                <span
+                  v-else
+                  class="font-display font-black text-stone-900 text-sm md:text-base"
+                >
+                  {{ post.creator.name?.charAt(0) || "C" }}
+                </span>
               </router-link>
-              <p
-                class="flex items-center gap-2 text-[11px] md:text-xs text-stone-500 font-body mt-0.5"
-              >
-                <span class="inline-flex items-center gap-1">
-                  <Calendar class="w-3 h-3" />
-                  {{ dateLabel }}
-                </span>
-                <span class="inline-flex items-center gap-1">
-                  <Clock class="w-3 h-3" />
-                  {{ readingTime }} menit baca
-                </span>
-              </p>
+
+              <div class="text-left min-w-0 flex-1">
+                <router-link
+                  v-if="post.creator?.id"
+                  :to="`/p/${post.creator.id}`"
+                  class="block font-body font-bold text-stone-900 dark:text-stone-100 text-sm md:text-base hover:text-brand-teal transition-colors truncate"
+                >
+                  {{ post.creator.name || "Creator" }}
+                </router-link>
+                <div
+                  class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] md:text-xs text-stone-500 dark:text-stone-400 font-body mt-0.5"
+                >
+                  <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                    <Calendar class="w-3 h-3 shrink-0" />
+                    {{ dateLabel }}
+                  </span>
+                  <span class="text-stone-300 dark:text-stone-600">•</span>
+                  <span class="inline-flex items-center gap-1 whitespace-nowrap">
+                    <Clock class="w-3 h-3 shrink-0" />
+                    {{ readingTime }} menit baca
+                  </span>
+                </div>
+              </div>
             </div>
 
             <!-- Owner / Moderator actions -->
-            <div v-if="canEditOrDelete" class="ml-auto flex items-center gap-2">
+            <div
+              v-if="canEditOrDelete"
+              class="flex items-center gap-2 self-start sm:self-auto shrink-0"
+            >
               <router-link
                 :to="`/feed/${post.postId}/edit`"
                 class="inline-flex items-center gap-1.5 border-2 border-black bg-brand-teal text-white font-body text-xs font-bold uppercase tracking-wide px-3 py-1.5 shadow-brutal-xs hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
@@ -357,7 +366,7 @@ onMounted(() => {
               </router-link>
               <button
                 type="button"
-                class="inline-flex items-center gap-1.5 border-2 border-black bg-brand-red text-white font-body text-xs font-bold uppercase tracking-wide px-3 py-1.5 shadow-brutal-xs hover:bg-red-700 hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
+                class="inline-flex items-center gap-1.5 border-2 border-black bg-brand-red text-white font-body text-xs font-bold uppercase tracking-wide px-3 py-1.5 shadow-brutal-xs hover:bg-red-700 hover:translate-x-[1px] hover:translate-y-[1px] transition-all cursor-pointer"
                 @click="showDeleteConfirm = true"
               >
                 <Trash2 class="w-3.5 h-3.5" />
@@ -370,7 +379,7 @@ onMounted(() => {
         <!-- Article body -->
         <div
           v-if="post.isiKonten"
-          class="feed-prose max-w-2xl mx-auto mt-8 md:mt-12"
+          class="feed-prose max-w-2xl mx-auto mt-8 md:mt-12 text-stone-900 dark:text-stone-100"
           v-html="post.isiKonten"
         ></div>
 
@@ -392,21 +401,21 @@ onMounted(() => {
             v-for="tag in post.tags"
             :key="tag"
             :to="`/feed?search=${encodeURIComponent(tag)}`"
-            class="px-2.5 py-1 text-[11px] font-body font-bold text-brand-teal bg-white border-2 border-black shadow-brutal-xs hover:bg-brand-teal hover:text-white transition-colors"
+            class="px-2.5 py-1 text-[11px] font-body font-bold text-brand-teal bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal-xs hover:bg-brand-teal hover:text-white transition-colors"
           >
             #{{ tag }}
           </router-link>
         </div>
 
         <!-- Share -->
-        <div class="max-w-2xl mx-auto mt-10 flex flex-wrap items-center gap-3">
+        <div class="max-w-2xl mx-auto mt-10 flex flex-wrap items-center gap-2.5">
           <span
-            class="font-body text-xs font-bold uppercase tracking-widest text-stone-400"
+            class="font-body text-xs font-bold uppercase tracking-widest text-stone-400 w-full sm:w-auto mb-1 sm:mb-0"
             >Bagikan:</span
           >
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 border-2 border-black bg-white text-stone-900 shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:bg-brand-teal hover:text-white transition-all"
+            class="inline-flex items-center gap-1.5 border-2 border-black bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:bg-brand-teal hover:text-white transition-all cursor-pointer"
             @click="handleShare"
           >
             <Link2 class="w-3.5 h-3.5" />
@@ -414,7 +423,7 @@ onMounted(() => {
           </button>
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 border-2 border-black bg-[#25D366] text-white shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:brightness-95 transition-all"
+            class="inline-flex items-center gap-1.5 border-2 border-black bg-[#25D366] text-white shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:brightness-95 transition-all cursor-pointer"
             title="Bagikan ke WhatsApp"
             aria-label="Bagikan ke WhatsApp"
             @click="shareTo('whatsapp')"
@@ -424,9 +433,9 @@ onMounted(() => {
           </button>
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 border-2 border-black bg-stone-900 text-white shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:bg-stone-700 transition-all"
-            title="Bagikan ke X"
-            aria-label="Bagikan ke X"
+            class="inline-flex items-center gap-1.5 border-2 border-black bg-stone-900 dark:bg-stone-800 text-white shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:bg-stone-700 transition-all cursor-pointer"
+            title="Bagikan ke Twitter / X"
+            aria-label="Bagikan ke Twitter / X"
             @click="shareTo('twitter')"
           >
             <svg
@@ -438,7 +447,7 @@ onMounted(() => {
                 d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
               ></path>
             </svg>
-            X
+            <span>Twitter (X)</span>
           </button>
         </div>
 

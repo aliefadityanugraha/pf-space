@@ -97,23 +97,23 @@ watch(() => props.targetId, () => {
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="close"></div>
         
         <!-- Dialog -->
-        <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-md animate-in zoom-in-95 duration-200 overflow-hidden">
+        <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-md animate-in zoom-in-95 duration-200 overflow-hidden">
           <!-- Header -->
-          <div class="flex items-center gap-3 px-6 py-4 border-b-2 border-black bg-stone-50">
-            <Flag class="w-5 h-5 text-red-600" />
-            <h2 class="font-bold text-lg flex-1 text-stone-900">
+          <div class="flex items-center gap-3 px-6 py-4 border-b-2 border-black dark:border-stone-800 bg-stone-50 dark:bg-stone-800">
+            <Flag class="w-5 h-5 text-red-600 dark:text-red-400" />
+            <h2 class="font-bold text-lg flex-1 text-stone-900 dark:text-stone-100">
               Laporkan Konten
             </h2>
-            <button @click="close" class="p-1 hover:bg-stone-200 transition-colors rounded">
-              <X class="w-5 h-5" />
+            <button @click="close" class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors rounded">
+              <X class="w-5 h-5 text-stone-900 dark:text-stone-100" />
             </button>
           </div>
           
           <!-- Body -->
           <div class="p-6">
-            <div class="mb-4 bg-red-50 border border-red-100 p-3 flex gap-3">
-              <AlertCircle class="w-5 h-5 text-red-600 shrink-0" />
-              <div class="text-xs text-red-800 leading-relaxed">
+            <div class="mb-4 bg-red-50 dark:bg-red-950/50 border border-red-100 dark:border-red-900/50 p-3 flex gap-3">
+              <AlertCircle class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" />
+              <div class="text-xs text-red-800 dark:text-red-200 leading-relaxed">
                 Anda melaporkan: <span class="font-bold">{{ targetName || 'Karya/Komentar ini' }}</span>
                 <p class="mt-1">Laporan yang disalahgunakan dapat berakibat pada pembatasan akun Anda.</p>
               </div>
@@ -121,7 +121,7 @@ watch(() => props.targetId, () => {
 
             <form @submit.prevent="handleSubmit">
               <div class="space-y-3 mb-6">
-                <label class="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">Alasan Pelaporan</label>
+                <label class="block text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2">Alasan Pelaporan</label>
                 <div v-for="r in reasons" :key="r.value" class="flex items-center">
                   <input 
                     type="radio" 
@@ -131,7 +131,7 @@ watch(() => props.targetId, () => {
                     name="report_reason"
                     class="w-4 h-4 border-2 border-black text-red-600 focus:ring-red-600 focus:ring-offset-0"
                   />
-                  <label :for="'reason-' + r.value" class="ml-3 text-sm font-medium text-stone-700 cursor-pointer select-none">
+                  <label :for="'reason-' + r.value" class="ml-3 text-sm font-medium text-stone-700 dark:text-stone-200 cursor-pointer select-none">
                     {{ r.label }}
                   </label>
                 </div>
@@ -140,7 +140,7 @@ watch(() => props.targetId, () => {
               <div class="mb-6">
                 <label 
                   for="report-desc" 
-                  class="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2"
+                  class="block text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2"
                 >
                   Detail Tambahan (Opsional)
                 </label>
@@ -148,7 +148,7 @@ watch(() => props.targetId, () => {
                   id="report-desc"
                   v-model="description"
                   rows="3"
-                  class="w-full p-3 border-2 border-black focus:outline-none focus:ring-0 text-sm placeholder:text-stone-300"
+                  class="w-full p-3 border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-0 text-sm placeholder:text-stone-400 dark:placeholder:text-stone-500"
                   placeholder="Berikan info lebih lanjut untuk membantu admin meninjau..."
                 ></textarea>
               </div>

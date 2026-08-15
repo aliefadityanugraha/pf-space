@@ -48,19 +48,60 @@ const handleScroll = () => {
 };
 
 // ─── SEO ────────────────────────────────────────────────
-useHead({
-  title: () =>
-    film.value ? `${film.value.judul} - PF Space` : "Memuat Karya...",
-  meta: [
-    {
-      name: "description",
-      content: () => film.value?.sinopsis || "Detail arsip karya.",
-    },
-    { property: "og:title", content: () => film.value?.judul },
-    { property: "og:description", content: () => film.value?.sinopsis },
-    { property: "og:image", content: () => film.value?.gambar_poster },
-    { name: "twitter:card", content: "summary_large_image" },
-  ],
+useHead(() => {
+  const title = film.value ? `${film.value.judul} - PF Space` : "Memuat Karya...";
+  const description = film.value?.sinopsis || "Detail arsip karya film di PF Space.";
+  const posterUrl = film.value?.gambar_poster
+    ? assetUrl(film.value.gambar_poster)
+    : `${typeof window !== "undefined" ? window.location.origin : ""}/logo-perfilman.png`;
+  const pageUrl = typeof window !== "undefined" ? window.location.href : "";
+
+  return {
+    title,
+    meta: [
+      { name: "description", content: description },
+      { name: "author", content: film.value?.creator?.name || "Kreator PF Space" },
+      
+      // Open Graph / Facebook / WhatsApp
+      { property: "og:type", content: "video.other" },
+      { property: "og:site_name", content: "PF Space" },
+      { property: "og:url", content: pageUrl },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:image", content: posterUrl },
+
+      // Twitter Cards
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:url", content: pageUrl },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: description },
+      { name: "twitter:image", content: posterUrl },
+    ],
+    script: film.value
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Movie",
+              "name": film.value.judul,
+              "description": film.value.sinopsis || "Karya film siswa di PF Space.",
+              "image": posterUrl,
+              "director": {
+                "@type": "Person",
+                "name": film.value.creator?.name || "Kreator PF Space",
+              },
+              "genre": film.value.category?.name || "Film Pendek",
+              "dateCreated": film.value.created_at,
+              "productionCompany": {
+                "@type": "Organization",
+                "name": "PF Space - Perfilman SMK",
+              },
+            }),
+          },
+        ]
+      : [],
+  };
 });
 
 // ─── Auth ───────────────────────────────────────────────

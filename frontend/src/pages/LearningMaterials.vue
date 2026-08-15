@@ -36,15 +36,51 @@ import {
 import { useHead } from "@unhead/vue";
 import { useToast } from "@/composables/useToast";
 
-useHead({
-  title: "Materi Pembelajaran - PF Space",
-  meta: [
-    {
-      name: "description",
-      content:
-        "Kumpulan materi pembelajaran perfilman dalam bentuk PDF dan Video.",
-    },
-  ],
+useHead(() => {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const pageUrl = typeof window !== "undefined" ? window.location.href : "";
+  const logoUrl = `${origin}/logo-perfilman.png`;
+  const title = "Materi Pembelajaran Sinematografi & Perfilman — PF Space";
+  const description =
+    "Akses modul pembelajaran perfilman, panduan tata kamera, pencahayaan, editing, dan produksi sinema SMK secara gratis.";
+
+  return {
+    title,
+    meta: [
+      { name: "description", content: description },
+
+      // Open Graph / Facebook / WhatsApp
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "PF Space" },
+      { property: "og:url", content: pageUrl },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:image", content: logoUrl },
+
+      // Twitter Cards
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:url", content: pageUrl },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: description },
+      { name: "twitter:image", content: logoUrl },
+    ],
+    script: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Course",
+          name: "Pembelajaran Perfilman SMK",
+          description: description,
+          provider: {
+            "@type": "Organization",
+            name: "PF Space",
+            sameAs: pageUrl,
+          },
+        }),
+      },
+    ],
+  };
 });
 
 const { showToast } = useToast();
@@ -186,7 +222,7 @@ onMounted(fetchData);
               Pembelajaran
             </h1>
             <p
-              class="text-lg md:text-xl text-stone-600 font-medium leading-relaxed max-w-xl mb-10"
+              class="text-lg md:text-xl text-stone-600 dark:text-stone-300 font-medium leading-relaxed max-w-xl mb-10"
             >
               Akses koleksi materi pendukung produksi film, mulai dari
               dasar-dasar sinematografi hingga manajemen sistem informasi
@@ -195,36 +231,36 @@ onMounted(fetchData);
 
             <div class="flex flex-wrap gap-4">
               <div
-                class="flex items-center gap-3 bg-white border-2 border-black p-4 shadow-brutal-sm"
+                class="flex items-center gap-3 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 p-4 shadow-brutal-sm"
               >
                 <div
-                  class="w-10 h-10 bg-brand-red border-2 border-black shadow-brutal-xs flex items-center justify-center shrink-0"
+                  class="w-10 h-10 bg-brand-red border-2 border-black dark:border-stone-100 shadow-brutal-xs flex items-center justify-center shrink-0"
                 >
                   <FileText class="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <div class="text-xl font-black leading-tight">
+                  <div class="text-xl font-black leading-tight text-stone-900 dark:text-stone-100">
                     {{ materials.filter((m) => m.tipe === "pdf").length }}
                   </div>
-                  <div class="text-[10px] font-bold uppercase text-stone-400">
+                  <div class="text-[10px] font-bold uppercase text-stone-500 dark:text-stone-400">
                     Arsip PDF
                   </div>
                 </div>
               </div>
 
               <div
-                class="flex items-center gap-3 bg-white border-2 border-black p-4 shadow-brutal-sm"
+                class="flex items-center gap-3 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 p-4 shadow-brutal-sm"
               >
                 <div
-                  class="w-10 h-10 bg-[#FF0000] border-2 border-black shadow-brutal-xs flex items-center justify-center shrink-0"
+                  class="w-10 h-10 bg-[#FF0000] border-2 border-black dark:border-stone-100 shadow-brutal-xs flex items-center justify-center shrink-0"
                 >
                   <Youtube class="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <div class="text-xl font-black leading-tight">
+                  <div class="text-xl font-black leading-tight text-stone-900 dark:text-stone-100">
                     {{ materials.filter((m) => m.tipe === "video").length }}
                   </div>
-                  <div class="text-[10px] font-bold uppercase text-stone-400">
+                  <div class="text-[10px] font-bold uppercase text-stone-500 dark:text-stone-400">
                     Materi Video
                   </div>
                 </div>
@@ -234,9 +270,9 @@ onMounted(fetchData);
 
           <!-- Featured Card Hero -->
           <div v-if="featuredMaterial" class="hidden lg:block">
-            <div class="bg-white border-4 border-black shadow-brutal group">
+            <div class="bg-white dark:bg-stone-900 border-4 border-black dark:border-stone-100 shadow-brutal group">
               <div
-                class="aspect-video bg-stone-100 border-b-4 border-black relative overflow-hidden"
+                class="aspect-video bg-stone-100 dark:bg-stone-800 border-b-4 border-black dark:border-stone-100 relative overflow-hidden"
               >
                 <img
                   v-if="featuredMaterial.tipe === 'video'"
@@ -245,9 +281,9 @@ onMounted(fetchData);
                 />
                 <div
                   v-else
-                  class="w-full h-full flex items-center justify-center bg-brand-red/5"
+                  class="w-full h-full flex items-center justify-center bg-brand-red/5 dark:bg-brand-red/10"
                 >
-                  <FileText class="w-24 h-24 text-brand-red opacity-10" />
+                  <FileText class="w-24 h-24 text-brand-red opacity-20" />
                 </div>
 
                 <div class="absolute top-4 left-4 flex gap-2">
@@ -256,38 +292,38 @@ onMounted(fetchData);
                     >Featured</Badge
                   >
                   <Badge
-                    class="bg-white border-2 border-black text-black font-black uppercase tracking-widest text-[10px] py-1"
+                    class="bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-100 text-stone-900 dark:text-stone-100 font-black uppercase tracking-widest text-[10px] py-1"
                     >{{ featuredMaterial.kategori || "Materi" }}</Badge
                   >
                 </div>
 
                 <button
                   @click="openPreview(featuredMaterial)"
-                  class="absolute inset-0 bg-black/0 hover:bg-black/20 flex items-center justify-center transition-all group"
+                  class="absolute inset-0 bg-black/0 hover:bg-black/20 flex items-center justify-center transition-all group cursor-pointer"
                 >
                   <div
-                    class="w-16 h-16 bg-white border-4 border-black shadow-brutal-sm scale-0 group-hover:scale-100 transition-all flex items-center justify-center"
+                    class="w-16 h-16 bg-white dark:bg-stone-800 border-4 border-black dark:border-stone-100 shadow-brutal-sm scale-0 group-hover:scale-100 transition-all flex items-center justify-center"
                   >
                     <Play
                       v-if="featuredMaterial.tipe === 'video'"
-                      class="w-8 h-8 fill-black"
+                      class="w-8 h-8 fill-stone-900 dark:fill-stone-100 text-stone-900 dark:text-stone-100"
                     />
-                    <Eye v-else class="w-8 h-8" />
+                    <Eye v-else class="w-8 h-8 text-stone-900 dark:text-stone-100" />
                   </div>
                 </button>
               </div>
               <div class="p-8">
-                <h2 class="text-2xl font-black uppercase mb-3 line-clamp-1">
+                <h2 class="text-2xl font-black uppercase mb-3 line-clamp-1 text-stone-900 dark:text-stone-100">
                   {{ featuredMaterial.judul }}
                 </h2>
                 <p
-                  class="text-stone-500 text-sm mb-6 line-clamp-2 leading-relaxed"
+                  class="text-stone-600 dark:text-stone-400 text-sm mb-6 line-clamp-2 leading-relaxed"
                 >
                   {{ featuredMaterial.deskripsi }}
                 </p>
                 <Button
                   @click="openPreview(featuredMaterial)"
-                  class="w-full gap-2 border-2 border-black shadow-brutal-sm hover:shadow-none translate-y-[-2px] hover:translate-y-0 transition-all py-6 h-auto text-lg uppercase font-black tracking-widest"
+                  class="w-full gap-2 border-2 border-black dark:border-stone-100 shadow-brutal-sm hover:shadow-none translate-y-[-2px] hover:translate-y-0 transition-all py-6 h-auto text-lg uppercase font-black tracking-widest bg-brand-teal text-white cursor-pointer"
                 >
                   Mulai Belajar
                   <ChevronRight class="w-5 h-5" />
@@ -317,10 +353,10 @@ onMounted(fetchData);
               :key="cat"
               @click="selectedCategory = cat"
               :class="[
-                'px-4 py-2 border-2 border-black text-xs font-black uppercase tracking-tight transition-all',
+                'px-4 py-2 border-2 border-black dark:border-stone-100 text-xs font-black uppercase tracking-tight transition-all cursor-pointer',
                 selectedCategory === cat
                   ? 'bg-brand-teal text-white shadow-brutal-xs translate-x-[-2px] translate-y-[-2px]'
-                  : 'bg-white hover:bg-stone-50 shadow-none',
+                  : 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 hover:bg-stone-50 dark:hover:bg-stone-700 shadow-none',
               ]"
             >
               {{ cat }}
@@ -338,20 +374,20 @@ onMounted(fetchData);
               v-model="searchQuery"
               type="text"
               placeholder="Cari kata kunci materi..."
-              class="w-full pl-11 pr-4 py-3 bg-white border-2 border-black shadow-brutal-sm focus:outline-none focus:ring-0 text-sm font-bold"
+              class="w-full pl-11 pr-4 py-3 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 border-2 border-black dark:border-stone-700 shadow-brutal-sm focus:outline-none focus:ring-0 text-sm font-bold placeholder:text-stone-400 dark:placeholder:text-stone-500"
             />
           </div>
 
           <div
-            class="inline-flex border-2 border-black bg-white shadow-brutal-xs h-10"
+            class="flex border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 h-10 shadow-brutal-xs overflow-hidden"
           >
             <button
               @click="selectedType = 'all'"
               :class="[
                 selectedType === 'all'
-                  ? 'bg-stone-900 text-white'
-                  : 'hover:bg-stone-100',
-                'flex-1 text-[10px] font-black uppercase tracking-widest transition-colors',
+                  ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900'
+                  : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
+                'flex-1 text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer',
               ]"
             >
               Semua
@@ -361,8 +397,8 @@ onMounted(fetchData);
               :class="[
                 selectedType === 'pdf'
                   ? 'bg-brand-red text-white'
-                  : 'hover:bg-stone-100',
-                'flex-1 border-x-2 border-black text-[10px] font-black uppercase tracking-widest transition-colors',
+                  : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
+                'flex-1 border-x-2 border-black dark:border-stone-700 text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer',
               ]"
             >
               Dokumen
@@ -372,8 +408,8 @@ onMounted(fetchData);
               :class="[
                 selectedType === 'video'
                   ? 'bg-[#FF0000] text-white'
-                  : 'hover:bg-stone-100',
-                'flex-1 text-[10px] font-black uppercase tracking-widest transition-colors',
+                  : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
+                'flex-1 text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer',
               ]"
             >
               Video
@@ -390,13 +426,13 @@ onMounted(fetchData);
         <div
           v-for="i in 6"
           :key="i"
-          class="h-96 animate-pulse bg-white border-2 border-black shadow-brutal-sm"
+          class="h-96 animate-pulse bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-700 shadow-brutal-sm"
         />
       </div>
 
       <div
         v-else-if="filteredMaterials.length === 0"
-        class="py-20 border-2 border-black border-dashed bg-stone-50"
+        class="py-20 border-2 border-black dark:border-stone-700 border-dashed bg-stone-50 dark:bg-stone-900"
       >
         <EmptyState
           title="Materi Tidak Ditemukan"
@@ -408,11 +444,11 @@ onMounted(fetchData);
         <div
           v-for="material in filteredMaterials"
           :key="material.materi_id"
-          class="bg-white border-2 border-black shadow-brutal-sm hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all group overflow-hidden flex flex-col"
+          class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 text-stone-900 dark:text-stone-100 shadow-brutal-sm hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all group overflow-hidden flex flex-col"
         >
           <!-- Card Thumbnail -->
           <div
-            class="aspect-video bg-stone-100 border-b-2 border-black relative overflow-hidden shrink-0"
+            class="aspect-video bg-stone-100 dark:bg-stone-800 border-b-2 border-black dark:border-stone-100 relative overflow-hidden shrink-0"
           >
             <template v-if="material.tipe === 'video'">
               <img
@@ -423,7 +459,7 @@ onMounted(fetchData);
                 class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center"
               >
                 <div
-                  class="w-12 h-12 bg-white border-2 border-black shadow-brutal-xs flex items-center justify-center group-hover:bg-brand-teal group-hover:text-white transition-colors"
+                  class="w-12 h-12 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal-xs flex items-center justify-center group-hover:bg-brand-teal group-hover:text-white transition-colors"
                 >
                   <Play class="w-6 h-6 fill-current" />
                 </div>
@@ -437,7 +473,7 @@ onMounted(fetchData);
             </template>
             <template v-else>
               <div
-                class="w-full h-full flex flex-col items-center justify-center p-8 bg-brand-red/5"
+                class="w-full h-full flex flex-col items-center justify-center p-8 bg-brand-red/5 dark:bg-brand-red/10"
               >
                 <FileText
                   class="w-12 h-12 text-brand-red opacity-50 group-hover:scale-110 transition-transform"
@@ -456,7 +492,7 @@ onMounted(fetchData);
             >
               <button
                 @click.stop="copyLink(material)"
-                class="p-2 bg-white border-2 border-black shadow-brutal-xs hover:bg-stone-50 transition-colors"
+                class="p-2 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 border-2 border-black dark:border-stone-100 shadow-brutal-xs hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors cursor-pointer"
                 title="Salin Link"
               >
                 <Share2 class="w-4 h-4" />
@@ -468,7 +504,7 @@ onMounted(fetchData);
           <div class="p-5 flex-1 flex flex-col">
             <div class="flex items-center gap-2 mb-2">
               <span
-                class="text-[9px] font-black uppercase tracking-widest text-brand-teal px-1.5 py-0.5 border border-brand-teal bg-teal-50"
+                class="text-[9px] font-black uppercase tracking-widest text-brand-teal px-1.5 py-0.5 border border-brand-teal bg-teal-50 dark:bg-teal-950/40"
                 >{{ material.kategori || "Uncategorized" }}</span
               >
               <div v-if="material.is_featured" class="text-brand-orange">
@@ -477,12 +513,12 @@ onMounted(fetchData);
             </div>
 
             <h3
-              class="text-lg font-black uppercase leading-tight mb-2 group-hover:text-brand-teal transition-colors line-clamp-2"
+              class="text-lg font-black uppercase leading-tight mb-2 text-stone-900 dark:text-stone-100 group-hover:text-brand-teal transition-colors line-clamp-2"
             >
               {{ material.judul }}
             </h3>
             <p
-              class="text-xs text-stone-500 font-medium mb-6 line-clamp-2 leading-relaxed"
+              class="text-xs text-stone-500 dark:text-stone-400 font-medium mb-6 line-clamp-2 leading-relaxed"
             >
               {{
                 material.deskripsi ||
@@ -491,24 +527,24 @@ onMounted(fetchData);
             </p>
 
             <div
-              class="mt-auto pt-4 border-t border-stone-100 flex items-center justify-between"
+              class="mt-auto pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between"
             >
               <div class="flex items-center gap-2">
                 <div
-                  class="w-7 h-7 rounded-full bg-stone-200 border border-black flex items-center justify-center shrink-0 shadow-brutal-xs overflow-hidden"
+                  class="w-7 h-7 rounded-full bg-stone-200 dark:bg-stone-700 border border-black dark:border-stone-100 flex items-center justify-center shrink-0 shadow-brutal-xs overflow-hidden"
                 >
                   <img
                     v-if="material.creator?.image"
                     :src="assetUrl(material.creator.image)"
                     class="w-full h-full object-cover"
                   />
-                  <span v-else class="text-[10px] font-black">{{
+                  <span v-else class="text-[10px] font-black text-stone-900 dark:text-stone-100">{{
                     material.creator?.name?.[0]?.toUpperCase()
                   }}</span>
                 </div>
                 <div class="flex flex-col">
                   <span
-                    class="text-[9px] font-black uppercase tracking-tight"
+                    class="text-[9px] font-black uppercase tracking-tight text-stone-900 dark:text-stone-100"
                     >{{ material.creator?.name }}</span
                   >
                   <span class="text-[8px] text-stone-400 font-bold uppercase">{{

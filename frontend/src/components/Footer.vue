@@ -192,7 +192,7 @@ import { Film, Instagram, Github, Mail, Globe, Heart } from "lucide-vue-next";
         <div
           class="flex items-center gap-1 text-[8px] md:text-[10px] font-mono text-[#a1a1aa]"
         >
-          <span>BUILD v1.5.0</span>
+          <span>BUILD v1.6.0</span>
           <span class="mx-0.5 md:mx-1">•</span>
           <span>STABLE RELEASE</span>
         </div>

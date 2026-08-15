@@ -70,32 +70,32 @@ onMounted(() => {
       <div class="absolute inset-0 backdrop-blur-sm" @click="close"></div>
       
       <!-- Modal Content -->
-      <div class="relative w-full max-w-md bg-brand-cream border-4 border-black shadow-brutal overflow-hidden">
+      <div class="relative w-full max-w-md bg-brand-cream dark:bg-stone-900 border-4 border-black dark:border-stone-100 shadow-brutal overflow-hidden">
         <!-- Accent Bar -->
-        <div class="h-3 bg-gradient-to-r from-brand-red via-brand-orange to-brand-teal w-full border-b-2 border-black"></div>
+        <div class="h-3 bg-gradient-to-r from-brand-red via-brand-orange to-brand-teal w-full border-b-2 border-black dark:border-stone-100"></div>
         
         <div class="p-5 md:p-6">
           <!-- Close Button -->
           <button 
             @click="close"
-            class="absolute top-5 right-5 p-1 border-2 border-transparent hover:border-black hover:bg-white transition-all"
+            class="absolute top-5 right-5 p-1 border-2 border-transparent hover:border-black dark:hover:border-stone-100 hover:bg-white dark:hover:bg-stone-800 transition-all"
           >
-            <X class="w-5 h-5" />
+            <X class="w-5 h-5 text-stone-900 dark:text-stone-100" />
           </button>
           
           <!-- Icon & Header -->
           <div class="flex items-center gap-4 mb-6">
             <div class="p-2 bg-brand-orange border-2 border-black shadow-brutal-sm">
-              <Megaphone class="w-6 h-6 text-white" />
+              <Megaphone class="w-6 h-6 text-stone-900" />
             </div>
-            <h2 class="text-xl md:text-2xl font-display font-bold uppercase tracking-tight text-stone-900 leading-none">
+            <h2 class="text-xl md:text-2xl font-display font-bold uppercase tracking-tight text-stone-900 dark:text-stone-100 leading-none">
               {{ config.title }}
             </h2>
           </div>
           
           <!-- Message Body -->
-          <div class="prose prose-stone mb-8">
-            <p class="text-stone-700 font-body text-sm md:text-base leading-relaxed whitespace-pre-line">
+          <div class="prose prose-stone dark:prose-invert mb-8">
+            <p class="text-stone-700 dark:text-stone-300 font-body text-sm md:text-base leading-relaxed whitespace-pre-line">
               {{ config.content }}
             </p>
           </div>

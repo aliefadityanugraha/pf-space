@@ -80,7 +80,7 @@ watch(() => route.params.id, fetchProfile);
       </div>
     </div>
 
-    <div v-else-if="user" class="max-w-7xl mx-auto px-4 pb-20">
+    <div v-else-if="user" class="max-w-7xl mx-auto px-4 md:px-8 pt-2 sm:pt-4 md:pt-6 pb-20">
       <!-- 1. HERO PORTFOLIO -->
       <section class="mb-12">
         <div

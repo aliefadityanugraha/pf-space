@@ -34,15 +34,15 @@ const hasLearningAssets = computed(
             name: 'AssetDetail',
             params: { archiveSlug: film.slug, assetSlug: 'naskah-film' },
           }"
-          class="flex items-center justify-between p-2.5 md:p-3 bg-stone-100 hover:bg-stone-200 transition-colors group"
+          class="flex items-center justify-between p-2.5 md:p-3 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-stone-700 transition-colors group"
         >
           <div class="flex items-center gap-2.5 md:gap-3 min-w-0 flex-1">
             <FileText class="w-4 h-4 md:w-5 md:h-5 text-brand-red shrink-0" />
             <div class="min-w-0 flex-1">
-              <span class="font-medium text-xs md:text-sm block truncate"
+              <span class="font-medium text-xs md:text-sm block truncate text-stone-900 dark:text-stone-100"
                 >Naskah Karya</span
               >
-              <span class="text-[10px] md:text-xs text-stone-500">PDF</span>
+              <span class="text-[10px] md:text-xs text-stone-500 dark:text-stone-400">PDF</span>
             </div>
           </div>
           <Eye
@@ -55,15 +55,15 @@ const hasLearningAssets = computed(
             name: 'AssetDetail',
             params: { archiveSlug: film.slug, assetSlug: 'storyboard' },
           }"
-          class="flex items-center justify-between p-2.5 md:p-3 bg-stone-100 hover:bg-stone-200 transition-colors group"
+          class="flex items-center justify-between p-2.5 md:p-3 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-stone-700 transition-colors group"
         >
           <div class="flex items-center gap-2.5 md:gap-3 min-w-0 flex-1">
             <FileText class="w-4 h-4 md:w-5 md:h-5 text-brand-teal shrink-0" />
             <div class="min-w-0 flex-1">
-              <span class="font-medium text-xs md:text-sm block truncate"
+              <span class="font-medium text-xs md:text-sm block truncate text-stone-900 dark:text-stone-100"
                 >Storyboard</span
               >
-              <span class="text-[10px] md:text-xs text-stone-500">PDF</span>
+              <span class="text-[10px] md:text-xs text-stone-500 dark:text-stone-400">PDF</span>
             </div>
           </div>
           <Eye
@@ -76,15 +76,15 @@ const hasLearningAssets = computed(
             name: 'AssetDetail',
             params: { archiveSlug: film.slug, assetSlug: 'rab' },
           }"
-          class="flex items-center justify-between p-2.5 md:p-3 bg-stone-100 hover:bg-stone-200 transition-colors group"
+          class="flex items-center justify-between p-2.5 md:p-3 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-stone-700 transition-colors group"
         >
           <div class="flex items-center gap-2.5 md:gap-3 min-w-0 flex-1">
             <FileText class="w-4 h-4 md:w-5 md:h-5 text-brand-orange shrink-0" />
             <div class="min-w-0 flex-1">
-              <span class="font-medium text-xs md:text-sm block truncate"
+              <span class="font-medium text-xs md:text-sm block truncate text-stone-900 dark:text-stone-100"
                 >RAB (Anggaran)</span
               >
-              <span class="text-[10px] md:text-xs text-stone-500">PDF</span>
+              <span class="text-[10px] md:text-xs text-stone-500 dark:text-stone-400">PDF</span>
             </div>
           </div>
           <Eye
@@ -101,12 +101,12 @@ const hasLearningAssets = computed(
     </ContentSection>
 
     <!-- Film Info Card -->
-    <Card>
+    <Card class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 text-stone-900 dark:text-stone-100 shadow-brutal">
       <CardContent class="p-3 md:p-4">
-        <h3 class="font-bold mb-3 md:mb-4 text-sm md:text-base">Informasi Karya</h3>
+        <h3 class="font-bold mb-3 md:mb-4 text-sm md:text-base text-stone-900 dark:text-stone-100">Informasi Karya</h3>
         <div class="space-y-2.5 md:space-y-3 text-xs md:text-sm">
           <div class="flex justify-between gap-4">
-            <span class="text-stone-500 shrink-0">Kategori</span>
+            <span class="text-stone-500 dark:text-stone-400 shrink-0">Kategori</span>
             <router-link
               v-if="film.category"
               :to="{ path: '/films', query: { category_id: film.category.category_id } }"
@@ -115,23 +115,23 @@ const hasLearningAssets = computed(
             >
               {{ film.category.nama_kategori }}
             </router-link>
-            <span v-else class="font-medium text-right truncate">-</span>
+            <span v-else class="font-medium text-right truncate text-stone-900 dark:text-stone-100">-</span>
           </div>
           <div class="flex justify-between gap-4">
-            <span class="text-stone-500 shrink-0">Tahun</span>
-            <span class="font-medium text-right">{{
+            <span class="text-stone-500 dark:text-stone-400 shrink-0">Tahun</span>
+            <span class="font-medium text-right text-stone-900 dark:text-stone-100">{{
               film.tahun_karya || '-'
             }}</span>
           </div>
           <div class="flex justify-between gap-4">
-            <span class="text-stone-500 shrink-0">Pembuat</span>
-            <span class="font-medium text-right truncate">{{
+            <span class="text-stone-500 dark:text-stone-400 shrink-0">Pembuat</span>
+            <span class="font-medium text-right truncate text-stone-900 dark:text-stone-100">{{
               film.creator?.name || '-'
             }}</span>
           </div>
           <div class="flex justify-between gap-4">
-            <span class="text-stone-500 shrink-0">Dipublikasi</span>
-            <span class="font-medium text-right">{{
+            <span class="text-stone-500 dark:text-stone-400 shrink-0">Dipublikasi</span>
+            <span class="font-medium text-right text-stone-900 dark:text-stone-100">{{
               formatDate(film.created_at)
             }}</span>
           </div>

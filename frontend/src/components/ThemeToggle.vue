@@ -26,12 +26,12 @@ const cycleTheme = () => {
   <button
     type="button"
     @click="cycleTheme"
-    class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-white hover:bg-stone-100 dark:bg-stone-900 dark:hover:bg-stone-800 text-stone-900 dark:text-white border-2 border-black dark:border-white shadow-brutal flex items-center justify-center hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal shrink-0"
+    class="w-11 h-11 md:w-11 md:h-11 bg-white dark:bg-stone-900 border-2 border-stone-900 dark:border-stone-100 shadow-brutal flex items-center justify-center hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-0 active:translate-y-0 active:shadow-none hover:shadow-brutal-sm transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal shrink-0"
     :aria-label="labelText"
     :title="labelText"
   >
-    <Sun v-if="themeMode === THEME_MODES.LIGHT" class="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-900" />
-    <Moon v-else-if="themeMode === THEME_MODES.DARK" class="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-    <Laptop v-else class="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-900 dark:text-white" />
+    <Sun v-if="themeMode === THEME_MODES.LIGHT" class="w-4 h-4 md:w-5 md:h-5 text-amber-500 fill-amber-400 stroke-[2.5]" />
+    <Moon v-else-if="themeMode === THEME_MODES.DARK" class="w-4 h-4 md:w-5 md:h-5 text-amber-300 fill-amber-300 stroke-[2.5]" />
+    <Laptop v-else class="w-4 h-4 md:w-5 md:h-5 text-stone-900 dark:text-amber-300 stroke-[2.5]" />
   </button>
 </template>

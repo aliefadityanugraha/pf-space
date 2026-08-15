@@ -135,15 +135,15 @@ fetchComments()
     <!-- Comment form -->
     <div
       v-if="isLoggedIn"
-      class="mb-6 md:mb-10 p-3 md:p-6 bg-white border-2 md:border-4 border-black shadow-[4px_4px_0_0_#000] md:shadow-brutal relative group"
+      class="mb-6 md:mb-10 p-3 md:p-6 bg-white dark:bg-stone-900 border-2 md:border-4 border-black dark:border-stone-100 shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_#fff] md:shadow-brutal relative group"
     >
       <div
-        class="absolute -z-10 inset-0 bg-stone-50 translate-x-1 translate-y-1 md:translate-x-2 md:translate-y-2 group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform"
+        class="absolute -z-10 inset-0 bg-stone-50 dark:bg-stone-800 translate-x-1 translate-y-1 md:translate-x-2 md:translate-y-2 group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform"
       ></div>
 
       <div class="flex gap-3 md:gap-6">
         <div
-          class="hidden sm:flex w-10 h-10 md:w-12 md:h-12 bg-brand-orange border-2 border-black shadow-brutal-xs items-center justify-center text-stone-900 font-bold flex-shrink-0 rounded-full overflow-hidden"
+          class="hidden sm:flex w-10 h-10 md:w-12 md:h-12 bg-brand-orange border-2 border-black dark:border-stone-100 shadow-brutal-xs items-center justify-center text-stone-900 font-bold flex-shrink-0 rounded-full overflow-hidden"
         >
           <img
             v-if="user?.image && !imageError"
@@ -163,10 +163,10 @@ fetchComments()
               aria-label="Komentar baru"
               @keydown.ctrl.enter="submitComment()"
               @keydown.meta.enter="submitComment()"
-              class="w-full p-3 md:p-4 border-2 border-black bg-white text-stone-900 text-sm md:text-base resize-none focus:ring-0 focus:outline-none mb-3 md:mb-4 font-body transition-all placeholder:text-stone-400"
+              class="w-full p-3 md:p-4 border-2 border-black dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 text-sm md:text-base resize-none focus:ring-0 focus:outline-none focus:border-brand-teal mb-3 md:mb-4 font-body transition-all placeholder:text-stone-400 dark:placeholder:text-stone-500"
             ></textarea>
             <div
-              class="absolute bottom-5 right-3 md:bottom-6 md:right-4 text-[8px] md:text-[10px] font-black text-stone-300 uppercase tracking-tighter pointer-events-none hidden sm:block"
+              class="absolute bottom-5 right-3 md:bottom-6 md:right-4 text-[8px] md:text-[10px] font-black text-stone-400 dark:text-stone-500 uppercase tracking-tighter pointer-events-none hidden sm:block"
             >
               CTRL + ENTER: KIRIM · SHIFT + ENTER: BARIS BARU
             </div>
@@ -176,7 +176,7 @@ fetchComments()
             <Button
               @click="submitComment()"
               :disabled="submittingComment || !newComment.trim()"
-              class="bg-brand-red hover:bg-brand-red/90 text-white rounded-none border-2 border-black shadow-[3px_3px_0_0_#000] md:shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all font-display font-black uppercase tracking-wider text-xs md:text-sm h-10 px-5 md:h-12 md:px-8 flex items-center justify-center gap-2 md:gap-3 w-full sm:w-auto"
+              class="bg-brand-red hover:bg-brand-red/90 text-white rounded-none border-2 border-black dark:border-stone-100 shadow-[3px_3px_0_0_#000] dark:shadow-[3px_3px_0_0_#fff] md:shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all font-display font-black uppercase tracking-wider text-xs md:text-sm h-10 px-5 md:h-12 md:px-8 flex items-center justify-center gap-2 md:gap-3 w-full sm:w-auto cursor-pointer disabled:opacity-60"
             >
               <Loader2 v-if="submittingComment" class="w-4 h-4 md:w-5 md:h-5 animate-spin" />
               <Send v-else class="w-4 h-4 md:w-5 md:h-5" />
@@ -190,14 +190,14 @@ fetchComments()
     <!-- Login CTA -->
     <div
       v-else
-      class="mb-8 p-4 md:p-6 bg-stone-100 border-2 border-dashed border-stone-400 text-center"
+      class="mb-8 p-4 md:p-6 bg-stone-100 dark:bg-stone-900 border-2 border-dashed border-stone-400 dark:border-stone-700 text-center"
     >
-      <p class="text-stone-600 mb-4 font-body text-sm md:text-base">
+      <p class="text-stone-600 dark:text-stone-300 mb-4 font-body text-sm md:text-base">
         Bergabung dalam diskusi untuk memberikan apresiasi atau masukan.
       </p>
       <Button
         variant="outline"
-        class="border-2 border-stone-800 shadow-brutal-xs text-sm"
+        class="border-2 border-stone-800 dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs text-sm cursor-pointer"
         @click="router.push('/auth/login')"
         >Login Untuk Berkomentar</Button
       >

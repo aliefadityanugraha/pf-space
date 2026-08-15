@@ -2,6 +2,8 @@
 @import "plyr/dist/plyr.css";
 @import "nprogress/nprogress.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 
 @theme {
   /* Brand Colors */
@@ -9,6 +11,7 @@
   --color-brand-teal: #265c5c;
   --color-brand-orange: #fdba74;
   --color-brand-cream: #f2eee3;
+  --color-brand-yellow: #facc15;
 
   /* Semantic Theme Tokens (shadcn mapping for Tailwind CSS v4) */
   --color-background: var(--background);
@@ -123,6 +126,20 @@
   --plyr-control-radius: 0px;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Hide scrollbar tracks for smooth horizontal touch scrolling */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Utility Classes for 3D Transforms */
 .perspective-1000 {
   perspective: 1000px;
@@ -138,7 +155,7 @@
 
 /* shadcn/ui CSS Variables - Customized for Brutal Design */
 :root {
-  --background: #e7e5e4; /* stone-200 / brand-cream */
+  --background: #f2eee3; /* stone-200 / brand-cream */
   --foreground: #1c1917; /* stone-900 */
 
   --card: #fafaf9; /* stone-50 */
@@ -153,7 +170,7 @@
   --secondary: #fdba74; /* brand-orange */
   --secondary-foreground: #1c1917;
 
-  --muted: #d6d3d1; /* stone-300 */
+  --muted: #e7e5e4; /* stone-300 */
   --muted-foreground: #57534e; /* stone-600 */
 
   --accent: #ef4444; /* brand-red */
@@ -206,30 +223,6 @@
 
   /* Overriding Tailwind's base utility colors for Brutalism Theme */
   --color-brand-cream: #1c1917;
-  --color-white: #1c1917; /* Invert white to stone-900 */
-  --color-black: #fafaf9; /* Invert black to stone-50 */
-  
-  /* Full Stone Palette Inversion (50 <-> 900, etc) */
-  --color-stone-50: #1c1917;
-  --color-stone-100: #292524;
-  --color-stone-200: #44403c;
-  --color-stone-300: #57534e;
-  --color-stone-400: #78716c;
-  --color-stone-500: #a8a29e;
-  --color-stone-600: #d6d3d1;
-  --color-stone-700: #e7e5e4;
-  --color-stone-800: #f5f5f4;
-  --color-stone-900: #fafaf9;
-  --color-stone-950: #ffffff;
-
-  /* Accent overrides */
-  --color-orange-50: #292524;
-  --color-orange-100: #44403c;
-  --color-amber-100: #451a03;
-  --color-amber-700: #fde68a;
-  --color-red-100: #450a0a;
-  --color-red-600: #f87171;
-  --color-red-700: #fecaca;
 
   /* Brutal Design System Shadows for Dark Mode (Darker shadow instead of white) */
   --shadow-brutal-color: 4px 4px 0px 0px rgba(0, 0, 0, 1);
@@ -239,7 +232,25 @@
   --shadow-brutal-xs-color: 2px 2px 0px 0px rgba(0, 0, 0, 1);
 }
 
+/* CSS Custom Color Properties for 100% Synchronized Theme Gradient & Background Transitions */
+@property --background {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f2eee3;
+}
+
+@property --foreground {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #1c1917;
+}
+
 /* Smooth Global Theme Transition Engine */
+html {
+  transition: --background 350ms cubic-bezier(0.4, 0, 0.2, 1),
+              --foreground 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 html,
 body,
 header,
@@ -259,7 +270,7 @@ input,
 textarea,
 select,
 svg {
-  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-property: background-color, background-image, border-color, color, fill, stroke, box-shadow;
   transition-duration: 350ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -69,7 +69,23 @@ export const seoMiddleware = async (request, reply) => {
         const pageUrl = `${siteUrl}/detail/${film.slug || film.film_id}`;
         const creatorName = escapeHtml(film.creator?.name || 'siswa SI');
 
-        // Return minimal HTML with necessary meta tags for crawlers
+        const jsonLd = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Movie",
+          "name": film.judul,
+          "description": film.sinopsis || "Karya film siswa di PF Space.",
+          "image": posterUrl,
+          "director": {
+            "@type": "Person",
+            "name": film.creator?.name || "Kreator PF Space"
+          },
+          "productionCompany": {
+            "@type": "Organization",
+            "name": "PF Space - Perfilman SMK"
+          }
+        });
+
+        // Return minimal HTML with necessary meta tags and JSON-LD for crawlers
         return reply.type('text/html').send(`
           <!DOCTYPE html>
           <html lang="id">
@@ -78,22 +94,25 @@ export const seoMiddleware = async (request, reply) => {
               <title>${title}</title>
               <meta name="description" content="${description}">
               
-              <!-- Open Graph / Facebook -->
+              <!-- Open Graph / Facebook / WhatsApp -->
               <meta property="og:type" content="video.other">
+              <meta property="og:site_name" content="PF Space">
               <meta property="og:url" content="${escapeHtml(pageUrl)}">
               <meta property="og:title" content="${title}">
               <meta property="og:description" content="${description}">
               <meta property="og:image" content="${escapeHtml(posterUrl)}">
+              <meta property="og:image:alt" content="${title}">
 
               <!-- Twitter -->
-              <meta property="twitter:card" content="summary_large_image">
-              <meta property="twitter:url" content="${escapeHtml(pageUrl)}">
-              <meta property="twitter:title" content="${title}">
-              <meta property="twitter:description" content="${description}">
-              <meta property="twitter:image" content="${escapeHtml(posterUrl)}">
+              <meta name="twitter:card" content="summary_large_image">
+              <meta name="twitter:url" content="${escapeHtml(pageUrl)}">
+              <meta name="twitter:title" content="${title}">
+              <meta name="twitter:description" content="${description}">
+              <meta name="twitter:image" content="${escapeHtml(posterUrl)}">
 
-              <!-- Additional Tags -->
+              <!-- Additional Meta & Schema.org JSON-LD -->
               <meta name="author" content="${creatorName}">
+              <script type="application/ld+json">${jsonLd}</script>
             </head>
             <body>
               <h1>${title}</h1>

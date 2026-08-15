@@ -28,7 +28,7 @@ const editor = useEditor({
   ],
   editorProps: {
     attributes: {
-      class: 'prose prose-sm max-w-none focus:outline-none min-h-[200px] p-4 font-body',
+      class: 'prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[200px] p-4 font-body text-stone-900 dark:text-stone-100',
     },
   },
   onUpdate: ({ editor }) => {
@@ -44,13 +44,13 @@ watch(() => props.modelValue, (value) => {
 </script>
 
 <template>
-  <div v-if="editor" class="border-2 border-black bg-white shadow-brutal-sm overflow-hidden flex flex-col">
+  <div v-if="editor" class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-sm overflow-hidden flex flex-col">
     <!-- Toolbar -->
-    <div class="flex flex-wrap items-center gap-1 p-2 border-b-2 border-black bg-stone-50">
+    <div class="flex flex-wrap items-center gap-1 p-2 border-b-2 border-black dark:border-stone-700 bg-stone-50 dark:bg-stone-900">
       <button 
         type="button"
         @click="editor.chain().focus().toggleBold().run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('bold') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('bold') ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Bold"
       >
         <Bold class="w-4 h-4" />
@@ -58,7 +58,7 @@ watch(() => props.modelValue, (value) => {
       <button 
         type="button"
         @click="editor.chain().focus().toggleItalic().run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('italic') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('italic') ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Italic"
       >
         <Italic class="w-4 h-4" />
@@ -66,7 +66,7 @@ watch(() => props.modelValue, (value) => {
       <button 
         type="button"
         @click="editor.chain().focus().toggleStrike().run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('strike') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('strike') ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Strikethrough"
       >
         <Strikethrough class="w-4 h-4" />
@@ -74,17 +74,17 @@ watch(() => props.modelValue, (value) => {
       <button 
         type="button"
         @click="editor.chain().focus().toggleCode().run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('code') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('code') ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Code"
       >
         <Code class="w-4 h-4" />
       </button>
-      <div class="w-px h-6 bg-stone-300 mx-1"></div>
+      <div class="w-px h-6 bg-stone-300 dark:bg-stone-700 mx-1"></div>
       
       <button 
         type="button"
         @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('heading', { level: 1 }) ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('heading', { level: 1 }) ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Heading 1"
       >
         <Heading1 class="w-4 h-4" />
@@ -92,7 +92,7 @@ watch(() => props.modelValue, (value) => {
       <button 
         type="button"
         @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('heading', { level: 2 }) ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('heading', { level: 2 }) ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Heading 2"
       >
         <Heading2 class="w-4 h-4" />
@@ -100,7 +100,7 @@ watch(() => props.modelValue, (value) => {
       <button 
         type="button"
         @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('heading', { level: 3 }) ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('heading', { level: 3 }) ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Heading 3"
       >
         <Heading3 class="w-4 h-4" />
@@ -108,17 +108,17 @@ watch(() => props.modelValue, (value) => {
       <button 
         type="button"
         @click="editor.chain().focus().setParagraph().run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('paragraph') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('paragraph') ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Normal Text"
       >
         <Type class="w-4 h-4" />
       </button>
 
-      <div class="w-px h-6 bg-stone-300 mx-1"></div>
+      <div class="w-px h-6 bg-stone-300 dark:bg-stone-700 mx-1"></div>
       <button 
         type="button"
         @click="editor.chain().focus().toggleBulletList().run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('bulletList') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('bulletList') ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Bullet List"
       >
         <List class="w-4 h-4" />
@@ -126,7 +126,7 @@ watch(() => props.modelValue, (value) => {
       <button 
         type="button"
         @click="editor.chain().focus().toggleOrderedList().run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('orderedList') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('orderedList') ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Ordered List"
       >
         <ListOrdered class="w-4 h-4" />
@@ -134,7 +134,7 @@ watch(() => props.modelValue, (value) => {
       <button 
         type="button"
         @click="editor.chain().focus().toggleBlockquote().run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('blockquote') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('blockquote') ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Quote"
       >
         <TextQuote class="w-4 h-4" />
@@ -142,7 +142,7 @@ watch(() => props.modelValue, (value) => {
       <button 
         type="button"
         @click="editor.chain().focus().toggleCodeBlock().run()"
-        :class="['p-1.5 hover:bg-stone-200 border border-transparent transition-all', editor.isActive('codeBlock') ? 'bg-stone-800 text-white border-black' : 'text-stone-600']"
+        :class="['p-1.5 hover:bg-stone-200 dark:hover:bg-stone-800 border border-transparent transition-all cursor-pointer', editor.isActive('codeBlock') ? 'bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-black dark:border-stone-100' : 'text-stone-600 dark:text-stone-300']"
         title="Code Block"
       >
         <FileCode2 class="w-4 h-4" />

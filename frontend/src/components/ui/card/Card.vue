@@ -9,7 +9,7 @@ const props = defineProps<Props>()
 </script>
 
 <template>
-  <div :class="cn('bg-white border-2 border-black shadow-brutal', props.class)">
+  <div :class="cn('bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-2 border-black dark:border-stone-100 shadow-brutal transition-colors', props.class)">
     <slot />
   </div>
 </template>

@@ -47,7 +47,7 @@ onMounted(() => {
       
       <!-- CTA/Header for Community -->
       <div class="mb-6 text-center flex flex-col items-center justify-center">
-         <h2 class="text-2xl md:text-4xl font-heading font-black uppercase text-stone-900 drop-shadow-[1px_1px_0_rgba(255,255,255,1)]">
+         <h2 class="text-2xl md:text-4xl font-heading font-black uppercase text-foreground">
            <span class="text-brand-red">Diskusi</span> Komunitas
          </h2>
          <p class="font-mono font-bold text-stone-900 mt-2 text-xs md:text-sm bg-yellow-400 border-2 border-black inline-block px-3 py-1 rotate-1 shadow-[2px_2px_0_rgba(28,25,23,1)]">Tanggapi panel diskusi publik sekarang.</p>

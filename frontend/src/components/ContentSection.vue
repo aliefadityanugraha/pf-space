@@ -15,11 +15,11 @@ const colorClasses = {
     <!-- Header -->
     <div class="flex items-start gap-3 mb-4 md:mb-6">
       <div class="w-1.5 h-6 md:h-8 rounded-sm mt-0.5 md:mt-1" :class="colorClasses[color] || colorClasses.red"></div>
-      <h2 class="text-lg md:text-3xl font-display font-semibold text-stone-800">{{ title }}</h2>
+      <h2 class="text-lg md:text-3xl font-display font-semibold text-stone-800 dark:text-stone-100">{{ title }}</h2>
     </div>
     
     <!-- Content Slot -->
-    <div class="text-sm md:text-base text-justify font-body text-stone-700 leading-normal md:leading-8">
+    <div class="text-sm md:text-base text-justify font-body text-stone-700 dark:text-stone-300 leading-normal md:leading-8">
       <slot />
     </div>
   </div>

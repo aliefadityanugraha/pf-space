@@ -317,42 +317,42 @@ onUnmounted(() => {
 
   <form @submit.prevent="handleSubmit" class="space-y-8">
     <!-- Basic Info -->
-    <Card>
+    <Card class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal">
       <CardContent class="p-6 space-y-4">
-        <h2 class="text-xl font-bold flex items-center gap-2 mb-4">
-          <Film class="w-5 h-5" /> Informasi Dasar
+        <h2 class="text-xl font-bold flex items-center gap-2 mb-4 text-stone-900 dark:text-stone-100">
+          <Film class="w-5 h-5 text-brand-teal" /> Informasi Dasar
         </h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold mb-2">Judul Karya *</label>
-            <Input v-model="form.judul" placeholder="Masukkan judul karya" />
+            <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">Judul Karya *</label>
+            <Input v-model="form.judul" placeholder="Masukkan judul karya" class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs" />
           </div>
 
           <div>
-            <label class="block text-sm font-bold mb-2">Kategori *</label>
+            <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">Kategori *</label>
             <select 
               v-model="form.category_id"
-              class="w-full h-10 px-3 border-2 border-black bg-white text-sm"
+              class="w-full h-10 px-3 border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 text-sm shadow-brutal-xs focus:outline-none"
             >
-              <option value="">Pilih kategori</option>
-              <option v-for="cat in categories" :key="cat.category_id" :value="cat.category_id">
+              <option value="" class="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">Pilih kategori</option>
+              <option v-for="cat in categories" :key="cat.category_id" :value="cat.category_id" class="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
                 {{ cat.nama_kategori }}
               </option>
             </select>
           </div>
 
           <div>
-            <label class="block text-sm font-bold mb-2">Tahun Karya</label>
-            <Input v-model="form.tahun_karya" type="number" min="1900" :max="new Date().getFullYear()" />
+            <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">Tahun Karya</label>
+            <Input v-model="form.tahun_karya" type="number" min="1900" :max="new Date().getFullYear()" class="border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs" />
           </div>
 
           <div class="md:col-span-2">
             <div class="flex items-center justify-between mb-2">
-              <label class="block text-sm font-bold">Sinopsis *</label>
+              <label class="block text-sm font-bold text-stone-900 dark:text-stone-100">Sinopsis *</label>
               <span 
                 class="text-xs font-mono font-bold"
-                :class="(form.sinopsis || '').length > 1000 ? 'text-red-500' : 'text-stone-500'"
+                :class="(form.sinopsis || '').length > 1000 ? 'text-red-500' : 'text-stone-500 dark:text-stone-400'"
               >
                 {{ (form.sinopsis || '').length }}/1000
               </span>
@@ -362,7 +362,7 @@ onUnmounted(() => {
               rows="4"
               maxlength="1000"
               placeholder="Ceritakan sinopsis karya..."
-              class="w-full p-3 border-2 border-black bg-white text-sm resize-none focus:outline-none focus:border-brand-teal transition-colors"
+              class="w-full p-3 border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 text-sm shadow-brutal-xs resize-none focus:outline-none focus:border-brand-teal transition-colors"
             ></textarea>
           </div>
         </div>
@@ -370,19 +370,19 @@ onUnmounted(() => {
     </Card>
 
     <!-- Links -->
-    <Card>
+    <Card class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal">
       <CardContent class="p-6 space-y-4">
-        <h2 class="text-xl font-bold flex items-center gap-2 mb-4">
-          <Upload class="w-5 h-5" /> Link Video
+        <h2 class="text-xl font-bold flex items-center gap-2 mb-4 text-stone-900 dark:text-stone-100">
+          <Upload class="w-5 h-5 text-brand-orange" /> Link Video
         </h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-bold mb-2">Video Utama (MP4/WebM)</label>
+            <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">Video Utama (MP4/WebM)</label>
             <div class="space-y-3">
-               <div v-if="form.link_video_utama" class="relative w-full bg-stone-100 border border-stone-300 rounded p-3 flex items-center gap-2">
-                  <Film class="w-5 h-5 text-stone-500 shrink-0" />
-                  <span class="text-xs text-stone-600 truncate flex-1">{{ form.link_video_utama.split('/').pop() }}</span>
+               <div v-if="form.link_video_utama" class="relative w-full bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded p-3 flex items-center gap-2">
+                  <Film class="w-5 h-5 text-brand-teal shrink-0" />
+                  <span class="text-xs text-stone-700 dark:text-stone-200 truncate flex-1 font-medium">{{ form.link_video_utama.split('/').pop() }}</span>
                    <button 
                     type="button" 
                     @click="form.link_video_utama = ''"
@@ -395,12 +395,12 @@ onUnmounted(() => {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  class="w-full border-2 border-dashed border-stone-400 h-20 flex flex-col gap-1 hover:border-brand-teal hover:bg-teal-50"
+                  class="w-full border-2 border-dashed border-stone-400 dark:border-stone-600 bg-stone-50 dark:bg-stone-800/80 text-stone-900 dark:text-stone-100 h-20 flex flex-col gap-1 hover:border-brand-teal hover:bg-teal-50 dark:hover:bg-stone-700/50 cursor-pointer"
                   @click="$refs.videoUtamaInput.click()"
                   :disabled="uploading"
                 >
-                  <Upload class="w-6 h-6 text-stone-400" />
-                  <span class="text-xs font-bold uppercase text-stone-500">Pilih File Video</span>
+                  <Upload class="w-6 h-6 text-stone-400 dark:text-stone-500" />
+                  <span class="text-xs font-bold uppercase text-stone-600 dark:text-stone-300">Pilih File Video</span>
                 </Button>
                 <input 
                   type="file" 
@@ -410,16 +410,16 @@ onUnmounted(() => {
                   class="hidden"
                 />
                </div>
-               <p class="text-xs text-stone-500 italic">Format: MP4 Max 2GB.</p>
+               <p class="text-xs text-stone-500 dark:text-stone-400 italic">Format: MP4 Max 2GB.</p>
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-bold mb-2">Video Trailer (MP4/WebM)</label>
+            <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">Video Trailer (MP4/WebM)</label>
             <div class="space-y-3">
-               <div v-if="form.link_trailer" class="relative w-full bg-stone-100 border border-stone-300 rounded p-3 flex items-center gap-2">
-                  <Film class="w-5 h-5 text-stone-500 shrink-0" />
-                  <span class="text-xs text-stone-600 truncate flex-1">{{ form.link_trailer.split('/').pop() }}</span>
+               <div v-if="form.link_trailer" class="relative w-full bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded p-3 flex items-center gap-2">
+                  <Film class="w-5 h-5 text-brand-teal shrink-0" />
+                  <span class="text-xs text-stone-700 dark:text-stone-200 truncate flex-1 font-medium">{{ form.link_trailer.split('/').pop() }}</span>
                    <button 
                     type="button" 
                     @click="form.link_trailer = ''"
@@ -432,12 +432,12 @@ onUnmounted(() => {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  class="w-full border-2 border-dashed border-stone-400 h-20 flex flex-col gap-1 hover:border-brand-teal hover:bg-teal-50"
+                  class="w-full border-2 border-dashed border-stone-400 dark:border-stone-600 bg-stone-50 dark:bg-stone-800/80 text-stone-900 dark:text-stone-100 h-20 flex flex-col gap-1 hover:border-brand-teal hover:bg-teal-50 dark:hover:bg-stone-700/50 cursor-pointer"
                   @click="$refs.trailerInput.click()"
                   :disabled="uploading"
                 >
-                  <Upload class="w-6 h-6 text-stone-400" />
-                  <span class="text-xs font-bold uppercase text-stone-500">Pilih File Trailer</span>
+                  <Upload class="w-6 h-6 text-stone-400 dark:text-stone-500" />
+                  <span class="text-xs font-bold uppercase text-stone-600 dark:text-stone-300">Pilih File Trailer</span>
                 </Button>
                 <input 
                   type="file" 
@@ -447,16 +447,16 @@ onUnmounted(() => {
                   class="hidden"
                 />
                </div>
-               <p class="text-xs text-stone-500 italic">Format: MP4, WebM. Max 2GB.</p>
+               <p class="text-xs text-stone-500 dark:text-stone-400 italic">Format: MP4, WebM. Max 2GB.</p>
             </div>
           </div>
             
             <div>
-              <label class="block text-sm font-bold mb-2">Video BTS (MP4/WebM) - Opsional</label>
+              <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">Video BTS (MP4/WebM) - Opsional</label>
               <div class="space-y-3">
-                 <div v-if="form.link_bts" class="relative w-full bg-stone-100 border border-stone-300 rounded p-3 flex items-center gap-2">
-                    <Film class="w-5 h-5 text-stone-500 shrink-0" />
-                    <span class="text-xs text-stone-600 truncate flex-1">{{ form.link_bts.split('/').pop() }}</span>
+                 <div v-if="form.link_bts" class="relative w-full bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded p-3 flex items-center gap-2">
+                    <Film class="w-5 h-5 text-brand-teal shrink-0" />
+                    <span class="text-xs text-stone-700 dark:text-stone-200 truncate flex-1 font-medium">{{ form.link_bts.split('/').pop() }}</span>
                      <button 
                       type="button" 
                       @click="form.link_bts = ''"
@@ -469,12 +469,12 @@ onUnmounted(() => {
                   <Button 
                     type="button" 
                     variant="outline" 
-                    class="w-full border-2 border-dashed border-stone-400 h-20 flex flex-col gap-1 hover:border-brand-teal hover:bg-teal-50"
+                    class="w-full border-2 border-dashed border-stone-400 dark:border-stone-600 bg-stone-50 dark:bg-stone-800/80 text-stone-900 dark:text-stone-100 h-20 flex flex-col gap-1 hover:border-brand-teal hover:bg-teal-50 dark:hover:bg-stone-700/50 cursor-pointer"
                     @click="$refs.btsInput.click()"
                     :disabled="uploading"
                   >
-                    <Upload class="w-6 h-6 text-stone-400" />
-                    <span class="text-xs font-bold uppercase text-stone-500">Pilih File BTS</span>
+                    <Upload class="w-6 h-6 text-stone-400 dark:text-stone-500" />
+                    <span class="text-xs font-bold uppercase text-stone-600 dark:text-stone-300">Pilih File BTS</span>
                   </Button>
                   <input 
                     type="file" 
@@ -484,7 +484,7 @@ onUnmounted(() => {
                     class="hidden"
                   />
                  </div>
-                 <p class="text-xs text-stone-500 italic">Format: MP4, WebM. Max 2GB.</p>
+                 <p class="text-xs text-stone-500 dark:text-stone-400 italic">Format: MP4, WebM. Max 2GB.</p>
               </div>
             </div>
         </div>
@@ -492,20 +492,20 @@ onUnmounted(() => {
     </Card>
 
     <!-- Visual Assets -->
-    <Card>
+    <Card class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal">
       <CardContent class="p-6 space-y-4">
-        <h2 class="text-xl font-bold mb-4">Visual & Dokumen</h2>
+        <h2 class="text-xl font-bold mb-4 text-stone-900 dark:text-stone-100">Visual & Dokumen</h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-bold mb-2">Gambar Poster</label>
+            <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">Gambar Poster</label>
             <div class="space-y-3">
-              <div v-if="form.gambar_poster" class="relative w-40 h-60 bg-stone-100 border border-stone-300 rounded overflow-hidden">
+              <div v-if="form.gambar_poster" class="relative w-40 h-60 bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded overflow-hidden">
                 <img :src="assetUrl(form.gambar_poster)" class="w-full h-full object-cover" />
                 <button 
                   type="button" 
                   @click="form.gambar_poster = ''"
-                  class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md"
+                  class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md cursor-pointer"
                 >
                   <X class="w-4 h-4" />
                 </button>
@@ -516,7 +516,7 @@ onUnmounted(() => {
                   type="file" 
                   accept="image/*"
                   @change="(e) => handleFileUpload(e, 'gambar_poster')"
-                  class="block w-full text-sm text-stone-500
+                  class="block w-full text-sm text-stone-500 dark:text-stone-400
                     file:mr-4 file:py-2 file:px-4
                     file:border-0 file:text-sm file:font-semibold
                     file:bg-brand-teal file:text-white
@@ -526,18 +526,18 @@ onUnmounted(() => {
                 />
                 <Loader2 v-if="uploading" class="w-5 h-5 animate-spin text-stone-400" />
               </div>
-              <p class="text-xs text-stone-500">Format: JPG, PNG. Max 10MB.</p>
+              <p class="text-xs text-stone-500 dark:text-stone-400">Format: JPG, PNG. Max 10MB.</p>
             </div>
 
             <div class="mt-6">
-              <label class="block text-sm font-bold mb-2">Gambar Banner (Opsional)</label>
+              <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">Gambar Banner (Opsional)</label>
               <div class="space-y-3">
-                <div v-if="form.banner_url" class="relative w-full h-32 bg-stone-100 border border-stone-300 rounded overflow-hidden">
+                <div v-if="form.banner_url" class="relative w-full h-32 bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded overflow-hidden">
                   <img :src="assetUrl(form.banner_url)" class="w-full h-full object-cover" />
                   <button 
                     type="button" 
                     @click="form.banner_url = ''"
-                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md"
+                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md cursor-pointer"
                   >
                     <X class="w-4 h-4" />
                   </button>
@@ -548,7 +548,7 @@ onUnmounted(() => {
                     type="file" 
                     accept="image/*"
                     @change="(e) => handleFileUpload(e, 'banner_url')"
-                    class="block w-full text-sm text-stone-500
+                    class="block w-full text-sm text-stone-500 dark:text-stone-400
                       file:mr-4 file:py-2 file:px-4
                       file:border-0 file:text-sm file:font-semibold
                       file:bg-brand-teal file:text-white
@@ -557,7 +557,7 @@ onUnmounted(() => {
                     :disabled="uploading"
                   />
                 </div>
-                <p class="text-xs text-stone-500">
+                <p class="text-xs text-stone-500 dark:text-stone-400">
                   Format: JPG, PNG. Rekomendasi: 1920x1080px (Landscape) untuk Carousel.
                 </p>
               </div>
@@ -566,74 +566,74 @@ onUnmounted(() => {
 
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-bold mb-2">File Naskah (PDF)</label>
+              <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">File Naskah (PDF)</label>
               <div class="flex items-center gap-2">
                 <input 
                   type="file" 
                   accept=".pdf"
                   @change="(e) => handleFileUpload(e, 'file_naskah')"
-                  class="block w-full text-sm text-stone-500
+                  class="block w-full text-sm text-stone-500 dark:text-stone-400
                     file:mr-4 file:py-2 file:px-4
                     file:border-0 file:text-sm file:font-semibold
-                    file:bg-stone-800 file:text-white
-                    hover:file:bg-stone-700
+                    file:bg-stone-800 dark:file:bg-stone-700 file:text-white
+                    hover:file:bg-stone-700 dark:hover:file:bg-stone-600
                     cursor-pointer"
                   :disabled="uploading"
                 />
                 <CheckCircle v-if="form.file_naskah" class="w-5 h-5 text-green-500" />
               </div>
-              <p v-if="form.file_naskah" class="text-xs text-green-600 mt-1 truncate">
+              <p v-if="form.file_naskah" class="text-xs text-green-600 dark:text-green-400 mt-1 truncate">
                 File terupload: {{ form.file_naskah.split('/').pop() }}
               </p>
             </div>
 
             <div>
-              <label class="block text-sm font-bold mb-2">File Storyboard (PDF)</label>
+              <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">File Storyboard (PDF)</label>
               <div class="flex items-center gap-2">
                 <input 
                   type="file" 
                   accept=".pdf"
                   @change="(e) => handleFileUpload(e, 'file_storyboard')"
-                  class="block w-full text-sm text-stone-500
+                  class="block w-full text-sm text-stone-500 dark:text-stone-400
                     file:mr-4 file:py-2 file:px-4
                     file:border-0 file:text-sm file:font-semibold
-                    file:bg-stone-800 file:text-white
-                    hover:file:bg-stone-700
+                    file:bg-stone-800 dark:file:bg-stone-700 file:text-white
+                    hover:file:bg-stone-700 dark:hover:file:bg-stone-600
                     cursor-pointer"
                   :disabled="uploading"
                 />
                 <CheckCircle v-if="form.file_storyboard" class="w-5 h-5 text-green-500" />
               </div>
-              <p v-if="form.file_storyboard" class="text-xs text-green-600 mt-1 truncate">
+              <p v-if="form.file_storyboard" class="text-xs text-green-600 dark:text-green-400 mt-1 truncate">
                 File terupload: {{ form.file_storyboard.split('/').pop() }}
               </p>
             </div>
 
             <div>
-              <label class="block text-sm font-bold mb-2">File RAB (PDF)</label>
+              <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">File RAB (PDF)</label>
               <div class="flex items-center gap-2">
                 <input 
                   type="file" 
                   accept=".pdf"
                   @change="(e) => handleFileUpload(e, 'file_rab')"
-                  class="block w-full text-sm text-stone-500
+                  class="block w-full text-sm text-stone-500 dark:text-stone-400
                     file:mr-4 file:py-2 file:px-4
                     file:border-0 file:text-sm file:font-semibold
-                    file:bg-stone-800 file:text-white
-                    hover:file:bg-stone-700
+                    file:bg-stone-800 dark:file:bg-stone-700 file:text-white
+                    hover:file:bg-stone-700 dark:hover:file:bg-stone-600
                     cursor-pointer"
                   :disabled="uploading"
                 />
                 <CheckCircle v-if="form.file_rab" class="w-5 h-5 text-green-500" />
               </div>
-              <p v-if="form.file_rab" class="text-xs text-green-600 mt-1 truncate">
+              <p v-if="form.file_rab" class="text-xs text-green-600 dark:text-green-400 mt-1 truncate">
                 File terupload: {{ form.file_rab.split('/').pop() }}
               </p>
             </div>
           </div>
 
           <div class="md:col-span-2 mt-4">
-            <label class="block text-sm font-bold mb-2">Informasi Tambahan (Backstory, Director Statement, dll)</label>
+            <label class="block text-sm font-bold mb-2 text-stone-900 dark:text-stone-100">Informasi Tambahan (Backstory, Director Statement, dll)</label>
             <RichTextEditor 
               v-model="form.deskripsi_lengkap"
               placeholder="Ceritakan sejarah pembuatan karya, statement sutradara, atau info menarik lainnya..."
@@ -644,28 +644,28 @@ onUnmounted(() => {
     </Card>
 
     <!-- Crew -->
-    <Card>
+    <Card class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal">
       <CardContent class="p-6">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold">Crew & Kontributor</h2>
-          <Button type="button" variant="outline" size="sm" @click="addCrew" class="gap-1">
+          <h2 class="text-xl font-bold text-stone-900 dark:text-stone-100">Crew & Kontributor</h2>
+          <Button type="button" variant="outline" size="sm" @click="addCrew" class="gap-1 border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs hover:shadow-none cursor-pointer">
             <Plus class="w-4 h-4" /> Tambah Jabatan
           </Button>
         </div>
 
         <div class="space-y-4">
-          <div v-for="(crew, crewIdx) in form.crew" :key="crewIdx" class="p-4 bg-stone-100 border border-stone-300">
+          <div v-for="(crew, crewIdx) in form.crew" :key="crewIdx" class="p-4 bg-stone-100 dark:bg-stone-800/80 border border-stone-300 dark:border-stone-700">
             <div class="flex items-center gap-2 mb-3">
               <Input 
                 v-model="crew.jabatan" 
                 placeholder="Jabatan (cth: Sutradara, Penulis)"
-                class="flex-1"
+                class="flex-1 border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs"
               />
               <Button 
                 type="button" 
                 variant="outline" 
                 size="sm"
-                class="text-red-600"
+                class="text-red-600 dark:text-red-400 border-2 border-black dark:border-stone-700 shadow-brutal-xs hover:shadow-none cursor-pointer"
                 @click="removeCrew(crewIdx)"
                 v-if="form.crew.length > 1"
               >
@@ -675,11 +675,11 @@ onUnmounted(() => {
 
             <div class="space-y-2 ml-4">
               <div v-for="(member, memberIdx) in crew.anggota" :key="memberIdx" class="flex items-center gap-2">
-                <span class="text-xs text-stone-500 w-4">{{ memberIdx + 1 }}.</span>
+                <span class="text-xs font-mono text-stone-500 dark:text-stone-400 w-4">{{ memberIdx + 1 }}.</span>
                 <Input 
                   v-model="crew.anggota[memberIdx]" 
                   placeholder="Nama anggota"
-                  class="flex-1"
+                  class="flex-1 border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs"
                 />
                 <Button 
                   type="button" 
@@ -687,6 +687,7 @@ onUnmounted(() => {
                   size="sm"
                   @click="removeCrewMember(crewIdx, memberIdx)"
                   v-if="crew.anggota.length > 1"
+                  class="text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer"
                 >
                   <X class="w-4 h-4" />
                 </Button>
@@ -696,7 +697,7 @@ onUnmounted(() => {
                 variant="ghost" 
                 size="sm" 
                 @click="addCrewMember(crewIdx)"
-                class="text-xs"
+                class="text-xs text-brand-teal dark:text-teal-400 font-bold hover:underline cursor-pointer"
               >
                 + Tambah Anggota
               </Button>
@@ -708,10 +709,10 @@ onUnmounted(() => {
 
     <!-- Submit -->
     <div class="flex gap-4 justify-end">
-      <Button type="button" variant="outline" @click="$emit('cancel')">
+      <Button type="button" variant="outline" @click="$emit('cancel')" class="border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs hover:shadow-none font-bold uppercase tracking-wider text-xs cursor-pointer">
         Batal
       </Button>
-      <Button type="submit" :disabled="loading || uploading" class="gap-2">
+      <Button type="submit" :disabled="loading || uploading" class="gap-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] font-bold uppercase tracking-wider text-xs cursor-pointer">
         <Loader2 v-if="loading" class="w-4 h-4 animate-spin" />
         <template v-else>
           <Save v-if="isEdit" class="w-4 h-4" />
@@ -724,33 +725,33 @@ onUnmounted(() => {
 
   <!-- Video Upload Modal -->
   <div v-if="showVideoModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="!uploading ? showVideoModal = false : null"></div>
-    <div class="relative w-full max-w-md bg-white border-2 border-black shadow-brutal animate-in fade-in zoom-in duration-200">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="!uploading ? showVideoModal = false : null"></div>
+    <div class="relative w-full max-w-md bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal animate-in fade-in zoom-in duration-200 text-stone-900 dark:text-stone-100">
       <div class="p-6">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-bold font-display uppercase tracking-tight">Upload Video</h3>
-          <button v-if="!uploading" @click="showVideoModal = false" class="text-stone-400 hover:text-black">
+          <h3 class="text-xl font-bold font-display uppercase tracking-tight text-stone-900 dark:text-stone-100">Upload Video</h3>
+          <button v-if="!uploading" @click="showVideoModal = false" class="text-stone-400 hover:text-black dark:hover:text-white cursor-pointer">
             <X class="w-5 h-5" />
           </button>
         </div>
 
         <div class="space-y-6">
-          <div class="p-4 bg-stone-100 border-2 border-stone-200 flex items-center gap-4">
-            <div class="w-12 h-12 bg-white border border-stone-300 flex items-center justify-center">
+          <div class="p-4 bg-stone-100 dark:bg-stone-800 border-2 border-stone-200 dark:border-stone-700 flex items-center gap-4">
+            <div class="w-12 h-12 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 flex items-center justify-center">
               <Film class="w-6 h-6 text-brand-teal" />
             </div>
             <div class="flex-1 min-w-0">
-               <p class="font-bold text-sm truncate">{{ selectedVideoFile?.name }}</p>
-               <p class="text-[10px] text-stone-500 font-mono uppercase">{{ (selectedVideoFile?.size / (1024 * 1024)).toFixed(2) }} MB</p>
+               <p class="font-bold text-sm truncate text-stone-900 dark:text-stone-100">{{ selectedVideoFile?.name }}</p>
+               <p class="text-[10px] text-stone-500 dark:text-stone-400 font-mono uppercase">{{ (selectedVideoFile?.size / (1024 * 1024)).toFixed(2) }} MB</p>
             </div>
           </div>
 
           <div v-if="uploading" class="space-y-2">
             <div class="flex justify-between text-xs font-bold uppercase tracking-widest">
               <span class="text-brand-teal">Mengunggah...</span>
-              <span>{{ uploadProgress }}%</span>
+              <span class="text-stone-900 dark:text-stone-100">{{ uploadProgress }}%</span>
             </div>
-            <div class="w-full h-4 bg-stone-100 border-2 border-black overflow-hidden relative">
+            <div class="w-full h-4 bg-stone-100 dark:bg-stone-800 border-2 border-black dark:border-stone-100 overflow-hidden relative">
               <div 
                 class="h-full bg-brand-teal transition-all duration-300 ease-out"
                 :style="{ width: `${uploadProgress}%` }"
@@ -758,20 +759,20 @@ onUnmounted(() => {
               <!-- Glitchy line effect -->
               <div class="absolute inset-0 bg-white/10 pointer-events-none"></div>
             </div>
-            <p class="text-[10px] text-stone-400 italic text-center">Jangan tutup halaman ini hingga proses selesai.</p>
+            <p class="text-[10px] text-stone-400 dark:text-stone-500 italic text-center">Jangan tutup halaman ini hingga proses selesai.</p>
           </div>
 
           <div class="flex gap-3 pt-2">
             <Button 
               v-if="!uploading"
               variant="outline" 
-              class="flex-1 border-2 border-black shadow-brutal-sm hover:shadow-none translate-x-[1px] translate-y-[1px] hover:translate-x-0 hover:translate-y-0"
+              class="flex-1 border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-sm hover:shadow-none cursor-pointer"
               @click="showVideoModal = false"
             >
               Batal
             </Button>
             <Button 
-              class="flex-1 bg-brand-teal text-white border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+              class="flex-1 bg-brand-teal text-white border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all cursor-pointer"
               @click="startVideoUpload"
               :disabled="uploading"
             >

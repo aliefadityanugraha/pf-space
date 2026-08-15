@@ -74,16 +74,16 @@ const isModerator = computed(() => props.comment.user?.role_id >= 3) // Assume 3
 </script>
 
 <template>
-  <div class="comment-item relative group" :class="depth > 0 ? 'mt-3 ml-6 md:ml-10' : 'mt-2 border-b-2 border-stone-50 pb-3 last:border-0 last:pb-0'">
+  <div class="comment-item relative group" :class="depth > 0 ? 'mt-3 ml-6 md:ml-10' : 'mt-2 border-b-2 border-stone-200 dark:border-stone-800 pb-3 last:border-0 last:pb-0'">
     <!-- Reply Line for nested items -->
-    <div v-if="depth > 0" class="absolute -left-6 md:-left-10 top-0 bottom-0 border-l-2 border-stone-200">
-      <div class="absolute top-5 left-0 w-4 md:w-8 border-t-2 border-stone-200"></div>
+    <div v-if="depth > 0" class="absolute -left-6 md:-left-10 top-0 bottom-0 border-l-2 border-stone-300 dark:border-stone-700">
+      <div class="absolute top-5 left-0 w-4 md:w-8 border-t-2 border-stone-300 dark:border-stone-700"></div>
     </div>
 
     <div class="flex gap-3 md:gap-4">
       <!-- Avatar -->
       <div 
-        class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-black shadow-brutal-xs flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0 overflow-hidden bg-stone-100 relative"
+        class="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-black dark:border-stone-100 shadow-brutal-xs flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0 overflow-hidden bg-stone-100 dark:bg-stone-800 relative"
       >
         <img 
           v-if="comment.user?.image && !imageError" 
@@ -106,19 +106,19 @@ const isModerator = computed(() => props.comment.user?.role_id >= 3) // Assume 3
         <!-- Header -->
         <div class="flex items-center flex-wrap gap-x-3 gap-y-1 mb-2">
           <div class="flex items-center gap-2">
-            <span class="font-display font-black text-sm md:text-base text-stone-900 capitalize tracking-tight">{{ comment.user?.name || 'Pengguna tidak dikenal' }}</span>
+            <span class="font-display font-black text-sm md:text-base text-stone-900 dark:text-stone-100 capitalize tracking-tight">{{ comment.user?.name || 'Pengguna tidak dikenal' }}</span>
             
             <!-- Badges -->
             <div v-if="isCreator" class="px-1.5 py-[3px] bg-brand-red text-white text-[8px] md:text-[9px] font-bold leading-none uppercase tracking-wider border border-black shadow-[1px_1px_0px_#000]">Kreator</div>
-            <div v-if="isModerator && !isCreator" class="px-1.5 py-[3px] bg-stone-900 text-white text-[8px] md:text-[9px] font-bold leading-none uppercase tracking-wider border border-black shadow-[1px_1px_0px_#000]">Moderator</div>
+            <div v-if="isModerator && !isCreator" class="px-1.5 py-[3px] bg-stone-900 dark:bg-stone-800 text-white text-[8px] md:text-[9px] font-bold leading-none uppercase tracking-wider border border-black dark:border-stone-100 shadow-[1px_1px_0px_#000]">Moderator</div>
           </div>
           
-          <span class="text-[10px] md:text-xs text-stone-400 font-mono font-medium">{{ formatDate(comment.created_at, true) }}</span>
+          <span class="text-[10px] md:text-xs text-stone-500 dark:text-stone-400 font-mono font-medium">{{ formatDate(comment.created_at, true) }}</span>
         </div>
 
         <!-- Body -->
         <div class="relative">
-           <p class="text-[13px] md:text-[15px] text-stone-800 leading-relaxed whitespace-pre-wrap mb-3 font-body font-medium">{{ comment.isi_pesan }}</p>
+           <p class="text-[13px] md:text-[15px] text-stone-800 dark:text-stone-200 leading-relaxed whitespace-pre-wrap mb-3 font-body font-medium">{{ comment.isi_pesan }}</p>
         </div>
 
         <!-- Actions -->
@@ -126,7 +126,7 @@ const isModerator = computed(() => props.comment.user?.role_id >= 3) // Assume 3
           <button 
             v-if="isLoggedIn && depth < maxDepth"
             @click="isReplyOpen = !isReplyOpen"
-            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-brand-teal transition-colors"
+            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-brand-teal dark:hover:text-brand-teal transition-colors"
           >
             <CornerDownRight class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
             <span>{{ isReplyOpen ? 'Batal' : 'Balas' }}</span>
@@ -136,7 +136,7 @@ const isModerator = computed(() => props.comment.user?.role_id >= 3) // Assume 3
             v-if="canDelete"
             @click="emit('delete', comment.diskusi_id)"
             :disabled="deletingCommentIds.has(comment.diskusi_id)"
-            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-brand-red transition-colors disabled:opacity-50"
+            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-brand-red dark:hover:text-brand-red transition-colors disabled:opacity-50"
           >
             <Loader2 v-if="deletingCommentIds.has(comment.diskusi_id)" class="w-3.5 h-3.5 animate-spin" />
             <Trash2 v-else class="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
@@ -146,7 +146,7 @@ const isModerator = computed(() => props.comment.user?.role_id >= 3) // Assume 3
           <button 
             v-if="isLoggedIn && comment.user_id !== currentUser?.id"
             @click="emit('report', comment)"
-            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-red-500 transition-colors"
+            class="group/btn flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
           >
             <Flag class="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
             <span>Laporkan</span>
@@ -159,18 +159,18 @@ const isModerator = computed(() => props.comment.user?.role_id >= 3) // Assume 3
           enter-from-class="opacity-0 -translate-y-2"
           enter-to-class="opacity-100 translate-y-0"
         >
-          <div v-if="isReplyOpen" class="mt-4 p-3 md:p-4 bg-white border-2 border-black shadow-brutal-xs md:shadow-brutal relative overflow-hidden">
+          <div v-if="isReplyOpen" class="mt-4 p-3 md:p-4 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal-xs md:shadow-brutal relative overflow-hidden">
             <div class="absolute top-0 left-0 w-1 md:w-1.5 h-full bg-brand-teal"></div>
             <textarea 
               v-model="replyText"
               rows="2"
               placeholder="Tulis balasan..."
-              class="w-full p-2 md:p-3 border-2 border-black bg-stone-50 text-stone-900 text-xs md:text-sm resize-none focus:bg-white focus:ring-0 focus:outline-none mb-2 font-body transition-colors placeholder:text-stone-400"
+              class="w-full p-2 md:p-3 border-2 border-black dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 text-xs md:text-sm resize-none focus:bg-white dark:focus:bg-stone-800 focus:ring-0 focus:outline-none mb-2 font-body transition-colors placeholder:text-stone-400 dark:placeholder:text-stone-500"
             ></textarea>
             <div class="flex justify-end">
               <Button 
                 size="sm" 
-                class="bg-brand-teal hover:bg-brand-teal/90 text-white rounded-none border-2 border-black shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all font-bold uppercase tracking-wider h-8 md:h-9" 
+                class="bg-brand-teal hover:bg-brand-teal/90 text-white rounded-none border-2 border-black dark:border-stone-100 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all font-bold uppercase tracking-wider h-8 md:h-9 cursor-pointer" 
                 @click="handleReplySubmit" 
                 :disabled="!replyText.trim() || isSubmittingReply"
               >

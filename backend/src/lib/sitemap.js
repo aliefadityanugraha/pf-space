@@ -18,9 +18,13 @@ export async function generateSitemap() {
   // 1. Define Static Routes
   const staticRoutes = [
     '',
-    '/about',
+    '/films',
     '/materi',
+    '/feed',
+    '/community',
+    '/festival',
     '/trending',
+    '/about',
     '/changelog',
     '/contact',
     '/privacy',

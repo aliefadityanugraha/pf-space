@@ -105,20 +105,20 @@ const displaySubtitle = computed(() => {
     </div>
 
     <!-- Content Section -->
-    <CardContent :class="cn('p-3 md:p-4', contentClass)">
+    <CardContent :class="cn('p-2.5 sm:p-3 md:p-4', contentClass)">
       <slot name="content">
-        <h3 class="font-bold text-base md:text-lg text-foreground line-clamp-1 mb-1">{{ displayTitle }}</h3>
-        <p v-if="displaySubtitle" class="text-xs md:text-sm text-muted-foreground mb-1 flex items-center gap-1 z-10 relative">
+        <h3 class="font-bold text-sm sm:text-base md:text-lg text-foreground line-clamp-1 mb-1 leading-tight">{{ displayTitle }}</h3>
+        <p v-if="displaySubtitle" class="text-[11px] sm:text-xs md:text-sm text-muted-foreground mb-1 flex items-center gap-1.5 z-10 relative min-w-0">
           <slot name="subtitle-icon"></slot>
           <router-link 
             v-if="archive?.creator?.id && displaySubtitle === archive.creator.name"
             :to="`/creator/${archive.creator.id}`"
-            class="hover:text-brand-teal hover:underline"
+            class="hover:text-brand-teal hover:underline truncate block flex-1"
             @click.stop
           >
             {{ displaySubtitle }}
           </router-link>
-          <span v-else>{{ displaySubtitle }}</span>
+          <span v-else class="truncate block flex-1">{{ displaySubtitle }}</span>
         </p>
         <slot name="extra-content"></slot>
       </slot>

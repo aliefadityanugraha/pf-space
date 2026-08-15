@@ -17,7 +17,7 @@ const router = useRouter()
     style="animation-delay: 500ms; opacity: 0; animation-fill-mode: forwards"
   >
     <h2
-      class="text-2xl font-black font-display text-stone-900 mb-6 uppercase tracking-wider flex items-center gap-2"
+      class="text-2xl font-black font-display text-stone-900 dark:text-stone-100 mb-6 uppercase tracking-wider flex items-center gap-2"
     >
       <Film class="w-6 h-6 text-brand-orange" />
       Karya Serupa
@@ -35,11 +35,11 @@ const router = useRouter()
         @click="router.push(`/archive/${related.slug}`)"
       >
         <template #content>
-          <h3 class="font-bold text-sm text-stone-900 line-clamp-1 mb-0.5">
+          <h3 class="font-bold text-xs sm:text-sm text-stone-900 dark:text-stone-100 line-clamp-1 mb-0.5 leading-tight">
             {{ related.judul }}
           </h3>
-          <p class="text-xs text-stone-500 mb-0 flex items-center gap-1">
-            {{ related.creator?.name }}
+          <p class="text-[11px] text-stone-500 dark:text-stone-400 mb-0 flex items-center gap-1 truncate">
+            <span class="truncate">{{ related.creator?.name }}</span>
           </p>
         </template>
       </ArchiveCard>

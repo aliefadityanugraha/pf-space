@@ -64,21 +64,39 @@ const resultLabel = computed(() => {
 });
 
 // ─── SEO ────────────────────────────────────────────────────────────────────
-useHead(
-  computed(() => ({
-    title: activeCategory.value
-      ? `${activeCategory.value.nama_kategori} — Arsip Karya · PF Space`
-      : "Arsip Karya — PF Space",
+useHead(() => {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const pageUrl = typeof window !== "undefined" ? window.location.href : "";
+  const logoUrl = `${origin}/logo-perfilman.png`;
+  const title = activeCategory.value
+    ? `${activeCategory.value.nama_kategori} — Arsip Karya · PF Space`
+    : "Jelajahi Arsip Karya — PF Space";
+  const description = activeCategory.value
+    ? `Jelajahi karya sinematik siswa dalam kategori ${activeCategory.value.nama_kategori} di PF Space.`
+    : "Jelajahi seluruh arsip karya sinematik siswa PF Space — platform kearsipan, apresiasi, dan pembelajaran.";
+
+  return {
+    title,
     meta: [
-      {
-        name: "description",
-        content: activeCategory.value
-          ? `Jelajahi karya sinematik siswa dalam kategori ${activeCategory.value.nama_kategori} di PF Space.`
-          : "Jelajahi seluruh arsip karya sinematik siswa PF Space — platform kearsipan, apresiasi, dan pembelajaran.",
-      },
+      { name: "description", content: description },
+
+      // Open Graph / Facebook / WhatsApp
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "PF Space" },
+      { property: "og:url", content: pageUrl },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:image", content: logoUrl },
+
+      // Twitter Cards
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:url", content: pageUrl },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: description },
+      { name: "twitter:image", content: logoUrl },
     ],
-  })),
-);
+  };
+});
 
 // ─── URL sync ────────────────────────────────────────────────────────────────
 const syncUrl = () => {
@@ -254,29 +272,29 @@ onMounted(async () => {
           <!-- Right: Stats -->
           <div class="flex gap-3 md:gap-4 md:flex-shrink-0">
             <div
-              class="bg-white border-2 border-black shadow-brutal px-5 py-4 text-center min-w-[80px]"
+              class="bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-100 shadow-brutal px-5 py-4 text-center min-w-[80px]"
             >
               <div
-                class="font-heading text-3xl md:text-4xl text-stone-900 leading-none"
+                class="font-heading text-3xl md:text-4xl text-stone-900 dark:text-stone-100 leading-none"
               >
                 {{ loadingFilms ? "—" : pagination.total }}
               </div>
               <div
-                class="text-[9px] font-black uppercase tracking-widest text-stone-500 mt-1"
+                class="text-[9px] font-black uppercase tracking-widest text-stone-500 dark:text-stone-400 mt-1"
               >
                 Karya
               </div>
             </div>
             <div
-              class="bg-white border-2 border-black shadow-brutal px-5 py-4 text-center min-w-[80px]"
+              class="bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-100 shadow-brutal px-5 py-4 text-center min-w-[80px]"
             >
               <div
-                class="font-heading text-3xl md:text-4xl text-stone-900 leading-none"
+                class="font-heading text-3xl md:text-4xl text-stone-900 dark:text-stone-100 leading-none"
               >
                 {{ loadingCategories ? "—" : categories.length }}
               </div>
               <div
-                class="text-[9px] font-black uppercase tracking-widest text-stone-500 mt-1"
+                class="text-[9px] font-black uppercase tracking-widest text-stone-500 dark:text-stone-400 mt-1"
               >
                 Kategori
               </div>
@@ -290,10 +308,10 @@ onMounted(async () => {
          FILTER BAR
          ══════════════════════════════════════════════════════════════════════ -->
     <div
-      class="sticky top-[70px] md:top-[84px] z-20 bg-background border-b-2 border-border shadow-brutal-sm transition-colors duration-300"
+      class="sticky top-[64px] md:top-[80px] z-20 bg-background border-b-2 border-border shadow-brutal-sm transition-colors duration-300 w-full"
     >
       <div
-        class="max-w-7xl mx-auto px-4 md:px-8 py-3 flex flex-col sm:flex-row gap-3 items-start sm:items-center"
+        class="max-w-7xl mx-auto px-4 md:px-8 py-3 flex flex-col sm:flex-row gap-3 items-start sm:items-center w-full min-w-0"
       >
         <!-- Search -->
         <div class="relative w-full sm:w-72 lg:w-96 flex-shrink-0">
@@ -321,7 +339,7 @@ onMounted(async () => {
         </div>
 
         <!-- Category pills — horizontal scroll on mobile -->
-        <div class="flex-1 overflow-x-auto scrollbar-none">
+        <div class="w-full sm:flex-1 overflow-x-auto min-w-0 py-1 scrollbar-none touch-pan-x overscroll-x-contain">
           <div
             class="flex gap-1.5 min-w-max pb-0.5"
             role="group"
