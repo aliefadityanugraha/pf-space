@@ -242,7 +242,7 @@ onMounted(() => {
       <template v-else-if="post">
         <!-- Hero cover -->
         <div
-          class="relative aspect-[16/9] w-full overflow-hidden border-2 border-black shadow-brutal-md bg-stone-200"
+          class="relative aspect-[16/9] w-full overflow-hidden border-2 border-stone-900 dark:border-stone-100 shadow-brutal-md bg-stone-200 dark:bg-stone-800"
         >
           <LazyImage
             :src="coverSrc"
@@ -261,7 +261,7 @@ onMounted(() => {
           </LazyImage>
           <div
             v-if="post.isPinned"
-            class="absolute top-3 left-3 z-10 -rotate-2 bg-brand-red text-white border-2 border-black shadow-brutal-xs px-3 py-1 flex items-center gap-1.5"
+            class="absolute top-3 left-3 z-10 -rotate-2 bg-brand-red text-white border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs px-3 py-1 flex items-center gap-1.5"
           >
             <Pin class="w-3.5 h-3.5" />
             <span class="font-heading text-[11px] tracking-widest uppercase"
@@ -276,21 +276,21 @@ onMounted(() => {
             <Badge
               v-if="post.category"
               variant="secondary"
-              class="uppercase tracking-wide"
+              class="uppercase tracking-wide font-bold"
             >
               {{ post.category.namaKategori }}
             </Badge>
             <Badge
               v-if="tipeLabel"
               variant="outline"
-              class="text-[10px] uppercase tracking-wide"
+              class="text-[10px] uppercase tracking-wide dark:border-stone-700 dark:text-stone-300"
             >
               {{ tipeLabel }}
             </Badge>
             <router-link
               v-if="post.filmId"
               to="/archive"
-              class="inline-flex items-center gap-1.5 bg-white text-stone-900 border-2 border-black shadow-brutal-xs px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+              class="inline-flex items-center gap-1.5 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
             >
               <Film class="w-3.5 h-3.5 text-brand-teal" />
               Terkait Film
@@ -305,13 +305,13 @@ onMounted(() => {
 
           <!-- Byline -->
           <div
-            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 md:mt-8 border-y-2 border-black/10 dark:border-stone-800 py-4"
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 md:mt-8 border-y-2 border-stone-200 dark:border-stone-800 py-4"
           >
             <div class="flex items-center gap-3 text-left">
               <router-link
                 v-if="post.creator?.id"
                 :to="`/p/${post.creator.id}`"
-                class="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-black shadow-brutal-xs overflow-hidden bg-brand-orange flex items-center justify-center flex-shrink-0"
+                class="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs overflow-hidden bg-brand-orange flex items-center justify-center flex-shrink-0"
               >
                 <img
                   v-if="post.creator.image"
@@ -359,14 +359,14 @@ onMounted(() => {
             >
               <router-link
                 :to="`/feed/${post.postId}/edit`"
-                class="inline-flex items-center gap-1.5 border-2 border-black bg-brand-teal text-white font-body text-xs font-bold uppercase tracking-wide px-3 py-1.5 shadow-brutal-xs hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
+                class="inline-flex items-center gap-1.5 border-2 border-stone-900 dark:border-stone-100 bg-brand-teal text-white font-body text-xs font-bold uppercase tracking-wide px-3 py-1.5 shadow-brutal-xs hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
               >
                 <PenLine class="w-3.5 h-3.5" />
                 Edit
               </router-link>
               <button
                 type="button"
-                class="inline-flex items-center gap-1.5 border-2 border-black bg-brand-red text-white font-body text-xs font-bold uppercase tracking-wide px-3 py-1.5 shadow-brutal-xs hover:bg-red-700 hover:translate-x-[1px] hover:translate-y-[1px] transition-all cursor-pointer"
+                class="inline-flex items-center gap-1.5 border-2 border-stone-900 dark:border-stone-100 bg-brand-red text-white font-body text-xs font-bold uppercase tracking-wide px-3 py-1.5 shadow-brutal-xs hover:bg-red-700 hover:translate-x-[1px] hover:translate-y-[1px] transition-all cursor-pointer"
                 @click="showDeleteConfirm = true"
               >
                 <Trash2 class="w-3.5 h-3.5" />
@@ -401,7 +401,7 @@ onMounted(() => {
             v-for="tag in post.tags"
             :key="tag"
             :to="`/feed?search=${encodeURIComponent(tag)}`"
-            class="px-2.5 py-1 text-[11px] font-body font-bold text-brand-teal bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal-xs hover:bg-brand-teal hover:text-white transition-colors"
+            class="px-2.5 py-1 text-[11px] font-body font-bold text-brand-teal bg-white dark:bg-stone-900 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs hover:bg-brand-teal hover:text-white transition-colors"
           >
             #{{ tag }}
           </router-link>
@@ -415,7 +415,7 @@ onMounted(() => {
           >
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 border-2 border-black bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:bg-brand-teal hover:text-white transition-all cursor-pointer"
+            class="inline-flex items-center gap-1.5 border-2 border-stone-900 dark:border-stone-100 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:bg-brand-teal hover:text-white transition-all cursor-pointer"
             @click="handleShare"
           >
             <Link2 class="w-3.5 h-3.5" />
@@ -423,7 +423,7 @@ onMounted(() => {
           </button>
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 border-2 border-black bg-[#25D366] text-white shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:brightness-95 transition-all cursor-pointer"
+            class="inline-flex items-center gap-1.5 border-2 border-stone-900 dark:border-stone-100 bg-[#25D366] text-white shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:brightness-95 transition-all cursor-pointer"
             title="Bagikan ke WhatsApp"
             aria-label="Bagikan ke WhatsApp"
             @click="shareTo('whatsapp')"
@@ -433,7 +433,7 @@ onMounted(() => {
           </button>
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 border-2 border-black bg-stone-900 dark:bg-stone-800 text-white shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:bg-stone-700 transition-all cursor-pointer"
+            class="inline-flex items-center gap-1.5 border-2 border-stone-900 dark:border-stone-100 bg-stone-900 dark:bg-stone-800 text-white shadow-brutal-xs px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:bg-stone-700 transition-all cursor-pointer"
             title="Bagikan ke Twitter / X"
             aria-label="Bagikan ke Twitter / X"
             @click="shareTo('twitter')"
@@ -453,7 +453,7 @@ onMounted(() => {
 
         <!-- Divider -->
         <div
-          class="max-w-3xl mx-auto mt-12 md:mt-16 border-t-2 border-black/10"
+          class="max-w-3xl mx-auto mt-12 md:mt-16 border-t-2 border-stone-200 dark:border-stone-800"
         ></div>
 
         <!-- Comments -->
@@ -484,20 +484,20 @@ onMounted(() => {
         @click="showDeleteConfirm = false"
       ></div>
       <div
-        class="relative w-full max-w-md bg-white border-2 border-black shadow-brutal animate-in fade-in zoom-in duration-200"
+        class="relative w-full max-w-md bg-white dark:bg-stone-900 border-2 border-stone-900 dark:border-stone-100 shadow-brutal animate-in fade-in zoom-in duration-200 text-stone-900 dark:text-stone-100"
       >
         <div class="p-6">
           <div class="flex items-start gap-3 mb-4">
             <div
-              class="w-11 h-11 shrink-0 bg-red-100 border-2 border-black flex items-center justify-center"
+              class="w-11 h-11 shrink-0 bg-red-100 dark:bg-rose-950 border-2 border-stone-900 dark:border-stone-100 flex items-center justify-center"
             >
-              <Trash2 class="w-6 h-6 text-brand-red" />
+              <Trash2 class="w-6 h-6 text-brand-red dark:text-rose-400" />
             </div>
             <div>
-              <h3 class="font-display text-xl font-bold mb-1 text-stone-900">
+              <h3 class="font-display text-xl font-bold mb-1 text-stone-900 dark:text-stone-100">
                 Hapus Postingan
               </h3>
-              <p class="text-sm text-stone-600">
+              <p class="text-sm text-stone-600 dark:text-stone-300">
                 Apakah Anda yakin ingin menghapus postingan
                 <strong>"{{ post?.judul }}"</strong>? Tindakan ini tidak dapat
                 dibatalkan.
@@ -509,7 +509,7 @@ onMounted(() => {
             <Button
               type="button"
               variant="outline"
-              class="flex-1 border-2 border-black"
+              class="flex-1 border-2 border-stone-900 dark:border-stone-100 font-bold"
               @click="showDeleteConfirm = false"
               :disabled="isDeleting"
             >
@@ -517,7 +517,7 @@ onMounted(() => {
             </Button>
             <Button
               type="button"
-              class="flex-1 bg-brand-red text-white border-2 border-black shadow-brutal hover:bg-red-700"
+              class="flex-1 bg-brand-red text-white border-2 border-stone-900 dark:border-stone-100 shadow-brutal hover:bg-red-700 font-bold"
               @click="handleDelete"
               :disabled="isDeleting"
             >
@@ -541,6 +541,11 @@ onMounted(() => {
   font-weight: 400;
 }
 
+:deep(.dark .feed-prose),
+.dark .feed-prose {
+  color: #e7e5e4 !important;
+}
+
 .feed-prose :deep(p) {
   margin: 0 0 1.5rem;
 }
@@ -555,6 +560,13 @@ onMounted(() => {
   line-height: 1.3;
   margin: 2.25rem 0 1rem;
   letter-spacing: -0.01em;
+}
+
+:deep(.dark .feed-prose h1),
+:deep(.dark .feed-prose h2),
+:deep(.dark .feed-prose h3),
+:deep(.dark .feed-prose h4) {
+  color: #f5f5f4 !important;
 }
 
 .feed-prose :deep(h1) {
@@ -598,9 +610,17 @@ onMounted(() => {
   text-underline-offset: 3px;
 }
 
+:deep(.dark .feed-prose a) {
+  color: #fdba74 !important;
+}
+
 .feed-prose :deep(strong) {
   color: var(--color-stone-900, #1c1917);
   font-weight: 700;
+}
+
+:deep(.dark .feed-prose strong) {
+  color: #f5f5f4 !important;
 }
 
 .feed-prose :deep(em) {
@@ -615,12 +635,20 @@ onMounted(() => {
   color: var(--color-stone-600, #57534e);
 }
 
+:deep(.dark .feed-prose blockquote) {
+  color: #a8a29e !important;
+}
+
 .feed-prose :deep(img) {
   max-width: 100%;
   height: auto;
   border: 2px solid var(--color-stone-900, #1c1917);
   box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 1);
   margin: 1.5rem 0;
+}
+
+:deep(.dark .feed-prose img) {
+  border-color: #57534e !important;
 }
 
 .feed-prose :deep(figure) {
@@ -649,6 +677,11 @@ onMounted(() => {
   font-size: 0.875em;
   background: var(--color-stone-100, #f5f5f4);
   padding: 0.15em 0.35em;
+}
+
+:deep(.dark .feed-prose code) {
+  background: #292524 !important;
+  color: #fdba74 !important;
 }
 
 .feed-prose :deep(pre code) {

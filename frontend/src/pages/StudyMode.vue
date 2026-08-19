@@ -491,24 +491,24 @@ useHead({
 
 <template>
   <div
-    class="h-screen flex flex-col lg:flex-row bg-stone-950 text-white overflow-hidden"
+    class="h-screen flex flex-col lg:flex-row bg-stone-950 text-stone-100 overflow-hidden font-sans"
   >
     <!-- 1. MOBILE HEADER -->
     <header
-      class="lg:hidden h-14 bg-stone-900 border-b border-white/10 flex items-center justify-between px-4 shrink-0 z-50"
+      class="lg:hidden h-14 bg-stone-900 border-b border-stone-800 flex items-center justify-between px-4 shrink-0 z-50"
     >
       <button
         @click="goBack"
-        class="p-2 hover:bg-white/5 rounded-full transition-colors"
+        class="p-2 hover:bg-stone-800 rounded-full transition-colors text-stone-300 hover:text-white"
       >
         <ArrowLeft class="w-5 h-5" />
       </button>
-      <h1 class="text-sm font-bold truncate max-w-[200px]">
+      <h1 class="text-sm font-bold truncate max-w-[200px] text-stone-100">
         {{ film?.judul || "Mode Studi" }}
       </h1>
       <button
         @click="showSidebar = !showSidebar"
-        class="p-2 hover:bg-white/5 rounded-full transition-colors text-brand-teal"
+        class="p-2 hover:bg-stone-800 rounded-full transition-colors text-brand-teal"
       >
         <Menu v-if="!showSidebar" class="w-6 h-6" />
         <X v-else class="w-6 h-6" />
@@ -518,34 +518,34 @@ useHead({
     <!-- 2. SIDEBAR NAVIGATION -->
     <aside
       :class="[
-        'fixed inset-y-0 left-0 w-72 bg-stone-900 border-r border-white/10 flex flex-col shrink-0 z-40 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0',
+        'fixed inset-y-0 left-0 w-72 bg-stone-900 border-r border-stone-800 flex flex-col shrink-0 z-40 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0',
         showSidebar ? 'translate-x-0' : '-translate-x-full',
       ]"
     >
       <div
         v-if="showSidebar"
         @click="showSidebar = false"
-        class="lg:hidden fixed inset-0 bg-black/60 z-[-1]"
+        class="lg:hidden fixed inset-0 bg-black/75 backdrop-blur-xs z-[-1]"
       ></div>
 
-      <div class="hidden lg:block p-6 border-b border-white/10">
+      <div class="hidden lg:block p-6 border-b border-stone-800">
         <button
           @click="goBack"
-          class="flex items-center text-sm text-white/50 hover:text-white transition-colors mb-6 group"
+          class="flex items-center text-xs font-bold uppercase tracking-wider text-stone-400 hover:text-white transition-colors mb-6 group cursor-pointer"
         >
           <ArrowLeft
             class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1"
           />
-          Kembali
+          Kembali ke Detail
         </button>
         <div v-if="film">
           <h1
-            class="font-display font-medium text-lg text-white leading-tight mb-2"
+            class="font-display font-bold text-lg text-stone-100 leading-tight mb-2 uppercase tracking-wide"
           >
             {{ film.judul }}
           </h1>
           <span
-            class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-brand-teal/10 text-brand-teal border border-brand-teal/20 uppercase tracking-widest"
+            class="inline-flex items-center px-2.5 py-1 rounded text-[10px] font-bold bg-brand-teal/20 text-brand-teal border border-brand-teal/40 uppercase tracking-widest"
             >Mode Studi</span
           >
         </div>
@@ -554,7 +554,7 @@ useHead({
       <nav class="flex-1 p-4 space-y-6 overflow-y-auto mt-14 lg:mt-0">
         <div>
           <div
-            class="text-[10px] font-black text-stone-500 uppercase tracking-[0.2em] px-3 mb-4"
+            class="text-[10px] font-black text-stone-500 uppercase tracking-[0.2em] px-3 mb-3"
           >
             Aset Produksi
           </div>
@@ -562,11 +562,11 @@ useHead({
             <button
               v-if="film?.file_naskah"
               @click="selectTab('naskah')"
-              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2"
+              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 border-2 cursor-pointer"
               :class="
                 activeTab === 'naskah'
-                  ? 'bg-brand-teal border-black shadow-[4px_4px_0px_#000] text-white -translate-y-0.5'
-                  : 'bg-stone-800/40 border-transparent text-stone-400 hover:bg-stone-800'
+                  ? 'bg-brand-teal border-stone-900 dark:border-stone-100 text-white shadow-brutal-xs -translate-y-0.5'
+                  : 'bg-stone-850/60 border-transparent text-stone-400 hover:bg-stone-800 hover:text-stone-200'
               "
             >
               <FileText class="w-4 h-4" />
@@ -575,11 +575,11 @@ useHead({
             <button
               v-if="film?.file_storyboard"
               @click="selectTab('storyboard')"
-              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2"
+              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 border-2 cursor-pointer"
               :class="
                 activeTab === 'storyboard'
-                  ? 'bg-brand-teal border-black shadow-[4px_4px_0px_#000] text-white -translate-y-0.5'
-                  : 'bg-stone-800/40 border-transparent text-stone-400 hover:bg-stone-800'
+                  ? 'bg-brand-teal border-stone-900 dark:border-stone-100 text-white shadow-brutal-xs -translate-y-0.5'
+                  : 'bg-stone-850/60 border-transparent text-stone-400 hover:bg-stone-800 hover:text-stone-200'
               "
             >
               <ImageIcon class="w-4 h-4" />
@@ -588,11 +588,11 @@ useHead({
             <button
               v-if="film?.file_rab"
               @click="selectTab('rab')"
-              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2"
+              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 border-2 cursor-pointer"
               :class="
                 activeTab === 'rab'
-                  ? 'bg-brand-teal border-black shadow-[4px_4px_0px_#000] text-white -translate-y-0.5'
-                  : 'bg-stone-800/40 border-transparent text-stone-400 hover:bg-stone-800'
+                  ? 'bg-brand-teal border-stone-900 dark:border-stone-100 text-white shadow-brutal-xs -translate-y-0.5'
+                  : 'bg-stone-850/60 border-transparent text-stone-400 hover:bg-stone-800 hover:text-stone-200'
               "
             >
               <FileSpreadsheet class="w-4 h-4" />
@@ -600,11 +600,11 @@ useHead({
             </button>
             <button
               @click="selectTab('scenes')"
-              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2"
+              class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 border-2 cursor-pointer"
               :class="
                 activeTab === 'scenes'
-                  ? 'bg-brand-teal border-black shadow-[4px_4px_0px_#000] text-white -translate-y-0.5'
-                  : 'bg-stone-800/40 border-transparent text-stone-400 hover:bg-stone-800'
+                  ? 'bg-brand-teal border-stone-900 dark:border-stone-100 text-white shadow-brutal-xs -translate-y-0.5'
+                  : 'bg-stone-850/60 border-transparent text-stone-400 hover:bg-stone-800 hover:text-stone-200'
               "
             >
               <ListVideo class="w-4 h-4" />
@@ -612,43 +612,44 @@ useHead({
             </button>
           </div>
         </div>
+
         <div v-if="isStaff || isOwner">
           <div
-            class="text-[10px] font-black text-stone-500 uppercase tracking-[0.2em] px-3 mb-4"
+            class="text-[10px] font-black text-stone-500 uppercase tracking-[0.2em] px-3 mb-3"
           >
             Evaluasi Kurator
           </div>
           <button
             @click="selectTab('evaluation')"
-            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 border-2 cursor-pointer"
             :class="
               activeTab === 'evaluation'
-                ? 'bg-orange-500 border-black shadow-[4px_4px_0px_#000] text-white -translate-y-0.5'
-                : 'bg-stone-800/40 border-transparent text-stone-400 hover:bg-stone-800'
+                ? 'bg-brand-orange border-stone-900 dark:border-stone-100 text-stone-950 shadow-brutal-xs -translate-y-0.5 font-black'
+                : 'bg-stone-850/60 border-transparent text-stone-400 hover:bg-stone-800 hover:text-stone-200'
             "
           >
             <Award class="w-4 h-4" />
             <span class="flex-1 text-left">Penilaian Karya</span>
             <div
               v-if="evaluation"
-              class="w-2 h-2 rounded-full bg-white animate-pulse"
+              class="w-2 h-2 rounded-full bg-brand-orange animate-pulse"
             ></div>
           </button>
         </div>
 
         <div>
           <div
-            class="text-[10px] font-black text-stone-500 uppercase tracking-[0.2em] px-3 mb-4"
+            class="text-[10px] font-black text-stone-500 uppercase tracking-[0.2em] px-3 mb-3"
           >
             Pengamatan Pribadi
           </div>
           <button
             @click="selectTab('notes')"
-            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 border-2 cursor-pointer"
             :class="
               activeTab === 'notes'
-                ? 'bg-amber-400 border-black shadow-[4px_4px_0px_#000] text-black -translate-y-0.5'
-                : 'bg-stone-800/40 border-transparent text-stone-400 hover:bg-stone-800'
+                ? 'bg-amber-400 border-stone-900 dark:border-stone-100 text-stone-950 shadow-brutal-xs -translate-y-0.5 font-black'
+                : 'bg-stone-850/60 border-transparent text-stone-400 hover:bg-stone-800 hover:text-stone-200'
             "
           >
             <StickyNote class="w-4 h-4" />
@@ -656,7 +657,7 @@ useHead({
             <Badge
               v-if="notes.length > 0"
               variant="outline"
-              class="bg-white/10 text-white border-white/20 text-[10px]"
+              class="bg-stone-950 text-amber-300 border-amber-400/40 text-[10px] font-mono font-bold"
               >{{ notes.length }}</Badge
             >
           </button>
@@ -667,11 +668,11 @@ useHead({
     <!-- 3. MAIN CONTENT -->
     <main
       v-if="!loading && film"
-      class="flex-1 flex flex-col min-w-0 relative h-full"
+      class="flex-1 flex flex-col min-w-0 relative h-full bg-stone-950"
     >
       <!-- Video Player Section -->
       <section
-        class="w-full bg-black flex flex-col border-b border-black lg:border-b-2 relative shrink-0 overflow-hidden z-20 min-h-[30vh] lg:h-[50vh]"
+        class="w-full bg-black flex flex-col border-b-2 border-stone-800 relative shrink-0 overflow-hidden z-20 min-h-[30vh] lg:h-[48vh]"
       >
         <ErrorBoundary name="Pemutar Video">
           <template v-if="film.link_video_utama">
@@ -692,7 +693,7 @@ useHead({
             <!-- Video Loading Overlay -->
             <div
               v-if="loadingVideo"
-              class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-stone-900/80 backdrop-blur-sm transition-opacity duration-500"
+              class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-stone-950/90 backdrop-blur-xs transition-opacity duration-500"
             >
               <div class="relative w-12 h-12 mb-4">
                 <div
@@ -711,44 +712,44 @@ useHead({
           </template>
           <div
             v-else
-            class="w-full h-full flex flex-col items-center justify-center bg-stone-900 text-stone-600 gap-4"
+            class="w-full h-full flex flex-col items-center justify-center bg-stone-900 text-stone-500 gap-4"
           >
-            <MonitorPlay class="w-16 h-16 opacity-10" />
-            <span class="text-xs uppercase font-black tracking-widest"
+            <MonitorPlay class="w-16 h-16 opacity-20" />
+            <span class="text-xs uppercase font-black tracking-widest text-stone-400"
               >Video tidak tersedia</span
             >
           </div>
         </ErrorBoundary>
       </section>
 
-      <!-- Viewer Section -->
+      <!-- Viewer Section (Studio Panel) -->
       <section
-        class="flex-1 w-full bg-stone-100 relative flex flex-col min-h-0 overflow-hidden"
+        class="flex-1 w-full bg-stone-900 text-stone-100 relative flex flex-col min-h-0 overflow-hidden"
       >
         <!-- Tab: Evaluation -->
         <div
           v-if="activeTab === 'evaluation'"
-          class="flex-1 overflow-y-auto bg-stone-50 p-4 md:p-8 no-scrollbar"
+          class="flex-1 overflow-y-auto bg-stone-900 p-4 md:p-8 no-scrollbar text-stone-100"
         >
           <div class="w-full space-y-8 pb-12">
             <!-- HEADER EVALUATION -->
             <div
-              class="flex items-center justify-between border-b-4 border-black pb-4"
+              class="flex items-center justify-between border-b-2 border-stone-800 pb-4"
             >
               <div class="flex items-center gap-4">
                 <div
-                  class="w-14 h-14 bg-orange-500 border-2 border-black shadow-brutal-sm flex items-center justify-center"
+                  class="w-12 h-12 md:w-14 md:h-14 bg-brand-orange border-2 border-stone-700 shadow-brutal-xs flex items-center justify-center"
                 >
-                  <Award class="w-8 h-8 text-white" />
+                  <Award class="w-7 h-7 text-stone-950" />
                 </div>
                 <div>
                   <h2
-                    class="text-2xl font-display font-black text-stone-900 uppercase"
+                    class="text-xl md:text-2xl font-display font-bold text-stone-100 uppercase tracking-wide"
                   >
                     Evaluasi & Feedback
                   </h2>
                   <p
-                    class="text-stone-500 text-xs font-bold uppercase tracking-wider"
+                    class="text-stone-400 text-xs font-bold uppercase tracking-wider"
                   >
                     Khusus Moderator & Pemilik Karya
                   </p>
@@ -759,13 +760,13 @@ useHead({
               <div class="hidden md:block">
                 <div
                   v-if="evaluation"
-                  class="inline-flex items-center gap-2 px-4 py-1.5 bg-green-500 border-2 border-black text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-[4px_4px_0px_#000]"
+                  class="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-950/80 border-2 border-emerald-700 text-emerald-300 text-[11px] font-bold uppercase tracking-[0.2em] shadow-brutal-xs"
                 >
-                  <CheckCircle2 class="w-4 h-4" /> Karya Telah Dinilai
+                  <CheckCircle2 class="w-4 h-4" /> Telah Dinilai
                 </div>
                 <div
                   v-else
-                  class="inline-flex items-center gap-2 px-4 py-1.5 bg-orange-500 border-2 border-black text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-[4px_4px_0px_#000]"
+                  class="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-950/80 border-2 border-amber-700 text-amber-300 text-[11px] font-bold uppercase tracking-[0.2em] shadow-brutal-xs"
                 >
                   <AlertCircle class="w-4 h-4" /> Menunggu Penilaian
                 </div>
@@ -776,15 +777,15 @@ useHead({
             <div class="md:hidden flex justify-start">
               <div
                 v-if="evaluation"
-                class="inline-flex items-center gap-2 px-3 py-1 bg-green-500 border-2 border-black text-white text-[9px] font-black uppercase tracking-widest shadow-[3px_3px_0px_#000]"
+                class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-950/80 border-2 border-emerald-700 text-emerald-300 text-[9px] font-bold uppercase tracking-widest shadow-brutal-xs"
               >
-                <CheckCircle2 class="w-3 h-3" /> Telah Dinilai
+                <CheckCircle2 class="w-3.5 h-3.5" /> Telah Dinilai
               </div>
               <div
                 v-else
-                class="inline-flex items-center gap-2 px-3 py-1 bg-orange-500 border-2 border-black text-white text-[9px] font-black uppercase tracking-widest shadow-[3px_3px_0px_#000]"
+                class="inline-flex items-center gap-2 px-3 py-1 bg-amber-950/80 border-2 border-amber-700 text-amber-300 text-[9px] font-bold uppercase tracking-widest shadow-brutal-xs"
               >
-                <AlertCircle class="w-3 h-3" /> Belum Dinilai
+                <AlertCircle class="w-3.5 h-3.5" /> Belum Dinilai
               </div>
             </div>
 
@@ -793,31 +794,31 @@ useHead({
               <!-- Added metadata for Staff view at TOP -->
               <div
                 v-if="evaluation"
-                class="flex flex-col md:flex-row items-center justify-between p-4 bg-orange-50 border-2 border-stone-200 gap-4 mb-6"
+                class="flex flex-col md:flex-row items-center justify-between p-4 bg-stone-850 border-2 border-stone-700 gap-4 mb-6"
               >
                 <div class="flex items-center gap-3">
                   <img
                     v-if="evaluation.moderator?.image"
                     :src="assetUrl(evaluation.moderator.image)"
-                    class="w-10 h-10 rounded-full border-2 border-black object-cover"
+                    class="w-10 h-10 rounded-full border-2 border-stone-600 object-cover"
                   />
                   <div class="flex flex-col">
                     <span
-                      class="text-[10px] font-black uppercase text-stone-900 leading-none mb-1"
+                      class="text-[10px] font-bold uppercase text-stone-400 leading-none mb-1"
                       >Kurator Terakhir:</span
                     >
                     <span
-                      class="text-xs font-bold text-orange-600 uppercase tracking-widest"
+                      class="text-xs font-bold text-brand-orange uppercase tracking-widest"
                       >{{ evaluation.moderator?.name || "Moderator" }}</span
                     >
                   </div>
                 </div>
                 <div class="flex flex-col items-end">
                   <span
-                    class="text-[9px] font-black uppercase text-stone-400 mb-1"
+                    class="text-[9px] font-bold uppercase text-stone-400 mb-1"
                     >Terakhir Diperbarui:</span
                   >
-                  <span class="text-[10px] font-bold text-stone-600"
+                  <span class="text-[10px] font-bold text-stone-300 font-mono"
                     >{{
                       new Date(evaluation.updated_at).toLocaleDateString(
                         "id-ID",
@@ -836,10 +837,10 @@ useHead({
               </div>
 
               <div
-                class="bg-blue-50 border-2 border-blue-200 p-4 rounded-xl flex items-start gap-3"
+                class="bg-blue-950/60 border-2 border-blue-800 p-4 rounded-xl flex items-start gap-3"
               >
-                <AlertCircle class="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                <p class="text-xs text-blue-700 font-medium leading-relaxed">
+                <AlertCircle class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                <p class="text-xs text-blue-200 font-medium leading-relaxed">
                   Anda sedang dalam mode <strong>Moderator</strong>. Berikan
                   penilaian objektif (1-10) dan feedback spesifik untuk setiap
                   kategori aset yang tersedia.
@@ -850,11 +851,11 @@ useHead({
                 <div
                   v-for="item in criteria"
                   :key="item.id"
-                  class="bg-white border-2 border-black p-4 shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+                  class="bg-stone-850 border-2 border-stone-700 p-4 shadow-brutal-xs transition-all"
                 >
                   <div class="flex justify-between items-center mb-4">
                     <label
-                      class="text-sm font-black uppercase text-stone-900"
+                      class="text-xs md:text-sm font-bold uppercase text-stone-100 tracking-wider"
                       >{{ item.label }}</label
                     >
                     <div class="flex items-center gap-2">
@@ -863,7 +864,7 @@ useHead({
                         min="0"
                         max="10"
                         v-model.number="evalForm[item.scoreKey]"
-                        class="w-12 h-8 border-2 border-black text-center font-black text-brand-teal focus:outline-none bg-white"
+                        class="w-12 h-8 border-2 border-stone-600 text-center font-black text-brand-teal focus:outline-none bg-stone-900 rounded text-sm"
                       />
                       <span class="text-[10px] font-bold text-stone-400"
                         >/10</span
@@ -873,20 +874,20 @@ useHead({
                   <textarea
                     v-model="evalForm[item.commentKey]"
                     placeholder="Tulis masukan spesifik..."
-                    class="w-full h-24 border-2 border-black p-2 text-xs font-medium focus:outline-none resize-none bg-stone-50 text-stone-900 placeholder:text-stone-400"
+                    class="w-full h-24 border-2 border-stone-700 p-3 text-xs font-medium focus:outline-none resize-none bg-stone-900 text-stone-100 placeholder:text-stone-500 rounded"
                   ></textarea>
                 </div>
               </div>
 
-              <div class="bg-white border-4 border-black p-6 shadow-brutal-md">
+              <div class="bg-stone-850 border-2 border-stone-700 p-6 shadow-brutal-xs">
                 <label
-                  class="block text-sm font-black uppercase text-stone-900 mb-3"
+                  class="block text-sm font-bold uppercase text-stone-100 mb-3 tracking-wider"
                   >Kesimpulan & Arahan Pengembangan</label
                 >
                 <textarea
                   v-model="evalForm.overall_feedback"
                   placeholder="Ceritakan apa yang bisa ditingkatkan secara keseluruhan..."
-                  class="w-full h-32 border-2 border-black p-4 text-sm font-medium focus:outline-none bg-stone-50 text-stone-900 placeholder:text-stone-400"
+                  class="w-full h-32 border-2 border-stone-700 p-4 text-sm font-medium focus:outline-none bg-stone-900 text-stone-100 placeholder:text-stone-500 rounded"
                 ></textarea>
               </div>
 
@@ -894,7 +895,7 @@ useHead({
                 <Button
                   @click="saveEvaluation"
                   :disabled="saving"
-                  class="bg-brand-teal hover:bg-brand-teal/90 text-white border-2 border-stone-900 shadow-brutal px-6 py-2 rounded-none font-display font-black text-lg h-auto flex justify-center items-center gap-2"
+                  class="bg-brand-teal hover:bg-teal-600 text-white border-2 border-stone-700 shadow-brutal-xs px-6 py-3 font-bold uppercase tracking-widest text-xs h-auto flex justify-center items-center gap-2 cursor-pointer"
                 >
                   <Loader2 v-if="saving" class="w-5 h-5 animate-spin" />
                   <CheckCircle2 v-else class="w-5 h-5" />
@@ -907,19 +908,19 @@ useHead({
             <ErrorBoundary name="Detail Evaluasi" v-else-if="isOwner">
               <div
                 v-if="!evaluation"
-                class="bg-white border-2 border-dashed border-stone-300 p-12 text-center rounded-2xl"
+                class="bg-stone-850 border-2 border-dashed border-stone-700 p-12 text-center rounded-2xl"
               >
                 <div
-                  class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                  class="w-16 h-16 bg-stone-800 border-2 border-stone-700 rounded-full flex items-center justify-center mx-auto mb-4"
                 >
-                  <Loader2 class="w-8 h-8 text-stone-300 animate-spin" />
+                  <Loader2 class="w-8 h-8 text-stone-400 animate-spin" />
                 </div>
                 <h3
-                  class="text-xl font-display font-black text-stone-400 uppercase"
+                  class="text-xl font-display font-bold text-stone-300 uppercase tracking-wide"
                 >
                   Menunggu Review Kurator
                 </h3>
-                <p class="text-stone-400 text-sm max-w-sm mx-auto mt-2">
+                <p class="text-stone-400 text-xs max-w-sm mx-auto mt-2">
                   Karya Anda telah masuk antrean penilaian. Kami akan memberikan
                   notifikasi setelah kurator selesai memberikan feedback.
                 </p>
@@ -928,17 +929,17 @@ useHead({
               <div v-else class="space-y-8">
                 <!-- Added metadata for Owner view at TOP -->
                 <div
-                  class="flex flex-col md:flex-row items-center justify-between p-4 bg-white border-2 border-black gap-4 shadow-brutal-sm"
+                  class="flex flex-col md:flex-row items-center justify-between p-4 bg-stone-850 border-2 border-stone-700 gap-4 shadow-brutal-xs"
                 >
                   <div class="flex items-center gap-3">
                     <img
                       v-if="evaluation.moderator?.image"
                       :src="assetUrl(evaluation.moderator.image)"
-                      class="w-10 h-10 rounded-full border-2 border-black object-cover"
+                      class="w-10 h-10 rounded-full border-2 border-stone-600 object-cover"
                     />
                     <div class="flex flex-col">
                       <span
-                        class="text-[10px] font-black uppercase text-stone-900 leading-none mb-1"
+                        class="text-[10px] font-bold uppercase text-stone-400 leading-none mb-1"
                         >Kurator Penilai:</span
                       >
                       <span
@@ -949,10 +950,10 @@ useHead({
                   </div>
                   <div class="flex flex-col items-end">
                     <span
-                      class="text-[9px] font-black uppercase text-stone-400 mb-1"
+                      class="text-[9px] font-bold uppercase text-stone-400 mb-1"
                       >Waktu Penilaian:</span
                     >
-                    <span class="text-[10px] font-bold text-stone-600"
+                    <span class="text-[10px] font-bold text-stone-300 font-mono"
                       >{{
                         new Date(evaluation.updated_at).toLocaleDateString(
                           "id-ID",
@@ -974,10 +975,10 @@ useHead({
                   <div
                     v-for="item in criteria"
                     :key="item.id"
-                    class="bg-white border-2 border-black p-6 relative overflow-hidden"
+                    class="bg-stone-850 border-2 border-stone-700 p-6 relative overflow-hidden shadow-brutal-xs"
                   >
                     <div
-                      class="absolute top-0 right-0 p-2 bg-stone-100 border-l-2 border-b-2 border-black font-black text-xl text-brand-teal"
+                      class="absolute top-0 right-0 p-2 bg-stone-900 border-l-2 border-b-2 border-stone-700 font-mono font-bold text-xl text-brand-teal"
                     >
                       {{ evaluation[item.scoreKey]
                       }}<span
@@ -986,34 +987,34 @@ useHead({
                       >
                     </div>
                     <h4
-                      class="text-xs font-black uppercase text-stone-400 mb-4"
+                      class="text-xs font-bold uppercase text-stone-400 mb-4 tracking-wider"
                     >
                       {{ item.label }}
                     </h4>
                     <p
                       v-if="evaluation[item.commentKey]"
-                      class="text-sm font-medium text-stone-800 leading-relaxed italic border-l-4 border-orange-400 pl-4 py-1"
+                      class="text-xs sm:text-sm font-medium text-stone-200 leading-relaxed italic border-l-4 border-brand-orange pl-4 py-1"
                     >
                       "{{ evaluation[item.commentKey] }}"
                     </p>
-                    <p v-else class="text-xs text-stone-400 italic">
+                    <p v-else class="text-xs text-stone-500 italic">
                       Tidak ada catatan spesifik.
                     </p>
                   </div>
                 </div>
 
                 <div
-                  class="bg-stone-900 text-white border-4 border-black p-8 shadow-brutal-lg"
+                  class="bg-stone-850 border-2 border-stone-700 p-6 md:p-8 shadow-brutal-xs"
                 >
-                  <div class="flex items-center gap-3 mb-6">
-                    <Award class="w-6 h-6 text-orange-400" />
+                  <div class="flex items-center gap-3 mb-4">
+                    <Award class="w-6 h-6 text-brand-orange" />
                     <h3
-                      class="text-xl font-display font-black uppercase tracking-wider"
+                      class="text-lg md:text-xl font-display font-bold uppercase tracking-wider text-stone-100"
                     >
                       Kesimpulan Kurator
                     </h3>
                   </div>
-                  <p class="text-lg font-medium leading-relaxed text-stone-300">
+                  <p class="text-sm md:text-base font-medium leading-relaxed text-stone-300">
                     {{
                       evaluation.overall_feedback ||
                       "Belum ada umpan balik keseluruhan."
@@ -1028,21 +1029,21 @@ useHead({
         <!-- Tab: Notes -->
         <div
           v-else-if="activeTab === 'notes'"
-          class="flex-1 flex flex-col h-full bg-stone-50 overflow-hidden"
+          class="flex-1 flex flex-col h-full bg-stone-900 text-stone-100 overflow-hidden"
         >
           <!-- Header Notes -->
           <div
-            class="p-4 md:p-6 border-b-2 border-black bg-white flex items-center justify-between shrink-0"
+            class="p-4 md:p-6 border-b-2 border-stone-800 bg-stone-900 flex items-center justify-between shrink-0"
           >
             <div class="flex items-center gap-3">
               <div
-                class="w-10 h-10 bg-amber-400 border-2 border-black shadow-brutal-xs flex items-center justify-center"
+                class="w-10 h-10 bg-amber-400 border-2 border-stone-800 shadow-brutal-xs flex items-center justify-center"
               >
-                <StickyNote class="w-5 h-5 text-black" />
+                <StickyNote class="w-5 h-5 text-stone-950" />
               </div>
               <div>
                 <h2
-                  class="font-black uppercase text-sm md:text-base leading-none"
+                  class="font-bold uppercase text-sm md:text-base leading-none text-stone-100 tracking-wider"
                 >
                   Catatan Waktu
                 </h2>
@@ -1056,17 +1057,17 @@ useHead({
           </div>
 
           <!-- Add Note Form -->
-          <div class="p-4 md:p-6 bg-white border-b-2 border-black shrink-0">
+          <div class="p-4 md:p-6 bg-stone-900 border-b-2 border-stone-800 shrink-0">
             <div class="flex gap-3">
               <div class="flex-1 relative">
                 <textarea
                   v-model="newNote"
                   @keydown.enter.exact.prevent="addNote"
                   placeholder="Tulis pengamatan di menit ini..."
-                  class="w-full border-2 border-black p-3 text-xs font-medium focus:outline-none bg-stone-50 resize-none h-20 text-stone-900"
+                  class="w-full border-2 border-stone-700 p-3 text-xs font-medium focus:outline-none bg-stone-950 resize-none h-20 text-stone-100 placeholder:text-stone-500 rounded"
                 ></textarea>
                 <div
-                  class="absolute bottom-2 right-2 text-[10px] font-black text-stone-300 uppercase"
+                  class="absolute bottom-2 right-2 text-[9px] font-bold text-stone-500 uppercase font-mono"
                 >
                   Tekan Enter untuk Simpan
                 </div>
@@ -1074,10 +1075,10 @@ useHead({
               <button
                 @click="addNote"
                 :disabled="addingNote || !newNote.trim()"
-                class="bg-brand-teal text-white border-2 border-black shadow-brutal-xs px-4 h-20 flex flex-col items-center justify-center gap-1 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all disabled:opacity-50 disabled:grayscale"
+                class="bg-brand-teal text-white border-2 border-stone-700 shadow-brutal-xs px-4 h-20 flex flex-col items-center justify-center gap-1 hover:bg-teal-600 transition-all disabled:opacity-50 cursor-pointer font-bold uppercase text-[10px] tracking-wider"
               >
                 <Plus class="w-5 h-5" />
-                <span class="text-[9px] font-black uppercase">Simpan</span>
+                <span>Simpan</span>
               </button>
             </div>
           </div>
@@ -1088,16 +1089,16 @@ useHead({
           >
             <div
               v-if="loadingNotes"
-              class="flex flex-col items-center justify-center py-10 opacity-20"
+              class="flex flex-col items-center justify-center py-10 text-stone-500"
             >
               <Loader2 class="w-8 h-8 animate-spin" />
             </div>
             <div
               v-else-if="notes.length === 0"
-              class="text-center py-10 opacity-30"
+              class="text-center py-12 text-stone-500"
             >
-              <StickyNote class="w-12 h-12 mx-auto mb-3" />
-              <p class="text-xs font-black uppercase tracking-widest">
+              <StickyNote class="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p class="text-xs font-bold uppercase tracking-widest text-stone-400">
                 Belum ada catatan waktu
               </p>
             </div>
@@ -1105,32 +1106,33 @@ useHead({
               <div
                 v-for="note in notes"
                 :key="note.note_id"
-                class="bg-white border-2 border-black p-4 shadow-brutal-xs hover:shadow-none hover:translate-x-[2px] transition-all group"
+                class="bg-stone-850 border-2 border-stone-700 p-4 shadow-brutal-xs transition-all group rounded-lg"
               >
                 <div class="flex items-start justify-between gap-4">
                   <div class="flex-1">
                     <div class="flex items-center gap-2 mb-2">
                       <button
                         @click="seekToNote(note.timestamp)"
-                        class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-stone-900 border border-black text-brand-teal text-[10px] font-black rounded hover:bg-black transition-colors"
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-stone-950 border border-stone-700 text-brand-teal font-mono text-xs font-bold rounded hover:bg-stone-900 transition-colors cursor-pointer"
                       >
-                        <PlayCircle class="w-3 h-3" />
+                        <PlayCircle class="w-3.5 h-3.5" />
                         {{ formatTimestamp(note.timestamp) }}
                       </button>
                       <span
-                        class="text-[9px] font-bold text-stone-300 uppercase"
+                        class="text-[10px] font-bold text-stone-400 uppercase font-mono"
                         >{{ timeAgo(note.created_at) }}</span
                       >
                     </div>
                     <p
-                      class="text-sm font-medium text-stone-800 leading-relaxed"
+                      class="text-xs sm:text-sm font-medium text-stone-200 leading-relaxed"
                     >
                       {{ note.content }}
                     </p>
                   </div>
                   <button
                     @click="deleteNote(note.note_id)"
-                    class="p-2 text-stone-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                    class="p-2 text-stone-500 hover:text-rose-400 transition-colors cursor-pointer"
+                    title="Hapus Catatan"
                   >
                     <Trash class="w-4 h-4" />
                   </button>
@@ -1143,20 +1145,20 @@ useHead({
         <!-- Tab: Scenes -->
         <div
           v-else-if="activeTab === 'scenes'"
-          class="flex-1 flex flex-col h-full bg-stone-50 overflow-hidden"
+          class="flex-1 flex flex-col h-full bg-stone-900 text-stone-100 overflow-hidden"
         >
           <div
-            class="p-4 md:p-6 border-b-2 border-black bg-white flex items-center justify-between shrink-0"
+            class="p-4 md:p-6 border-b-2 border-stone-800 bg-stone-900 flex items-center justify-between shrink-0"
           >
             <div class="flex items-center gap-3">
               <div
-                class="w-10 h-10 bg-brand-teal border-2 border-black shadow-brutal-xs flex items-center justify-center"
+                class="w-10 h-10 bg-brand-teal border-2 border-stone-800 shadow-brutal-xs flex items-center justify-center"
               >
                 <ListVideo class="w-5 h-5 text-white" />
               </div>
               <div>
                 <h2
-                  class="font-black uppercase text-sm md:text-base leading-none"
+                  class="font-bold uppercase text-sm md:text-base leading-none text-stone-100 tracking-wider"
                 >
                   Struktur Adegan
                 </h2>
@@ -1172,7 +1174,7 @@ useHead({
           <!-- Add Scene (Only Owner/Staff) -->
           <div
             v-if="isOwner || isStaff"
-            class="p-4 md:p-6 bg-white border-b-2 border-black shrink-0"
+            class="p-4 md:p-6 bg-stone-900 border-b-2 border-stone-800 shrink-0"
           >
             <div class="flex gap-3">
               <div class="flex-1 relative">
@@ -1180,41 +1182,39 @@ useHead({
                   v-model="newSceneTitle"
                   @keydown.enter="addScene"
                   placeholder="Judul adegan/bab baru..."
-                  class="w-full border-2 border-black p-3 text-sm font-bold focus:outline-none bg-stone-50 h-12 text-stone-900"
+                  class="w-full border-2 border-stone-700 p-3 text-sm font-bold focus:outline-none bg-stone-950 h-12 text-stone-100 placeholder:text-stone-500 rounded"
                 />
               </div>
               <button
                 @click="addScene"
                 :disabled="savingScenes || !newSceneTitle.trim()"
-                class="bg-black text-white px-4 h-12 flex items-center justify-center gap-2 hover:bg-stone-800 transition-all disabled:opacity-50"
+                class="bg-brand-teal text-white px-5 h-12 flex items-center justify-center gap-2 hover:bg-teal-600 transition-all disabled:opacity-50 border-2 border-stone-700 shadow-brutal-xs cursor-pointer text-xs font-bold uppercase tracking-wider"
               >
                 <Plus class="w-4 h-4" />
-                <span class="text-[10px] font-black uppercase"
-                  >Tanda Adegan</span
-                >
+                <span>Tanda Adegan</span>
               </button>
             </div>
-            <p class="text-[9px] text-stone-400 font-bold uppercase mt-2">
+            <p class="text-[10px] text-stone-400 font-bold uppercase mt-2 font-mono">
               Adegan akan ditandai pada menit video saat ini.
             </p>
           </div>
 
           <!-- Scenes List -->
           <div
-            class="flex-1 overflow-y-auto p-4 md:p-6 space-y-2 no-scrollbar pb-10"
+            class="flex-1 overflow-y-auto p-4 md:p-6 space-y-2.5 no-scrollbar pb-10"
           >
             <div
               v-if="loadingScenes"
-              class="flex flex-col items-center justify-center py-10 opacity-20"
+              class="flex flex-col items-center justify-center py-10 text-stone-500"
             >
               <Loader2 class="w-8 h-8 animate-spin" />
             </div>
             <div
               v-else-if="scenes.length === 0"
-              class="text-center py-10 opacity-30"
+              class="text-center py-12 text-stone-500"
             >
-              <ListVideo class="w-12 h-12 mx-auto mb-3" />
-              <p class="text-xs font-black uppercase tracking-widest">
+              <ListVideo class="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p class="text-xs font-bold uppercase tracking-widest text-stone-400">
                 Belum ada struktur adegan
               </p>
             </div>
@@ -1222,14 +1222,14 @@ useHead({
               <div
                 v-for="(scene, index) in scenes"
                 :key="index"
-                class="group flex items-center justify-between p-3 bg-white border-2 border-black hover:bg-stone-50 transition-all cursor-pointer shadow-brutal-xs hover:shadow-none translate-x-0 hover:translate-x-1"
+                class="group flex items-center justify-between p-3.5 bg-stone-850 border-2 border-stone-700 hover:bg-stone-800 transition-all cursor-pointer shadow-brutal-xs rounded-lg"
                 @click="seekToNote(scene.start_time)"
               >
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 min-w-0 flex-1">
                   <div
-                    class="flex items-center gap-1.5 px-2 py-1 bg-stone-100 border border-black rounded text-[10px] font-black text-stone-800"
+                    class="flex items-center gap-1.5 px-2.5 py-1 bg-stone-950 border border-stone-700 rounded text-xs font-mono font-bold text-brand-teal shrink-0"
                   >
-                    <Clock class="w-3 h-3 text-stone-800" />
+                    <Clock class="w-3.5 h-3.5" />
                     {{ formatTimestamp(scene.start_time) }}
                   </div>
                   <input
@@ -1238,12 +1238,12 @@ useHead({
                     @click.stop
                     @keydown.enter="saveEditScene"
                     @keydown.esc="cancelEditScene"
-                    class="flex-1 border-b-2 border-brand-teal focus:outline-none bg-transparent text-sm font-black text-stone-900 uppercase py-0.5"
+                    class="flex-1 border-b-2 border-brand-teal focus:outline-none bg-transparent text-sm font-bold text-stone-100 uppercase py-0.5"
                     autofocus
                   />
                   <span
                     v-else
-                    class="text-sm font-black text-stone-900 uppercase truncate max-w-[200px] md:max-w-md"
+                    class="text-sm font-bold text-stone-100 uppercase truncate max-w-[200px] md:max-w-md"
                     >{{ scene.title }}</span
                   >
                 </div>
@@ -1252,13 +1252,13 @@ useHead({
                   <template v-if="editingSceneIndex === index">
                     <button
                       @click.stop="saveEditScene"
-                      class="p-1.5 text-brand-teal hover:bg-brand-teal/10 rounded transition-colors"
+                      class="p-1.5 text-brand-teal hover:bg-brand-teal/20 rounded transition-colors cursor-pointer"
                     >
                       <Check class="w-4 h-4" />
                     </button>
                     <button
                       @click.stop="cancelEditScene"
-                      class="p-1.5 text-stone-400 hover:bg-stone-100 rounded transition-colors"
+                      class="p-1.5 text-stone-400 hover:bg-stone-700 rounded transition-colors cursor-pointer"
                     >
                       <X class="w-4 h-4" />
                     </button>
@@ -1266,18 +1266,18 @@ useHead({
                   <template v-else-if="isOwner || isStaff">
                     <button
                       @click.stop="startEditScene(index)"
-                      class="p-1.5 text-stone-300 hover:text-brand-teal transition-colors opacity-0 group-hover:opacity-100"
+                      class="p-1.5 text-stone-400 hover:text-brand-teal transition-colors cursor-pointer"
                     >
                       <Pencil class="w-3.5 h-3.5" />
                     </button>
                     <button
                       @click.stop="removeScene(index)"
-                      class="p-1.5 text-stone-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                      class="p-1.5 text-stone-400 hover:text-rose-400 transition-colors cursor-pointer"
                     >
                       <Trash class="w-3.5 h-3.5" />
                     </button>
                   </template>
-                  <ChevronRight v-else class="w-4 h-4 text-stone-200" />
+                  <ChevronRight v-else class="w-4 h-4 text-stone-500" />
                 </div>
               </div>
             </template>
@@ -1285,7 +1285,7 @@ useHead({
         </div>
 
         <!-- Tab: Documents (Naskah/Storyboard/RAB) -->
-        <div v-else class="flex-1 w-full h-full bg-stone-200 relative">
+        <div v-else class="flex-1 w-full h-full bg-stone-950 relative">
           <template v-if="activeDocUrl">
             <iframe
               :src="
@@ -1299,21 +1299,21 @@ useHead({
             <!-- Doc Loading Overlay -->
             <div
               v-if="loadingDoc"
-              class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm"
+              class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-stone-950/90 backdrop-blur-xs"
             >
               <div class="w-16 h-16 relative mb-4">
                 <div
-                  class="absolute inset-0 border-4 border-stone-100 rounded-full"
+                  class="absolute inset-0 border-4 border-stone-800 rounded-full"
                 ></div>
                 <div
                   class="absolute inset-0 border-4 border-t-amber-400 rounded-full animate-spin"
                 ></div>
                 <FileText
-                  class="absolute inset-0 m-auto w-6 h-6 text-stone-300"
+                  class="absolute inset-0 m-auto w-6 h-6 text-stone-400"
                 />
               </div>
               <p
-                class="text-[10px] font-black uppercase tracking-widest text-stone-400 animate-pulse"
+                class="text-[10px] font-black uppercase tracking-widest text-amber-400 animate-pulse"
               >
                 Memuat Dokumen...
               </p>
@@ -1323,19 +1323,18 @@ useHead({
           <!-- Placeholder when no doc is selected -->
           <div
             v-else
-            class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-white"
+            class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-stone-900 text-stone-100"
           >
             <div
-              class="w-20 h-20 rounded-full bg-stone-100 flex items-center justify-center mb-6 animate-bounce"
+              class="w-16 h-16 md:w-20 md:h-20 border-2 border-stone-700 bg-stone-850 flex items-center justify-center mb-6 shadow-brutal-xs"
             >
-              <FileText class="w-10 h-10 text-stone-300" />
+              <FileText class="w-8 h-8 md:w-10 md:h-10 text-brand-teal" />
             </div>
-            <h3 class="font-display font-bold text-stone-900 text-xl mb-2">
+            <h3 class="font-display font-bold text-stone-100 text-lg md:text-xl mb-2 uppercase tracking-wide">
               Pilih Dokumen Produksi
             </h3>
-            <p class="text-sm text-stone-500 max-w-xs mx-auto font-body">
-              Pilih salah satu dokumen di menu untuk mulai menganalisis teknik
-              produksi film ini.
+            <p class="text-xs md:text-sm text-stone-400 max-w-xs mx-auto font-body leading-relaxed">
+              Pilih salah satu dokumen di menu bilah samping untuk mulai menganalisis teknik produksi film ini.
             </p>
           </div>
         </div>
@@ -1345,7 +1344,7 @@ useHead({
     <!-- Loading State -->
     <div
       v-else
-      class="flex-1 flex flex-col items-center justify-center gap-6 bg-stone-950"
+      class="flex-1 flex flex-col items-center justify-center gap-6 bg-stone-950 text-stone-100"
     >
       <div class="relative w-16 h-16">
         <div

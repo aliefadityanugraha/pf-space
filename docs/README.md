@@ -1,40 +1,39 @@
 # 📚 PF Space Documentation
 
-Dokumentasi teknis untuk pengembangan dan pengelolaan PF Space.
+Dokumentasi teknis resmi untuk pengembangan, arsitektur, dan pengelolaan platform PF Space.
 
 ---
 
-## 📂 Core Documentation
+## 📂 Core Documentation Index
 
 | File                                   | Deskripsi                                                                              |
 | -------------------------------------- | -------------------------------------------------------------------------------------- |
-| [DEVELOPMENT.md](./DEVELOPMENT.md)     | Panduan setup, arsitektur MSC, konvensi penamaan, dan troubleshooting.                 |
-| [API_REFERENCE.md](./API_REFERENCE.md) | Daftar lengkap seluruh endpoint API (21 route groups) beserta contoh request/response. |
+| [DEVELOPMENT.md](./DEVELOPMENT.md)     | Panduan setup, arsitektur micro-services/monorepo, konvensi penamaan, dan HLS Transcoder. |
+| [API_REFERENCE.md](./API_REFERENCE.md) | Daftar lengkap seluruh endpoint API (22 route groups) termasuk Worker Audit & Retranscode. |
 | [API_STANDARDS.md](./API_STANDARDS.md) | Standar format response JSON, kode error, dan konvensi Bahasa Indonesia.               |
-| [DATABASE.md](./DATABASE.md)           | Schema database, relasi antar tabel, dan daftar migration.                             |
-| [UPLOAD_SYSTEM.md](./UPLOAD_SYSTEM.md) | Penjelasan sistem upload Tus.io resumable dan mekanisme draft.                         |
-| [TESTING_GUIDE.md](./TESTING_GUIDE.md) | Panduan menjalankan pengujian (Unit & Integration).                                    |
-| [CHANGELOG.md](./CHANGELOG.md)         | Riwayat perubahan versi (Added, Changed, Fixed, Optimized).                            |
-| [ROADMAP.md](./ROADMAP.md)             | Status pengembangan fitur dan rencana mendatang.                                       |
-| [CONTRIBUTING.md](./CONTRIBUTING.md)   | Panduan kontribusi untuk pengembang baru.                                              |
+| [DATABASE.md](./DATABASE.md)           | Schema database, relasi antar tabel, migration, dan tabel audit `transcode_operations`. |
+| [UPLOAD_SYSTEM.md](./UPLOAD_SYSTEM.md) | Penjelasan sistem upload Tus.io resumable, HLS Transcoding pipeline, dan MP4 Fallback. |
+| [TESTING_GUIDE.md](./TESTING_GUIDE.md) | Panduan pengujian Vitest (174 unit test suites) & integrasi pipeline CI/CD.             |
+| [CHANGELOG.md](./CHANGELOG.md)         | Riwayat perubahan versi komprehensif (Added, Changed, Fixed, Optimized).               |
+| [ROADMAP.md](./ROADMAP.md)             | Status pengembangan fitur dan rencana pengembangan masa depan.                         |
+| [CONTRIBUTING.md](./CONTRIBUTING.md)   | Panduan kontribusi dan standar kualitas kode bagi pengembang.                           |
 
 ---
 
-## 🚀 Deployment
+## 🚀 Deployment & Operations
 
 | File                                                 | Deskripsi                                                           |
 | ---------------------------------------------------- | ------------------------------------------------------------------- |
-| [DEPLOYMENT_GUIDE.md](../deploy/DEPLOYMENT_GUIDE.md) | Panduan lengkap deploy ke self-hosted server (Nginx + PM2 + MySQL). |
+| [DEPLOYMENT_GUIDE.md](../deploy/DEPLOYMENT_GUIDE.md) | Panduan lengkap deploy ke aaPanel Linux, Nginx Port 80, PM2, dan Cloudflare Tunnel. |
 
 ---
 
-## 🛠️ Project Guidelines
+## 🛠️ System Architecture Overview
 
-- **Commit Message**: Ikuti standar [Conventional Commits](https://www.conventionalcommits.org/).
-- **API Response**: Format wajib mengikuti [API_STANDARDS.md](./API_STANDARDS.md) — semua pesan dalam **Bahasa Indonesia**.
-- **Controller Naming**: Fungsi mengikuti standar REST CRUD (`getAll`, `getById`, `create`, `update`, `delete`) — lihat [DEVELOPMENT.md](./DEVELOPMENT.md).
-- **Validation**: Gunakan Zod + middleware `validateRequest` — lihat [API_STANDARDS.md](./API_STANDARDS.md).
-- **Contributing**: Lihat [CONTRIBUTING.md](./CONTRIBUTING.md) bagi pengembang baru.
+- **Frontend**: Vue 3 SPA + Vite + TailwindCSS + Plyr HLS Player (`frontend/`)
+- **Backend API**: Fastify + Objection.js / Knex + Tus Resumable Upload + MySQL (`backend/`)
+- **Transcoder Worker**: Standalone Worker + BullMQ + Redis + FFmpeg (`transcoder/`)
+- **Admin Dashboard**: Monitoring Worker, Kinerja Server, & Log Auditing Real-time (`/admin/workers`)
 
 ---
 

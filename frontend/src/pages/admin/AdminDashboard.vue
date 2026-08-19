@@ -134,10 +134,10 @@ const fetchDashboardStats = async () => {
         subject: karya.judul,
         subjectNote: `oleh ${karya.creator?.name || 'Anonim'}`,
         status: 'Pending',
-        statusColor: 'bg-amber-100 text-amber-800 border-amber-300',
+        statusColor: 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700 font-bold',
         icon: FileEdit,
-        iconBg: 'bg-amber-100',
-        iconColor: 'text-amber-900',
+        iconBg: 'bg-amber-100 dark:bg-amber-900',
+        iconColor: 'text-amber-900 dark:text-amber-200',
         action: 'Review',
         date: formatDate(karya.created_at)
       }))
@@ -171,9 +171,9 @@ onMounted(() => {
     <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
       <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
       <span class="text-stone-400">/</span>
-      <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+      <router-link to="/admin" class="text-stone-600 dark:text-stone-300 hover:underline">Administrasi</router-link>
       <span class="text-stone-400">/</span>
-      <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Dashboard</Badge>
+      <Badge variant="outline" class="bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-700 font-bold">Dashboard</Badge>
     </nav>
 
     <!-- Page Header -->
@@ -186,7 +186,7 @@ onMounted(() => {
       <template #actions>
         <Button 
           variant="outline" 
-          class="gap-2 border-2 border-stone-900 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all font-bold uppercase text-xs"
+          class="gap-2 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all font-bold uppercase text-xs"
           @click="navigateTo('/upload')"
         >
           <Upload class="w-4 h-4" />
@@ -194,7 +194,7 @@ onMounted(() => {
         </Button>
         <Button 
           variant="outline" 
-          class="gap-2 border-2 border-stone-900 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all font-bold uppercase text-xs"
+          class="gap-2 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all font-bold uppercase text-xs"
           @click="navigateTo('/admin/reports')"
         >
           <Flag class="w-4 h-4" />
@@ -566,7 +566,7 @@ onMounted(() => {
             </div>
 
             <!-- Footer Modal -->
-            <div class="flex justify-end gap-3 mt-6 pt-4 border-t-2 border-stone-200">
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t-2 border-stone-200 dark:border-stone-700">
               <Button
                 variant="outline"
                 class="border-2 border-stone-900 font-bold uppercase text-xs"

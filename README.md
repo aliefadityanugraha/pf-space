@@ -24,13 +24,15 @@ PF Space adalah platform web arsip film yang dibangun untuk siswa sekolah meneng
 
 | Kategori                | Fitur                                                                        |
 | ----------------------- | ---------------------------------------------------------------------------- |
-| 🎬 **Manajemen Karya**  | Upload film (video + dokumen), review workflow, status publish/reject        |
+| 🎬 **Manajemen Karya**  | Upload film (video + dokumen), HLS multi-resolution transcoding (720p/360p), review workflow |
+| 📺 **HLS Streaming**    | Adaptif HLS streaming via Plyr player dengan dropdown kualitas resolusi dinamis               |
 | 📚 **Mode Studi**       | Split-screen: tonton film sambil baca naskah, storyboard, atau RAB           |
 | 🎯 **Evaluasi**         | Penilaian kurator (Naskah, Sinematografi, Editing, Produksi) dengan feedback |
 | 💬 **Diskusi**          | Threaded comments (5 level kedalaman), komunitas forum                       |
 | 🔖 **Koleksi & Voting** | Bookmark pribadi, voting trending (mingguan/bulanan)                         |
 | 🤖 **AI Chat**          | Asisten AI berbasis konteks arsip film (Groq/OpenAI/Gemini)                  |
 | 📊 **Feed Production**  | Pemantauan alur dan aktivitas produksi karya film                            |
+| ⚡ **Worker Monitor**   | Monitoring real-time status worker transcoder, CPU/RAM, dan log eksekusi    |
 | 🔐 **RBAC**             | 4 level akses: User, Creator, Moderator, Admin                               |
 | 📱 **Responsive**       | Brutal Design System, mobile-first, dark mode                                |
 | 🔔 **Notifikasi**       | Real-time in-app notifications                                               |
@@ -43,13 +45,14 @@ PF Space adalah platform web arsip film yang dibangun untuk siswa sekolah meneng
 
 | Layer          | Technology                                                   |
 | -------------- | ------------------------------------------------------------ |
-| **Frontend**   | Vue 3.5 · Vite 7 · Tailwind CSS 4 · shadcn/ui · Lucide Icons |
-| **Backend**    | Fastify 5 · Node.js 23 · MySQL · Knex.js · Objection.js      |
+| **Frontend**   | Vue 3.5 · Vite 7 · Tailwind CSS 4 · Plyr HLS · Lucide Icons  |
+| **Backend**    | Fastify 5 · Node.js 20+ · MySQL · Knex.js · Objection.js     |
+| **Transcoder** | Worker Process · BullMQ · Redis · FFmpeg                     |
 | **Auth**       | Better Auth (Email/Password + Google OAuth)                  |
-| **Upload**     | Tus.io (Resumable, hingga 4GB)                               |
+| **Upload**     | Tus.io (Resumable, hingga 4GB) + HLS Segmenter              |
 | **AI**         | Groq · OpenAI · Gemini (pluggable)                           |
 | **Validation** | Zod (centralized schema)                                     |
-| **CI/CD**      | GitHub Actions · Vitest                                      |
+| **CI/CD**      | GitHub Actions · Vitest (174 tests pass)                     |
 
 </div>
 
@@ -57,26 +60,31 @@ PF Space adalah platform web arsip film yang dibangun untuk siswa sekolah meneng
 
 ```
 pf-space/
-├── backend/                    # API Server (Fastify)
+├── backend/                    # API Server (Fastify + Mysql + Tus)
 │   ├── src/
-│   │   ├── controllers/        # 19 request handlers
-│   │   ├── services/           # Business logic (20 services)
-│   │   ├── models/             # Database models (24 models)
-│   │   ├── routes/             # API routes (22 files)
-│   │   ├── middlewares/        # Auth, rate-limit, view-limit
-│   │   ├── lib/                # Utilities (auth, AI, upload, SEO)
-│   │   ├── __tests__/          # Backend tests (21 files, 185 tests)
+│   │   ├── controllers/        # Request handlers (Admin, Films, Users, Feed)
+│   │   ├── services/           # Business logic & Transcode Audit
+│   │   ├── models/             # Database models (Film, TranscodeOperation, etc.)
+│   │   ├── routes/             # API routes
+│   │   ├── lib/                # Utilities & BullMQ Queue producer
 │   │   └── database/           # Migrations & seeds
-│   └── uploads/                # Uploaded files (gitignored)
+│   ├── scripts/                # Utility scripts (batch-retranscode.js)
+│   └── uploads/                # Video MP4 & HLS (.m3u8) directory
 │
-├── frontend/                   # SPA Client (Vue 3)
+├── transcoder/                 # Standalone Transcoder Worker (BullMQ + FFmpeg)
 │   ├── src/
-│   │   ├── components/         # 68 Vue components
-│   │   ├── pages/              # 45 page views
-│   │   ├── composables/        # 9 shared composables
-│   │   ├── plugins/            # Vite plugins (SEO)
-│   │   └── lib/                # Utilities (api, format, sanitize)
+│   │   ├── worker.js           # Main Queue Worker process
+│   │   └── ffmpeg.js           # Multi-rendition HLS encoding engine
+│
+├── frontend/                   # SPA Client (Vue 3 + Vite + Tailwind)
+│   ├── src/
+│   │   ├── components/         # UI components & TranscodeStatus / VideoPlayer
+│   │   ├── pages/              # Page views (WorkerMonitor, Archives, etc.)
+│   │   └── composables/        # Shared composables
 │   └── public/                 # Static assets
+│
+├── deploy/                     # Deployment configs (Nginx, aaPanel, Cloudflare)
+└── ecosystem.config.cjs        # PM2 process manager configuration
 │
 ├── deploy/                     # Deployment configs
 │   ├── deploy.sh               # One-command deploy script

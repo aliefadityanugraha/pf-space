@@ -42,6 +42,11 @@ export default async function filmRoutes(fastify) {
     preHandler: requireCreator
   }, filmController.getStats.bind(filmController));
 
+  // Development Debug: Get overall queue operational metrics
+  fastify.get('/transcode/queue', {
+    preHandler: [authenticate]
+  }, filmController.getTranscodeQueueMetrics.bind(filmController));
+
   // Public: Get single film (with optional auth for unpublished)
   fastify.get('/:id', {
     preHandler: [validateRequest(filmIdParamSchema, 'params'), optionalAuth]
@@ -94,4 +99,29 @@ export default async function filmRoutes(fastify) {
       validateRequest(rejectionSchema, 'body')
     ]
   }, filmController.reject.bind(filmController));
+
+  // Admin/Creator: Re-transcode film
+  fastify.post('/:id/retranscode', {
+    preHandler: [authenticate, validateRequest(numericIdParamSchema, 'params')]
+  }, filmController.retranscode.bind(filmController));
+
+  // Admin/Creator: Cancel transcoding
+  fastify.post('/:id/transcode/cancel', {
+    preHandler: [authenticate, validateRequest(numericIdParamSchema, 'params')]
+  }, filmController.cancelTranscode.bind(filmController));
+
+  // Development Debug: Get detailed transcode status
+  fastify.get('/:id/transcode/status', {
+    preHandler: [authenticate, validateRequest(numericIdParamSchema, 'params')]
+  }, filmController.getTranscodeStatus.bind(filmController));
+
+  // Audit History: Get chronological operation history
+  fastify.get('/:id/transcode/history', {
+    preHandler: [authenticate, validateRequest(numericIdParamSchema, 'params')]
+  }, filmController.getTranscodeHistory.bind(filmController));
+
+  // Development Debug: Get detailed audit summary
+  fastify.get('/:id/transcode/audit', {
+    preHandler: [authenticate, validateRequest(numericIdParamSchema, 'params')]
+  }, filmController.getTranscodeAudit.bind(filmController));
 }

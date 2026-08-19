@@ -1,0 +1,22 @@
+{
+  "name": "pfspace-transcoder",
+  "version": "1.0.0",
+  "description": "Standalone Transcoder Worker process for PF Space video processing",
+  "main": "src/worker.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/worker.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "bullmq": "^5.41.6",
+    "dotenv": "^16.4.5",
+    "ioredis": "^5.5.0",
+    "knex": "^3.1.0",
+    "mysql2": "^3.11.0",
+    "objection": "^3.1.4"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}

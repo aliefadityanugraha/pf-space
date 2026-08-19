@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import TranscodeStatus from '@/components/TranscodeStatus.vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -21,6 +22,7 @@ const props = defineProps({
   isInCollection: { type: Boolean, default: false },
   processingCollection: { type: Boolean, default: false },
   hasLearningAssets: { type: Boolean, default: false },
+  canManage: { type: Boolean, default: true },
 })
 
 const emit = defineEmits([
@@ -28,6 +30,7 @@ const emit = defineEmits([
   'toggle-collection',
   'share',
   'share-to',
+  'status-updated',
 ])
 
 const router = useRouter()
@@ -75,8 +78,19 @@ const router = useRouter()
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Action Buttons & Status -->
       <div class="flex flex-wrap items-center gap-1.5 md:gap-2">
+        <!-- Transcode Progress & Status (Compact Circle & Badge) -->
+        <TranscodeStatus
+          v-if="film && film.film_id"
+          :film-id="film.film_id"
+          :transcode-status="film.transcode_status || 'none'"
+          :transcode-progress="film.transcode_progress || 0"
+          :can-manage="canManage"
+          compact
+          @status-updated="emit('status-updated', $event)"
+        />
+
         <Button
           v-if="hasLearningAssets"
           variant="outline"

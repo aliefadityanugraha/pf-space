@@ -495,7 +495,7 @@ onMounted(() => {
             'px-4 md:px-6 py-2.5 md:py-3 font-display font-bold uppercase tracking-widest text-[10px] md:text-sm border-2 border-black dark:border-stone-100 transition-all shadow-brutal-xs flex items-center gap-1.5 md:gap-2 whitespace-nowrap cursor-pointer',
             activeTab === 'dashboard'
               ? 'bg-brand-teal text-white translate-x-[1px] translate-y-[1px] shadow-none'
-              : 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100',
+              : 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-700',
           ]"
         >
           <LayoutDashboard class="w-3.5 h-3.5 md:w-4 md:h-4" />
@@ -504,10 +504,10 @@ onMounted(() => {
         <button
           @click="activeTab = 'settings'"
           :class="[
-            'px-4 md:px-6 py-2.5 md:py-3 font-display font-bold uppercase tracking-widest text-[10px] md:text-sm border-2 border-black transition-all shadow-brutal-xs flex items-center gap-1.5 md:gap-2 whitespace-nowrap',
+            'px-4 md:px-6 py-2.5 md:py-3 font-display font-bold uppercase tracking-widest text-[10px] md:text-sm border-2 border-black dark:border-stone-100 transition-all shadow-brutal-xs flex items-center gap-1.5 md:gap-2 whitespace-nowrap cursor-pointer',
             activeTab === 'settings'
-              ? 'bg-stone-900 text-white translate-x-[1px] translate-y-[1px] shadow-none'
-              : 'bg-white text-stone-900',
+              ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 translate-x-[1px] translate-y-[1px] shadow-none font-black'
+              : 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-700',
           ]"
         >
           <Settings class="w-3.5 h-3.5 md:w-4 md:h-4" />
@@ -529,13 +529,13 @@ onMounted(() => {
             <!-- Badges Section -->
             <div
               v-if="badges.length > 0"
-              class="bg-white border-2 border-black p-4 md:p-6 shadow-brutal relative overflow-hidden"
+              class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 p-4 md:p-6 shadow-brutal relative overflow-hidden"
             >
               <div
-                class="absolute -right-6 -top-6 w-24 h-24 bg-brand-teal/10 rounded-full"
+                class="absolute -right-6 -top-6 w-24 h-24 bg-brand-teal/10 dark:bg-brand-teal/20 rounded-full"
               ></div>
               <h4
-                class="text-xs md:text-sm font-display font-bold text-stone-900 uppercase tracking-widest mb-4 flex items-center gap-2"
+                class="text-xs md:text-sm font-display font-bold text-stone-900 dark:text-stone-100 uppercase tracking-widest mb-4 flex items-center gap-2"
               >
                 <Award class="w-4 h-4 text-brand-teal" /> Koleksi Lencana
                 Kreator
@@ -548,7 +548,7 @@ onMounted(() => {
                 >
                   <div
                     :class="[
-                      'w-12 h-12 md:w-14 md:h-14 border-2 border-black flex items-center justify-center shadow-brutal-xs transition-transform hover:-rotate-3 cursor-help',
+                      'w-12 h-12 md:w-14 md:h-14 border-2 border-black dark:border-stone-100 flex items-center justify-center shadow-brutal-xs transition-transform hover:-rotate-3 cursor-help',
                       badge.color,
                     ]"
                   >
@@ -759,32 +759,32 @@ onMounted(() => {
         <!-- Non-Creator Content -->
         <div
           v-else
-          class="text-center py-16 border-2 border-black bg-white shadow-brutal"
+          class="text-center py-16 border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-900 shadow-brutal"
         >
           <div
-            class="w-20 h-20 bg-brand-orange border-2 border-black flex items-center justify-center mx-auto mb-6 shadow-brutal"
+            class="w-20 h-20 bg-brand-orange border-2 border-black dark:border-stone-100 flex items-center justify-center mx-auto mb-6 shadow-brutal"
           >
             <User class="w-10 h-10 text-stone-900" />
           </div>
           <h3
-            class="font-display font-bold text-2xl mb-2 text-stone-900 uppercase"
+            class="font-display font-bold text-2xl mb-2 text-stone-900 dark:text-stone-100 uppercase"
           >
             Halo, penikmat karya!
           </h3>
-          <p class="text-stone-600 mb-8 font-medium max-w-sm mx-auto">
+          <p class="text-stone-600 dark:text-stone-400 mb-8 font-medium max-w-sm mx-auto">
             Jelajahi karya-karya siswa di halaman utama atau atur koleksi
             favoritmu.
           </p>
           <div class="flex justify-center gap-4">
             <Button
-              class="bg-stone-900 text-white border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] h-12 px-6"
+              class="bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] h-12 px-6 font-bold cursor-pointer"
               @click="router.push('/')"
             >
               Cari Karya
             </Button>
             <Button
               variant="outline"
-              class="bg-white text-stone-900 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] h-12 px-6"
+              class="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] h-12 px-6 font-bold cursor-pointer"
               @click="router.push('/collections')"
             >
               Lihat Koleksi
@@ -1067,19 +1067,19 @@ onMounted(() => {
       class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
     >
       <div
-        class="bg-white border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-fade-in"
+        class="bg-white dark:bg-stone-900 border-4 border-black dark:border-stone-100 shadow-brutal w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-fade-in"
       >
         <div
-          class="p-4 border-b-4 border-black flex justify-between items-center bg-brand-cream"
+          class="p-4 border-b-4 border-black dark:border-stone-100 flex justify-between items-center bg-stone-100 dark:bg-stone-800"
         >
           <h3
-            class="font-display font-black text-xl uppercase tracking-widest text-black"
+            class="font-display font-black text-xl uppercase tracking-widest text-stone-900 dark:text-stone-100"
           >
             Sesuaikan Foto
           </h3>
           <button
             @click="cancelCrop"
-            class="p-1 hover:bg-black hover:text-white transition-colors border-2 border-transparent hover:border-black cursor-pointer"
+            class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 transition-colors border-2 border-transparent hover:border-black dark:hover:border-stone-100 cursor-pointer"
           >
             <X class="w-6 h-6" />
           </button>
@@ -1093,18 +1093,18 @@ onMounted(() => {
           />
         </div>
         <div
-          class="p-4 border-t-4 border-black flex justify-end gap-3 bg-brand-cream"
+          class="p-4 border-t-4 border-black dark:border-stone-100 flex justify-end gap-3 bg-stone-100 dark:bg-stone-800"
         >
           <Button
             @click="cancelCrop"
             variant="outline"
-            class="border-2 border-black font-bold uppercase hover:bg-stone-200 text-black shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+            class="border-2 border-black dark:border-stone-100 font-bold uppercase hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all cursor-pointer"
           >
             Batal
           </Button>
           <Button
             @click="confirmCrop"
-            class="border-2 border-black font-bold uppercase bg-brand-teal text-white hover:bg-teal-600 shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex gap-2"
+            class="border-2 border-black dark:border-stone-100 font-bold uppercase bg-brand-teal text-white hover:bg-teal-600 shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex gap-2 cursor-pointer"
           >
             <Check class="w-4 h-4" />
             Terapkan

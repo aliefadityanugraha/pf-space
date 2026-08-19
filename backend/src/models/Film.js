@@ -51,7 +51,10 @@ export class Film extends BaseModel {
         rejection_reason: { type: ['string', 'null'] },
         banner_url: { type: ['string', 'null'] },
         is_banner_active: { type: ['boolean', 'integer'] },
-        views: { type: 'integer' }
+        views: { type: 'integer' },
+        transcode_status: { type: 'string', enum: ['none', 'pending', 'processing', 'completed', 'failed'] },
+        hls_manifest_url: { type: ['string', 'null'] },
+        transcode_progress: { type: 'integer' }
       }
     };
   }

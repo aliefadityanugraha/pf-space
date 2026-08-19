@@ -12,7 +12,7 @@ const sidebarCollapsed = ref(false)
     <div 
       :class="[
         'flex-1 transition-all duration-300 min-h-screen flex flex-col',
-        sidebarCollapsed ? 'ml-14' : 'ml-56'
+        sidebarCollapsed ? 'ml-16' : 'ml-60'
       ]"
     >
       <main id="main-content" class="flex-1 flex flex-col">

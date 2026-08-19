@@ -1,15 +1,28 @@
 <script setup>
 import { computed } from 'vue'
 import VideoPlayer from '@/components/VideoPlayer.vue'
+import TranscodeStatus from '@/components/TranscodeStatus.vue'
 import { Film, Clapperboard, Video, Play } from 'lucide-vue-next'
 
 const props = defineProps({
   film: { type: Object, required: true },
   activeVideoUrl: { type: String, default: null },
   activeVideoType: { type: String, default: 'film' },
+  canManage: { type: Boolean, default: true },
 })
 
-const emit = defineEmits(['switch-video'])
+const emit = defineEmits(['switch-video', 'status-updated'])
+
+const handleStatusUpdated = (evt) => {
+  if (props.film) {
+    props.film.transcode_status = evt.status
+    props.film.transcode_progress = evt.progress
+    if (evt.hlsManifestUrl) {
+      props.film.hls_manifest_url = evt.hlsManifestUrl
+    }
+  }
+  emit('status-updated', evt)
+}
 
 const hasActiveVideo = computed(() => !!props.activeVideoUrl)
 
@@ -61,11 +74,14 @@ const getYoutubeThumbnail = (url) => {
       <!-- Left: Video Player -->
       <div class="flex-1 flex flex-col">
         <div class="w-full bg-[#000000]">
-          <div class="aspect-video">
+          <div class="aspect-video w-full overflow-hidden relative">
             <VideoPlayer
               v-if="hasActiveVideo"
               :key="'vp-' + activeVideoUrl"
               :src="activeVideoUrl"
+              :mp4-src="film.link_video_utama || ''"
+              :hls-src="film.hls_manifest_url || ''"
+              :transcode-status="film.transcode_status || 'none'"
               :title="film.judul || 'Video'"
               :poster="film.gambar_poster || null"
               :storageKey="

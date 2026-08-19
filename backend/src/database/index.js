@@ -10,7 +10,7 @@ import { Model } from 'objection';
 import knexConfig from '../../knexfile.js';
 
 const environment = process.env.NODE_ENV || 'development';
-const knex = Knex(knexConfig[environment]);
+const knex = Knex(knexConfig[environment] || knexConfig.development);
 
 /**
  * Initialize database connection and attach it to Objection.js models

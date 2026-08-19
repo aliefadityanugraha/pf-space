@@ -5,16 +5,16 @@
       v-if="!isOpen"
       @click="openChat"
       aria-label="Buka Asisten AI"
-      class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-10 h-10 sm:w-12 sm:h-12 bg-brand-orange text-stone-900 border-2 border-stone-900 shadow-brutal-sm sm:shadow-brutal flex items-center justify-center hover:-translate-y-1 hover:shadow-brutal-lg transition-all cursor-pointer group rounded-none"
+      class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-12 h-12 sm:w-14 sm:h-14 bg-brand-orange text-stone-950 border-2 border-stone-900 dark:border-stone-100 shadow-brutal hover:-translate-y-1 hover:shadow-brutal-lg transition-all cursor-pointer group flex items-center justify-center rounded-none"
     >
-      <Bot class="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-bounce" />
+      <Bot class="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform" />
     </button>
 
     <!-- Backdrop Overlay -->
     <Transition name="fade">
       <div
         v-if="isOpen"
-        class="fixed inset-0 z-[95] bg-stone-900/50 backdrop-blur-xs"
+        class="fixed inset-0 z-[95] bg-stone-950/75 backdrop-blur-xs"
         @click="isOpen = false"
       />
     </Transition>
@@ -23,29 +23,29 @@
     <Transition name="slide">
       <div
         v-if="isOpen"
-        class="fixed top-0 right-0 z-[100] w-full sm:max-w-md md:max-w-lg lg:max-w-xl h-[100dvh] bg-brand-cream border-l-2 sm:border-l-4 border-stone-900 flex flex-col shadow-[-8px_0_0_0_rgba(0,0,0,1)] font-body"
+        class="fixed top-0 right-0 z-[100] w-full sm:max-w-md md:max-w-lg lg:max-w-xl h-[100dvh] bg-brand-cream dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-l-2 sm:border-l-4 border-stone-900 dark:border-stone-700 flex flex-col shadow-[-8px_0_0_0_rgba(0,0,0,1)] font-body"
       >
         <!-- Header -->
         <div
-          class="h-16 md:h-18 bg-white border-b-2 md:border-b-4 border-stone-900 flex items-center px-4 md:px-5 shrink-0 justify-between sticky top-0 z-20"
+          class="h-16 md:h-18 bg-white dark:bg-stone-950 border-b-2 md:border-b-4 border-stone-900 dark:border-stone-800 flex items-center px-4 md:px-5 shrink-0 justify-between sticky top-0 z-20"
         >
           <div class="flex items-center gap-3 min-w-0">
             <div
-              class="w-9 h-9 md:w-10 md:h-10 bg-brand-teal border-2 border-stone-900 shadow-brutal-xs flex items-center justify-center shrink-0 relative"
+              class="w-9 h-9 md:w-10 md:h-10 bg-brand-teal border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs flex items-center justify-center shrink-0 relative"
             >
               <Bot class="w-5 h-5 text-white" />
               <div
-                class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-stone-900 animate-pulse"
+                class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-stone-900 animate-pulse"
               ></div>
             </div>
             <div class="min-w-0">
               <h2
-                class="text-stone-900 text-sm md:text-base font-black font-display uppercase tracking-widest leading-tight truncate"
+                class="text-stone-900 dark:text-stone-100 text-sm md:text-base font-black font-display uppercase tracking-widest leading-tight truncate"
               >
                 PF Space.BOT
               </h2>
               <p
-                class="text-stone-500 font-bold text-[10px] md:text-xs truncate"
+                class="text-stone-500 dark:text-stone-400 font-bold text-[10px] md:text-xs truncate"
               >
                 Asisten AI Sinematik
               </p>
@@ -58,7 +58,7 @@
               @click="clearHistory"
               title="Bersihkan Riwayat"
               aria-label="Bersihkan Riwayat Chat"
-              class="w-8 h-8 md:w-9 md:h-9 bg-stone-100 hover:bg-brand-red hover:text-white border-2 border-stone-900 shadow-brutal-xs active:translate-x-0.5 active:translate-y-0.5 active:shadow-none flex items-center justify-center transition-all cursor-pointer"
+              class="w-8 h-8 md:w-9 md:h-9 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 hover:bg-brand-red hover:text-white dark:hover:bg-brand-red border-2 border-stone-900 dark:border-stone-700 shadow-brutal-xs active:translate-x-0.5 active:translate-y-0.5 active:shadow-none flex items-center justify-center transition-all cursor-pointer"
             >
               <Trash2 class="w-4 h-4" />
             </button>
@@ -67,7 +67,7 @@
             <button
               @click="isOpen = false"
               aria-label="Tutup Asisten AI"
-              class="w-8 h-8 md:w-9 md:h-9 bg-stone-100 hover:bg-stone-300 border-2 border-stone-900 shadow-brutal-xs active:translate-x-0.5 active:translate-y-0.5 active:shadow-none flex items-center justify-center transition-all cursor-pointer"
+              class="w-8 h-8 md:w-9 md:h-9 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 hover:bg-stone-300 dark:hover:bg-stone-700 border-2 border-stone-900 dark:border-stone-700 shadow-brutal-xs active:translate-x-0.5 active:translate-y-0.5 active:shadow-none flex items-center justify-center transition-all cursor-pointer"
             >
               <X class="w-4 h-4 stroke-[3]" />
             </button>
@@ -81,26 +81,26 @@
         >
           <!-- Session Start -->
           <div class="flex items-center gap-3 py-1">
-            <div class="h-0.5 flex-1 bg-stone-900"></div>
+            <div class="h-0.5 flex-1 bg-stone-900 dark:bg-stone-700"></div>
             <span
-              class="text-stone-900 text-[10px] md:text-xs font-black uppercase tracking-widest bg-white border border-stone-900 px-2.5 py-0.5 shadow-brutal-xs"
+              class="text-stone-900 dark:text-stone-100 text-[10px] md:text-xs font-black uppercase tracking-widest bg-white dark:bg-stone-800 border border-stone-900 dark:border-stone-700 px-2.5 py-0.5 shadow-brutal-xs"
             >
               Mulai Sesi
             </span>
-            <div class="h-0.5 flex-1 bg-stone-900"></div>
+            <div class="h-0.5 flex-1 bg-stone-900 dark:bg-stone-700"></div>
           </div>
 
           <!-- Initial Greeting -->
           <div class="flex gap-3">
             <div
-              class="w-8 h-8 md:w-9 md:h-9 shrink-0 bg-brand-teal border-2 border-stone-900 shadow-brutal-xs flex items-center justify-center"
+              class="w-8 h-8 md:w-9 md:h-9 shrink-0 bg-brand-teal border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs flex items-center justify-center"
             >
               <Bot class="w-4 h-4 text-white" />
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex justify-between items-center mb-1 gap-2">
                 <span
-                  class="text-stone-900 text-[10px] font-black uppercase tracking-wider bg-brand-teal text-white px-1.5 py-0.5 border border-stone-900"
+                  class="text-stone-900 dark:text-stone-100 text-[10px] font-black uppercase tracking-wider bg-brand-teal text-white px-1.5 py-0.5 border border-stone-900 dark:border-stone-700"
                 >
                   Sistem AI
                 </span>
@@ -109,10 +109,10 @@
                 >
               </div>
               <div
-                class="bg-white border-2 border-stone-900 shadow-brutal-xs p-3.5 relative"
+                class="bg-white dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-700 shadow-brutal-xs p-3.5 relative text-stone-900 dark:text-stone-100"
               >
                 <p
-                  class="text-stone-900 text-xs md:text-sm font-medium leading-relaxed"
+                  class="text-xs md:text-sm font-medium leading-relaxed"
                 >
                   Halo! Saya asisten AI PF Space. Ada yang bisa saya bantu
                   tentang sinematografi, analisis film, naskah, atau materi
@@ -132,39 +132,39 @@
                     formatTime(msg.created_at)
                   }}</span>
                   <span
-                    class="text-white text-[10px] font-black uppercase tracking-wider bg-stone-900 px-1.5 py-0.5 border border-stone-900"
+                    class="text-white text-[10px] font-black uppercase tracking-wider bg-stone-900 dark:bg-stone-700 px-1.5 py-0.5 border border-stone-900 dark:border-stone-600"
                   >
                     Anda
                   </span>
                 </div>
                 <div
-                  class="bg-brand-orange border-2 border-stone-900 shadow-brutal-xs p-3.5 relative"
+                  class="bg-brand-orange border-2 border-stone-900 dark:border-stone-700 shadow-brutal-xs p-3.5 relative text-stone-950"
                 >
                   <p
-                    class="text-stone-900 text-xs md:text-sm font-bold leading-relaxed whitespace-pre-wrap"
+                    class="text-xs md:text-sm font-bold leading-relaxed whitespace-pre-wrap"
                   >
                     {{ msg.content }}
                   </p>
                 </div>
               </div>
               <div
-                class="w-8 h-8 md:w-9 md:h-9 shrink-0 bg-stone-200 border-2 border-stone-900 shadow-brutal-xs flex items-center justify-center"
+                class="w-8 h-8 md:w-9 md:h-9 shrink-0 bg-stone-200 dark:bg-stone-700 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs flex items-center justify-center"
               >
-                <User class="w-4 h-4 text-stone-900" />
+                <User class="w-4 h-4 text-stone-900 dark:text-stone-100" />
               </div>
             </div>
 
             <!-- AI Message -->
             <div v-else class="flex gap-3">
               <div
-                class="w-8 h-8 md:w-9 md:h-9 shrink-0 bg-brand-teal border-2 border-stone-900 shadow-brutal-xs flex items-center justify-center"
+                class="w-8 h-8 md:w-9 md:h-9 shrink-0 bg-brand-teal border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs flex items-center justify-center"
               >
                 <Bot class="w-4 h-4 text-white" />
               </div>
               <div class="flex-1 max-w-[92%] sm:max-w-[88%] min-w-0">
                 <div class="flex justify-between items-center mb-1 gap-2">
                   <span
-                    class="text-stone-900 text-[10px] font-black uppercase tracking-wider bg-white px-1.5 py-0.5 border border-stone-900"
+                    class="text-stone-900 dark:text-stone-100 text-[10px] font-black uppercase tracking-wider bg-white dark:bg-stone-800 px-1.5 py-0.5 border border-stone-900 dark:border-stone-700"
                   >
                     Sistem AI
                   </span>
@@ -173,7 +173,7 @@
                   }}</span>
                 </div>
                 <div
-                  class="bg-white border-2 border-stone-900 shadow-brutal-xs p-3.5 relative prose prose-xs md:prose-sm prose-stone prose-a:text-brand-orange prose-a:font-bold max-w-none font-medium leading-relaxed break-words"
+                  class="bg-white dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-700 shadow-brutal-xs p-3.5 relative text-stone-900 dark:text-stone-100 prose dark:prose-invert prose-xs md:prose-sm prose-a:text-brand-orange prose-a:font-bold max-w-none font-medium leading-relaxed break-words"
                 >
                   <div v-html="formatMarkdown(msg.content)"></div>
                 </div>
@@ -184,30 +184,30 @@
           <!-- Loading Indicator -->
           <div v-if="isLoading" class="flex gap-3">
             <div
-              class="w-8 h-8 md:w-9 md:h-9 shrink-0 bg-brand-teal border-2 border-stone-900 shadow-brutal-xs flex items-center justify-center"
+              class="w-8 h-8 md:w-9 md:h-9 shrink-0 bg-brand-teal border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs flex items-center justify-center"
             >
               <Bot class="w-4 h-4 text-white" />
             </div>
             <div class="flex-1 max-w-[85%]">
               <div class="flex items-center mb-1">
                 <span
-                  class="text-stone-900 text-[10px] font-black uppercase tracking-wider bg-white px-1.5 py-0.5 border border-stone-900"
+                  class="text-stone-900 dark:text-stone-100 text-[10px] font-black uppercase tracking-wider bg-white dark:bg-stone-800 px-1.5 py-0.5 border border-stone-900 dark:border-stone-700"
                 >
                   Memproses
                 </span>
               </div>
               <div
-                class="bg-white border-2 border-stone-900 shadow-brutal-xs px-4 py-3 flex gap-2 w-fit"
+                class="bg-white dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-700 shadow-brutal-xs px-4 py-3 flex gap-2 w-fit"
               >
                 <div
-                  class="w-2 h-2 bg-brand-orange border border-stone-900 animate-bounce"
+                  class="w-2 h-2 bg-brand-orange border border-stone-900 dark:border-stone-700 animate-bounce"
                 ></div>
                 <div
-                  class="w-2 h-2 bg-brand-teal border border-stone-900 animate-bounce"
+                  class="w-2 h-2 bg-brand-teal border border-stone-900 dark:border-stone-700 animate-bounce"
                   style="animation-delay: 0.15s"
                 ></div>
                 <div
-                  class="w-2 h-2 bg-brand-red border border-stone-900 animate-bounce"
+                  class="w-2 h-2 bg-brand-red border border-stone-900 dark:border-stone-700 animate-bounce"
                   style="animation-delay: 0.3s"
                 ></div>
               </div>
@@ -217,16 +217,16 @@
           <!-- Error Alert -->
           <div
             v-if="error"
-            class="p-3 bg-red-100 border-2 border-red-500 shadow-brutal-xs text-red-900 flex gap-2.5 items-center"
+            class="p-3 bg-red-100 dark:bg-rose-950/80 border-2 border-red-500 dark:border-rose-700 shadow-brutal-xs text-red-900 dark:text-rose-200 flex gap-2.5 items-center"
           >
-            <AlertTriangle class="w-5 h-5 shrink-0 text-red-600" />
+            <AlertTriangle class="w-5 h-5 shrink-0 text-red-600 dark:text-rose-400" />
             <span class="font-bold text-xs leading-snug">{{ error }}</span>
           </div>
         </div>
 
         <!-- Input Area -->
         <div
-          class="bg-stone-100 border-t-2 md:border-t-4 border-stone-900 p-3 md:p-4 shrink-0 relative z-20"
+          class="bg-stone-100 dark:bg-stone-950 border-t-2 md:border-t-4 border-stone-900 dark:border-stone-800 p-3 md:p-4 shrink-0 relative z-20"
         >
           <!-- Quick Actions -->
           <div class="flex gap-1.5 mb-3 overflow-x-auto pb-1 scrollbar-none">
@@ -234,7 +234,7 @@
               v-for="action in quickActions"
               :key="action.label"
               @click="setInput(action.text)"
-              class="px-2.5 py-1 bg-white font-bold text-[11px] text-stone-900 border border-stone-900 hover:-translate-y-0.5 hover:shadow-brutal-xs transition-all cursor-pointer whitespace-nowrap shrink-0"
+              class="px-2.5 py-1 bg-white dark:bg-stone-800 font-bold text-[11px] text-stone-900 dark:text-stone-100 border border-stone-900 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-brutal-xs transition-all cursor-pointer whitespace-nowrap shrink-0"
             >
               <span class="text-brand-orange mr-1">#</span>{{ action.label }}
             </button>
@@ -242,40 +242,40 @@
 
           <!-- Input Box -->
           <div
-            class="bg-white border-2 border-stone-900 shadow-brutal-xs flex flex-col focus-within:-translate-y-0.5 focus-within:shadow-brutal-sm transition-all duration-200"
+            class="bg-white dark:bg-stone-900 border-2 border-stone-900 dark:border-stone-700 shadow-brutal-xs flex flex-col focus-within:-translate-y-0.5 focus-within:shadow-brutal-sm transition-all duration-200"
           >
             <textarea
               v-model="inputMessage"
               @keydown.enter.exact.prevent="sendMessage"
               placeholder="Tulis pertanyaan atau perintah ke AI..."
               rows="2"
-              class="w-full px-3 py-2 text-xs md:text-sm font-bold text-stone-900 placeholder:text-stone-400 resize-none focus:outline-none bg-transparent"
+              class="w-full px-3 py-2 text-xs md:text-sm font-bold text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 resize-none focus:outline-none bg-transparent"
               :disabled="isLoading"
             ></textarea>
 
             <div
-              class="flex items-center justify-between px-2.5 py-1.5 bg-stone-50 border-t border-stone-900"
+              class="flex items-center justify-between px-2.5 py-1.5 bg-stone-50 dark:bg-stone-850 border-t border-stone-900 dark:border-stone-700"
             >
               <div
-                class="text-[10px] text-stone-400 font-bold uppercase tracking-wider hidden sm:block"
+                class="text-[10px] text-stone-400 dark:text-stone-400 font-bold uppercase tracking-wider hidden sm:block font-mono"
               >
                 [Shift + Enter] baris baru
               </div>
               <div
-                class="text-[10px] text-stone-400 font-bold uppercase tracking-wider sm:hidden"
+                class="text-[10px] text-stone-400 dark:text-stone-400 font-bold uppercase tracking-wider sm:hidden font-mono"
               >
                 Pesan
               </div>
               <button
                 @click="sendMessage"
                 :disabled="isLoading || !inputMessage.trim()"
-                class="px-3 py-1 md:py-1.5 bg-brand-orange hover:bg-orange-500 border border-stone-900 shadow-brutal-xs active:translate-x-0.5 active:translate-y-0.5 active:shadow-none flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                class="px-3 py-1 md:py-1.5 bg-brand-orange hover:bg-orange-500 border border-stone-900 dark:border-stone-700 shadow-brutal-xs active:translate-x-0.5 active:translate-y-0.5 active:shadow-none flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
                 <span
-                  class="text-stone-900 text-xs font-black font-display uppercase tracking-widest hidden sm:inline-block"
+                  class="text-stone-950 text-xs font-black font-display uppercase tracking-widest hidden sm:inline-block"
                   >Kirim</span
                 >
-                <Send class="w-3.5 h-3.5 text-stone-900" />
+                <Send class="w-3.5 h-3.5 text-stone-950" />
               </button>
             </div>
           </div>
@@ -359,16 +359,16 @@ const formatMarkdown = (text) => {
   return text
     .replace(
       /\*\*(.*?)\*\*/g,
-      '<strong class="text-stone-900 uppercase font-black tracking-wide">$1</strong>',
+      '<strong class="text-stone-900 dark:text-stone-100 uppercase font-black tracking-wide">$1</strong>',
     )
-    .replace(/\*(.*?)\*/g, '<em class="text-stone-700 italic">$1</em>')
+    .replace(/\*(.*?)\*/g, '<em class="text-stone-700 dark:text-stone-300 italic">$1</em>')
     .replace(
       /`(.*?)`/g,
-      '<code class="bg-stone-100 border border-stone-900 px-1 py-0.5 font-mono text-xs text-brand-red">$1</code>',
+      '<code class="bg-stone-100 dark:bg-stone-900 border border-stone-900 dark:border-stone-700 px-1 py-0.5 font-mono text-xs text-brand-red dark:text-brand-orange">$1</code>',
     )
     .replace(
       /\[(.*?)\]\((.*?)\)/g,
-      '<a href="$2" class="text-brand-orange hover:text-stone-900 underline font-bold transition-colors" target="_blank">$1</a>',
+      '<a href="$2" class="text-brand-orange hover:underline font-bold transition-colors" target="_blank">$1</a>',
     )
     .replace(/\n/g, "<br>");
 };

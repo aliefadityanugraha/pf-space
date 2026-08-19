@@ -233,7 +233,7 @@ onMounted(fetchData);
 <template>
   <PageLayout>
     <!-- HERO SECTION -->
-    <div class="relative bg-brand-cream overflow-hidden mb-10">
+    <div class="relative bg-brand-cream dark:bg-stone-950 text-stone-900 dark:text-stone-100 overflow-hidden mb-10 border-b-2 border-stone-200 dark:border-stone-800 transition-colors">
       <div
         class="absolute inset-0 opacity-[0.03] pointer-events-none"
         style="
@@ -246,20 +246,20 @@ onMounted(fetchData);
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <div
-              class="inline-flex items-center gap-2 px-3 py-1 bg-white border-2 border-black shadow-brutal-xs mb-6"
+              class="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-stone-900 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs mb-6"
             >
-              <BookOpen class="w-4 h-4 text-brand-teal" />
+              <BookOpen class="w-4 h-4 text-brand-teal dark:text-teal-400" />
               <span
-                class="text-[10px] font-black uppercase tracking-widest text-stone-600"
+                class="text-[10px] font-black uppercase tracking-widest text-stone-600 dark:text-stone-300"
                 >Knowledge Base</span
               >
             </div>
             <h1
-              class="text-3xl md:text-7xl font-display font-black text-stone-900 leading-none mb-4 md:mb-6"
+              class="text-3xl md:text-7xl font-display font-black text-stone-900 dark:text-stone-100 leading-none mb-4 md:mb-6"
             >
               Materi
               <span
-                class="text-brand-teal italic underline md:decoration-4 underline-offset-8"
+                class="text-brand-teal dark:text-brand-orange italic underline md:decoration-4 underline-offset-8"
                 >Terbuka</span
               >
               Pembelajaran
@@ -274,10 +274,10 @@ onMounted(fetchData);
 
             <div class="flex flex-wrap gap-4">
               <div
-                class="flex items-center gap-3 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 p-4 shadow-brutal-sm"
+                class="flex items-center gap-3 bg-white dark:bg-stone-900 border-2 border-stone-900 dark:border-stone-100 p-4 shadow-brutal-sm"
               >
                 <div
-                  class="w-10 h-10 bg-brand-red border-2 border-black dark:border-stone-100 shadow-brutal-xs flex items-center justify-center shrink-0"
+                  class="w-10 h-10 bg-brand-red border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs flex items-center justify-center shrink-0"
                 >
                   <FileText class="w-6 h-6 text-white" />
                 </div>
@@ -292,10 +292,10 @@ onMounted(fetchData);
               </div>
 
               <div
-                class="flex items-center gap-3 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 p-4 shadow-brutal-sm"
+                class="flex items-center gap-3 bg-white dark:bg-stone-900 border-2 border-stone-900 dark:border-stone-100 p-4 shadow-brutal-sm"
               >
                 <div
-                  class="w-10 h-10 bg-[#FF0000] border-2 border-black dark:border-stone-100 shadow-brutal-xs flex items-center justify-center shrink-0"
+                  class="w-10 h-10 bg-[#FF0000] border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs flex items-center justify-center shrink-0"
                 >
                   <Youtube class="w-6 h-6 text-white" />
                 </div>
@@ -313,10 +313,10 @@ onMounted(fetchData);
             <div v-if="canManage" class="mt-6">
               <router-link to="/manage-materi">
                 <Button
-                  class="bg-brand-orange text-stone-900 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 font-bold uppercase transition-all gap-2 h-11 px-5 text-sm cursor-pointer"
+                  class="bg-brand-orange text-stone-900 border-2 border-stone-900 dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 font-bold uppercase transition-all gap-2 h-11 px-5 text-sm cursor-pointer"
                 >
                   <Plus class="w-4 h-4" />
-                  <span>+ Unggah & Kelola Materi</span>
+                  <span>Unggah &amp; Kelola Materi</span>
                 </Button>
               </router-link>
             </div>
@@ -324,9 +324,9 @@ onMounted(fetchData);
 
           <!-- Featured Card Hero -->
           <div v-if="featuredMaterial" class="hidden lg:block">
-            <div class="bg-white dark:bg-stone-900 border-4 border-black dark:border-stone-100 shadow-brutal group">
+            <div class="bg-white dark:bg-stone-900 border-4 border-stone-900 dark:border-stone-100 shadow-brutal group">
               <div
-                class="aspect-video bg-stone-100 dark:bg-stone-800 border-b-4 border-black dark:border-stone-100 relative overflow-hidden"
+                class="aspect-video bg-stone-100 dark:bg-stone-800 border-b-4 border-stone-900 dark:border-stone-100 relative overflow-hidden"
               >
                 <img
                   v-if="featuredMaterial.tipe === 'video'"
@@ -342,11 +342,11 @@ onMounted(fetchData);
 
                 <div class="absolute top-4 left-4 flex gap-2">
                   <Badge
-                    class="bg-brand-orange text-white border-2 border-black font-black uppercase tracking-widest text-[10px] py-1"
+                    class="bg-brand-orange text-stone-900 border-2 border-stone-900 dark:border-stone-100 font-black uppercase tracking-widest text-[10px] py-1"
                     >Featured</Badge
                   >
                   <Badge
-                    class="bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-100 text-stone-900 dark:text-stone-100 font-black uppercase tracking-widest text-[10px] py-1"
+                    class="bg-white dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-100 text-stone-900 dark:text-stone-100 font-black uppercase tracking-widest text-[10px] py-1"
                     >{{ featuredMaterial.kategori || "Materi" }}</Badge
                   >
                 </div>
@@ -356,7 +356,7 @@ onMounted(fetchData);
                   class="absolute inset-0 bg-black/0 hover:bg-black/20 flex items-center justify-center transition-all group cursor-pointer"
                 >
                   <div
-                    class="w-16 h-16 bg-white dark:bg-stone-800 border-4 border-black dark:border-stone-100 shadow-brutal-sm scale-0 group-hover:scale-100 transition-all flex items-center justify-center"
+                    class="w-16 h-16 bg-white dark:bg-stone-800 border-4 border-stone-900 dark:border-stone-100 shadow-brutal-sm scale-0 group-hover:scale-100 transition-all flex items-center justify-center"
                   >
                     <Play
                       v-if="featuredMaterial.tipe === 'video'"
@@ -377,7 +377,7 @@ onMounted(fetchData);
                 </p>
                 <Button
                   @click="openPreview(featuredMaterial)"
-                  class="w-full gap-2 border-2 border-black dark:border-stone-100 shadow-brutal-sm hover:shadow-none translate-y-[-2px] hover:translate-y-0 transition-all py-6 h-auto text-lg uppercase font-black tracking-widest bg-brand-teal text-white cursor-pointer"
+                  class="w-full gap-2 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-sm hover:shadow-none translate-y-[-2px] hover:translate-y-0 transition-all py-6 h-auto text-lg uppercase font-black tracking-widest bg-brand-teal text-white cursor-pointer"
                 >
                   Mulai Belajar
                   <ChevronRight class="w-5 h-5" />
@@ -709,7 +709,7 @@ onMounted(fetchData);
 
               <button
                 @click="openPreview(material)"
-                class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-stone-900 hover:text-brand-teal transition-colors group/link"
+                class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-stone-100 hover:text-brand-teal dark:hover:text-brand-orange transition-colors group/link"
               >
                 <span>Lihat Detail</span>
                 <ChevronRight
@@ -733,7 +733,7 @@ onMounted(fetchData);
       ></div>
 
       <div
-        class="relative bg-white border-4 border-black shadow-brutal w-full max-w-5xl h-full flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
+        class="relative bg-white dark:bg-stone-900 border-4 border-stone-900 dark:border-stone-100 shadow-brutal w-full max-w-5xl h-full flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 text-stone-900 dark:text-stone-100"
       >
         <!-- Close Button Desktop -->
         <button
@@ -746,23 +746,23 @@ onMounted(fetchData);
         <div class="flex-1 overflow-hidden flex flex-col">
           <!-- Header Mobile -->
           <div
-            class="flex items-center justify-between p-4 border-b-4 border-black bg-stone-100 md:hidden shrink-0"
+            class="flex items-center justify-between p-4 border-b-4 border-stone-900 dark:border-stone-100 bg-stone-100 dark:bg-stone-800 shrink-0 text-stone-900 dark:text-stone-100"
           >
             <h3 class="font-black uppercase text-sm truncate pr-4">
               {{ previewMaterial.judul }}
             </h3>
             <button
               @click="closePreview"
-              class="p-1 border-2 border-black bg-white shadow-brutal-xs"
+              class="p-1 border-2 border-stone-900 dark:border-stone-100 bg-white dark:bg-stone-900 shadow-brutal-xs"
             >
-              <X class="w-5 h-5" />
+              <X class="w-5 h-5 text-stone-900 dark:text-stone-100" />
             </button>
           </div>
 
           <div class="flex-1 flex flex-col md:flex-row h-full overflow-hidden">
             <!-- Content Area -->
             <div
-              class="flex-1 bg-stone-100 overflow-hidden relative border-b-4 md:border-b-0 md:border-r-4 border-black order-1"
+              class="flex-1 bg-stone-100 dark:bg-stone-950 overflow-hidden relative border-b-4 md:border-b-0 md:border-r-4 border-stone-900 dark:border-stone-100 order-1"
             >
               <!-- Video Embed -->
               <template v-if="previewMaterial.tipe === 'video'">
@@ -793,31 +793,31 @@ onMounted(fetchData);
 
             <!-- Sidebar Info -->
             <div
-              class="w-full md:w-80 lg:w-96 bg-white p-6 md:p-8 flex flex-col h-full overflow-y-auto order-2 shrink-0"
+              class="w-full md:w-80 lg:w-96 bg-white dark:bg-stone-900 p-6 md:p-8 flex flex-col h-full overflow-y-auto order-2 shrink-0 text-stone-900 dark:text-stone-100"
             >
               <div class="inline-flex items-center gap-2 mb-4">
                 <Badge
                   v-if="previewMaterial.tipe === 'pdf'"
-                  class="bg-brand-red text-white border-2 border-black font-black uppercase text-[10px]"
+                  class="bg-brand-red text-white border-2 border-stone-900 dark:border-stone-100 font-black uppercase text-[10px]"
                   >Dokumen</Badge
                 >
                 <Badge
                   v-else
-                  class="bg-[#FF0000] text-white border-2 border-black font-black uppercase text-[10px]"
+                  class="bg-[#FF0000] text-white border-2 border-stone-900 dark:border-stone-100 font-black uppercase text-[10px]"
                   >Video</Badge
                 >
                 <span
-                  class="text-[10px] font-black uppercase text-brand-teal"
+                  class="text-[10px] font-black uppercase text-brand-teal dark:text-teal-400"
                   >{{ previewMaterial.kategori }}</span
                 >
               </div>
 
               <h2
-                class="text-2xl md:text-3xl font-black uppercase leading-tight mb-4"
+                class="text-2xl md:text-3xl font-black uppercase leading-tight mb-4 text-stone-900 dark:text-stone-100"
               >
                 {{ previewMaterial.judul }}
               </h2>
-              <p class="text-stone-500 text-sm leading-relaxed mb-8">
+              <p class="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-8">
                 {{
                   previewMaterial.deskripsi ||
                   "Tidak ada deskripsi lengkap untuk materi ini."
@@ -826,43 +826,43 @@ onMounted(fetchData);
 
               <div class="space-y-4 mb-8">
                 <div
-                  class="flex items-center gap-3 p-3 bg-stone-50 border-2 border-black"
+                  class="flex items-center gap-3 p-3 bg-stone-50 dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-100"
                 >
                   <div
-                    class="w-8 h-8 rounded-full bg-white border-2 border-black flex items-center justify-center shadow-brutal-xs shrink-0 overflow-hidden"
+                    class="w-8 h-8 rounded-full bg-white dark:bg-stone-900 border-2 border-stone-900 dark:border-stone-100 flex items-center justify-center shadow-brutal-xs shrink-0 overflow-hidden"
                   >
                     <img
                       v-if="previewMaterial.creator?.image"
                       :src="assetUrl(previewMaterial.creator.image)"
                       class="w-full h-full object-cover"
                     />
-                    <User v-else class="w-4 h-4" />
+                    <User v-else class="w-4 h-4 text-stone-900 dark:text-stone-100" />
                   </div>
                   <div>
                     <div
-                      class="text-[10px] font-bold text-stone-400 uppercase leading-none mb-1"
+                      class="text-[10px] font-bold text-stone-400 dark:text-stone-400 uppercase leading-none mb-1"
                     >
                       Diterbitkan Oleh
                     </div>
                     <div
-                      class="text-[11px] font-black uppercase tracking-tight"
+                      class="text-[11px] font-black uppercase tracking-tight text-stone-900 dark:text-stone-100"
                     >
                       {{ previewMaterial.creator?.name }}
                     </div>
                   </div>
                 </div>
                 <div
-                  class="flex items-center gap-3 p-3 bg-stone-50 border-2 border-black"
+                  class="flex items-center gap-3 p-3 bg-stone-50 dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-100"
                 >
                   <Clock class="w-5 h-5 text-stone-400 shrink-0" />
                   <div>
                     <div
-                      class="text-[10px] font-bold text-stone-400 uppercase leading-none mb-1"
+                      class="text-[10px] font-bold text-stone-400 dark:text-stone-400 uppercase leading-none mb-1"
                     >
                       Waktu Terbit
                     </div>
                     <div
-                      class="text-[11px] font-black uppercase tracking-tight"
+                      class="text-[11px] font-black uppercase tracking-tight text-stone-900 dark:text-stone-100"
                     >
                       {{
                         new Date(previewMaterial.created_at).toLocaleDateString(
@@ -876,7 +876,7 @@ onMounted(fetchData);
               </div>
 
               <div
-                class="mt-auto pt-6 border-t-2 border-stone-100 flex flex-col gap-3"
+                class="mt-auto pt-6 border-t-2 border-stone-100 dark:border-stone-800 flex flex-col gap-3"
               >
                 <Button
                   as="a"
@@ -886,7 +886,7 @@ onMounted(fetchData);
                       : previewMaterial.video_url
                   "
                   target="_blank"
-                  class="w-full py-6 h-auto text-sm uppercase font-black tracking-widest border-2 border-black shadow-brutal-xs translate-y-[-2px] hover:translate-y-0 transition-all hover:shadow-none"
+                  class="w-full py-6 h-auto text-sm uppercase font-black tracking-widest border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs translate-y-[-2px] hover:translate-y-0 transition-all hover:shadow-none bg-brand-teal text-white cursor-pointer"
                 >
                   <Download
                     v-if="previewMaterial.tipe === 'pdf'"
@@ -902,7 +902,7 @@ onMounted(fetchData);
                 <Button
                   variant="outline"
                   @click="copyLink(previewMaterial)"
-                  class="w-full border-2 border-black font-black uppercase tracking-widest h-12"
+                  class="w-full border-2 border-stone-900 dark:border-stone-100 font-black uppercase tracking-widest h-12 text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-800 cursor-pointer"
                 >
                   <Share2 class="w-4 h-4 mr-2" />
                   Bagikan

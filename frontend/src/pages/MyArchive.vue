@@ -62,9 +62,12 @@ const openRejectionModal = (film) => {
 };
 
 const statusColors = {
-  pending: "bg-yellow-100 dark:bg-yellow-950 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800",
-  published: "bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800",
-  rejected: "bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800",
+  pending:
+    "bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border-2 border-amber-300 dark:border-amber-700 font-bold",
+  published:
+    "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border-2 border-emerald-300 dark:border-emerald-700 font-bold",
+  rejected:
+    "bg-rose-100 dark:bg-rose-950/80 text-rose-900 dark:text-rose-300 border-2 border-rose-300 dark:border-rose-700 font-bold",
 };
 
 const statusLabels = {
@@ -187,7 +190,7 @@ onMounted(async () => {
         <span class="text-stone-400">/</span>
         <Badge
           variant="outline"
-          class="bg-orange-100 text-orange-700 border-orange-300"
+          class="bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-300 border-2 border-orange-300 dark:border-orange-700 font-bold"
           >Karya Saya</Badge
         >
       </nav>
@@ -200,7 +203,7 @@ onMounted(async () => {
         <template #actions>
           <Button
             @click="router.push('/upload')"
-            class="gap-2 shadow-brutal-sm h-10 md:h-12 font-bold uppercase tracking-wider text-xs px-6"
+            class="gap-2 shadow-brutal-sm h-10 md:h-12 font-bold uppercase tracking-wider text-xs px-6 cursor-pointer"
           >
             <Plus class="w-4 h-4" />
             Upload Karya Baru
@@ -209,44 +212,43 @@ onMounted(async () => {
       </PageHeader>
 
       <ErrorBoundary name="Ringkasan Status">
-        <Card class="mb-6">
+        <Card class="mb-6 border-2 border-stone-800 dark:border-stone-700 shadow-brutal bg-card text-card-foreground">
           <CardContent
-            class="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+            class="p-4 sm:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
           >
             <div>
               <p
-                class="text-xs font-bold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1"
+                class="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1"
               >
                 Status Pengajuan Karya
               </p>
-              <p class="text-sm text-stone-500 dark:text-stone-300">
-                Ringkasan semua karya yang kamu upload berdasarkan status
-                review.
+              <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
+                Ringkasan semua karya yang kamu upload berdasarkan status review.
               </p>
             </div>
             <div class="flex flex-wrap gap-2 items-center">
               <Badge
                 variant="outline"
-                class="bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-stone-900 dark:border-stone-100"
+                class="px-2.5 py-1 text-xs font-bold bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs"
               >
                 <span class="font-bold mr-1">{{
                   summaryLoading ? "…" : statusSummary.all
                 }}</span>
                 Total
               </Badge>
-              <Badge :class="statusColors.pending">
+              <Badge variant="outline" :class="['px-2.5 py-1 text-xs shadow-brutal-xs', statusColors.pending]">
                 <span class="font-bold mr-1">{{
                   summaryLoading ? "…" : statusSummary.pending
                 }}</span>
                 Menunggu
               </Badge>
-              <Badge :class="statusColors.published">
+              <Badge variant="outline" :class="['px-2.5 py-1 text-xs shadow-brutal-xs', statusColors.published]">
                 <span class="font-bold mr-1">{{
                   summaryLoading ? "…" : statusSummary.published
                 }}</span>
                 Dipublikasi
               </Badge>
-              <Badge :class="statusColors.rejected">
+              <Badge variant="outline" :class="['px-2.5 py-1 text-xs shadow-brutal-xs', statusColors.rejected]">
                 <span class="font-bold mr-1">{{
                   summaryLoading ? "…" : statusSummary.rejected
                 }}</span>
@@ -262,15 +264,19 @@ onMounted(async () => {
         <Button
           v-for="status in ['all', 'pending', 'published', 'rejected']"
           :key="status"
-          :variant="statusFilter === status ? 'default' : 'outline'"
           size="sm"
           @click="changeFilter(status)"
-          class="gap-2"
+          class="gap-2 font-bold text-xs uppercase tracking-wider shadow-brutal-xs transition-all cursor-pointer"
+          :class="
+            statusFilter === status
+              ? 'bg-brand-teal text-white border-2 border-stone-900 dark:border-stone-100 font-black'
+              : 'bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-2 border-stone-800 dark:border-stone-700 hover:bg-stone-200 dark:hover:bg-stone-700 hover:text-stone-900 dark:hover:text-white'
+          "
         >
-          <Clock v-if="status === 'pending'" class="w-4 h-4" />
-          <CheckCircle v-else-if="status === 'published'" class="w-4 h-4" />
-          <XCircle v-else-if="status === 'rejected'" class="w-4 h-4" />
-          <Film v-else class="w-4 h-4" />
+          <Clock v-if="status === 'pending'" class="w-4 h-4 text-amber-500" />
+          <CheckCircle v-else-if="status === 'published'" class="w-4 h-4 text-emerald-500" />
+          <XCircle v-else-if="status === 'rejected'" class="w-4 h-4 text-rose-500" />
+          <Film v-else class="w-4 h-4 text-brand-teal" />
           {{ status === "all" ? "Semua" : statusLabels[status] }}
         </Button>
       </div>
@@ -321,35 +327,39 @@ onMounted(async () => {
             <template #overlay>
               <!-- Status Badge -->
               <Badge
-                :class="['absolute top-2 right-2', statusColors[item.status]]"
+                variant="outline"
+                :class="['absolute top-2.5 right-2.5 px-2.5 py-1 text-xs shadow-brutal-xs', statusColors[item.status]]"
               >
                 {{ statusLabels[item.status] }}
               </Badge>
             </template>
 
             <template #extra-content>
-              <p class="text-xs text-stone-400 mb-4">
+              <p class="text-xs text-stone-500 dark:text-stone-400 mb-4 font-mono font-bold">
                 {{ item.tahun_karya || "-" }}
               </p>
 
               <div
                 v-if="item.status === 'rejected'"
-                class="p-2 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs mb-4 rounded"
+                class="p-3 bg-rose-50 dark:bg-rose-950/70 border-2 border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs mb-4 rounded-lg font-body"
               >
-                <p class="font-semibold mb-1">Karya ditolak admin.</p>
+                <p class="font-bold mb-1 flex items-center gap-1.5">
+                  <XCircle class="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                  Karya ditolak admin.
+                </p>
                 <div v-if="item.rejection_reason">
-                  <p class="line-clamp-2">
+                  <p class="line-clamp-2 text-stone-700 dark:text-stone-300">
                     Alasan: {{ item.rejection_reason }}
                   </p>
                   <button
                     v-if="item.rejection_reason.length > 60"
                     @click.stop="openRejectionModal(item)"
-                    class="text-red-800 font-bold underline mt-1 hover:text-red-950"
+                    class="text-rose-700 dark:text-rose-300 font-bold underline mt-1.5 hover:text-rose-900 dark:hover:text-rose-100 cursor-pointer block"
                   >
                     Lihat Alasan Lengkap
                   </button>
                 </div>
-                <p v-else>
+                <p v-else class="text-stone-600 dark:text-stone-400">
                   Silakan periksa kembali kualitas konten, format file, dan
                   kelengkapan data lalu submit ulang.
                 </p>
@@ -358,28 +368,29 @@ onMounted(async () => {
 
             <template #actions>
               <Button
-                variant="outline"
                 size="sm"
-                class="flex-1 gap-1"
+                variant="outline"
+                class="flex-1 gap-1.5 font-bold text-xs uppercase border-2 border-stone-800 dark:border-stone-700 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-brutal-xs cursor-pointer"
                 @click="router.push(`/archive/${item.slug}`)"
               >
-                <Eye class="w-4 h-4" /> Lihat
+                <Eye class="w-3.5 h-3.5" /> Lihat
               </Button>
               <Button
-                variant="outline"
                 size="sm"
-                class="flex-1 gap-1"
+                variant="outline"
+                class="flex-1 gap-1.5 font-bold text-xs uppercase border-2 border-stone-800 dark:border-stone-700 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-brutal-xs cursor-pointer"
                 @click="router.push(`/edit-archive/${item.slug}`)"
               >
-                <Pencil class="w-4 h-4" /> Edit
+                <Pencil class="w-3.5 h-3.5" /> Edit
               </Button>
               <Button
-                variant="outline"
                 size="sm"
-                class="text-red-600 hover:bg-red-50"
+                variant="outline"
+                class="gap-1.5 font-bold text-xs uppercase border-2 border-rose-400 dark:border-rose-800 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/80 text-rose-700 dark:text-rose-300 shadow-brutal-xs cursor-pointer px-3"
                 @click="confirmDelete(item)"
+                title="Hapus Karya"
               >
-                <Trash2 class="w-4 h-4" />
+                <Trash2 class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
               </Button>
             </template>
           </ArchiveCard>

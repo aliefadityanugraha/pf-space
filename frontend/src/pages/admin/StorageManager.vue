@@ -65,7 +65,7 @@ onMounted(() => {
     <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
       <router-link to="/admin" class="text-brand-teal hover:underline">Administrasi</router-link>
       <span class="text-stone-400">/</span>
-      <Badge variant="outline" class="bg-blue-100 text-blue-700 border-blue-300">File Manager</Badge>
+      <Badge variant="outline" class="bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700 font-bold">File Manager</Badge>
     </nav>
 
     <PageHeader 
@@ -186,12 +186,12 @@ onMounted(() => {
       </Card>
     </template>
 
-    <Card v-else class="min-h-[200px] flex items-center justify-center bg-red-50 border-red-200">
+    <Card v-else class="min-h-[200px] flex items-center justify-center bg-red-50 dark:bg-rose-950/60 border-red-200 dark:border-rose-800">
       <div class="text-center p-8">
-        <AlertCircle class="w-12 h-12 text-red-500 mx-auto mb-4" />
-        <h3 class="text-lg font-bold text-red-900 uppercase">Gagal Memuat Data</h3>
-        <p class="text-red-700 mb-4">Terjadi kesalahan saat mencoba mengakses sistem file server.</p>
-        <Button variant="outline" @click="fetchStorageStats" class="border-red-300 hover:bg-red-100 uppercase font-bold text-xs">Coba Lagi</Button>
+        <AlertCircle class="w-12 h-12 text-red-500 dark:text-rose-400 mx-auto mb-4" />
+        <h3 class="text-lg font-bold text-red-900 dark:text-rose-200 uppercase">Gagal Memuat Data</h3>
+        <p class="text-red-700 dark:text-rose-300 mb-4">Terjadi kesalahan saat mencoba mengakses sistem file server.</p>
+        <Button variant="outline" @click="fetchStorageStats" class="border-red-300 dark:border-rose-700 hover:bg-red-100 dark:hover:bg-rose-900 uppercase font-bold text-xs">Coba Lagi</Button>
       </div>
     </Card>
   </div>

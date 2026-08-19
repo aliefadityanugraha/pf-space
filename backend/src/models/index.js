@@ -28,3 +28,4 @@ export { ProductionPostMedia } from './ProductionPostMedia.js';
 export { Tag } from './Tag.js';
 export { ProductionPostTag } from './ProductionPostTag.js';
 export { MaterialCategory } from './MaterialCategory.js';
+export { TranscodeOperation } from './TranscodeOperation.js';

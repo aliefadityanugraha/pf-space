@@ -66,10 +66,17 @@ export default async function staticRoutes(fastify) {
       else if (filePath.startsWith('images/') || filePath.startsWith('avatars/')) ext = '.jpg';
     }
 
-    // 1. PDF Handling: Set headers to ensure browser displays them inline
-    if (ext === '.pdf') {
+    // 1b. HLS Manifest & Segment Handling
+    if (ext === '.m3u8') {
+      reply.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+      reply.header('Content-Type', 'application/vnd.apple.mpegurl');
+      reply.header('Content-Disposition', 'inline');
+      return reply.send(fs.createReadStream(absolutePath));
+    }
+
+    if (ext === '.ts') {
       reply.header('Cache-Control', 'public, max-age=31536000, immutable');
-      reply.header('Content-Type', 'application/pdf');
+      reply.header('Content-Type', 'video/mp2t');
       reply.header('Content-Disposition', 'inline');
       return reply.send(fs.createReadStream(absolutePath));
     }

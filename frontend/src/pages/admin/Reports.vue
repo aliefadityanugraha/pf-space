@@ -171,9 +171,9 @@ onMounted(fetchReports)
     <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
       <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
       <span class="text-stone-400">/</span>
-      <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+      <router-link to="/admin" class="text-stone-600 dark:text-stone-300 hover:underline">Administrasi</router-link>
       <span class="text-stone-400">/</span>
-      <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Laporan</Badge>
+      <Badge variant="outline" class="bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-700 font-bold">Laporan</Badge>
     </nav>
 
     <!-- Header -->
@@ -306,7 +306,7 @@ onMounted(fetchReports)
         size="icon" 
         :disabled="pagination.page === 1" 
         @click="changePage(pagination.page - 1)"
-        class="w-10 h-10 border-2 border-black shadow-brutal-xs hover:shadow-none transition-all"
+        class="w-10 h-10 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs hover:shadow-none transition-all"
       >
         <ChevronLeft class="w-5 h-5" />
       </Button>
@@ -317,8 +317,8 @@ onMounted(fetchReports)
           @click="changePage(p)"
           :variant="pagination.page === p ? 'default' : 'outline'"
           :class="[
-            'w-10 h-10 border-2 border-black font-bold font-mono',
-            pagination.page === p ? 'bg-black text-white shadow-none' : 'bg-white text-black shadow-brutal-xs hover:shadow-none'
+            'w-10 h-10 border-2 border-stone-900 dark:border-stone-100 font-bold font-mono',
+            pagination.page === p ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-none' : 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs hover:shadow-none'
           ]"
         >
           {{ p }}
@@ -329,7 +329,7 @@ onMounted(fetchReports)
         size="icon" 
         :disabled="pagination.page === pagination.totalPages" 
         @click="changePage(pagination.page + 1)"
-        class="w-10 h-10 border-2 border-black shadow-brutal-xs hover:shadow-none transition-all"
+        class="w-10 h-10 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs hover:shadow-none transition-all"
       >
         <ChevronRight class="w-5 h-5" />
       </Button>

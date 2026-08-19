@@ -10,6 +10,9 @@ import { deleteFile } from "../lib/upload.js";
 import { FILM_STATUS, PAGINATION, parsePagination, buildPagination } from "../config/constants.js";
 import { embeddingService } from "./embedding.service.js";
 import { sanitizeRichText, sanitizePlainText } from "../lib/sanitize.js";
+import { enqueueVideoTranscoding } from "../lib/queue/transcoderQueue.js";
+import { NotFoundError } from "../lib/errors.js";
+import { transcodeAuditService } from "./transcodeAudit.service.js";
 
 export class FilmService {
   /**
@@ -221,7 +224,7 @@ export class FilmService {
    * @returns {Promise<Film>} Newly created film object
    */
   async create(data) {
-    return Film.transaction(async (trx) => {
+    const createdFilm = await Film.transaction(async (trx) => {
       // Insert film first within transaction
       const film = await Film.query(trx).insert(data);
 
@@ -257,6 +260,232 @@ export class FilmService {
 
       return { ...film, slug };
     });
+
+    // POST-COMMIT: Trigger HLS Transcoding enqueue if local video upload is present
+    const videoUrl = createdFilm.link_video_utama;
+    if (videoUrl && typeof videoUrl === 'string' && (videoUrl.startsWith('/uploads/videos/') || videoUrl.includes('videos/'))) {
+      try {
+        const enqueued = await enqueueVideoTranscoding({
+          filmId: createdFilm.film_id,
+          sourcePath: videoUrl,
+        });
+
+        if (enqueued) {
+          await Film.query()
+            .findById(createdFilm.film_id)
+            .patch({ transcode_status: 'pending' });
+          createdFilm.transcode_status = 'pending';
+        } else {
+          console.warn(`[FilmService] Transcoding enqueue failed for film ${createdFilm.film_id}. Retaining transcode_status='none' (MP4 fallback).`);
+        }
+      } catch (err) {
+        console.warn(`[FilmService] Post-commit enqueue error for film ${createdFilm.film_id}: ${err.message}`);
+      }
+    }
+
+    return createdFilm;
+  }
+
+  /**
+   * Triggers re-transcoding for an existing film if video file is present
+   * @param {number} filmId
+   * @returns {Promise<Film>}
+   */
+  async retranscode(filmId) {
+    const film = await Film.query().findById(filmId);
+    if (!film) {
+      throw new NotFoundError('Film tidak ditemukan');
+    }
+
+    // Phase 5 Idempotency: Return existing film if already pending or processing
+    if (film.transcode_status === 'pending' || film.transcode_status === 'processing') {
+      return film;
+    }
+
+    const videoUrl = film.link_video_utama;
+    if (!videoUrl || typeof videoUrl !== 'string') {
+      throw new Error('Film tidak memiliki berkas video utama untuk di-transcode');
+    }
+
+    // Phase 7 Path Traversal Protection: Prevent path traversal attacks
+    if (videoUrl.includes('..') || videoUrl.includes('\0')) {
+      throw new Error('Invalid video file path detected');
+    }
+
+    // Reset transcode fields
+    await Film.query().findById(filmId).patch({
+      transcode_status: 'pending',
+      transcode_progress: 0,
+      hls_manifest_url: null,
+    });
+
+    const enqueued = await enqueueVideoTranscoding({
+      filmId: film.film_id,
+      sourcePath: videoUrl,
+    });
+
+    if (!enqueued) {
+      await Film.query().findById(filmId).patch({
+        transcode_status: 'none',
+      });
+      throw new Error('Gagal memasukkan pekerjaan transkoding ke dalam antrean Redis');
+    }
+
+    await transcodeAuditService.recordOperation({
+      film_id: filmId,
+      operation_type: 'retranscode',
+      previous_status: film.transcode_status,
+      new_status: 'pending',
+      reason: 'user_requested_retranscode',
+    });
+
+    return await Film.query().findById(filmId);
+  }
+
+  /**
+   * Cancels an active or pending transcoding job for a film
+   * @param {number} filmId
+   * @returns {Promise<Film>}
+   */
+  async cancelTranscode(filmId) {
+    const film = await Film.query().findById(filmId);
+    if (!film) {
+      throw new NotFoundError('Film tidak ditemukan');
+    }
+
+    // Phase 5 Idempotency: Return gracefully if already failed, completed, or cancelled
+    if (film.transcode_status !== 'processing' && film.transcode_status !== 'pending') {
+      return film;
+    }
+
+    // Update status to failed
+    await Film.query().findById(filmId).patch({
+      transcode_status: 'failed',
+      transcode_progress: 0,
+      hls_manifest_url: null,
+    });
+
+    await transcodeAuditService.recordOperation({
+      film_id: filmId,
+      operation_type: 'cancelled',
+      previous_status: film.transcode_status,
+      new_status: 'failed',
+      reason: 'user_requested_cancellation',
+    });
+
+    return await Film.query().findById(filmId);
+  }
+
+  /**
+   * Retrieves detailed development transcode status for a film
+   * @param {number} filmId
+   * @returns {Promise<object>}
+   */
+  async getTranscodeStatus(filmId) {
+    const film = await Film.query().findById(filmId);
+    if (!film) {
+      throw new NotFoundError('Film tidak ditemukan');
+    }
+
+    return {
+      filmId: film.film_id,
+      title: film.judul,
+      status: film.transcode_status || 'none',
+      progress: film.transcode_progress || 0,
+      job: {
+        id: `transcode-film-${film.film_id}`,
+        attempt: 1,
+        maxAttempts: 2,
+      },
+      output: {
+        hls: !!film.hls_manifest_url,
+        manifestUrl: film.hls_manifest_url,
+        renditions: film.transcode_status === 'completed' ? ['1080p', '720p', '360p'] : [],
+      },
+    };
+  }
+
+  /**
+   * Retrieves overall transcoding queue operational metrics
+   * @returns {Promise<object>}
+   */
+  async getTranscodeQueueMetrics() {
+    const stats = await Film.query()
+      .select('transcode_status')
+      .count('film_id as count')
+      .groupBy('transcode_status');
+
+    const result = {
+      waiting: 0,
+      active: 0,
+      completed: 0,
+      failed: 0,
+      delayed: 0,
+    };
+
+    if (Array.isArray(stats)) {
+      stats.forEach((row) => {
+        const s = row.transcode_status;
+        const count = parseInt(row.count, 10) || 0;
+        if (s === 'pending') result.waiting += count;
+        else if (s === 'processing') result.active += count;
+        else if (s === 'completed') result.completed += count;
+        else if (s === 'failed') result.failed += count;
+      });
+    }
+
+    return result;
+  }
+
+  /**
+   * Fetches transcode audit history for a film
+   * @param {number} filmId
+   * @returns {Promise<object>}
+   */
+  async getTranscodeHistory(filmId) {
+    const film = await Film.query().findById(filmId);
+    if (!film) throw new NotFoundError('Film tidak ditemukan');
+
+    const history = await transcodeAuditService.getFilmHistory(filmId);
+    return {
+      filmId: film.film_id,
+      currentStatus: film.transcode_status || 'none',
+      currentProgress: film.transcode_progress || 0,
+      operations: history.map((op) => ({
+        id: op.id,
+        operationType: op.operation_type,
+        previousStatus: op.previous_status,
+        newStatus: op.new_status,
+        progress: op.progress,
+        attempt: op.attempt,
+        reason: op.reason,
+        createdAt: op.created_at,
+      })),
+    };
+  }
+
+  /**
+   * Fetches detailed transcode audit summary for development debugging
+   * @param {number} filmId
+   * @returns {Promise<object>}
+   */
+  async getTranscodeAudit(filmId) {
+    const film = await Film.query().findById(filmId);
+    if (!film) throw new NotFoundError('Film tidak ditemukan');
+
+    const [history, summary] = await Promise.all([
+      transcodeAuditService.getFilmHistory(filmId),
+      transcodeAuditService.getOperationSummary(filmId),
+    ]);
+
+    return {
+      filmId: film.film_id,
+      title: film.judul,
+      currentStatus: film.transcode_status || 'none',
+      currentProgress: film.transcode_progress || 0,
+      summary,
+      operations: history,
+    };
   }
 
   /**

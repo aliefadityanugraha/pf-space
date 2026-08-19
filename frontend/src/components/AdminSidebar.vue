@@ -23,6 +23,7 @@ import {
   BookOpen,
   Database,
   Sparkles,
+  Cpu,
 } from "lucide-vue-next";
 import { assetUrl } from "@/lib/format";
 
@@ -58,6 +59,7 @@ const menuGroups = computed(() => {
     {
       title: "SISTEM & MODERASI",
       items: [
+        { name: "Worker & Sistem", icon: Cpu, path: "/admin/workers" },
         { name: "Log Audit", icon: Shield, path: "/admin/logs" },
         { name: "Kontrol Akses", icon: Shield, path: "/admin/rbac" },
         { name: "Trending", icon: Vote, path: "/admin/trending" },

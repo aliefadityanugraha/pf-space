@@ -105,7 +105,7 @@ const fetchKaryas = async () => {
     }
   } catch (err) {
     console.error('Failed to fetch archives:', err)
-    showToast('error', 'Gagal memuat data arsip')
+    showToast('Gagal memuat data arsip', 'error')
   } finally {
     loading.value = false
   }
@@ -134,26 +134,26 @@ const executeAction = async () => {
   try {
     if (type === 'approve') {
       await api.patch(`/api/films/${karya.film_id}/approve`, {})
-      showToast('success', `Karya "${karya.judul}" berhasil dipublikasi`)
+      showToast(`Karya "${karya.judul}" berhasil dipublikasi`, 'success')
     } else if (type === 'reject') {
       if (!rejectionReason.value.trim()) {
-        showToast('error', 'Alasan penolakan wajib diisi')
+        showToast('Alasan penolakan wajib diisi', 'error')
         actionLoading.value = false
         return
       }
       await api.patch(`/api/films/${karya.film_id}/reject`, {
         rejection_reason: rejectionReason.value.trim()
       })
-      showToast('success', `Karya "${karya.judul}" ditolak`)
+      showToast(`Karya "${karya.judul}" ditolak`, 'success')
     } else if (type === 'delete') {
       await api.delete(`/api/films/${karya.film_id}`)
-      showToast('success', `Karya "${karya.judul}" berhasil dihapus`)
+      showToast(`Karya "${karya.judul}" berhasil dihapus`, 'success')
     }
     showConfirm.value = false
     showDetailModal.value = false
     await fetchKaryas()
   } catch (err) {
-    showToast('error', err.message || 'Gagal melakukan aksi')
+    showToast(err.message || 'Gagal melakukan aksi', 'error')
   } finally {
     actionLoading.value = false
   }

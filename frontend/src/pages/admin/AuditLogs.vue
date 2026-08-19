@@ -31,11 +31,11 @@ const fetchLogs = async (page = 1) => {
 
 const getActionBadge = (action) => {
   switch (action) {
-    case 'DELETE_FILM': return 'bg-red-100 text-red-700 border-red-200'
-    case 'UPDATE_ROLE': return 'bg-blue-100 text-blue-700 border-blue-200'
-    case 'APPROVE_FILM': return 'bg-green-100 text-green-700 border-green-200'
-    case 'REJECT_FILM': return 'bg-amber-100 text-amber-700 border-amber-200'
-    default: return 'bg-stone-100 text-stone-700 border-stone-200'
+    case 'DELETE_FILM': return 'bg-red-100 dark:bg-rose-950/80 text-red-700 dark:text-rose-300 border-red-200 dark:border-rose-700 font-bold'
+    case 'UPDATE_ROLE': return 'bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700 font-bold'
+    case 'APPROVE_FILM': return 'bg-green-100 dark:bg-emerald-950/80 text-green-700 dark:text-emerald-300 border-green-200 dark:border-emerald-700 font-bold'
+    case 'REJECT_FILM': return 'bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-700 font-bold'
+    default: return 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700 font-bold'
   }
 }
 
@@ -76,7 +76,7 @@ onMounted(() => {
     <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
       <router-link to="/admin" class="text-brand-teal hover:underline">Administrasi</router-link>
       <span class="text-stone-400">/</span>
-      <Badge variant="outline" class="bg-purple-100 text-purple-700 border-purple-300">Log Audit</Badge>
+      <Badge variant="outline" class="bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700 font-bold">Log Audit</Badge>
     </nav>
 
     <PageHeader 
@@ -168,7 +168,7 @@ onMounted(() => {
 
           <!-- Pagination -->
           <div class="p-4 bg-stone-50 dark:bg-stone-800 border-t-2 border-border flex items-center justify-between">
-            <span class="text-[10px] font-bold uppercase text-stone-500">
+            <span class="text-[10px] font-bold uppercase text-stone-500 dark:text-stone-400">
               Halaman {{ pagination.page }} dari {{ pagination.totalPages }}
             </span>
             <div class="flex gap-2">
@@ -177,7 +177,7 @@ onMounted(() => {
                 size="sm" 
                 :disabled="pagination.page === 1 || loading"
                 @click="fetchLogs(pagination.page - 1)"
-                class="h-8 border-2 border-stone-800 shadow-brutal-xs"
+                class="h-8 border-2 border-stone-800 dark:border-stone-700 shadow-brutal-xs"
               >
                 <ChevronLeft class="w-4 h-4" />
               </Button>
@@ -186,7 +186,7 @@ onMounted(() => {
                 size="sm" 
                 :disabled="pagination.page === pagination.totalPages || loading"
                 @click="fetchLogs(pagination.page + 1)"
-                class="h-8 border-2 border-stone-800 shadow-brutal-xs"
+                class="h-8 border-2 border-stone-800 dark:border-stone-700 shadow-brutal-xs"
               >
                 <ChevronRight class="w-4 h-4" />
               </Button>

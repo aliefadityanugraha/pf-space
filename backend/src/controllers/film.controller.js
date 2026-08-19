@@ -8,8 +8,12 @@
 import { filmService, notificationService, gamificationService } from '../services/index.js';
 import { ApiResponse } from '../lib/response.js';
 import { ROLES, FILM_STATUS } from '../config/constants.js';
-import { NotFoundError } from '../lib/errors.js';
+import { NotFoundError, AuthorizationError, ValidationError } from '../lib/errors.js';
+import { Film } from '../models/index.js';
+import { transcodeAuditService } from '../services/transcodeAudit.service.js';
 import { recordAuditLog } from '../lib/audit.js';
+
+const rateLimitMap = new Map();
 
 export class FilmController {
   /**
@@ -229,6 +233,135 @@ export class FilmController {
     }
 
     return ApiResponse.success(reply, null, 'Film berhasil dihapus');
+  }
+
+  /**
+   * Admin/Creator: Triggers re-transcoding for a film
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  /**
+   * Helper to verify user authorization (owner or staff) for a film
+   */
+  async verifyFilmOwnershipOrStaff(filmId, user, operationType = 'access') {
+    const film = await Film.query().findById(filmId);
+    if (!film) {
+      throw new NotFoundError('Film tidak ditemukan');
+    }
+
+    if (!user) {
+      throw new AuthorizationError('Akses ditolak: Autentikasi diperlukan');
+    }
+
+    const isOwner = Number(film.user_id) === Number(user.id);
+    const isStaff = user.role === 'admin' || user.role === 'moderator' || user.role_id === ROLES.ADMIN || user.role_id === ROLES.MODERATOR;
+
+    if (!isOwner && !isStaff) {
+      await transcodeAuditService.recordOperation({
+        film_id: filmId,
+        operation_type: operationType === 'cancel' ? 'cancelled' : (operationType === 'retranscode' ? 'retranscode' : 'reconciliation'),
+        reason: 'unauthorized_attempt_blocked',
+        error_code: 'FORBIDDEN',
+        previous_status: film.transcode_status,
+        new_status: film.transcode_status,
+      });
+      throw new AuthorizationError('Anda tidak memiliki izin untuk mengakses atau mengelola transkoding film ini');
+    }
+
+    return film;
+  }
+
+  /**
+   * Admin/Creator: Triggers re-transcoding for a film
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async retranscode(request, reply) {
+    const { id } = request.params;
+    const filmId = parseInt(id, 10);
+    await this.verifyFilmOwnershipOrStaff(filmId, request.user, 'retranscode');
+
+    // Rate Limiting
+    const key = `${request.user.id}:${filmId}`;
+    const now = Date.now();
+    const history = (rateLimitMap.get(key) || []).filter((t) => now - t < 60000);
+    if (history.length >= 5) {
+      throw new ValidationError('Rate limit exceeded: Terlalu banyak permintaan transkoding. Silakan tunggu 1 menit.');
+    }
+    history.push(now);
+    rateLimitMap.set(key, history);
+
+    const film = await filmService.retranscode(filmId);
+    return ApiResponse.success(reply, film, 'Retranskoding video berhasil dimulai');
+  }
+
+  /**
+   * Admin/Creator: Cancels active or pending transcoding for a film
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async cancelTranscode(request, reply) {
+    const { id } = request.params;
+    const filmId = parseInt(id, 10);
+    await this.verifyFilmOwnershipOrStaff(filmId, request.user, 'cancel');
+
+    const film = await filmService.cancelTranscode(filmId);
+    return ApiResponse.success(reply, film, 'Pekerjaan transkoding berhasil dibatalkan');
+  }
+
+  /**
+   * Development Debug: Fetch detailed transcode status & job payload
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getTranscodeStatus(request, reply) {
+    const { id } = request.params;
+    const filmId = parseInt(id, 10);
+    await this.verifyFilmOwnershipOrStaff(filmId, request.user, 'access');
+
+    const status = await filmService.getTranscodeStatus(filmId);
+    return ApiResponse.success(reply, status, 'Detail status transkoding berhasil diambil');
+  }
+
+  /**
+   * Development Debug: Fetch queue operational metrics
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getTranscodeQueueMetrics(request, reply) {
+    if (!request.user) {
+      throw new AuthorizationError('Akses ditolak: Autentikasi diperlukan');
+    }
+    const metrics = await filmService.getTranscodeQueueMetrics();
+    return ApiResponse.success(reply, metrics, 'Metrik antrean transkoding berhasil diambil');
+  }
+
+  /**
+   * Audit History: Fetch chronological transcode audit trail for a film
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getTranscodeHistory(request, reply) {
+    const { id } = request.params;
+    const filmId = parseInt(id, 10);
+    await this.verifyFilmOwnershipOrStaff(filmId, request.user, 'access');
+
+    const history = await filmService.getTranscodeHistory(filmId);
+    return ApiResponse.success(reply, history, 'Riwayat operasi transkoding berhasil diambil');
+  }
+
+  /**
+   * Development Debug: Fetch detailed transcode audit summary
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getTranscodeAudit(request, reply) {
+    const { id } = request.params;
+    const filmId = parseInt(id, 10);
+    await this.verifyFilmOwnershipOrStaff(filmId, request.user, 'access');
+
+    const audit = await filmService.getTranscodeAudit(filmId);
+    return ApiResponse.success(reply, audit, 'Audit transkoding berhasil diambil');
   }
 
   /**

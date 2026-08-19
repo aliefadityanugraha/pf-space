@@ -272,6 +272,12 @@ const routes = [
         meta: { requiresAdmin: true },
       },
       {
+        path: "workers",
+        name: "AdminWorkerMonitor",
+        component: () => import("../pages/admin/WorkerMonitor.vue"),
+        meta: { requiresAdmin: true },
+      },
+      {
         path: "material-categories",
         name: "AdminMaterialCategories",
         component: () => import("../pages/admin/MaterialCategories.vue"),

@@ -30,5 +30,21 @@ module.exports = {
       out_file: "./logs/frontend-out.log",
       merge_logs: true,
     },
+    {
+      name: "pfspace-transcoder",
+      cwd: "./transcoder",
+      script: "src/worker.js",
+      instances: 1,
+      exec_mode: "fork",
+      env: {
+        NODE_ENV: "production",
+      },
+      max_memory_restart: "1G",
+      error_file: "./logs/transcoder-error.log",
+      out_file: "./logs/transcoder-out.log",
+      merge_logs: true,
+      max_restarts: 10,
+      restart_delay: 4000,
+    },
   ],
 };

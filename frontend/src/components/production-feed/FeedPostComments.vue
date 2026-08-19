@@ -210,10 +210,10 @@ fetchComments()
       </div>
       <div
         v-else-if="comments.length === 0"
-        class="text-center py-8 bg-stone-100 rounded border-2 border-stone-200 border-dashed"
+        class="text-center py-8 bg-stone-100 dark:bg-stone-900 rounded border-2 border-stone-200 dark:border-stone-800 border-dashed text-stone-600 dark:text-stone-300"
       >
-        <MessageCircle class="w-12 h-12 text-stone-300 mx-auto mb-2" />
-        <p class="text-stone-500 font-body text-sm md:text-base">
+        <MessageCircle class="w-12 h-12 text-stone-300 dark:text-stone-600 mx-auto mb-2" />
+        <p class="text-stone-500 dark:text-stone-400 font-body text-sm md:text-base">
           Belum ada diskusi. Jadilah yang pertama berkomentar!
         </p>
       </div>
