@@ -32,9 +32,13 @@ import {
   X,
   Eye,
   MonitorPlay,
+  Plus,
+  LayoutGrid,
+  FolderKanban,
 } from "lucide-vue-next";
 import { useHead } from "@unhead/vue";
 import { useToast } from "@/composables/useToast";
+import { useAuth } from "@/composables/useAuth";
 
 useHead(() => {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
@@ -84,30 +88,40 @@ useHead(() => {
 });
 
 const { showToast } = useToast();
+const { isModerator, isAdmin } = useAuth();
+const canManage = computed(() => isModerator.value || isAdmin.value);
 
 const materials = ref([]);
+const categoryObjects = ref([]);
 const loading = ref(true);
 const searchQuery = ref("");
 const selectedType = ref("all");
 const selectedCategory = ref("Semua");
+const viewMode = ref("grid"); // 'grid' | 'grouped'
 
 // Modal for preview
 const showPreviewModal = ref(false);
 const previewMaterial = ref(null);
 
-const categories = [
-  "Semua",
-  "Dasar Perfilman",
-  "Pra Produksi",
-  "Produksi",
-  "Pasca Produksi",
-  "Apresiasi & Kritik",
-  "Sistem Informasi",
-];
+const fetchCategories = async () => {
+  try {
+    const res = await api.get('/api/material-categories');
+    if (res.success) {
+      categoryObjects.value = res.data;
+    }
+  } catch (err) {
+    console.error('Failed to fetch material categories:', err);
+  }
+};
+
+const categoryPills = computed(() => {
+  return ["Semua", ...categoryObjects.value.map((c) => c.nama_kategori)];
+});
 
 const fetchData = async () => {
   loading.value = true;
   try {
+    await fetchCategories();
     const res = await api.get("/api/learning-materials");
     if (res.success) {
       materials.value = res.data;
@@ -134,11 +148,40 @@ const filteredMaterials = computed(() => {
         m.deskripsi.toLowerCase().includes(searchQuery.value.toLowerCase()));
     const matchesType =
       selectedType.value === "all" || m.tipe === selectedType.value;
+    
+    const matCatName = m.materialCategory?.nama_kategori || m.kategori;
     const matchesCategory =
       selectedCategory.value === "Semua" ||
-      m.kategori === selectedCategory.value;
+      matCatName === selectedCategory.value;
     return matchesSearch && matchesType && matchesCategory;
   });
+});
+
+const groupedMaterials = computed(() => {
+  const groups = {};
+  
+  // Initialize groups for fetched categories
+  categoryObjects.value.forEach((cat) => {
+    groups[cat.nama_kategori] = {
+      meta: cat,
+      items: []
+    };
+  });
+
+  // Group filtered materials
+  filteredMaterials.value.forEach((m) => {
+    const catName = m.materialCategory?.nama_kategori || m.kategori || "Materi Umum";
+    if (!groups[catName]) {
+      groups[catName] = {
+        meta: { nama_kategori: catName, deskripsi: "Materi pembelajaran perfilman", icon: "BookOpen" },
+        items: []
+      };
+    }
+    groups[catName].items.push(m);
+  });
+
+  // Filter out empty groups unless specific category selected
+  return Object.values(groups).filter((g) => g.items.length > 0);
 });
 
 const getYoutubeId = (url) => {
@@ -266,6 +309,17 @@ onMounted(fetchData);
                 </div>
               </div>
             </div>
+
+            <div v-if="canManage" class="mt-6">
+              <router-link to="/manage-materi">
+                <Button
+                  class="bg-brand-orange text-stone-900 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 font-bold uppercase transition-all gap-2 h-11 px-5 text-sm cursor-pointer"
+                >
+                  <Plus class="w-4 h-4" />
+                  <span>+ Unggah & Kelola Materi</span>
+                </Button>
+              </router-link>
+            </div>
           </div>
 
           <!-- Featured Card Hero -->
@@ -349,7 +403,7 @@ onMounted(fetchData);
           </div>
           <div class="flex flex-wrap gap-2">
             <button
-              v-for="cat in categories"
+              v-for="cat in categoryPills"
               :key="cat"
               @click="selectedCategory = cat"
               :class="[
@@ -364,7 +418,7 @@ onMounted(fetchData);
           </div>
         </div>
 
-        <!-- Search & Type Toggle -->
+        <!-- Search & Type & View Mode Toggle -->
         <div class="w-full xl:w-96 shrink-0 flex flex-col gap-4">
           <div class="relative">
             <Search
@@ -378,42 +432,69 @@ onMounted(fetchData);
             />
           </div>
 
-          <div
-            class="flex border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 h-10 shadow-brutal-xs overflow-hidden"
-          >
-            <button
-              @click="selectedType = 'all'"
-              :class="[
-                selectedType === 'all'
-                  ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900'
-                  : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
-                'flex-1 text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer',
-              ]"
+          <div class="flex gap-2">
+            <!-- Type Toggle -->
+            <div
+              class="flex-1 flex border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 h-10 shadow-brutal-xs overflow-hidden"
             >
-              Semua
-            </button>
-            <button
-              @click="selectedType = 'pdf'"
-              :class="[
-                selectedType === 'pdf'
-                  ? 'bg-brand-red text-white'
-                  : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
-                'flex-1 border-x-2 border-black dark:border-stone-700 text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer',
-              ]"
-            >
-              Dokumen
-            </button>
-            <button
-              @click="selectedType = 'video'"
-              :class="[
-                selectedType === 'video'
-                  ? 'bg-[#FF0000] text-white'
-                  : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
-                'flex-1 text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer',
-              ]"
-            >
-              Video
-            </button>
+              <button
+                @click="selectedType = 'all'"
+                :class="[
+                  selectedType === 'all'
+                    ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900'
+                    : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
+                  'flex-1 text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer',
+                ]"
+              >
+                Semua
+              </button>
+              <button
+                @click="selectedType = 'pdf'"
+                :class="[
+                  selectedType === 'pdf'
+                    ? 'bg-brand-red text-white'
+                    : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
+                  'flex-1 border-x-2 border-black dark:border-stone-700 text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer',
+                ]"
+              >
+                Dokumen
+              </button>
+              <button
+                @click="selectedType = 'video'"
+                :class="[
+                  selectedType === 'video'
+                    ? 'bg-[#FF0000] text-white'
+                    : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
+                  'flex-1 text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer',
+                ]"
+              >
+                Video
+              </button>
+            </div>
+
+            <!-- View Mode Toggle -->
+            <div class="flex border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 h-10 shadow-brutal-xs overflow-hidden shrink-0">
+              <button
+                @click="viewMode = 'grid'"
+                :title="'Tampilan Grid'"
+                :class="[
+                  viewMode === 'grid' ? 'bg-brand-teal text-white' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
+                  'px-3 flex items-center justify-center transition-colors cursor-pointer'
+                ]"
+              >
+                <LayoutGrid class="w-4 h-4" />
+              </button>
+              <button
+                @click="viewMode = 'grouped'"
+                :title="'Tampilan Berkelompok per Kategori'"
+                :class="[
+                  viewMode === 'grouped' ? 'bg-brand-teal text-white' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700',
+                  'px-3 flex items-center justify-center border-l-2 border-black dark:border-stone-700 transition-colors cursor-pointer'
+                ]"
+              >
+                <FolderKanban class="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -432,12 +513,85 @@ onMounted(fetchData);
 
       <div
         v-else-if="filteredMaterials.length === 0"
-        class="py-20 border-2 border-black dark:border-stone-700 border-dashed bg-stone-50 dark:bg-stone-900"
+        class="py-20 border-2 border-black dark:border-stone-700 border-dashed bg-stone-50 dark:bg-stone-900 text-center"
       >
-        <EmptyState
-          title="Materi Tidak Ditemukan"
-          description="Coba gunakan kata kunci lain atau pilih kategori yang berbeda."
-        />
+        <BookOpen class="w-16 h-16 text-stone-300 dark:text-stone-700 mx-auto mb-4" />
+        <h3 class="text-xl font-black uppercase text-stone-900 dark:text-stone-100 mb-2">
+          Tidak Ada Materi Pembelajaran
+        </h3>
+        <p class="text-stone-500 dark:text-stone-400 text-sm max-w-md mx-auto">
+          Tidak ada materi yang sesuai dengan kata kunci atau kriteria filter yang Anda pilih.
+        </p>
+      </div>
+
+      <!-- GROUPED VIEW MODE -->
+      <div v-else-if="viewMode === 'grouped'" class="space-y-16">
+        <section v-for="group in groupedMaterials" :key="group.meta.nama_kategori" class="space-y-6">
+          <div class="flex items-center gap-3 border-b-4 border-black dark:border-stone-100 pb-4">
+            <div class="w-10 h-10 bg-brand-teal text-white border-2 border-black dark:border-stone-100 shadow-brutal-xs flex items-center justify-center font-bold">
+              <BookOpen class="w-5 h-5" />
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-3">
+                <h2 class="text-2xl font-black uppercase tracking-tight text-stone-900 dark:text-stone-100">
+                  {{ group.meta.nama_kategori }}
+                </h2>
+                <Badge class="bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 font-mono font-bold">
+                  {{ group.items.length }} Materi
+                </Badge>
+              </div>
+              <p v-if="group.meta.deskripsi" class="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                {{ group.meta.deskripsi }}
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card
+              v-for="material in group.items"
+              :key="material.materi_id"
+              class="bg-white dark:bg-stone-900 border-4 border-black dark:border-stone-100 shadow-brutal hover:translate-x-[-3px] hover:translate-y-[-3px] transition-all flex flex-col group overflow-hidden"
+            >
+              <div class="aspect-video bg-stone-100 dark:bg-stone-800 border-b-4 border-black dark:border-stone-100 relative overflow-hidden shrink-0">
+                <img
+                  v-if="material.tipe === 'video'"
+                  :src="`https://img.youtube.com/vi/${getYoutubeId(material.video_url)}/hqdefault.jpg`"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div v-else class="w-full h-full flex items-center justify-center bg-brand-red/5 dark:bg-brand-red/10">
+                  <FileText class="w-16 h-16 text-brand-red opacity-30" />
+                </div>
+                <div class="absolute top-3 left-3">
+                  <Badge v-if="material.tipe === 'video'" class="bg-[#FF0000] text-white border-2 border-black text-[10px] font-black uppercase">
+                    Video
+                  </Badge>
+                  <Badge v-else class="bg-brand-red text-white border-2 border-black text-[10px] font-black uppercase">
+                    PDF
+                  </Badge>
+                </div>
+                <button @click="openPreview(material)" class="absolute inset-0 bg-black/0 hover:bg-black/20 flex items-center justify-center transition-all group/btn cursor-pointer">
+                  <div class="w-12 h-12 bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-100 shadow-brutal-xs scale-0 group-hover/btn:scale-100 transition-all flex items-center justify-center">
+                    <Play v-if="material.tipe === 'video'" class="w-6 h-6 fill-stone-900 dark:fill-stone-100 text-stone-900 dark:text-stone-100" />
+                    <Eye v-else class="w-6 h-6 text-stone-900 dark:text-stone-100" />
+                  </div>
+                </button>
+              </div>
+              <CardContent class="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 class="font-black text-lg uppercase mb-2 line-clamp-1 text-stone-900 dark:text-stone-100">
+                    {{ material.judul }}
+                  </h3>
+                  <p class="text-stone-600 dark:text-stone-400 text-xs line-clamp-2 leading-relaxed mb-4">
+                    {{ material.deskripsi || "Tidak ada deskripsi singkat." }}
+                  </p>
+                </div>
+                <Button @click="openPreview(material)" class="w-full gap-2 border-2 border-black dark:border-stone-100 shadow-brutal-xs hover:shadow-none bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-xs font-black uppercase tracking-wider py-4 h-auto cursor-pointer">
+                  Lihat Materi
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
       </div>
 
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

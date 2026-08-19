@@ -238,9 +238,9 @@ onMounted(() => {
     </PageHeader>
 
     <!-- Info Card -->
-    <Card class="mb-6 border-2 border-blue-300 bg-blue-50">
+    <Card class="mb-6 border-2 border-blue-300 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/60">
       <CardContent class="p-4">
-        <p class="text-sm text-blue-900">
+        <p class="text-sm text-blue-900 dark:text-blue-200">
           <strong>Catatan:</strong> Hanya satu diskusi yang bisa aktif dalam satu waktu. 
           Diskusi aktif akan ditampilkan di halaman utama dan semua user bisa memberikan balasan.
         </p>
@@ -248,25 +248,25 @@ onMounted(() => {
     </Card>
 
     <!-- Form Modal -->
-    <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center">
-      <div class="absolute inset-0 bg-black/50" @click="closeForm"></div>
-      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-2xl mx-4">
-        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-stone-100">
-          <h2 class="font-bold text-lg">{{ editingId ? 'Edit Diskusi' : 'Buat Diskusi Baru' }}</h2>
-          <button @click="closeForm" class="p-1 hover:bg-stone-200">
+    <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeForm"></div>
+      <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-2xl mx-4 text-stone-900 dark:text-stone-100">
+        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-stone-100 dark:bg-stone-800">
+          <h2 class="font-bold text-lg font-display uppercase tracking-tight">{{ editingId ? 'Edit Diskusi' : 'Buat Diskusi Baru' }}</h2>
+          <button @click="closeForm" class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors">
             <XCircle class="w-5 h-5" />
           </button>
         </div>
         <form @submit.prevent="saveDiscussion" class="p-6 space-y-4">
           <div>
-            <label class="block text-sm font-bold mb-2">Judul Diskusi *</label>
+            <label class="block text-xs font-bold uppercase tracking-widest mb-1.5">Judul Diskusi *</label>
             <Input
               v-model="formData.title"
               placeholder="Contoh: Apa Karya favorit kalian tahun ini?"
             />
           </div>
           <div>
-            <label class="block text-sm font-bold mb-2">Deskripsi (Opsional)</label>
+            <label class="block text-xs font-bold uppercase tracking-widest mb-1.5">Deskripsi (Opsional)</label>
             <Textarea
               v-model="formData.description"
               placeholder="Tambahkan konteks atau pertanyaan lebih detail..."
@@ -286,17 +286,17 @@ onMounted(() => {
     </div>
 
     <!-- Discussions List -->
-    <Card>
-      <CardHeader class="bg-teal-50 border-b-2 border-stone-800">
+    <Card class="border-2 border-stone-800 dark:border-stone-100 shadow-brutal bg-card">
+      <CardHeader class="bg-teal-50 dark:bg-teal-950/60 border-b-2 border-stone-800 dark:border-stone-100">
         <div class="flex items-center gap-3">
-          <MessageCircle class="w-5 h-5" />
-          <CardTitle class="text-lg font-bold uppercase">Daftar Diskusi</CardTitle>
+          <MessageCircle class="w-5 h-5 text-brand-teal dark:text-teal-300" />
+          <CardTitle class="text-lg font-bold uppercase text-stone-900 dark:text-stone-100">Daftar Diskusi</CardTitle>
         </div>
       </CardHeader>
       <CardContent class="p-0">
         <!-- Loading -->
         <div v-if="loading" class="flex items-center justify-center py-12">
-          <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
+          <Loader2 class="w-8 h-8 animate-spin text-brand-teal" />
         </div>
 
         <!-- Empty -->
@@ -310,32 +310,32 @@ onMounted(() => {
           <div 
             v-for="discussion in discussions" 
             :key="discussion.discussion_id" 
-            class="px-6 py-4 border-b border-stone-200 hover:bg-stone-50"
+            class="px-6 py-4 border-b border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors"
           >
             <div class="flex items-start justify-between gap-4">
               <div class="flex-1">
                 <div class="flex items-center gap-3 mb-2">
-                  <h3 class="text-lg font-bold text-stone-900">{{ discussion.title }}</h3>
+                  <h3 class="text-lg font-bold text-stone-900 dark:text-stone-100">{{ discussion.title }}</h3>
                   <Badge
                     :variant="discussion.is_active ? 'default' : 'secondary'"
-                    :class="discussion.is_active ? 'bg-green-100 text-green-700' : ''"
+                    :class="discussion.is_active ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-800' : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-300 dark:border-stone-700'"
                   >
                     {{ discussion.is_active ? 'Aktif' : 'Nonaktif' }}
                   </Badge>
                 </div>
                 
-                <p v-if="discussion.description" class="text-stone-600 text-sm mb-3">
+                <p v-if="discussion.description" class="text-stone-600 dark:text-stone-300 text-sm mb-3">
                   {{ discussion.description }}
                 </p>
 
-                <div class="flex items-center gap-4 text-xs text-stone-500">
+                <div class="flex items-center gap-4 text-xs text-stone-500 dark:text-stone-400">
                   <span>Dibuat oleh {{ discussion.creator?.name }}</span>
                   <span>•</span>
                   <span>{{ formatTime(discussion.created_at) }}</span>
                   <span>•</span>
                   <button 
                     @click="viewReplies(discussion)"
-                    class="text-brand-teal hover:underline font-medium"
+                    class="text-brand-teal dark:text-teal-300 hover:underline font-medium"
                   >
                     {{ discussion.reply_count || 0 }} balasan
                   </button>
@@ -347,6 +347,7 @@ onMounted(() => {
                   @click="toggleDiscussion(discussion.discussion_id, discussion.is_active)"
                   size="sm"
                   variant="outline"
+                  class="border-2 border-stone-800 dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-700"
                   :title="discussion.is_active ? 'Nonaktifkan' : 'Aktifkan'"
                 >
                   <Eye v-if="!discussion.is_active" class="w-4 h-4" />
@@ -357,6 +358,7 @@ onMounted(() => {
                   @click="openForm(discussion)"
                   size="sm"
                   variant="outline"
+                  class="border-2 border-stone-800 dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-700"
                   title="Edit"
                 >
                   <Edit class="w-4 h-4" />
@@ -366,7 +368,7 @@ onMounted(() => {
                   @click="confirmDelete(discussion)"
                   size="sm"
                   variant="outline"
-                  class="text-red-600 hover:bg-red-50"
+                  class="border-2 border-stone-800 dark:border-stone-100 bg-white dark:bg-stone-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/60"
                   title="Hapus"
                 >
                   <Trash2 class="w-4 h-4" />
@@ -379,20 +381,20 @@ onMounted(() => {
     </Card>
 
     <!-- Confirm Delete Dialog -->
-    <div v-if="showConfirm" class="fixed inset-0 z-50 flex items-center justify-center">
-      <div class="absolute inset-0 bg-black/50" @click="showConfirm = false"></div>
-      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-sm mx-4">
-        <div class="flex items-center gap-3 px-6 py-4 border-b-2 border-black bg-red-50">
-          <AlertTriangle class="w-5 h-5 text-red-600" />
-          <h2 class="font-bold text-lg text-red-800">{{ confirmData.title }}</h2>
+    <div v-if="showConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showConfirm = false"></div>
+      <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-sm mx-4 text-stone-900 dark:text-stone-100 overflow-hidden animate-in fade-in duration-200">
+        <div class="flex items-center gap-3 px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-red-50 dark:bg-red-950/60">
+          <AlertTriangle class="w-5 h-5 text-red-600 dark:text-red-400" />
+          <h2 class="font-bold text-lg text-red-800 dark:text-red-300">{{ confirmData.title }}</h2>
         </div>
         <div class="p-6">
-          <p class="text-stone-600 mb-6">{{ confirmData.message }}</p>
+          <p class="text-stone-600 dark:text-stone-300 mb-6 text-sm">{{ confirmData.message }}</p>
           <div class="flex gap-3">
             <Button type="button" variant="outline" class="flex-1" @click="showConfirm = false" :disabled="deleting">
               Batal
             </Button>
-            <Button type="button" class="flex-1 gap-2 bg-red-600 hover:bg-red-700" @click="executeDelete" :disabled="deleting">
+            <Button type="button" class="flex-1 gap-2 bg-red-600 hover:bg-red-700 text-white" @click="executeDelete" :disabled="deleting">
               <Loader2 v-if="deleting" class="w-4 h-4 animate-spin" />
               <Trash2 v-else class="w-4 h-4" />
               Hapus
@@ -403,15 +405,15 @@ onMounted(() => {
     </div>
 
     <!-- Replies Modal -->
-    <div v-if="showRepliesModal" class="fixed inset-0 z-50 flex items-center justify-center">
-      <div class="absolute inset-0 bg-black/50" @click="closeRepliesModal"></div>
-      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-3xl mx-4 max-h-[80vh] flex flex-col">
-        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-stone-100">
+    <div v-if="showRepliesModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeRepliesModal"></div>
+      <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-3xl mx-4 max-h-[80vh] flex flex-col text-stone-900 dark:text-stone-100 overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-stone-100 dark:bg-stone-800">
           <div>
-            <h2 class="font-bold text-lg">Balasan Diskusi</h2>
-            <p class="text-sm text-stone-600 mt-1">{{ selectedDiscussion?.title }}</p>
+            <h2 class="font-bold text-lg font-display uppercase tracking-tight">Balasan Diskusi</h2>
+            <p class="text-xs text-stone-600 dark:text-stone-300 mt-1">{{ selectedDiscussion?.title }}</p>
           </div>
-          <button @click="closeRepliesModal" class="p-1 hover:bg-stone-200">
+          <button @click="closeRepliesModal" class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors">
             <XCircle class="w-5 h-5" />
           </button>
         </div>
@@ -419,7 +421,7 @@ onMounted(() => {
         <div class="flex-1 overflow-y-auto p-6">
           <!-- Loading -->
           <div v-if="loadingReplies" class="flex items-center justify-center py-12">
-            <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
+            <Loader2 class="w-8 h-8 animate-spin text-brand-teal" />
           </div>
 
           <!-- Empty -->
@@ -433,10 +435,10 @@ onMounted(() => {
             <div 
               v-for="reply in replies" 
               :key="reply.reply_id"
-              class="flex gap-3 p-4 bg-stone-50 border-2 border-stone-200 hover:border-stone-300 transition-colors"
+              class="flex gap-3 p-4 bg-stone-50 dark:bg-stone-800/60 border-2 border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 transition-colors"
             >
               <!-- Avatar -->
-              <div class="w-10 h-10 bg-brand-teal border-2 border-black shadow-brutal-sm flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <div class="w-10 h-10 bg-brand-teal border-2 border-black dark:border-stone-100 shadow-brutal-sm flex items-center justify-center flex-shrink-0 overflow-hidden">
                 <img 
                   v-if="reply.user?.image" 
                   :src="assetUrl(reply.user.image)" 
@@ -452,9 +454,9 @@ onMounted(() => {
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between gap-2 mb-2">
                   <div class="flex items-center gap-2 text-sm">
-                    <span class="font-bold text-stone-900">{{ reply.user?.name || 'User' }}</span>
+                    <span class="font-bold text-stone-900 dark:text-stone-100">{{ reply.user?.name || 'User' }}</span>
                     <span class="text-stone-400">•</span>
-                    <span class="text-stone-500 text-xs">{{ formatTime(reply.created_at) }}</span>
+                    <span class="text-stone-500 dark:text-stone-400 text-xs">{{ formatTime(reply.created_at) }}</span>
                   </div>
                   
                   <!-- Delete button -->
@@ -462,19 +464,19 @@ onMounted(() => {
                     @click="deleteReplyFromModal(reply.reply_id)"
                     size="sm"
                     variant="outline"
-                    class="text-red-600 hover:bg-red-50"
+                    class="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/60 border-2 border-stone-800 dark:border-stone-100 bg-white dark:bg-stone-800"
                     title="Hapus balasan"
                   >
                     <Trash2 class="w-4 h-4" />
                   </Button>
                 </div>
-                <p class="text-stone-700 text-sm whitespace-pre-wrap break-words">{{ reply.content }}</p>
+                <p class="text-stone-700 dark:text-stone-200 text-sm whitespace-pre-wrap break-words">{{ reply.content }}</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="border-t-2 border-black p-4 bg-stone-50">
+        <div class="border-t-2 border-black dark:border-stone-100 p-4 bg-stone-50 dark:bg-stone-900">
           <Button @click="closeRepliesModal" variant="outline" class="w-full">
             Tutup
           </Button>

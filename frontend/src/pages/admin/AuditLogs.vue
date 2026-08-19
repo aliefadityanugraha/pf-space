@@ -132,32 +132,32 @@ onMounted(() => {
                       {{ formatDate(log.created_at) }}
                     </div>
                   </td>
-                  <td class="px-6 py-4 border-r border-stone-100">
+                  <td class="px-6 py-4 border-r border-border">
                     <div class="flex items-center gap-2">
-                      <div class="w-6 h-6 bg-stone-200 border border-stone-800 flex items-center justify-center text-[10px] font-bold">
+                      <div class="w-6 h-6 bg-stone-200 dark:bg-stone-800 border border-stone-800 dark:border-stone-100 flex items-center justify-center text-[10px] font-bold text-foreground">
                         {{ log.user?.name?.charAt(0) || '?' }}
                       </div>
                       <div>
-                        <p class="text-[13px] font-bold truncate max-w-[120px]">{{ log.user?.name || 'Sistem' }}</p>
-                        <p class="text-[10px] text-stone-500 font-mono">{{ log.ip_address || '0.0.0.0' }}</p>
+                        <p class="text-[13px] font-bold truncate max-w-[120px] text-foreground">{{ log.user?.name || 'Sistem' }}</p>
+                        <p class="text-[10px] text-muted-foreground font-mono">{{ log.ip_address || '0.0.0.0' }}</p>
                       </div>
                     </div>
                   </td>
-                  <td class="px-6 py-4 border-r border-stone-100">
+                  <td class="px-6 py-4 border-r border-border">
                     <Badge :class="getActionBadge(log.action)" variant="outline" class="text-[10px] font-bold uppercase py-0.5">
                       {{ log.action.replace('_', ' ') }}
                     </Badge>
                   </td>
-                  <td class="px-6 py-4 border-r border-stone-100">
+                  <td class="px-6 py-4 border-r border-border">
                     <div class="flex items-center gap-2 text-[13px]">
                       <component :is="getTargetIcon(log.target_type)" class="w-3.5 h-3.5 text-stone-400" />
-                      <span class="font-medium uppercase text-[11px] text-stone-500">{{ log.target_type }}</span>
-                      <span class="text-stone-300">#</span>
-                      <span class="font-mono text-stone-400 text-[10px]">{{ log.target_id?.substring(0, 8) }}</span>
+                      <span class="font-medium uppercase text-[11px] text-muted-foreground">{{ log.target_type }}</span>
+                      <span class="text-stone-300 dark:text-stone-600">#</span>
+                      <span class="font-mono text-muted-foreground text-[10px]">{{ log.target_id?.substring(0, 8) }}</span>
                     </div>
                   </td>
                   <td class="px-6 py-4">
-                    <div class="text-[11px] bg-stone-100 p-2 border border-stone-200 rounded font-mono text-stone-600 max-w-md overflow-hidden">
+                    <div class="text-[11px] bg-stone-100 dark:bg-stone-800 p-2 border border-stone-200 dark:border-stone-700 rounded font-mono text-stone-600 dark:text-stone-300 max-w-md overflow-hidden">
                       {{ log.details }}
                     </div>
                   </td>
@@ -167,7 +167,7 @@ onMounted(() => {
           </div>
 
           <!-- Pagination -->
-          <div class="p-4 bg-stone-50 border-t-2 border-stone-800 flex items-center justify-between">
+          <div class="p-4 bg-stone-50 dark:bg-stone-800 border-t-2 border-border flex items-center justify-between">
             <span class="text-[10px] font-bold uppercase text-stone-500">
               Halaman {{ pagination.page }} dari {{ pagination.totalPages }}
             </span>

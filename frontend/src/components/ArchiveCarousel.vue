@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Autoplay } from 'swiper/modules'
 import 'swiper/css'
@@ -6,7 +7,7 @@ import 'swiper/css/navigation'
 import ArchiveCard from './ArchiveCard.vue'
 import ArchiveSkeleton from './ArchiveSkeleton.vue'
 import { Badge } from '@/components/ui/badge'
-import { User, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { User, ChevronLeft, ChevronRight, Sparkles, Film } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -21,11 +22,18 @@ const props = defineProps({
   title: {
     type: String,
     default: ''
+  },
+  carouselId: {
+    type: [String, Number],
+    default: '1'
   }
 })
 
 const router = useRouter()
 const modules = [Navigation, Autoplay]
+
+const prevClass = computed(() => `swiper-prev-btn-${props.carouselId}`)
+const nextClass = computed(() => `swiper-next-btn-${props.carouselId}`)
 
 const goToDetail = (slug) => {
   router.push(`/archive/${slug}`)
@@ -34,18 +42,48 @@ const goToDetail = (slug) => {
 
 <template>
   <div class="w-full relative group/swiper">
+    <!-- Header Sub-Bar for Row Slider -->
+    <div class="flex items-center justify-between mb-4 px-1">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-brand-red animate-pulse"></span>
+        <h3 v-if="title" class="text-sm md:text-base font-extrabold uppercase tracking-wide text-stone-900 dark:text-stone-100 font-display flex items-center gap-2">
+          {{ title }}
+        </h3>
+        <Badge variant="outline" class="bg-brand-red/10 dark:bg-brand-red/20 text-brand-red dark:text-red-400 border-brand-red/30 text-[10px] font-mono font-bold px-2 py-0.5">
+          {{ items.length }} Karya
+        </Badge>
+      </div>
+
+      <!-- Navigation Arrows -->
+      <div class="flex items-center gap-2">
+        <button
+          :class="[prevClass, 'w-8 h-8 rounded bg-white dark:bg-stone-800 border-2 border-stone-800 dark:border-stone-100 shadow-brutal-xs flex items-center justify-center transition-all hover:bg-brand-teal hover:text-white dark:hover:bg-brand-teal text-stone-900 dark:text-stone-100 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed']"
+          title="Sebelumnya"
+        >
+          <ChevronLeft class="w-4 h-4" />
+        </button>
+        <button
+          :class="[nextClass, 'w-8 h-8 rounded bg-white dark:bg-stone-800 border-2 border-stone-800 dark:border-stone-100 shadow-brutal-xs flex items-center justify-center transition-all hover:bg-brand-teal hover:text-white dark:hover:bg-brand-teal text-stone-900 dark:text-stone-100 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed']"
+          title="Berikutnya"
+        >
+          <ChevronRight class="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Swiper Container -->
     <Swiper
       :modules="modules"
       :slides-per-view="2.1"
-      :space-between="12"
+      :space-between="14"
       :navigation="{
-        nextEl: '.swiper-button-next-custom',
-        prevEl: '.swiper-button-prev-custom',
+        nextEl: `.${nextClass}`,
+        prevEl: `.${prevClass}`,
       }"
       :breakpoints="{
         '480': {
           slidesPerView: 2.5,
-          spaceBetween: 16,
+          spaceBetween: 14,
         },
         '640': {
           slidesPerView: 3.2,
@@ -57,14 +95,14 @@ const goToDetail = (slug) => {
         },
         '1024': {
           slidesPerView: 5,
-          spaceBetween: 20,
+          spaceBetween: 18,
         },
         '1280': {
           slidesPerView: 5,
-          spaceBetween: 24,
+          spaceBetween: 20,
         },
       }"
-      class="pb-12 !px-1"
+      class="pb-2 !px-1"
     >
       <!-- Loading State -->
       <template v-if="loading">
@@ -79,27 +117,22 @@ const goToDetail = (slug) => {
           <ArchiveCard 
             :archive="item"
             @click="goToDetail(item.slug)"
-            class="cursor-pointer h-full"
+            class="cursor-pointer h-full border-2 border-stone-800 dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all bg-card text-card-foreground"
           >
             <template #overlay>
-              <Badge v-if="item.tahun_karya" class="absolute top-2 left-2 bg-black/70 text-white text-xs">
+              <Badge v-if="item.tahun_karya" class="absolute top-2 left-2 bg-stone-950/80 backdrop-blur-sm text-white text-[10px] font-mono font-bold px-2 py-0.5 border border-white/20">
                 {{ item.tahun_karya }}
+              </Badge>
+              <Badge v-if="item.category?.nama_kategori" class="absolute top-2 right-2 bg-brand-teal text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 border border-black shadow-brutal-xs">
+                {{ item.category.nama_kategori }}
               </Badge>
             </template>
             <template #subtitle-icon>
-              <User class="w-3 h-3" />
+              <User class="w-3.5 h-3.5 text-stone-400 shrink-0" />
             </template>
           </ArchiveCard>
         </SwiperSlide>
       </template>
     </Swiper>
-
-    <!-- Custom Navigation Buttons -->
-    <button class="swiper-button-prev-custom absolute top-1/2 -left-4 md:-left-15 z-10 -translate-y-1/2 w-10 h-10 bg-white border-2 border-black shadow-brutal flex items-center justify-center opacity-0 group-hover/swiper:opacity-100 transition-opacity disabled:opacity-0 cursor-pointer hover:bg-stone-50">
-      <ChevronLeft class="w-6 h-6" />
-    </button>
-    <button class="swiper-button-next-custom absolute top-1/2 -right-4 md:-right-15 z-10 -translate-y-1/2 w-10 h-10 bg-white border-2 border-black shadow-brutal flex items-center justify-center opacity-0 group-hover/swiper:opacity-100 transition-opacity disabled:opacity-0 cursor-pointer hover:bg-stone-50">
-      <ChevronRight class="w-6 h-6" />
-    </button>
   </div>
 </template>

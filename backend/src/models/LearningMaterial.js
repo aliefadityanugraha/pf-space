@@ -40,6 +40,7 @@ export class LearningMaterial extends BaseModel {
         is_active: { type: 'boolean' },
         is_featured: { type: 'boolean' },
         kategori: { type: ['string', 'null'], maxLength: 100 },
+        material_category_id: { type: ['integer', 'null'] },
         creator_id: { type: 'string', minLength: 1, maxLength: 36 }
       }
     };
@@ -57,6 +58,14 @@ export class LearningMaterial extends BaseModel {
         join: {
           from: 'learning_materials.creator_id',
           to: 'users.id'
+        }
+      },
+      materialCategory: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: 'MaterialCategory',
+        join: {
+          from: 'learning_materials.material_category_id',
+          to: 'material_categories.category_id'
         }
       }
     };

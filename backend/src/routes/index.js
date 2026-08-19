@@ -22,6 +22,7 @@ import studyNoteRoutes from './studyNote.routes.js';
 import filmSceneRoutes from './filmScene.routes.js';
 import reportRoutes from './report.routes.js';
 import productionFeedRoutes from './productionFeed.routes.js';
+import materialCategoryRoutes from './materialCategory.routes.js';
 import { knex } from '../database/index.js';
 import os from 'os';
 
@@ -60,8 +61,9 @@ export default async function routes(fastify) {
   // Personal watchlists/bookmarks
   await fastify.register(collectionRoutes, { prefix: '/collections' });
 
-  // Learning materials (Materi)
+  // Learning materials (Materi) & Categories
   await fastify.register(learningMaterialRoutes, { prefix: '/learning-materials' });
+  await fastify.register(materialCategoryRoutes, { prefix: '/material-categories' });
 
   // System settings
   await fastify.register(settingRoutes, { prefix: '/settings' });

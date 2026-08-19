@@ -46,7 +46,7 @@ PF Space adalah platform web arsip film yang dibangun untuk siswa sekolah meneng
 | **Frontend**   | Vue 3.5 · Vite 7 · Tailwind CSS 4 · shadcn/ui · Lucide Icons |
 | **Backend**    | Fastify 5 · Node.js 23 · MySQL · Knex.js · Objection.js      |
 | **Auth**       | Better Auth (Email/Password + Google OAuth)                  |
-| **Upload**     | Tus.io (Resumable, hingga 2GB)                               |
+| **Upload**     | Tus.io (Resumable, hingga 4GB)                               |
 | **AI**         | Groq · OpenAI · Gemini (pluggable)                           |
 | **Validation** | Zod (centralized schema)                                     |
 | **CI/CD**      | GitHub Actions · Vitest                                      |
@@ -169,7 +169,7 @@ gh run list                # lihat status GitHub Actions
 - [x] Film Evaluation — Kurator feedback & notifikasi
 - [x] Study Mode — Video player + dokumen split-screen
 - [x] Production Feed — Pemantauan aktivitas produksi
-- [x] Media Handling — Tus.io resumable upload (2GB)
+- [x] Media Handling — Tus.io resumable upload (4GB)
 - [x] Community Forum — Threaded discussions
 - [x] AI Chat — Context-aware film assistant
 - [x] Learning Materials — Curated resource management

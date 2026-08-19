@@ -85,17 +85,17 @@ onMounted(() => {
 
     <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Voting Rank Status -->
-      <Card class="border-2 border-black shadow-brutal h-fit">
-        <CardHeader class="bg-stone-50 border-b-2 border-black">
+      <Card class="border-2 border-black dark:border-stone-100 shadow-brutal h-fit bg-card text-card-foreground">
+        <CardHeader class="bg-stone-50 dark:bg-stone-800 border-b-2 border-black dark:border-stone-100 text-stone-900 dark:text-stone-100">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <TrendingUp class="w-5 h-5" />
-              <CardTitle>Status Peringkat Trending</CardTitle>
+              <TrendingUp class="w-5 h-5 text-stone-900 dark:text-stone-100" />
+              <CardTitle class="text-stone-900 dark:text-stone-100">Status Peringkat Trending</CardTitle>
             </div>
             <Button 
               variant="ghost" 
               size="icon" 
-              class="h-8 w-8 hover:bg-stone-200"
+              class="h-8 w-8 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100"
               @click="fetchTrending"
               :disabled="loadingTrending"
             >
@@ -105,7 +105,7 @@ onMounted(() => {
               />
             </Button>
           </div>
-          <CardDescription>
+          <CardDescription class="text-stone-500 dark:text-stone-300">
             Top 10 karya dengan apresiasi terbanyak saat ini.
           </CardDescription>
         </CardHeader>
@@ -113,33 +113,33 @@ onMounted(() => {
           <div v-if="loadingTrending" class="p-8 flex justify-center">
             <Loader2 class="w-8 h-8 animate-spin text-stone-400" />
           </div>
-          <div v-else-if="trendingKaryas.length === 0" class="p-8 text-center text-stone-500 italic">
+          <div v-else-if="trendingKaryas.length === 0" class="p-8 text-center text-stone-500 dark:text-stone-400 italic">
             Belum ada data trending.
           </div>
-          <div v-else class="divide-y divide-stone-200">
+          <div v-else class="divide-y divide-stone-200 dark:divide-stone-800">
             <div 
               v-for="(karya, index) in trendingKaryas" 
               :key="karya.film_id"
-              class="flex items-center gap-4 p-4 hover:bg-stone-50 transition-colors"
+              class="flex items-center gap-4 p-4 hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors"
             >
               <div 
-                class="w-8 h-8 flex items-center justify-center font-bold font-mono border-2 border-black shadow-brutal-sm"
-                :class="index < 3 ? 'bg-yellow-400' : 'bg-white'"
+                class="w-8 h-8 flex items-center justify-center font-bold font-mono border-2 border-black dark:border-stone-100 shadow-brutal-sm"
+                :class="index < 3 ? 'bg-yellow-400 text-stone-900' : 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100'"
               >
                 #{{ index + 1 }}
               </div>
               
-              <div class="w-10 h-14 bg-stone-200 border border-stone-800 flex-shrink-0 overflow-hidden">
+              <div class="w-10 h-14 bg-stone-200 dark:bg-stone-800 border border-stone-800 dark:border-stone-700 flex-shrink-0 overflow-hidden">
                 <img v-if="karya.gambar_poster" :src="assetUrl(karya.gambar_poster)" class="w-full h-full object-cover" />
                 <FilmIcon v-else class="w-full h-full p-2 text-stone-400" />
               </div>
 
               <div class="flex-1 min-w-0">
-                <h4 class="font-bold text-sm truncate">{{ karya.judul }}</h4>
-                <p class="text-xs text-stone-500">{{ karya.category?.nama_kategori || '-' }}</p>
+                <h4 class="font-bold text-sm truncate text-stone-900 dark:text-stone-100">{{ karya.judul }}</h4>
+                <p class="text-xs text-stone-500 dark:text-stone-400">{{ karya.category?.nama_kategori || '-' }}</p>
               </div>
 
-              <Badge variant="secondary" class="font-mono bg-stone-800 text-white border-none">
+              <Badge variant="secondary" class="font-mono bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 border-none">
                 {{ karya.vote_count }} Suara
               </Badge>
             </div>
@@ -148,27 +148,27 @@ onMounted(() => {
       </Card>
 
       <!-- Danger Zone -->
-      <Card class="border-2 border-red-200 shadow-brutal h-fit">
-        <CardHeader class="bg-red-50 border-b border-red-100">
-          <div class="flex items-center gap-2 text-red-700">
+      <Card class="border-2 border-red-200 dark:border-red-800 shadow-brutal h-fit bg-card text-card-foreground">
+        <CardHeader class="bg-red-50 dark:bg-red-950/60 border-b border-red-100 dark:border-red-900">
+          <div class="flex items-center gap-2 text-red-700 dark:text-red-300">
             <AlertTriangle class="w-5 h-5" />
-            <CardTitle>Zona Bahaya</CardTitle>
+            <CardTitle class="text-red-700 dark:text-red-300">Zona Bahaya</CardTitle>
           </div>
-          <CardDescription class="text-red-600">
+          <CardDescription class="text-red-600 dark:text-red-300">
             Tindakan di bawah ini bersifat destruktif dan tidak dapat dibatalkan.
           </CardDescription>
         </CardHeader>
         <CardContent class="p-6">
           <div class="flex flex-col gap-4">
             <div>
-              <h3 class="font-bold text-stone-900 mb-1">Reset Statistik Trending</h3>
-              <p class="text-sm text-stone-500">
+              <h3 class="font-bold text-stone-900 dark:text-stone-100 mb-1">Reset Statistik Trending</h3>
+              <p class="text-sm text-stone-500 dark:text-stone-400">
                 Menghapus seluruh data apresiasi dari database. Jumlah suara pada semua karya akan kembali menjadi 0.
               </p>
             </div>
             <Button 
               variant="destructive" 
-              class="w-full sm:w-auto bg-red-600 hover:bg-red-700 border-2 border-black shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-all justify-center"
+              class="w-full sm:w-auto bg-red-600 hover:bg-red-700 border-2 border-black dark:border-stone-100 shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-all justify-center"
               @click="openResetConfirm"
               :disabled="loading"
             >
@@ -183,15 +183,15 @@ onMounted(() => {
     <!-- Reset Confirmation Modal -->
     <div v-if="showResetConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="!loading ? showResetConfirm = false : null"></div>
-      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-md animate-in fade-in zoom-in duration-200">
-        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-red-50">
-          <div class="flex items-center gap-2 text-red-700">
+      <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-md animate-in fade-in zoom-in duration-200 text-stone-900 dark:text-stone-100">
+        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-red-50 dark:bg-red-950/60">
+          <div class="flex items-center gap-2 text-red-700 dark:text-red-300">
             <AlertTriangle class="w-5 h-5" />
             <h2 class="font-bold text-lg">Konfirmasi Reset</h2>
           </div>
           <button 
             @click="showResetConfirm = false" 
-            class="p-1 hover:bg-red-100 rounded transition-colors"
+            class="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-colors"
             :disabled="loading"
           >
             <X class="w-5 h-5" />
@@ -199,10 +199,10 @@ onMounted(() => {
         </div>
         
         <div class="p-6">
-          <p class="text-stone-700 mb-6 leading-relaxed">
+          <p class="text-stone-700 dark:text-stone-300 mb-6 leading-relaxed">
             Apakah Anda yakin ingin mereset <strong>SEMUA</strong> data trending? 
             <br><br>
-            <span class="text-red-600 font-bold text-sm bg-red-50 px-2 py-1 border border-red-200 rounded">
+            <span class="text-red-600 dark:text-red-300 font-bold text-sm bg-red-50 dark:bg-red-950/60 px-2 py-1 border border-red-200 dark:border-red-800 rounded">
               Tindakan ini tidak dapat dibatalkan!
             </span>
           </p>

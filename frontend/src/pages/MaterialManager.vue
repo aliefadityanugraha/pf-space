@@ -23,6 +23,7 @@ import {
   ExternalLink,
   Power,
   Upload,
+  FolderKanban,
 } from "lucide-vue-next";
 import PageHeader from "@/components/PageHeader.vue";
 import { useToast } from "@/composables/useToast";
@@ -42,7 +43,7 @@ const uploadProgress = ref(0);
 
 // Modal state
 const showModal = ref(false);
-const editingMaterial = ref(null);
+const categories = ref([]);
 const formData = ref({
   judul: "",
   deskripsi: "",
@@ -51,7 +52,8 @@ const formData = ref({
   video_url: "",
   is_active: true,
   is_featured: false,
-  kategori: "Dasar Perfilman",
+  material_category_id: "",
+  kategori: "",
 });
 const formError = ref("");
 
@@ -60,6 +62,18 @@ import { useAuth } from "@/composables/useAuth";
 const { user, isAdmin, isModerator } = useAuth();
 const isStaff = computed(() => isAdmin.value || isModerator.value);
 const { showToast } = useToast();
+
+// Fetch categories
+const fetchCategories = async () => {
+  try {
+    const res = await api.get('/api/material-categories');
+    if (res.success) {
+      categories.value = res.data;
+    }
+  } catch (err) {
+    console.error('Failed to fetch material categories:', err);
+  }
+};
 
 // Fetch materials
 const fetchMaterials = async () => {
@@ -197,9 +211,11 @@ const openModal = (material = null) => {
       video_url: material.video_url || "",
       is_active: material.is_active,
       is_featured: material.is_featured || false,
-      kategori: material.kategori || "Dasar Perfilman",
+      material_category_id: material.material_category_id || (material.materialCategory?.category_id || ""),
+      kategori: material.kategori || "",
     };
   } else {
+    const defaultCat = categories.value.length > 0 ? categories.value[0] : null;
     formData.value = {
       judul: "",
       deskripsi: "",
@@ -208,7 +224,8 @@ const openModal = (material = null) => {
       video_url: "",
       is_active: true,
       is_featured: false,
-      kategori: "Dasar Perfilman",
+      material_category_id: defaultCat ? defaultCat.category_id : "",
+      kategori: defaultCat ? defaultCat.nama_kategori : "",
     };
   }
   formError.value = "";
@@ -257,17 +274,17 @@ const saveMaterial = async () => {
   saving.value = true;
 
   try {
+    const selectedCat = categories.value.find(c => String(c.category_id) === String(formData.value.material_category_id));
     const payload = {
-      judul: formData.value.judul,
+      judul: formData.value.judul.trim(),
       deskripsi: formData.value.deskripsi,
       tipe: formData.value.tipe,
+      file_path: formData.value.tipe === "pdf" ? formData.value.file_path : null,
+      video_url: formData.value.tipe === "video" ? formData.value.video_url : null,
       is_active: formData.value.is_active,
       is_featured: formData.value.is_featured,
-      kategori: formData.value.kategori,
-      file_path:
-        formData.value.tipe === "pdf" ? formData.value.file_path : null,
-      video_url:
-        formData.value.tipe === "video" ? formData.value.video_url : null,
+      material_category_id: formData.value.material_category_id ? Number(formData.value.material_category_id) : null,
+      kategori: selectedCat ? selectedCat.nama_kategori : (formData.value.kategori || null),
     };
 
     if (editingMaterial.value) {
@@ -338,7 +355,10 @@ const toggleStatus = async (material) => {
   }
 };
 
-onMounted(fetchMaterials);
+onMounted(() => {
+  fetchCategories();
+  fetchMaterials();
+});
 </script>
 
 <template>
@@ -370,31 +390,42 @@ onMounted(fetchMaterials);
         icon-color="bg-brand-red"
       >
         <template #actions>
-          <Button
-            @click="openModal()"
-            class="gap-2 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
-          >
-            <Plus class="w-4 h-4" />
-            Tambah Materi
-          </Button>
+          <div class="flex flex-wrap gap-2">
+            <router-link to="/admin/material-categories">
+              <Button
+                variant="outline"
+                class="gap-2 border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-800"
+              >
+                <FolderKanban class="w-4 h-4 text-brand-teal" />
+                Kelola Kategori Materi
+              </Button>
+            </router-link>
+            <Button
+              @click="openModal()"
+              class="gap-2 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+            >
+              <Plus class="w-4 h-4" />
+              Tambah Materi
+            </Button>
+          </div>
         </template>
       </PageHeader>
 
       <!-- Info Box mirip CreateArchive -->
       <div
-        class="mb-8 p-4 bg-stone-50 border-2 border-black shadow-brutal-sm flex gap-3"
+        class="mb-8 p-4 bg-stone-50 dark:bg-stone-800 border-2 border-black dark:border-stone-100 shadow-brutal-sm flex gap-3"
       >
         <div class="mt-1 shrink-0">
           <AlertTriangle class="w-5 h-5 text-brand-orange" />
         </div>
         <div class="min-w-0">
           <p
-            class="font-bold text-stone-900 mb-1 uppercase tracking-tight text-sm"
+            class="font-bold text-stone-900 dark:text-stone-100 mb-1 uppercase tracking-tight text-sm"
           >
             Panduan Pengelolaan Materi
           </p>
           <ul
-            class="list-disc pl-5 text-xs text-stone-700 space-y-1 font-medium"
+            class="list-disc pl-5 text-xs text-stone-700 dark:text-stone-300 space-y-1 font-medium"
           >
             <li>Materi PDF harus memiliki ukuran maksimal 20MB.</li>
             <li>
@@ -414,15 +445,15 @@ onMounted(fetchMaterials);
 
       <!-- Table View -->
       <Card
-        class="border-2 border-black shadow-brutal rounded-none overflow-hidden"
+        class="border-2 border-black dark:border-stone-100 shadow-brutal rounded-none overflow-hidden"
       >
-        <CardHeader class="border-b-2 border-black bg-stone-100 p-4">
+        <CardHeader class="border-b-2 border-black dark:border-stone-100 bg-stone-100 dark:bg-stone-800 p-4">
           <CardTitle
-            class="text-sm font-bold uppercase tracking-widest text-stone-900"
+            class="text-sm font-bold uppercase tracking-widest text-stone-900 dark:text-stone-100"
             >Daftar Materi Pembelajaran</CardTitle
           >
         </CardHeader>
-        <CardContent class="p-0 overflow-x-auto bg-white">
+        <CardContent class="p-0 overflow-x-auto bg-white dark:bg-stone-900">
           <div
             v-if="loading"
             class="flex flex-col items-center justify-center py-12"
@@ -445,7 +476,7 @@ onMounted(fetchMaterials);
           <template v-else>
             <table class="w-full text-left border-collapse min-w-[800px]">
               <thead
-                class="bg-lime-50 border-b-2 border-black text-[10px] font-bold uppercase tracking-widest"
+                class="bg-lime-50 dark:bg-stone-800 border-b-2 border-black dark:border-stone-100 text-[10px] font-bold uppercase tracking-widest text-stone-900 dark:text-stone-100"
               >
                 <tr>
                   <th class="px-6 py-3">Materi</th>
@@ -455,14 +486,14 @@ onMounted(fetchMaterials);
                   <th class="px-6 py-3 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-stone-200 bg-white">
+              <tbody class="divide-y divide-stone-200 dark:divide-stone-800 bg-white dark:bg-stone-900">
                 <tr
                   v-for="m in materials"
                   :key="m.materi_id"
-                  class="hover:bg-stone-50 transition-colors"
+                  class="hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors"
                 >
                   <td class="px-6 py-4">
-                    <div class="font-bold text-stone-900 leading-tight">
+                    <div class="font-bold text-stone-900 dark:text-stone-100 leading-tight">
                       {{ m.judul }}
                     </div>
                     <div class="flex items-center gap-1.5 mt-1">
@@ -584,17 +615,17 @@ onMounted(fetchMaterials);
         @click="closeModal"
       ></div>
       <div
-        class="relative bg-white border-2 border-black shadow-brutal w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200"
+        class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 text-stone-900 dark:text-stone-100"
       >
         <div
-          class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-stone-100"
+          class="flex items-center justify-between px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-stone-100 dark:bg-stone-800"
         >
           <h2 class="font-bold text-lg font-display uppercase tracking-tight">
             {{ editingMaterial ? "Edit Materi" : "Tambah Materi Baru" }}
           </h2>
           <button
             @click="closeModal"
-            class="p-1 hover:bg-stone-200 border-2 border-transparent hover:border-black transition-colors rounded"
+            class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700 border-2 border-transparent hover:border-black dark:hover:border-stone-100 transition-colors rounded"
           >
             <X class="w-5 h-5" />
           </button>
@@ -606,7 +637,7 @@ onMounted(fetchMaterials);
         >
           <div
             v-if="formError"
-            class="p-3 bg-red-50 border-2 border-red-200 text-red-600 text-sm font-medium"
+            class="p-3 bg-red-50 dark:bg-red-950/60 border-2 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-medium"
           >
             {{ formError }}
           </div>
@@ -620,7 +651,7 @@ onMounted(fetchMaterials);
               <Input
                 v-model="formData.judul"
                 placeholder="Masukkan judul materi"
-                class="border-2 border-black focus-visible:ring-0"
+                class="border-2 border-black dark:border-stone-100 focus-visible:ring-0"
               />
             </div>
 
@@ -633,7 +664,7 @@ onMounted(fetchMaterials);
                 v-model="formData.deskripsi"
                 rows="3"
                 placeholder="Deskripsi materi..."
-                class="w-full p-2 border-2 border-black focus:outline-none text-sm"
+                class="w-full p-2 border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none text-sm"
               ></textarea>
             </div>
 
@@ -643,14 +674,14 @@ onMounted(fetchMaterials);
                   class="block text-xs font-bold uppercase tracking-widest mb-1.5"
                   >Tipe Materi</label
                 >
-                <div class="flex border-2 border-black">
+                <div class="flex border-2 border-black dark:border-stone-100">
                   <button
                     type="button"
                     @click="formData.tipe = 'pdf'"
                     :class="[
                       formData.tipe === 'pdf'
                         ? 'bg-brand-red text-white'
-                        : 'bg-white text-black',
+                        : 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100',
                       'flex-1 py-1.5 text-xs font-bold uppercase tracking-tighter transition-colors',
                     ]"
                   >
@@ -662,7 +693,7 @@ onMounted(fetchMaterials);
                     :class="[
                       formData.tipe === 'video'
                         ? 'bg-[#FF0000] text-white'
-                        : 'bg-white text-black',
+                        : 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100',
                       'flex-1 py-1.5 text-xs font-bold uppercase tracking-tighter transition-colors',
                     ]"
                   >
@@ -677,9 +708,9 @@ onMounted(fetchMaterials);
                   <input
                     type="checkbox"
                     v-model="formData.is_active"
-                    class="w-4 h-4 border-2 border-black rounded-none"
+                    class="w-4 h-4 border-2 border-black dark:border-stone-100 rounded-none bg-white dark:bg-stone-800"
                   />
-                  <span class="text-[10px] font-bold uppercase tracking-widest"
+                  <span class="text-[10px] font-bold uppercase tracking-widest text-stone-900 dark:text-stone-100"
                     >Aktif</span
                   >
                 </label>
@@ -689,7 +720,7 @@ onMounted(fetchMaterials);
                   <input
                     type="checkbox"
                     v-model="formData.is_featured"
-                    class="w-4 h-4 border-2 border-black rounded-none"
+                    class="w-4 h-4 border-2 border-black dark:border-stone-100 rounded-none bg-white dark:bg-stone-800"
                   />
                   <span
                     class="text-[10px] font-bold uppercase tracking-widest text-brand-orange"
@@ -705,15 +736,13 @@ onMounted(fetchMaterials);
                 >Kategori Materi</label
               >
               <select
-                v-model="formData.kategori"
-                class="w-full p-2 border-2 border-black focus:outline-none text-sm bg-white"
+                v-model="formData.material_category_id"
+                class="w-full p-2 border-2 border-black dark:border-stone-100 focus:outline-none text-sm bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100"
               >
-                <option value="Dasar Perfilman">Dasar Perfilman</option>
-                <option value="Pra Produksi">Pra Produksi</option>
-                <option value="Produksi">Produksi</option>
-                <option value="Pasca Produksi">Pasca Produksi</option>
-                <option value="Apresiasi & Kritik">Apresiasi & Kritik</option>
-                <option value="Sistem Informasi">Sistem Informasi</option>
+                <option value="" disabled class="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">-- Pilih Kategori --</option>
+                <option v-for="cat in categories" :key="cat.category_id" :value="cat.category_id" class="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
+                  {{ cat.nama_kategori }}
+                </option>
               </select>
             </div>
 
@@ -725,7 +754,7 @@ onMounted(fetchMaterials);
               >
               <div
                 v-if="formData.file_path"
-                class="p-3 bg-green-50 border-2 border-green-200 text-green-700 text-xs flex items-center justify-between"
+                class="p-3 bg-green-50 dark:bg-green-950/60 border-2 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 text-xs flex items-center justify-between"
               >
                 <div class="flex items-center gap-2 truncate">
                   <CheckCircle class="w-4 h-4 flex-shrink-0" />
@@ -736,7 +765,7 @@ onMounted(fetchMaterials);
                 <button
                   type="button"
                   @click="formData.file_path = ''"
-                  class="text-green-700 hover:scale-110 transition-transform"
+                  class="text-green-700 dark:text-green-300 hover:scale-110 transition-transform"
                 >
                   <X class="w-4 h-4" />
                 </button>
@@ -751,16 +780,16 @@ onMounted(fetchMaterials);
                     :disabled="uploading"
                   />
                   <div
-                    class="border-2 border-dashed border-stone-300 p-6 text-center hover:bg-stone-50 transition-colors"
+                    class="border-2 border-dashed border-stone-300 dark:border-stone-700 p-6 text-center hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors bg-stone-50/50 dark:bg-stone-800/50"
                   >
                     <template v-if="uploading">
                       <div class="space-y-2">
-                        <div class="flex justify-between text-[10px] font-bold">
+                        <div class="flex justify-between text-[10px] font-bold text-stone-900 dark:text-stone-100">
                           <span>MENGUNGGAH...</span>
                           <span>{{ uploadProgress }}%</span>
                         </div>
                         <div
-                          class="w-full h-2 bg-stone-100 border border-black relative"
+                          class="w-full h-2 bg-stone-100 dark:bg-stone-700 border border-black dark:border-stone-100 relative"
                         >
                           <div
                             class="h-full bg-brand-teal transition-all"
@@ -772,7 +801,7 @@ onMounted(fetchMaterials);
                     <template v-else>
                       <Upload class="w-6 h-6 mx-auto mb-2 text-stone-400" />
                       <p
-                        class="text-[10px] font-bold uppercase text-stone-500 tracking-widest"
+                        class="text-[10px] font-bold uppercase text-stone-500 dark:text-stone-400 tracking-widest"
                       >
                         Klik atau seret file PDF
                       </p>
@@ -790,9 +819,9 @@ onMounted(fetchMaterials);
               <Input
                 v-model="formData.video_url"
                 placeholder="https://youtube.com/watch?v=..."
-                class="border-2 border-black focus-visible:ring-0"
+                class="border-2 border-black dark:border-stone-100 focus-visible:ring-0"
               />
-              <p class="text-[10px] text-stone-500 mt-1 italic tracking-tight">
+              <p class="text-[10px] text-stone-500 dark:text-stone-400 mt-1 italic tracking-tight">
                 Gunakan link full atau shortened (youtu.be)
               </p>
             </div>
@@ -802,7 +831,7 @@ onMounted(fetchMaterials);
             <Button
               type="button"
               variant="outline"
-              class="flex-1 border-2 border-black"
+              class="flex-1 border-2 border-black dark:border-stone-100 text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700"
               @click="closeModal"
               :disabled="saving"
             >
@@ -829,15 +858,15 @@ onMounted(fetchMaterials);
     >
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
       <div
-        class="relative bg-white border-2 border-black shadow-brutal w-full max-w-sm p-6 overflow-hidden animate-in fade-in duration-200"
+        class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-sm p-6 overflow-hidden animate-in fade-in duration-200 text-stone-900 dark:text-stone-100"
       >
-        <div class="flex items-center gap-3 text-red-600 mb-4">
+        <div class="flex items-center gap-3 text-red-600 dark:text-red-400 mb-4">
           <AlertTriangle class="w-6 h-6" />
           <h3 class="font-bold text-lg uppercase tracking-tight">
             Hapus Materi?
           </h3>
         </div>
-        <p class="text-sm text-stone-600 mb-6 font-medium">
+        <p class="text-sm text-stone-600 dark:text-stone-300 mb-6 font-medium">
           Apakah Anda yakin ingin menghapus materi
           <span class="text-black font-bold"
             >"{{ materialToDelete?.judul }}"</span

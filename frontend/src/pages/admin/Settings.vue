@@ -202,7 +202,7 @@ onMounted(fetchSettings)
         <Button 
           @click="saveSettings" 
           :disabled="saving"
-          class="bg-brand-teal text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all gap-2"
+          class="bg-brand-teal text-white border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all gap-2"
         >
           <Loader2 v-if="saving" class="w-4 h-4 animate-spin" />
           <Save v-else class="w-4 h-4" />
@@ -215,7 +215,7 @@ onMounted(fetchSettings)
       <!-- Loading State -->
       <div v-if="loading" class="flex flex-col items-center justify-center py-20">
         <Loader2 class="w-10 h-10 animate-spin text-brand-teal mb-4" />
-        <p class="font-mono text-sm uppercase tracking-widest text-stone-500">Menyiapkan konfigurasi...</p>
+        <p class="font-mono text-sm uppercase tracking-widest text-stone-500 dark:text-stone-400">Menyiapkan konfigurasi...</p>
       </div>
 
       <template v-else>
@@ -223,28 +223,28 @@ onMounted(fetchSettings)
         <section class="space-y-6">
           <div class="flex items-center gap-3 mb-2">
             <Megaphone class="w-6 h-6 text-brand-orange" />
-            <h2 class="text-xl font-display font-bold uppercase tracking-tight">Announcement Modal</h2>
+            <h2 class="text-xl font-display font-bold uppercase tracking-tight text-stone-900 dark:text-stone-100">Announcement Modal</h2>
           </div>
           
-          <Card class="border-2 border-black shadow-brutal rounded-none overflow-hidden">
-            <CardHeader class="bg-stone-50 border-b-2 border-black flex flex-row items-center justify-between py-4">
-              <div class="flex items-center gap-2 text-stone-700">
-                <AlertCircle class="w-4 h-4" />
-                <span class="text-xs font-bold uppercase tracking-widest">Konfigurasi Pengumuman Utama</span>
+          <Card class="border-2 border-black dark:border-stone-100 shadow-brutal rounded-none overflow-hidden bg-card text-stone-900 dark:text-stone-100">
+            <CardHeader class="bg-stone-100 dark:bg-stone-800 border-b-2 border-black dark:border-stone-100 flex flex-row items-center justify-between py-4">
+              <div class="flex items-center gap-2 text-stone-700 dark:text-stone-200">
+                <AlertCircle class="w-4 h-4 text-brand-teal" />
+                <span class="text-xs font-bold uppercase tracking-widest text-stone-900 dark:text-stone-100">Konfigurasi Pengumuman Utama</span>
               </div>
               
               <div class="flex items-center gap-3">
-                <span :class="[announcementConfig.is_active ? 'text-green-600' : 'text-stone-400', 'text-[10px] font-bold uppercase tracking-widest']">
+                <span :class="[announcementConfig.is_active ? 'text-green-600 dark:text-green-400' : 'text-stone-400 dark:text-stone-500', 'text-[10px] font-bold uppercase tracking-widest']">
                   {{ announcementConfig.is_active ? 'Aktif' : 'Non-aktif' }}
                 </span>
                 <button 
                   @click="announcementConfig.is_active = !announcementConfig.is_active"
                   :class="[
-                    announcementConfig.is_active ? 'bg-green-500' : 'bg-stone-300',
-                    'w-12 h-6 border-2 border-black rounded-full relative transition-colors'
+                    announcementConfig.is_active ? 'bg-green-500' : 'bg-stone-300 dark:bg-stone-700',
+                    'w-12 h-6 border-2 border-black dark:border-stone-100 rounded-full relative transition-colors cursor-pointer'
                   ]"
                 >
-                  <div :class="[announcementConfig.is_active ? 'translate-x-6' : 'translate-x-0', 'absolute top-0.5 left-0.5 w-4 h-4 bg-white border-2 border-black rounded-full transition-transform']"></div>
+                  <div :class="[announcementConfig.is_active ? 'translate-x-6' : 'translate-x-0', 'absolute top-0.5 left-0.5 w-4 h-4 bg-white dark:bg-stone-100 border-2 border-black rounded-full transition-transform']"></div>
                 </button>
               </div>
             </CardHeader>
@@ -254,19 +254,19 @@ onMounted(fetchSettings)
               <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-4">
                   <div>
-                    <label class="block text-xs font-bold uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                    <label class="block text-xs font-bold uppercase tracking-widest mb-1.5 flex items-center gap-2 text-stone-900 dark:text-stone-100">
                       <Edit3 class="w-3 h-3 text-stone-400" />
                       Judul Pengumuman
                     </label>
                     <Input 
                       v-model="announcementConfig.title" 
                       placeholder="Contoh: Pendaftaran PKM-PM 2024 Dibuka!" 
-                      class="border-2 border-black focus-visible:ring-0 text-lg font-bold"
+                      class="border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus-visible:ring-0 text-lg font-bold"
                     />
                   </div>
                   
                   <div>
-                    <label class="block text-xs font-bold uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                    <label class="block text-xs font-bold uppercase tracking-widest mb-1.5 flex items-center gap-2 text-stone-900 dark:text-stone-100">
                       <Edit3 class="w-3 h-3 text-stone-400" />
                       Isi Pesan
                     </label>
@@ -274,38 +274,38 @@ onMounted(fetchSettings)
                       v-model="announcementConfig.content" 
                       rows="5"
                       placeholder="Tuliskan detail pengumuman di sini..." 
-                      class="w-full p-4 border-2 border-black focus:border-brand-teal focus:outline-none text-sm leading-relaxed"
+                      class="w-full p-4 border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:border-brand-teal focus:outline-none text-sm leading-relaxed"
                     ></textarea>
                   </div>
                 </div>
 
                 <!-- CTAs -->
-                <div class="space-y-4 bg-stone-50 p-6 border-2 border-black border-dashed">
-                  <h3 class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4">Aksi Tombol (Optional)</h3>
+                <div class="space-y-4 bg-stone-50 dark:bg-stone-800/60 p-6 border-2 border-black dark:border-stone-100 border-dashed">
+                  <h3 class="text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-300 mb-4">Aksi Tombol (Optional)</h3>
                   
                   <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 text-stone-500">Teks Tombol</label>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 text-stone-600 dark:text-stone-300">Teks Tombol</label>
                     <Input 
                       v-model="announcementConfig.button_text" 
                       placeholder="Contoh: Daftar Sekarang" 
-                      class="border-2 border-black focus-visible:ring-0"
+                      class="border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus-visible:ring-0"
                     />
                   </div>
                   
                   <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 text-stone-500 flex items-center gap-1">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 text-stone-600 dark:text-stone-300 flex items-center gap-1">
                       <Link class="w-3 h-3" />
                       Link Tujuan
                     </label>
                     <Input 
                       v-model="announcementConfig.button_url" 
                       placeholder="Contoh: /about atau https://domain.com" 
-                      class="border-2 border-black focus-visible:ring-0"
+                      class="border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus-visible:ring-0"
                     />
                   </div>
 
-                  <div class="pt-4 mt-4 border-t border-stone-200">
-                    <p class="text-[10px] text-stone-400 italic">
+                  <div class="pt-4 mt-4 border-t border-stone-200 dark:border-stone-700">
+                    <p class="text-[10px] text-stone-500 dark:text-stone-400 italic">
                       * Modal ini akan muncul satu kali per sesi browser untuk setiap pengguna ketika baru masuk ke halaman utama.
                     </p>
                   </div>
@@ -314,15 +314,15 @@ onMounted(fetchSettings)
 
               <!-- Preview Area -->
               <div class="mt-10">
-                 <h3 class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4">Preview Tampilan</h3>
-                 <div class="bg-stone-200 p-8 border-2 border-black border-dashed flex items-center justify-center">
-                    <div class="bg-brand-cream border-4 border-black shadow-brutal p-6 w-full max-w-sm">
-                       <div class="w-10 h-10 bg-brand-orange border-2 border-black shadow-brutal-sm flex items-center justify-center mb-4">
+                 <h3 class="text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-300 mb-4">Preview Tampilan</h3>
+                 <div class="bg-stone-200 dark:bg-stone-800/80 p-8 border-2 border-black dark:border-stone-100 border-dashed flex items-center justify-center">
+                    <div class="bg-brand-cream dark:bg-stone-900 border-4 border-black dark:border-stone-100 shadow-brutal p-6 w-full max-w-sm text-stone-900 dark:text-stone-100">
+                       <div class="w-10 h-10 bg-brand-orange border-2 border-black dark:border-stone-100 shadow-brutal-sm flex items-center justify-center mb-4">
                           <Megaphone class="w-5 h-5 text-white" />
                        </div>
-                       <h4 class="font-display font-bold text-xl mb-2">{{ announcementConfig.title || 'Judul Kosong' }}</h4>
-                       <p class="text-xs text-stone-600 line-clamp-3 mb-4">{{ announcementConfig.content || 'Isi pesan akan tampil di sini...' }}</p>
-                       <div v-if="announcementConfig.button_text" class="px-4 py-2 bg-brand-red text-white border-2 border-black text-[10px] font-bold uppercase text-center w-full">
+                       <h4 class="font-display font-bold text-xl mb-2 text-stone-900 dark:text-stone-100">{{ announcementConfig.title || 'Judul Kosong' }}</h4>
+                       <p class="text-xs text-stone-600 dark:text-stone-300 line-clamp-3 mb-4">{{ announcementConfig.content || 'Isi pesan akan tampil di sini...' }}</p>
+                       <div v-if="announcementConfig.button_text" class="px-4 py-2 bg-brand-red text-white border-2 border-black dark:border-stone-100 text-[10px] font-bold uppercase text-center w-full">
                           {{ announcementConfig.button_text }}
                        </div>
                     </div>
@@ -336,63 +336,64 @@ onMounted(fetchSettings)
         <section class="space-y-6">
           <div class="flex items-center gap-3 mb-2">
             <Megaphone class="w-6 h-6 text-yellow-500" />
-            <h2 class="text-xl font-display font-bold uppercase tracking-tight">Mode Festival</h2>
+            <h2 class="text-xl font-display font-bold uppercase tracking-tight text-stone-900 dark:text-stone-100">Mode Festival</h2>
           </div>
           
-          <Card class="border-2 border-black shadow-brutal rounded-none overflow-hidden bg-yellow-400">
-            <CardHeader class="border-b-2 border-black flex flex-row items-center justify-between py-4">
+          <Card class="border-2 border-black dark:border-stone-100 shadow-brutal rounded-none overflow-hidden bg-yellow-400 dark:bg-yellow-500">
+            <CardHeader class="border-b-2 border-black dark:border-stone-100 flex flex-row items-center justify-between py-4">
               <div class="flex items-center gap-2 text-stone-900">
                 <AlertCircle class="w-4 h-4" />
                 <span class="text-xs font-bold uppercase tracking-widest">Aktivasi Halaman Festival</span>
               </div>
               
               <div class="flex items-center gap-3">
-                <span :class="[festivalConfig.is_active ? 'text-green-800' : 'text-stone-700', 'text-[10px] font-bold uppercase tracking-widest']">
+                <span :class="[festivalConfig.is_active ? 'text-green-900 font-black' : 'text-stone-800', 'text-[10px] font-bold uppercase tracking-widest']">
                   {{ festivalConfig.is_active ? 'Aktif' : 'Non-aktif' }}
                 </span>
                 <button 
                   @click="festivalConfig.is_active = !festivalConfig.is_active"
                   :class="[
                     festivalConfig.is_active ? 'bg-green-500' : 'bg-stone-300',
-                    'w-12 h-6 border-2 border-black rounded-full relative transition-colors'
+                    'w-12 h-6 border-2 border-black rounded-full relative transition-colors cursor-pointer'
                   ]"
                 >
                   <div :class="[festivalConfig.is_active ? 'translate-x-6' : 'translate-x-0', 'absolute top-0.5 left-0.5 w-4 h-4 bg-white border-2 border-black rounded-full transition-transform']"></div>
                 </button>
               </div>
             </CardHeader>
-            <CardContent class="p-6 md:p-8 bg-stone-50">
-              <p class="text-sm font-body text-stone-700">Jika diaktifkan, tombol Festival akan muncul di navigasi utama dan halaman festival dapat diakses. Gunakan fitur ini selama periode acara eksibisi.</p>
+            <CardContent class="p-6 md:p-8 bg-stone-50 dark:bg-stone-900">
+              <p class="text-sm font-body text-stone-700 dark:text-stone-200">Jika diaktifkan, tombol Festival akan muncul di navigasi utama dan halaman festival dapat diakses. Gunakan fitur ini selama periode acara eksibisi.</p>
             </CardContent>
           </Card>
         </section>
+
         <!-- Backup System Settings Section -->
         <section class="space-y-6">
           <div class="flex items-center gap-3 mb-2">
             <Save class="w-6 h-6 text-brand-teal" />
-            <h2 class="text-xl font-display font-bold uppercase tracking-tight">Sistem Backup</h2>
+            <h2 class="text-xl font-display font-bold uppercase tracking-tight text-stone-900 dark:text-stone-100">Sistem Backup</h2>
           </div>
           
-          <Card class="border-2 border-black shadow-brutal rounded-none overflow-hidden bg-white">
-            <CardHeader class="border-b-2 border-black flex flex-row items-center justify-between py-4 bg-stone-50">
-              <div class="flex items-center gap-2 text-stone-900">
-                <AlertCircle class="w-4 h-4" />
+          <Card class="border-2 border-black dark:border-stone-100 shadow-brutal rounded-none overflow-hidden bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100">
+            <CardHeader class="border-b-2 border-black dark:border-stone-100 flex flex-row items-center justify-between py-4 bg-stone-50 dark:bg-stone-800">
+              <div class="flex items-center gap-2 text-stone-900 dark:text-stone-100">
+                <AlertCircle class="w-4 h-4 text-brand-orange" />
                 <span class="text-xs font-bold uppercase tracking-widest">Backup Database & File Upload</span>
               </div>
             </CardHeader>
             <CardContent class="p-6 md:p-8">
-              <p class="text-sm font-body text-stone-700 mb-6">Fitur ini memungkinkan Anda untuk melakukan backup seluruh database dan file yang telah diunggah ke server. Anda bisa mengunduhnya langsung atau menyimpannya di server.</p>
+              <p class="text-sm font-body text-stone-700 dark:text-stone-300 mb-6">Fitur ini memungkinkan Anda untuk melakukan backup seluruh database dan file yang telah diunggah ke server. Anda bisa mengunduhnya langsung atau menyimpannya di server.</p>
               
               <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
                 <div class="flex items-center gap-2">
-                  <input type="checkbox" id="downloadBackup" v-model="downloadBackup" class="w-4 h-4 border-2 border-black rounded-none text-brand-teal focus:ring-brand-teal" />
-                  <label for="downloadBackup" class="text-xs font-bold uppercase tracking-widest cursor-pointer select-none">Download ke komputer ini</label>
+                  <input type="checkbox" id="downloadBackup" v-model="downloadBackup" class="w-4 h-4 border-2 border-black dark:border-stone-100 rounded-none text-brand-teal focus:ring-brand-teal" />
+                  <label for="downloadBackup" class="text-xs font-bold uppercase tracking-widest cursor-pointer select-none text-stone-900 dark:text-stone-100">Download ke komputer ini</label>
                 </div>
                 
                 <Button 
                   @click="generateBackup" 
                   :disabled="generatingBackup"
-                  class="bg-brand-orange text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all gap-2 px-6"
+                  class="bg-brand-orange text-white border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all gap-2 px-6"
                 >
                   <Loader2 v-if="generatingBackup" class="w-4 h-4 animate-spin" />
                   <Save v-else class="w-4 h-4" />
@@ -401,16 +402,16 @@ onMounted(fetchSettings)
               </div>
 
               <!-- Divider -->
-              <hr class="my-8 border-t-2 border-black border-dashed" />
+              <hr class="my-8 border-t-2 border-black dark:border-stone-100 border-dashed" />
               
               <div class="space-y-4">
-                <h3 class="text-sm font-bold uppercase tracking-widest text-stone-900 flex items-center gap-2">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-stone-900 dark:text-stone-100 flex items-center gap-2">
                   <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                   Restore Dari Backup
                 </h3>
-                <p class="text-[10px] md:text-sm font-body text-stone-500">
-                  Untuk memulihkan sistem dari kondisi sebelumnya, unggah file backup berektensi <code class="bg-stone-200 px-1 py-0.5 rounded text-black font-mono">.zip</code>. <br/> 
-                  <span class="text-brand-red font-bold">PERINGATAN:</span> Tindakan ini akan menimpa seluruh data (database & uploads) saat ini secara permanen!
+                <p class="text-[10px] md:text-sm font-body text-stone-600 dark:text-stone-300">
+                  Untuk memulihkan sistem dari kondisi sebelumnya, unggah file backup berektensi <code class="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded text-black dark:text-white font-mono">.zip</code>. <br/> 
+                  <span class="text-brand-red dark:text-red-400 font-bold">PERINGATAN:</span> Tindakan ini akan menimpa seluruh data (database & uploads) saat ini secara permanen!
                 </p>
                 <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
                   <input 
@@ -418,12 +419,12 @@ onMounted(fetchSettings)
                     accept=".zip" 
                     ref="fileInput"
                     @change="handleFileSelect"
-                    class="block text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-2 file:border-black file:text-xs file:font-bold file:uppercase file:bg-stone-100 file:text-black hover:file:bg-brand-teal hover:file:text-white transition-colors cursor-pointer w-full md:max-w-md" 
+                    class="block text-sm text-stone-500 dark:text-stone-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-2 file:border-black dark:file:border-stone-100 file:text-xs file:font-bold file:uppercase file:bg-stone-100 dark:file:bg-stone-800 file:text-black dark:file:text-white hover:file:bg-brand-teal hover:file:text-white transition-colors cursor-pointer w-full md:max-w-md" 
                   />
                   <Button 
                     @click="restoreBackup" 
                     :disabled="restoringBackup || !selectedFile"
-                    class="bg-brand-red text-white border-2 border-black shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all gap-2 px-6 shrink-0 w-full md:w-auto disabled:opacity-50"
+                    class="bg-brand-red text-white border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all gap-2 px-6 shrink-0 w-full md:w-auto disabled:opacity-50"
                   >
                     <Loader2 v-if="restoringBackup" class="w-4 h-4 animate-spin" />
                     <Save v-else class="w-4 h-4" />
@@ -436,8 +437,8 @@ onMounted(fetchSettings)
         </section>
 
         <!-- More categories coming soon -->
-        <div class="py-10 border-t-2 border-black border-dashed">
-          <p class="text-center font-mono text-[10px] uppercase tracking-[0.2em] text-stone-400">
+        <div class="py-10 border-t-2 border-black dark:border-stone-100 border-dashed">
+          <p class="text-center font-mono text-[10px] uppercase tracking-[0.2em] text-stone-400 dark:text-stone-500">
             Pengaturan Tambahan Akan Datang
           </p>
         </div>

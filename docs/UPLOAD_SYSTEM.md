@@ -6,7 +6,7 @@ Dokumentasi lengkap sistem upload resumable dan draft management untuk PF Space.
 
 PF Space menggunakan **Tus.io protocol** untuk resumable file upload yang memungkinkan:
 
-- Upload file besar (hingga 1GB untuk video)
+- Upload file besar (hingga 4GB untuk video)
 - Resume upload jika koneksi terputus
 - Auto-save form data ke draft
 - Restore draft setelah koneksi kembali

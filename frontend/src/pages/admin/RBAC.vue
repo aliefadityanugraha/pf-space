@@ -221,7 +221,7 @@ onMounted(() => {
           <Card
             v-for="role in roles"
             :key="role.role_id"
-            class="hover:shadow-brutal transition-shadow"
+            class="hover:shadow-brutal transition-shadow border-2 border-stone-800 dark:border-stone-100 bg-card"
           >
             <CardContent class="p-4">
               <div class="flex items-center justify-between mb-3">
@@ -233,15 +233,15 @@ onMounted(() => {
                   {{ role.name }}
                 </Badge>
                 <span
-                  class="text-xs text-stone-500 bg-stone-100 px-2 py-1 border border-stone-300"
+                  class="text-xs text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-stone-800 px-2 py-1 border border-stone-300 dark:border-stone-700 font-mono"
                 >
                   ID: {{ role.role_id }}
                 </span>
               </div>
-              <p class="text-xs text-stone-600 mb-3">
+              <p class="text-xs text-stone-600 dark:text-stone-300 mb-3">
                 {{ role.description || "Tidak ada deskripsi" }}
               </p>
-              <div class="flex items-center gap-1 text-xs text-stone-500">
+              <div class="flex items-center gap-1 text-xs text-stone-500 dark:text-stone-400">
                 <Users class="w-3 h-3" />
                 {{ getRoleUserCount(role.role_id) }} pengguna
               </div>
@@ -251,14 +251,14 @@ onMounted(() => {
       </section>
 
       <!-- Users Section -->
-      <Card>
-        <CardHeader class="bg-stone-50 border-b-2 border-stone-800">
+      <Card class="border-2 border-stone-800 dark:border-stone-100 shadow-brutal bg-card">
+        <CardHeader class="bg-stone-50 dark:bg-stone-800 border-b-2 border-stone-800 dark:border-stone-100">
           <div
             class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4"
           >
             <div class="flex items-center gap-3">
-              <Users class="w-5 h-5" />
-              <CardTitle class="text-lg font-bold uppercase">
+              <Users class="w-5 h-5 text-stone-900 dark:text-stone-100" />
+              <CardTitle class="text-lg font-bold uppercase text-stone-900 dark:text-stone-100">
                 Manajemen Pengguna ({{ users.length }} pengguna)
               </CardTitle>
             </div>
@@ -279,7 +279,7 @@ onMounted(() => {
         <CardContent class="p-0">
           <!-- Table Header -->
           <div
-            class="hidden lg:grid grid-cols-12 gap-4 px-6 py-3 bg-lime-50 border-b-2 border-stone-800 text-xs font-bold uppercase tracking-wider"
+            class="hidden lg:grid grid-cols-12 gap-4 px-6 py-3 bg-stone-100 dark:bg-stone-800 border-b-2 border-stone-800 dark:border-stone-100 text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300"
           >
             <div class="col-span-4">Pengguna</div>
             <div class="col-span-2">Role</div>
@@ -291,12 +291,12 @@ onMounted(() => {
           <div
             v-for="user in filteredUsers"
             :key="user.id"
-            class="grid grid-cols-1 lg:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 hover:bg-stone-50"
+            class="grid grid-cols-1 lg:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800/60"
           >
             <!-- User Info -->
             <div class="lg:col-span-4 flex items-center gap-3">
               <div
-                class="w-10 h-10 bg-stone-200 border-2 border-stone-800 shadow-brutal-sm flex items-center justify-center text-sm font-bold overflow-hidden"
+                class="w-10 h-10 bg-stone-200 dark:bg-stone-800 border-2 border-stone-800 dark:border-stone-100 shadow-brutal-sm flex items-center justify-center text-sm font-bold overflow-hidden text-stone-900 dark:text-stone-100"
               >
                 <img
                   v-if="user.image"
@@ -308,14 +308,14 @@ onMounted(() => {
                 <span v-else>{{ getAvatarInitials(user.name) }}</span>
               </div>
               <div>
-                <p class="font-bold text-sm">{{ user.name }}</p>
-                <p class="text-xs text-stone-500">{{ user.email }}</p>
+                <p class="font-bold text-sm text-stone-900 dark:text-stone-100">{{ user.name }}</p>
+                <p class="text-xs text-stone-500 dark:text-stone-400">{{ user.email }}</p>
               </div>
             </div>
 
             <!-- Role -->
             <div class="lg:col-span-2">
-              <span class="lg:hidden text-xs text-stone-500 uppercase mr-2"
+              <span class="lg:hidden text-xs text-stone-500 dark:text-stone-400 uppercase mr-2"
                 >Role:</span
               >
 
@@ -334,7 +334,7 @@ onMounted(() => {
               <template v-else>
                 <select
                   v-model="selectedRoleId"
-                  class="text-xs border-2 border-stone-800 px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-brand-teal"
+                  class="text-xs border-2 border-stone-800 dark:border-stone-100 px-2 py-1 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-brand-teal"
                 >
                   <option
                     v-for="role in roles"

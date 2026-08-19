@@ -271,10 +271,17 @@ const routes = [
         component: () => import("../pages/admin/AuditLogs.vue"),
         meta: { requiresAdmin: true },
       },
+      {
+        path: "material-categories",
+        name: "AdminMaterialCategories",
+        component: () => import("../pages/admin/MaterialCategories.vue"),
+        meta: { requiresModerator: true },
+      },
     ],
   },
   {
     path: "/manage-materi",
+    alias: "/admin/materials",
     name: "MaterialManager",
     component: () => import("@/pages/MaterialManager.vue"),
     meta: { requiresAuth: true, requiresModerator: true },

@@ -159,6 +159,7 @@ export const materialCreateSchema = z.object({
   is_active: z.coerce.boolean().optional(),
   is_featured: z.coerce.boolean().optional(),
   kategori: z.string().max(100).nullable().optional(),
+  material_category_id: z.coerce.number().int().nullable().optional(),
 }).strip();
 
 export const materialUpdateSchema = z.object({
@@ -170,6 +171,7 @@ export const materialUpdateSchema = z.object({
   is_active: z.coerce.boolean().optional(),
   is_featured: z.coerce.boolean().optional(),
   kategori: z.string().max(100).nullable().optional(),
+  material_category_id: z.coerce.number().int().nullable().optional(),
 }).strip();
 
 export const materialQuerySchema = z.object({
@@ -177,6 +179,8 @@ export const materialQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).optional(),
   owner: z.enum(['true', 'false']).optional(),
   status: z.enum(['all']).optional(),
+  category_id: z.coerce.number().int().optional(),
+  category_slug: z.string().optional(),
 });
 
 export const materialIdParamSchema = z.object({

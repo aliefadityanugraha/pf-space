@@ -167,11 +167,11 @@ onMounted(fetchCategories)
     </PageHeader>
 
     <!-- Categories Table -->
-    <Card>
-      <CardHeader class="bg-teal-50 border-b-2 border-stone-800">
+    <Card class="border-2 border-stone-800 dark:border-stone-100 shadow-brutal bg-card">
+      <CardHeader class="bg-teal-50 dark:bg-teal-950/60 border-b-2 border-stone-800 dark:border-stone-100">
         <div class="flex items-center gap-3">
-          <FolderOpen class="w-5 h-5" />
-          <CardTitle class="text-lg font-bold uppercase">Daftar Kategori</CardTitle>
+          <FolderOpen class="w-5 h-5 text-teal-900 dark:text-teal-200" />
+          <CardTitle class="text-lg font-bold uppercase text-teal-950 dark:text-teal-100">Daftar Kategori</CardTitle>
         </div>
       </CardHeader>
       <CardContent class="p-0">
@@ -189,7 +189,7 @@ onMounted(fetchCategories)
 
         <!-- Table -->
         <template v-else>
-          <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-lime-50 border-b-2 border-stone-800 text-xs font-bold uppercase tracking-wider">
+          <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-stone-100 dark:bg-stone-800 border-b-2 border-stone-800 dark:border-stone-100 text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300">
             <div class="col-span-4">Nama Kategori</div>
             <div class="col-span-5">Deskripsi</div>
             <div class="col-span-1 text-center">Karyas</div>
@@ -198,12 +198,12 @@ onMounted(fetchCategories)
           <div 
             v-for="category in categories" 
             :key="category.category_id" 
-            class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 hover:bg-stone-50"
+            class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800/60"
           >
             <div class="md:col-span-4">
-              <span class="font-bold text-stone-900">{{ category.nama_kategori }}</span>
+              <span class="font-bold text-stone-900 dark:text-stone-100">{{ category.nama_kategori }}</span>
             </div>
-            <div class="md:col-span-5 text-sm text-stone-600">
+            <div class="md:col-span-5 text-sm text-stone-600 dark:text-stone-300">
               {{ category.deskripsi || '-' }}
             </div>
             <div class="md:col-span-1 text-center">
@@ -225,15 +225,15 @@ onMounted(fetchCategories)
     <!-- Create/Edit Modal -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center">
       <div class="absolute inset-0 bg-black/50" @click="closeModal"></div>
-      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-md mx-4">
-        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-stone-100">
+      <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-md mx-4 text-stone-900 dark:text-stone-100">
+        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-stone-100 dark:bg-stone-800">
           <h2 class="font-bold text-lg">{{ editingCategory ? 'Edit Kategori' : 'Tambah Kategori' }}</h2>
-          <button @click="closeModal" class="p-1 hover:bg-stone-200">
+          <button @click="closeModal" class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700">
             <X class="w-5 h-5" />
           </button>
         </div>
         <form @submit.prevent="saveCategory" class="p-6 space-y-4">
-          <div v-if="formError" class="p-3 bg-red-50 border border-red-200 text-red-600 text-sm">
+          <div v-if="formError" class="p-3 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm">
             {{ formError }}
           </div>
           <div>
@@ -259,13 +259,13 @@ onMounted(fetchCategories)
     <!-- Confirm Delete Dialog -->
     <div v-if="showConfirm" class="fixed inset-0 z-50 flex items-center justify-center">
       <div class="absolute inset-0 bg-black/50" @click="showConfirm = false"></div>
-      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-sm mx-4">
-        <div class="flex items-center gap-3 px-6 py-4 border-b-2 border-black bg-red-50">
-          <AlertTriangle class="w-5 h-5 text-red-600" />
-          <h2 class="font-bold text-lg text-red-800">{{ confirmData.title }}</h2>
+      <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-sm mx-4 text-stone-900 dark:text-stone-100">
+        <div class="flex items-center gap-3 px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-red-50 dark:bg-red-950/60">
+          <AlertTriangle class="w-5 h-5 text-red-600 dark:text-red-400" />
+          <h2 class="font-bold text-lg text-red-800 dark:text-red-300">{{ confirmData.title }}</h2>
         </div>
         <div class="p-6">
-          <p class="text-stone-600 mb-6">{{ confirmData.message }}</p>
+          <p class="text-stone-600 dark:text-stone-300 mb-6">{{ confirmData.message }}</p>
           <div class="flex gap-3">
             <Button type="button" variant="outline" class="flex-1" @click="showConfirm = false" :disabled="deleting">
               Batal

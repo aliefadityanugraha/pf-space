@@ -154,7 +154,7 @@ onMounted(async () => {
             <Film class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <select 
               v-model="selectedFilmId"
-              class="w-full pl-10 pr-4 py-2 border-2 border-stone-800 bg-white focus:outline-none focus:ring-0 font-body"
+              class="w-full pl-10 pr-4 py-2 border-2 border-stone-800 dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-0 font-body"
             >
               <option value="">Semua Karya</option>
               <option v-for="film in films" :key="film.film_id" :value="film.film_id">
@@ -223,10 +223,10 @@ onMounted(async () => {
       </div>
 
       <!-- Comments Table -->
-      <Card>
-        <CardHeader class="bg-brand-teal/10 border-b-2 border-stone-800">
-          <CardTitle class="flex items-center gap-2">
-            <MessageCircle class="w-5 h-5" />
+      <Card class="border-2 border-stone-800 dark:border-stone-100 shadow-brutal bg-card">
+        <CardHeader class="bg-brand-teal/10 dark:bg-teal-950/60 border-b-2 border-stone-800 dark:border-stone-100">
+          <CardTitle class="flex items-center gap-2 text-stone-900 dark:text-stone-100">
+            <MessageCircle class="w-5 h-5 text-brand-teal dark:text-teal-300" />
             Semua Komentar
           </CardTitle>
         </CardHeader>
@@ -244,15 +244,15 @@ onMounted(async () => {
           </div>
 
           <!-- Comments List -->
-          <div v-else class="divide-y divide-stone-200">
+          <div v-else class="divide-y divide-stone-200 dark:divide-stone-800">
             <div 
               v-for="comment in filteredComments" 
               :key="comment.diskusi_id"
-              class="p-6 hover:bg-stone-50 transition-colors"
+              class="p-6 hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors"
             >
               <div class="flex gap-4">
                 <!-- Avatar -->
-                <div class="w-10 h-10 bg-brand-orange border-2 border-stone-800 shadow-brutal-sm flex items-center justify-center text-sm font-bold shrink-0">
+                <div class="w-10 h-10 bg-brand-orange border-2 border-stone-800 dark:border-stone-100 shadow-brutal-sm flex items-center justify-center text-sm font-bold shrink-0 text-stone-900">
                   {{ comment.user?.name?.charAt(0) || 'U' }}
                 </div>
 
@@ -262,13 +262,13 @@ onMounted(async () => {
                   <div class="flex items-start justify-between gap-4 mb-2">
                     <div class="flex-1 min-w-0">
                       <div class="flex items-center gap-2 flex-wrap mb-1">
-                        <span class="font-bold text-stone-900">{{ comment.user?.name || 'Pengguna tidak dikenal' }}</span>
+                        <span class="font-bold text-stone-900 dark:text-stone-100">{{ comment.user?.name || 'Pengguna tidak dikenal' }}</span>
                         <Badge variant="outline" class="text-xs">
                           <User class="w-3 h-3 mr-1" />
                           {{ comment.user?.email || 'Tidak ada email' }}
                         </Badge>
                       </div>
-                      <div class="flex items-center gap-3 text-xs text-stone-500">
+                      <div class="flex items-center gap-3 text-xs text-stone-500 dark:text-stone-400">
                         <span class="flex items-center gap-1">
                           <Calendar class="w-3 h-3" />
                           {{ formatDate(comment.created_at, true) }}
@@ -311,8 +311,8 @@ onMounted(async () => {
                   </div>
 
                   <!-- Comment Body -->
-                  <div class="mt-3 p-4 bg-stone-100 border-l-4 border-brand-teal">
-                    <p class="text-sm text-stone-700 whitespace-pre-wrap leading-relaxed">
+                  <div class="mt-3 p-4 bg-stone-100 dark:bg-stone-800 border-l-4 border-brand-teal">
+                    <p class="text-sm text-stone-700 dark:text-stone-200 whitespace-pre-wrap leading-relaxed">
                       {{ comment.isi_pesan }}
                     </p>
                   </div>

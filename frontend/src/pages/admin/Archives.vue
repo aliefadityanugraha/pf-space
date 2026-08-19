@@ -188,18 +188,15 @@ onMounted(fetchKaryas)
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-100">
-    <!-- <AdminSidebar @update:collapsed="sidebarCollapsed = $event" /> -->
-    
-    <main class="p-4 md:p-8">
-      <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-        <a href="/" class="text-brand-teal hover:underline">Beranda</a>
-        <span class="text-stone-400">/</span>
-        <span class="text-stone-600">Administrasi</span>
-        <span class="text-stone-400">/</span>
-        <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Arsip</Badge>
-      </nav>
+  <div class="p-4 md:p-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
+      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <span class="text-stone-400">/</span>
+      <router-link to="/admin" class="text-stone-600 dark:text-stone-400 hover:underline">Administrasi</router-link>
+      <span class="text-stone-400">/</span>
+      <Badge variant="outline" class="bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-300 dark:border-orange-800">Arsip</Badge>
+    </nav>
 
       <!-- Header -->
       <PageHeader 
@@ -241,11 +238,11 @@ onMounted(fetchKaryas)
       </div>
 
       <!-- Karyas Table -->
-      <Card class="w-full">
-        <CardHeader class="bg-teal-50 border-b-2 border-stone-800">
+      <Card class="w-full border-2 border-stone-800 dark:border-stone-100 shadow-brutal bg-card">
+        <CardHeader class="bg-teal-50 dark:bg-teal-950/60 border-b-2 border-stone-800 dark:border-stone-100">
           <div class="flex items-center gap-3">
-            <Film class="w-5 h-5" />
-            <CardTitle class="text-lg font-bold uppercase">Daftar Arsip Karya</CardTitle>
+            <Film class="w-5 h-5 text-teal-900 dark:text-teal-200" />
+            <CardTitle class="text-lg font-bold uppercase text-teal-950 dark:text-teal-100">Daftar Arsip Karya</CardTitle>
           </div>
         </CardHeader>
         <CardContent class="p-0">
@@ -265,7 +262,7 @@ onMounted(fetchKaryas)
 
           <!-- Table -->
           <template v-else>
-            <div class="hidden lg:grid grid-cols-12 gap-4 px-6 py-3 bg-lime-50 border-b-2 border-stone-800 text-xs font-bold uppercase tracking-wider">
+            <div class="hidden lg:grid grid-cols-12 gap-4 px-6 py-3 bg-stone-100 dark:bg-stone-800 border-b-2 border-stone-800 dark:border-stone-100 text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300">
               <div class="col-span-4">Karya</div>
               <div class="col-span-2">Creator</div>
               <div class="col-span-2">Kategori</div>
@@ -277,7 +274,7 @@ onMounted(fetchKaryas)
             <div 
               v-for="Karya in Karyas" 
               :key="Karya.film_id" 
-              class="grid grid-cols-1 lg:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 hover:bg-stone-50 w-full"
+              class="grid grid-cols-1 lg:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800/60 w-full"
             >
               <!-- Karya Info -->
               <div class="lg:col-span-4 flex items-center gap-3">
@@ -285,19 +282,19 @@ onMounted(fetchKaryas)
                   v-if="Karya.gambar_poster" 
                   :src="assetUrl(Karya.gambar_poster)" 
                   :alt="Karya.judul"
-                  class="w-12 h-16 object-cover border border-stone-200 rounded"
+                  class="w-12 h-16 object-cover border border-stone-200 dark:border-stone-700 rounded"
                 />
-                <div v-else class="w-12 h-16 bg-stone-200 flex items-center justify-center rounded">
+                <div v-else class="w-12 h-16 bg-stone-200 dark:bg-stone-800 flex items-center justify-center rounded">
                   <Film class="w-6 h-6 text-stone-400" />
                 </div>
                 <div class="min-w-0">
-                  <span class="block font-bold text-stone-900 truncate">{{ Karya.judul }}</span>
-                  <p class="text-xs text-stone-500 truncate">{{ Karya.sinopsis || '-' }}</p>
+                  <span class="block font-bold text-stone-900 dark:text-stone-100 truncate">{{ Karya.judul }}</span>
+                  <p class="text-xs text-stone-500 dark:text-stone-400 truncate">{{ Karya.sinopsis || '-' }}</p>
                 </div>
               </div>
 
               <!-- Creator -->
-              <div class="lg:col-span-2 text-sm text-stone-600">
+              <div class="lg:col-span-2 text-sm text-stone-600 dark:text-stone-300">
                 {{ Karya.creator?.name || '-' }}
               </div>
 
@@ -421,15 +418,15 @@ onMounted(fetchKaryas)
           </div>
         </CardContent>
       </Card>
-    </main>
+    </div>
 
     <!-- Detail Modal -->
     <div v-if="showDetailModal && selectedKarya" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/50" @click="showDetailModal = false"></div>
-      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-stone-100 sticky top-0">
+      <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-2xl max-h-[90vh] overflow-y-auto text-stone-900 dark:text-stone-100">
+        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-stone-100 dark:bg-stone-800 sticky top-0">
           <h2 class="font-bold text-lg">Detail Arsip Karya</h2>
-          <button @click="showDetailModal = false" class="p-1 hover:bg-stone-200">
+          <button @click="showDetailModal = false" class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700">
             <X class="w-5 h-5" />
           </button>
         </div>
@@ -506,19 +503,19 @@ onMounted(fetchKaryas)
     <!-- Confirm Dialog -->
     <div v-if="showConfirm" class="fixed inset-0 z-50 flex items-center justify-center">
       <div class="absolute inset-0 bg-black/50" @click="showConfirm = false"></div>
-      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-sm mx-4">
+      <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-sm mx-4 text-stone-900 dark:text-stone-100">
         <div :class="[
-          'flex items-center gap-3 px-6 py-4 border-b-2 border-black',
-          confirmAction.type === 'approve' ? 'bg-green-50' : 'bg-red-50'
+          'flex items-center gap-3 px-6 py-4 border-b-2 border-black dark:border-stone-100',
+          confirmAction.type === 'approve' ? 'bg-green-50 dark:bg-green-950/60' : 'bg-red-50 dark:bg-red-950/60'
         ]">
-          <CheckCircle v-if="confirmAction.type === 'approve'" class="w-5 h-5 text-green-600" />
-          <AlertTriangle v-else class="w-5 h-5 text-red-600" />
+          <CheckCircle v-if="confirmAction.type === 'approve'" class="w-5 h-5 text-green-600 dark:text-green-400" />
+          <AlertTriangle v-else class="w-5 h-5 text-red-600 dark:text-red-400" />
           <h2 class="font-bold text-lg">
             {{ confirmAction.type === 'approve' ? 'Setujui Karya' : confirmAction.type === 'reject' ? 'Tolak Karya' : 'Hapus Karya' }}
           </h2>
         </div>
         <div class="p-6">
-          <p class="text-stone-600 mb-6">
+          <p class="text-stone-600 dark:text-stone-300 mb-6">
             {{ confirmAction.type === 'approve' 
               ? `Approve dan publikasikan karya "${confirmAction.karya?.judul}"?`
               : confirmAction.type === 'reject'
@@ -527,13 +524,13 @@ onMounted(fetchKaryas)
             }}
           </p>
           <div v-if="confirmAction.type === 'reject'" class="mb-6">
-            <label class="block text-sm font-medium text-stone-700 mb-2">
+            <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               Alasan penolakan untuk kreator
             </label>
             <textarea
               v-model="rejectionReason"
               rows="3"
-              class="w-full border-2 border-stone-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 resize-none"
+              class="w-full border-2 border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 resize-none"
               placeholder="Contoh: Kualitas audio kurang jelas, mohon perbaiki mixing dan kirim ulang."
             ></textarea>
           </div>
@@ -564,10 +561,10 @@ onMounted(fetchKaryas)
     <!-- Banner Modal -->
     <div v-if="showBannerModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/50" @click="showBannerModal = false"></div>
-      <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-lg">
-        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-stone-100">
+      <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-lg text-stone-900 dark:text-stone-100">
+        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-stone-100 dark:bg-stone-800">
           <h2 class="font-bold text-lg">Pengaturan Banner</h2>
-          <button @click="showBannerModal = false" class="p-1 hover:bg-stone-200 rounded">
+          <button @click="showBannerModal = false" class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700 rounded">
             <X class="w-5 h-5" />
           </button>
         </div>
@@ -614,5 +611,4 @@ onMounted(fetchKaryas)
       :message="toast.message" 
       @close="toast.show = false" 
     />
-    </div>
 </template>

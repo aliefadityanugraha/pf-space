@@ -186,14 +186,14 @@ onMounted(fetchReports)
 
     <!-- Filters -->
     <div class="flex flex-wrap gap-4 mb-6">
-      <div class="flex gap-2 bg-white p-1 border-2 border-black">
+      <div class="flex gap-2 bg-white dark:bg-stone-900 p-1 border-2 border-black dark:border-stone-100">
         <button 
           v-for="s in ['all', 'pending', 'reviewed', 'resolved', 'rejected']" 
           :key="s"
           @click="statusFilter = s; pagination.page = 1; fetchReports()"
           :class="[
             'px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all',
-            statusFilter === s ? 'bg-black text-white' : 'hover:bg-stone-100 text-stone-600'
+            statusFilter === s ? 'bg-black dark:bg-stone-100 text-white dark:text-stone-900' : 'hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300'
           ]"
         >
           {{ s === 'all' ? 'Semua' : statusLabels[s] }}
@@ -203,7 +203,7 @@ onMounted(fetchReports)
       <select 
         v-model="targetTypeFilter" 
         @change="pagination.page = 1; fetchReports()"
-        class="bg-white border-2 border-black px-3 py-1.5 text-xs font-bold uppercase tracking-wider h-full focus:outline-none"
+        class="bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 text-stone-900 dark:text-stone-100 px-3 py-1.5 text-xs font-bold uppercase tracking-wider h-full focus:outline-none"
       >
         <option value="all">Semua Tipe</option>
         <option value="film">Film / Karya</option>
@@ -214,11 +214,11 @@ onMounted(fetchReports)
     </div>
 
     <!-- Reports Table -->
-    <Card class="border-2 border-black shadow-brutal-sm overflow-hidden">
-      <CardHeader class="border-b-2 border-black bg-stone-50">
+    <Card class="border-2 border-black dark:border-stone-100 shadow-brutal-sm overflow-hidden bg-card">
+      <CardHeader class="border-b-2 border-black dark:border-stone-100 bg-stone-50 dark:bg-stone-800">
         <div class="flex items-center gap-2">
-          <FileText class="w-5 h-5" />
-          <CardTitle class="text-[14px] font-black uppercase tracking-tight">Daftar Laporan</CardTitle>
+          <FileText class="w-5 h-5 text-stone-900 dark:text-stone-100" />
+          <CardTitle class="text-[14px] font-black uppercase tracking-tight text-stone-900 dark:text-stone-100">Daftar Laporan</CardTitle>
         </div>
       </CardHeader>
       <CardContent class="p-0 overflow-x-auto">
@@ -229,12 +229,12 @@ onMounted(fetchReports)
 
         <div v-else-if="reports.length === 0" class="flex flex-col items-center justify-center py-20 px-4">
           <CheckCircle class="w-12 h-12 text-green-500 mb-4 opacity-20" />
-          <h3 class="font-bold text-stone-900 mb-1">Tidak Ada Laporan</h3>
-          <p class="text-sm text-stone-500">Semua bersih! Belum ada laporan yang sesuai kriteria.</p>
+          <h3 class="font-bold text-stone-900 dark:text-stone-100 mb-1">Tidak Ada Laporan</h3>
+          <p class="text-sm text-stone-500 dark:text-stone-400">Semua bersih! Belum ada laporan yang sesuai kriteria.</p>
         </div>
 
         <table v-else class="w-full text-left border-collapse min-w-[800px]">
-          <thead class="bg-stone-50 border-b-2 border-black uppercase text-[10px] font-black tracking-widest text-stone-500">
+          <thead class="bg-stone-50 dark:bg-stone-800 border-b-2 border-black dark:border-stone-100 uppercase text-[10px] font-black tracking-widest text-stone-500 dark:text-stone-300">
             <tr>
               <th class="px-6 py-4">Target</th>
               <th class="px-6 py-4">Pelapor</th>
@@ -244,16 +244,16 @@ onMounted(fetchReports)
               <th class="px-6 py-4 text-right">Aksi</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-stone-200">
-            <tr v-for="report in reports" :key="report.report_id" class="hover:bg-stone-50 transition-colors">
+          <tbody class="divide-y divide-stone-200 dark:divide-stone-800 bg-white dark:bg-stone-900">
+            <tr v-for="report in reports" :key="report.report_id" class="hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors">
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <div class="p-2 border-2 border-black bg-white shrink-0">
+                  <div class="p-2 border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shrink-0">
                     <component :is="targetIcons[report.target_type] || FileText" class="w-4 h-4" />
                   </div>
                   <div>
-                    <span class="block text-xs font-bold uppercase tracking-tight text-stone-900">{{ report.target_type }}</span>
-                    <span class="text-[11px] text-stone-500">ID: {{ report.target_id }}</span>
+                    <span class="block text-xs font-bold uppercase tracking-tight text-stone-900 dark:text-stone-100">{{ report.target_type }}</span>
+                    <span class="text-[11px] text-stone-500 dark:text-stone-400">ID: {{ report.target_id }}</span>
                   </div>
                 </div>
               </td>
@@ -348,14 +348,14 @@ onMounted(fetchReports)
         <div v-if="showProcessModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showProcessModal = false"></div>
           
-          <div class="relative bg-white border-2 border-black shadow-brutal w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95">
+          <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 text-stone-900 dark:text-stone-100">
             <!-- Modal Header -->
-            <div class="px-6 py-4 border-b-2 border-black bg-stone-100 flex items-center justify-between shrink-0">
+            <div class="px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-stone-100 dark:bg-stone-800 flex items-center justify-between shrink-0">
               <div class="flex items-center gap-3">
-                <ShieldAlert class="w-5 h-5 text-red-600" />
+                <ShieldAlert class="w-5 h-5 text-red-600 dark:text-red-400" />
                 <h2 class="font-bold text-lg uppercase tracking-tight">Detail Laporan #{{ selectedReport?.report_id }}</h2>
               </div>
-              <button @click="showProcessModal = false" class="p-1 hover:bg-stone-200 transition-colors">
+              <button @click="showProcessModal = false" class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors">
                 <X class="w-6 h-6" />
               </button>
             </div>
@@ -367,38 +367,38 @@ onMounted(fetchReports)
                 <div class="space-y-4">
                   <div>
                     <h4 class="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-1">Tipe Konten</h4>
-                    <Badge variant="outline" class="bg-white border-black border font-mono">
+                    <Badge variant="outline" class="bg-white dark:bg-stone-800 border-black dark:border-stone-100 border font-mono">
                       {{ selectedReport?.target_type }}
                     </Badge>
                   </div>
                   <div>
                     <h4 class="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-1">Pelapor</h4>
-                    <p class="text-sm font-bold">{{ selectedReport?.reporter?.name }}</p>
-                    <p class="text-[11px] text-stone-500">{{ selectedReport?.reporter?.email }}</p>
+                    <p class="text-sm font-bold text-stone-900 dark:text-stone-100">{{ selectedReport?.reporter?.name }}</p>
+                    <p class="text-[11px] text-stone-500 dark:text-stone-400">{{ selectedReport?.reporter?.email }}</p>
                   </div>
                 </div>
                 <div class="space-y-4">
                   <div>
                     <h4 class="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-1">Alasan</h4>
-                    <p class="text-sm font-bold text-red-600 uppercase tracking-tight">{{ selectedReport?.reason.replace('_', ' ') }}</p>
+                    <p class="text-sm font-bold text-red-600 dark:text-red-400 uppercase tracking-tight">{{ selectedReport?.reason.replace('_', ' ') }}</p>
                   </div>
                   <div>
                     <h4 class="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-1">Waktu Laporan</h4>
-                    <p class="text-sm font-medium">{{ formatDate(selectedReport?.created_at, true) }}</p>
+                    <p class="text-sm font-medium text-stone-900 dark:text-stone-100">{{ formatDate(selectedReport?.created_at, true) }}</p>
                   </div>
                 </div>
               </div>
 
               <!-- Description -->
-              <div v-if="selectedReport?.description" class="bg-red-50 border-2 border-red-100 p-4 relative">
+              <div v-if="selectedReport?.description" class="bg-red-50 dark:bg-red-950/60 border-2 border-red-100 dark:border-red-900 p-4 relative">
                 <div class="absolute -top-3 -left-3 bg-red-600 text-white px-2 py-0.5 text-[9px] font-black uppercase border border-black italic">Pesan Pelapor</div>
-                <p class="text-sm text-red-900 leading-relaxed italic">"{{ selectedReport.description }}"</p>
+                <p class="text-sm text-red-900 dark:text-red-200 leading-relaxed italic">"{{ selectedReport.description }}"</p>
               </div>
 
               <!-- Target Content Preview -->
-              <div class="border-2 border-black overflow-hidden bg-stone-50">
-                <div class="px-4 py-2 border-b-2 border-black bg-stone-200 flex items-center justify-between">
-                  <h4 class="text-[10px] font-black uppercase tracking-widest">Pratinjau Konten Terlapor</h4>
+              <div class="border-2 border-black dark:border-stone-100 overflow-hidden bg-stone-50 dark:bg-stone-800">
+                <div class="px-4 py-2 border-b-2 border-black dark:border-stone-100 bg-stone-200 dark:bg-stone-700 flex items-center justify-between">
+                  <h4 class="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-stone-100">Pratinjau Konten Terlapor</h4>
                   <Loader2 v-if="loadingTarget" class="w-3 h-3 animate-spin" />
                 </div>
                 <div class="p-4 min-h-[100px]">
@@ -413,15 +413,15 @@ onMounted(fetchReports)
                   <div v-else>
                     <!-- Film Preview -->
                     <div v-if="selectedReport?.target_type === 'film'" class="flex gap-4">
-                      <div class="w-20 aspect-[3/4] bg-stone-300 border border-black shrink-0 relative overflow-hidden">
+                      <div class="w-20 aspect-[3/4] bg-stone-300 dark:bg-stone-800 border border-black dark:border-stone-100 shrink-0 relative overflow-hidden">
                         <img v-if="targetData.gambar_poster" :src="targetData.gambar_poster" class="w-full h-full object-cover">
                       </div>
                       <div class="flex-1 min-w-0">
-                        <h5 class="font-black uppercase tracking-tight text-sm truncate">{{ targetData.judul }}</h5>
-                        <p class="text-xs text-stone-600 mt-1 line-clamp-2 italic">"{{ targetData.sinopsis }}"</p>
+                        <h5 class="font-black uppercase tracking-tight text-sm truncate text-stone-900 dark:text-stone-100">{{ targetData.judul }}</h5>
+                        <p class="text-xs text-stone-600 dark:text-stone-300 mt-1 line-clamp-2 italic">"{{ targetData.sinopsis }}"</p>
                         <div class="mt-2 flex gap-2">
                            <a :href="'/archive/' + targetData.slug" target="_blank">
-                             <Button size="sm" variant="outline" class="h-7 text-[9px] border-black">Lihat Halaman</Button>
+                             <Button size="sm" variant="outline" class="h-7 text-[9px] border-black dark:border-stone-100">Lihat Halaman</Button>
                            </a>
                         </div>
                       </div>
@@ -430,32 +430,32 @@ onMounted(fetchReports)
                     <!-- Comment/Reply Preview -->
                     <div v-else-if="['comment', 'reply'].includes(selectedReport?.target_type)" class="space-y-2">
                       <div class="flex items-center gap-2 mb-2">
-                        <div class="w-5 h-5 rounded-full bg-stone-200 border border-black"></div>
-                        <span class="text-xs font-black uppercase tracking-tighter">{{ targetData.user?.name || 'User' }}</span>
+                        <div class="w-5 h-5 rounded-full bg-stone-200 dark:bg-stone-700 border border-black dark:border-stone-100"></div>
+                        <span class="text-xs font-black uppercase tracking-tighter text-stone-900 dark:text-stone-100">{{ targetData.user?.name || 'User' }}</span>
                         <span class="text-[9px] text-stone-400">• {{ formatDate(targetData.created_at) }}</span>
                       </div>
-                      <div class="p-3 bg-white border border-stone-300 italic text-sm text-stone-700">
+                      <div class="p-3 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 italic text-sm text-stone-700 dark:text-stone-200">
                         "{{ targetData.isi_pesan || targetData.content }}"
                       </div>
                     </div>
 
                     <!-- Generic/Discussion/Material Preview -->
                     <div v-else class="space-y-1">
-                      <h5 class="font-bold text-sm">{{ targetData.title || targetData.judul || targetData.nama_materi }}</h5>
-                      <p class="text-xs text-stone-600 italic">"{{ targetData.description || targetData.sinopsis || targetData.deskripsi }}"</p>
+                      <h5 class="font-bold text-sm text-stone-900 dark:text-stone-100">{{ targetData.title || targetData.judul || targetData.nama_materi }}</h5>
+                      <p class="text-xs text-stone-600 dark:text-stone-300 italic">"{{ targetData.description || targetData.sinopsis || targetData.deskripsi }}"</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <!-- Admin Resolution -->
-              <div class="space-y-4 pt-4 border-t-2 border-stone-100">
-                <h4 class="text-[10px] font-black uppercase tracking-widest text-stone-900">Keputusan Moderasi</h4>
+              <div class="space-y-4 pt-4 border-t-2 border-stone-100 dark:border-stone-800">
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-stone-100">Keputusan Moderasi</h4>
                 <textarea 
                   v-model="adminNotes" 
                   rows="3" 
                   placeholder="Berikan catatan internal atau alasan keputusan anda..."
-                  class="w-full p-4 border-2 border-black focus:outline-none focus:ring-0 text-sm bg-stone-50 focus:bg-white transition-colors font-body"
+                  class="w-full p-4 border-2 border-black dark:border-stone-100 focus:outline-none focus:ring-0 text-sm bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 transition-colors font-body"
                 ></textarea>
                 
                 <div class="flex flex-wrap gap-2">

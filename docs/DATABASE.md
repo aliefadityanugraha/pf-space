@@ -238,7 +238,24 @@ Relasi many-to-many antara postingan produksi dan tag.
 
 ---
 
-### N. Tabel Better Auth (Auto-generated)
+### N. Tabel Material_Categories
+
+Kategori custom untuk mengelompokkan materi pembelajaran sinematografi.
+
+| Field | Tipe | Keterangan |
+| ----- | ---- | ---------- |
+| `category_id` | Integer (PK) | Auto Increment |
+| `nama_kategori` | Varchar(255) | Nama kategori custom |
+| `slug` | Varchar(255) | URL-friendly slug |
+| `deskripsi` | Text | Deskripsi singkat |
+| `icon` | Varchar(50) | Ikon Lucide/visual |
+| `sort_order` | Integer | Urutan tampilan |
+| `created_at` | Timestamp | Waktu pembuatan |
+| `updated_at` | Timestamp | Waktu update terakhir |
+
+---
+
+### O. Tabel Better Auth (Auto-generated)
 
 Tabel yang di-generate oleh Better Auth:
 

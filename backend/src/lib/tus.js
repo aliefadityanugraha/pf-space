@@ -100,7 +100,7 @@ export const tusServer = new Server({
 
     return `${proto}://${selectedHost}${basePath}/${id}`;
   },
-  maxSize: 2 * 1024 * 1024 * 1024, // 2GB
+  maxSize: 4 * 1024 * 1024 * 1024, // 4GB
   
   /**
    * Generates a unique filename for the upload.

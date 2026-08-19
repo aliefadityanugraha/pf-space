@@ -115,12 +115,12 @@ onMounted(fetchCollections);
         <Card
           v-for="item in collections"
           :key="item.collection_id"
-          class="group bg-white border-2 border-black shadow-brutal hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-brutal-sm transition-all"
+          class="group bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-brutal-sm transition-all"
         >
           <CardContent class="p-0">
             <!-- Thumbnail -->
             <div
-              class="aspect-video bg-stone-200 border-b-2 border-black relative overflow-hidden"
+              class="aspect-video bg-stone-200 dark:bg-stone-800 border-b-2 border-black dark:border-stone-100 relative overflow-hidden"
             >
               <img
                 v-if="item.film?.gambar_poster"
@@ -147,7 +147,7 @@ onMounted(fetchCollections);
             <div class="p-4 md:p-5">
               <div class="flex justify-between items-start gap-2 mb-2">
                 <h3
-                  class="text-base md:text-xl font-display font-bold text-stone-900 line-clamp-1 group-hover:text-brand-red transition-colors"
+                  class="text-base md:text-xl font-display font-bold text-stone-900 dark:text-stone-100 line-clamp-1 group-hover:text-brand-red transition-colors"
                 >
                   {{ item.film?.judul }}
                 </h3>
@@ -158,7 +158,7 @@ onMounted(fetchCollections);
               </div>
 
               <p
-                class="text-[11px] md:text-sm text-stone-500 font-body line-clamp-2 mb-4 md:mb-6"
+                class="text-[11px] md:text-sm text-stone-500 dark:text-stone-300 font-body line-clamp-2 mb-4 md:mb-6"
               >
                 {{ item.film?.sinopsis || "Tidak ada deskripsi." }}
               </p>
@@ -174,7 +174,7 @@ onMounted(fetchCollections);
                 <Button
                   variant="outline"
                   size="icon"
-                  class="w-9 h-9 md:w-10 md:h-10 border-2 border-stone-200 hover:border-brand-red hover:text-brand-red transition-all"
+                  class="w-9 h-9 md:w-10 md:h-10 border-2 border-stone-200 dark:border-stone-700 dark:text-stone-300 hover:border-brand-red hover:text-brand-red transition-all"
                   @click="removeFromCollection(item.film_id)"
                   :disabled="removingIds.has(item.film_id)"
                 >

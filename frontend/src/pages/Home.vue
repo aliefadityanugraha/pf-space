@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { api } from "@/lib/api";
 import { assetUrl } from "@/lib/format";
@@ -133,24 +133,61 @@ const loading = ref(true);
 const getCategoryMeta = (name = "") => {
   const lower = name.toLowerCase();
   if (lower.includes("pendek") || lower.includes("short")) {
-    return { icon: Clapperboard, bg: "bg-brand-red text-white", badge: "bg-brand-red/10 text-brand-red border-brand-red/30" };
+    return {
+      icon: Clapperboard,
+      bg: "bg-brand-red text-white",
+      badge: "bg-brand-red/10 text-brand-red border-brand-red/30",
+    };
   }
   if (lower.includes("dokumen") || lower.includes("docu")) {
-    return { icon: Camera, bg: "bg-amber-400 text-stone-900", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30" };
+    return {
+      icon: Camera,
+      bg: "bg-amber-400 text-stone-900",
+      badge:
+        "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
+    };
   }
   if (lower.includes("animas") || lower.includes("anim")) {
-    return { icon: Sparkles, bg: "bg-purple-500 text-white", badge: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30" };
+    return {
+      icon: Sparkles,
+      bg: "bg-purple-500 text-white",
+      badge:
+        "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30",
+    };
   }
   if (lower.includes("musik") || lower.includes("song")) {
-    return { icon: Music, bg: "bg-sky-500 text-white", badge: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30" };
+    return {
+      icon: Music,
+      bg: "bg-sky-500 text-white",
+      badge: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30",
+    };
   }
   if (lower.includes("eksperimen") || lower.includes("exp")) {
-    return { icon: Zap, bg: "bg-emerald-400 text-stone-900", badge: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30" };
+    return {
+      icon: Zap,
+      bg: "bg-emerald-400 text-stone-900",
+      badge:
+        "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
+    };
   }
-  if (lower.includes("romance") || lower.includes("drama") || lower.includes("fiksi") || lower.includes("fiction")) {
-    return { icon: Heart, bg: "bg-rose-500 text-white", badge: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30" };
+  if (
+    lower.includes("romance") ||
+    lower.includes("drama") ||
+    lower.includes("fiksi") ||
+    lower.includes("fiction")
+  ) {
+    return {
+      icon: Heart,
+      bg: "bg-rose-500 text-white",
+      badge:
+        "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30",
+    };
   }
-  return { icon: Film, bg: "bg-brand-teal text-white", badge: "bg-brand-teal/10 text-brand-teal border-brand-teal/30" };
+  return {
+    icon: Film,
+    bg: "bg-brand-teal text-white",
+    badge: "bg-brand-teal/10 text-brand-teal border-brand-teal/30",
+  };
 };
 
 const handleScroll = () => {
@@ -166,7 +203,7 @@ const fetchData = async () => {
   loading.value = true;
   try {
     const results = await Promise.allSettled([
-      api.get("/api/films/latest?limit=10"),
+      api.get("/api/films/latest?limit=30"),
       api.get("/api/votes/trending?period=week&limit=6"),
       api.get("/api/categories/with-count"),
     ]);
@@ -197,6 +234,16 @@ const fetchData = async () => {
     loading.value = false;
   }
 };
+
+const latestFilmChunks = computed(() => {
+  if (!latestFilms.value || latestFilms.value.length === 0) return [];
+  const chunkSize = 10;
+  const chunks = [];
+  for (let i = 0; i < latestFilms.value.length; i += chunkSize) {
+    chunks.push(latestFilms.value.slice(i, i + chunkSize));
+  }
+  return chunks;
+});
 
 const goToDetail = (slug) => {
   router.push(`/archive/${slug}`);
@@ -236,23 +283,68 @@ onUnmounted(() => {
         <!-- Global Loading removed in favor of section-based skeletons -->
 
         <!-- Latest Films Section -->
-        <section class="max-w-7xl mx-auto px-4 md:px-8 py-8 relative z-10">
-          <SectionHeader
-            title="Karya Terbaru"
-            subtitle="Eksplorasi karya terbaru dari para kontributor"
-            :light-text="false"
-          />
+        <section
+          class="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 relative z-10 space-y-6"
+        >
+          <!-- Simplified Section Header -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-1.5 h-8 bg-brand-teal rounded-full shrink-0"></div>
+              <div>
+                <h2
+                  class="font-heading text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-100 uppercase tracking-tight leading-none"
+                >
+                  Karya Terbaru
+                </h2>
+                <p
+                  class="font-body text-xs md:text-sm text-stone-500 dark:text-stone-400 mt-1"
+                >
+                  Eksplorasi karya terbaru dari para kontributor
+                </p>
+              </div>
+            </div>
+
+            <router-link
+              to="/films"
+              class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand-teal hover:underline shrink-0"
+            >
+              <span>Lihat Semua</span>
+              <ArrowRight class="w-4 h-4" />
+            </router-link>
+          </div>
 
           <ErrorBoundary name="Karya Terbaru">
-            <!-- Archive Carousel -->
+            <!-- Empty State -->
             <div v-if="!loading && latestFilms.length === 0" class="w-full">
               <EmptyState
                 title="Belum ada karya yang dipublikasi"
                 description="Silahkan unggah karya pertamamu."
               />
             </div>
-            <div v-else class="w-full">
-              <ArchiveCarousel :items="latestFilms" :loading="loading" />
+
+            <!-- Loading State -->
+            <div v-else-if="loading" class="w-full">
+              <ArchiveCarousel :loading="true" />
+            </div>
+
+            <!-- Data State: Multi-Slider Chunks (Max 10 Items per Row Slider) -->
+            <div v-else class="space-y-10">
+              <div
+                v-for="(chunk, idx) in latestFilmChunks"
+                :key="idx"
+                class="w-full"
+              >
+                <ArchiveCarousel
+                  :items="chunk"
+                  :loading="false"
+                  :carousel-id="idx + 1"
+                  :title="
+                    latestFilmChunks.length > 1
+                      ? `Karya Terbaru — Bagian #${idx + 1}`
+                      : ''
+                  "
+                />
+              </div>
             </div>
           </ErrorBoundary>
         </section>
@@ -262,7 +354,9 @@ onUnmounted(() => {
           class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 relative z-10"
         >
           <!-- Section Badge & Header -->
-          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 md:mb-12">
+          <div
+            class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 md:mb-12"
+          >
             <div>
               <div
                 class="inline-flex items-center gap-2 bg-brand-teal text-white border-2 border-black px-3 py-1 text-xs font-bold uppercase tracking-widest shadow-brutal-xs mb-3"
@@ -278,7 +372,8 @@ onUnmounted(() => {
               <p
                 class="font-body text-stone-600 dark:text-stone-400 text-sm md:text-base mt-2 max-w-xl"
               >
-                Catatan di balik layar, progress produksi, dan pengumuman terbaru langsung dari tim pembuat film PF Space.
+                Catatan di balik layar, progress produksi, dan pengumuman
+                terbaru langsung dari tim pembuat film PF Space.
               </p>
             </div>
 
@@ -288,7 +383,9 @@ onUnmounted(() => {
                 class="h-10 md:h-11 px-5 border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-bold uppercase text-xs tracking-wider shadow-brutal-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all cursor-pointer inline-flex items-center gap-2"
               >
                 <span>Jelajahi Feed</span>
-                <ArrowRight class="w-4 h-4 text-brand-teal dark:text-teal-400" />
+                <ArrowRight
+                  class="w-4 h-4 text-brand-teal dark:text-teal-400"
+                />
               </Button>
             </div>
           </div>
@@ -368,7 +465,9 @@ onUnmounted(() => {
 
           <div class="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
             <!-- Section Badge & Header -->
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 md:mb-12">
+            <div
+              class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 md:mb-12"
+            >
               <div>
                 <div
                   class="inline-flex items-center gap-2 bg-brand-red text-white border-2 border-black px-3 py-1 text-xs font-bold uppercase tracking-widest shadow-brutal-xs mb-3"
@@ -384,7 +483,8 @@ onUnmounted(() => {
                 <p
                   class="font-body text-stone-600 dark:text-stone-400 text-sm md:text-base mt-2 max-w-xl"
                 >
-                  Karya sinematik dengan apresiasi terbanyak dari komunitas pembuat & penonton film PF Space.
+                  Karya sinematik dengan apresiasi terbanyak dari komunitas
+                  pembuat & penonton film PF Space.
                 </p>
               </div>
 
@@ -394,7 +494,9 @@ onUnmounted(() => {
                   class="h-10 md:h-11 px-5 border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-bold uppercase text-xs tracking-wider shadow-brutal-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all cursor-pointer inline-flex items-center gap-2"
                 >
                   <span>Jelajahi Peringkat</span>
-                  <ArrowRight class="w-4 h-4 text-brand-red dark:text-red-400" />
+                  <ArrowRight
+                    class="w-4 h-4 text-brand-red dark:text-red-400"
+                  />
                 </Button>
               </div>
             </div>
@@ -423,10 +525,10 @@ onUnmounted(() => {
                       index === 0
                         ? 'bg-yellow-400 text-stone-900'
                         : index === 1
-                        ? 'bg-stone-300 dark:bg-stone-700 text-stone-900 dark:text-stone-100'
-                        : index === 2
-                        ? 'bg-amber-600 text-white'
-                        : 'bg-brand-red text-white'
+                          ? 'bg-stone-300 dark:bg-stone-700 text-stone-900 dark:text-stone-100'
+                          : index === 2
+                            ? 'bg-amber-600 text-white'
+                            : 'bg-brand-red text-white',
                     ]"
                   >
                     <Crown v-if="index === 0" class="w-5 h-5 text-stone-900" />
@@ -463,14 +565,21 @@ onUnmounted(() => {
                     <p
                       class="text-xs font-mono font-medium text-stone-600 dark:text-stone-400 truncate mb-2"
                     >
-                      {{ film.creator?.name || film.sutradara || "Kreator SMK" }}
+                      {{
+                        film.creator?.name || film.sutradara || "Kreator SMK"
+                      }}
                     </p>
 
                     <!-- Vote Pill Tag -->
-                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 border border-black dark:border-stone-700 text-xs font-bold shadow-brutal-xs">
+                    <div
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 border border-black dark:border-stone-700 text-xs font-bold shadow-brutal-xs"
+                    >
                       <Flame class="w-3.5 h-3.5 text-brand-red animate-pulse" />
                       <span>{{ (film.vote_count || 0).toLocaleString() }}</span>
-                      <span class="text-[10px] text-stone-500 uppercase font-mono">apresiasi</span>
+                      <span
+                        class="text-[10px] text-stone-500 uppercase font-mono"
+                        >apresiasi</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -534,7 +643,7 @@ onUnmounted(() => {
                 <div
                   :class="[
                     'w-11 h-11 md:w-13 md:h-13 rounded-full border-2 border-black dark:border-stone-100 flex items-center justify-center shadow-brutal-xs mb-3 group-hover/cat:scale-110 transition-transform duration-300 shrink-0',
-                    getCategoryMeta(category.nama_kategori).bg
+                    getCategoryMeta(category.nama_kategori).bg,
                   ]"
                 >
                   <component

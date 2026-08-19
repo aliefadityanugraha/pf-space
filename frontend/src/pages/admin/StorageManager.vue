@@ -90,39 +90,39 @@ onMounted(() => {
     <template v-else-if="storageStats">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <!-- Total Storage Card -->
-        <Card class="lg:col-span-1 border-2 border-stone-800 shadow-brutal">
-          <CardHeader class="bg-stone-50 border-b border-stone-200">
-            <CardTitle class="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+        <Card class="lg:col-span-1 border-2 border-stone-800 dark:border-stone-100 shadow-brutal bg-card">
+          <CardHeader class="bg-stone-50 dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700">
+            <CardTitle class="text-sm font-bold uppercase tracking-wider flex items-center gap-2 text-stone-900 dark:text-stone-100">
               <HardDrive class="w-4 h-4" />
               Total Penggunaan
             </CardTitle>
           </CardHeader>
           <CardContent class="p-6">
-            <div class="text-5xl font-black text-stone-900 mb-2">{{ formatSize(storageStats.totalSize) }}</div>
-            <p class="text-stone-500 text-sm mb-6 uppercase font-bold">Tersebar di {{ storageStats.totalCount }} file</p>
+            <div class="text-5xl font-black text-stone-900 dark:text-stone-100 mb-2">{{ formatSize(storageStats.totalSize) }}</div>
+            <p class="text-stone-500 dark:text-stone-400 text-sm mb-6 uppercase font-bold">Tersebar di {{ storageStats.totalCount }} file</p>
             <div v-if="storageStats.disk" class="mb-6">
-              <div class="flex items-center justify-between text-[11px] font-mono mb-1">
+              <div class="flex items-center justify-between text-[11px] font-mono mb-1 text-stone-700 dark:text-stone-300">
                 <span>Terpakai</span>
                 <span>{{ Math.round((storageStats.disk.used / (storageStats.disk.total || 1)) * 100) }}%</span>
               </div>
-              <div class="w-full h-3 bg-stone-200 border border-stone-800 overflow-hidden">
+              <div class="w-full h-3 bg-stone-200 dark:bg-stone-800 border border-stone-800 dark:border-stone-100 overflow-hidden">
                 <div 
-                  class="h-full bg-stone-800"
+                  class="h-full bg-stone-800 dark:bg-stone-100"
                   :style="{ width: `${(storageStats.disk.used / (storageStats.disk.total || 1)) * 100}%` }"
                 ></div>
               </div>
-              <div class="mt-2 text-xs text-stone-600">
+              <div class="mt-2 text-xs text-stone-600 dark:text-stone-400">
                 {{ formatSize(storageStats.disk.used) }} dari {{ formatSize(storageStats.disk.total) }} • Sisa {{ formatSize(storageStats.disk.free) }}
               </div>
             </div>
 
             <div class="space-y-4">
               <div v-for="(cat, key) in storageStats.categories" :key="key">
-                <div class="flex items-center justify-between text-xs font-bold uppercase mb-1">
+                <div class="flex items-center justify-between text-xs font-bold uppercase mb-1 text-stone-900 dark:text-stone-100">
                   <span>{{ cat.name }}</span>
                   <span>{{ formatSize(cat.size) }}</span>
                 </div>
-                <div class="w-full h-3 bg-stone-200 border border-stone-800 overflow-hidden">
+                <div class="w-full h-3 bg-stone-200 dark:bg-stone-800 border border-stone-800 dark:border-stone-100 overflow-hidden">
                   <div 
                     :class="getCategoryColor(key)" 
                     class="h-full transition-all duration-1000"
@@ -136,32 +136,32 @@ onMounted(() => {
 
         <!-- Category Grid -->
         <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card v-for="(cat, key) in storageStats.categories" :key="key" class="hover:border-stone-800 transition-colors">
+          <Card v-for="(cat, key) in storageStats.categories" :key="key" class="hover:border-stone-800 dark:hover:border-stone-100 transition-colors bg-card">
             <CardContent class="p-6 flex items-center gap-4">
-              <div :class="['w-12 h-12 flex items-center justify-center border-2 border-stone-800 shadow-brutal-sm text-white', getCategoryColor(key)]">
+              <div :class="['w-12 h-12 flex items-center justify-center border-2 border-stone-800 dark:border-stone-100 shadow-brutal-xs text-white', getCategoryColor(key)]">
                 <component :is="getCategoryIcon(key)" class="w-6 h-6" />
               </div>
               <div class="flex-1">
-                <h3 class="font-bold uppercase tracking-wide text-sm">{{ cat.name }}</h3>
+                <h3 class="font-bold uppercase tracking-wide text-sm text-stone-900 dark:text-stone-100">{{ cat.name }}</h3>
                 <div class="flex items-baseline gap-2">
-                  <span class="text-2xl font-black">{{ formatSize(cat.size) }}</span>
-                  <span class="text-xs text-stone-500 uppercase font-bold">{{ cat.count }} File</span>
+                  <span class="text-2xl font-black text-stone-900 dark:text-stone-100">{{ formatSize(cat.size) }}</span>
+                  <span class="text-xs text-stone-500 dark:text-stone-400 uppercase font-bold">{{ cat.count }} File</span>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" class="rounded-none hover:bg-stone-100">
-                <ChevronRight class="w-5 h-5" />
+              <Button variant="ghost" size="icon" class="rounded-none hover:bg-stone-100 dark:hover:bg-stone-800">
+                <ChevronRight class="w-5 h-5 text-stone-900 dark:text-stone-100" />
               </Button>
             </CardContent>
           </Card>
 
-          <Card class="bg-amber-50 border-dashed border-2 border-amber-300">
+          <Card class="bg-amber-50 dark:bg-amber-950/60 border-dashed border-2 border-amber-300 dark:border-amber-800">
             <CardContent class="p-6 flex items-center gap-4">
-              <div class="w-12 h-12 flex items-center justify-center bg-amber-100 text-amber-700">
+              <div class="w-12 h-12 flex items-center justify-center bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300">
                 <AlertCircle class="w-8 h-8" />
               </div>
               <div>
-                <h3 class="font-bold text-amber-900 uppercase text-xs mb-1">Tips Efisiensi</h3>
-                <p class="text-xs text-amber-800 leading-tight">Gunakan format WebP untuk gambar dan kompresi H.264 untuk video agar hemat ruang.</p>
+                <h3 class="font-bold text-amber-900 dark:text-amber-200 uppercase text-xs mb-1">Tips Efisiensi</h3>
+                <p class="text-xs text-amber-800 dark:text-amber-300 leading-tight">Gunakan format WebP untuk gambar dan kompresi H.264 untuk video agar hemat ruang.</p>
               </div>
             </CardContent>
           </Card>
@@ -169,9 +169,9 @@ onMounted(() => {
       </div>
 
       <!-- System Info -->
-      <Card class="border-2 border-stone-800">
-        <CardHeader class="bg-lime-50 border-b-2 border-stone-800">
-          <CardTitle class="text-sm font-bold uppercase tracking-widest">Detail Lokasi Penyimpanan</CardTitle>
+      <Card class="border-2 border-stone-800 dark:border-stone-100 bg-card">
+        <CardHeader class="bg-stone-100 dark:bg-stone-800 border-b-2 border-stone-800 dark:border-stone-100">
+          <CardTitle class="text-sm font-bold uppercase tracking-widest text-stone-900 dark:text-stone-100">Detail Lokasi Penyimpanan</CardTitle>
         </CardHeader>
         <CardContent class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

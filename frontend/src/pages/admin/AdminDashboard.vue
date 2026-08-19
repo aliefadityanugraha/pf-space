@@ -215,7 +215,7 @@ onMounted(() => {
         <Card 
           v-for="stat in stats" 
           :key="stat.id"
-          class="cursor-pointer hover:shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all bg-white border-2 border-stone-900 group"
+          class="cursor-pointer hover:shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all bg-white dark:bg-stone-900 border-2 border-stone-900 dark:border-stone-100 group"
           @click="navigateTo(stat.path)"
         >
           <CardContent class="p-4 flex flex-col justify-between h-full">
@@ -322,21 +322,21 @@ onMounted(() => {
           <div
             v-for="item in quickAccessList"
             :key="item.title"
-            class="p-4 bg-white border-2 border-stone-900 shadow-brutal-xs hover:shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all cursor-pointer group flex flex-col justify-between"
+            class="p-4 bg-white dark:bg-stone-900 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs hover:shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all cursor-pointer group flex flex-col justify-between"
             @click="navigateTo(item.path)"
           >
             <div>
-              <div :class="[item.color]" class="w-10 h-10 border-2 border-stone-900 shadow-brutal-xs flex items-center justify-center mb-3">
+              <div :class="[item.color]" class="w-10 h-10 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs flex items-center justify-center mb-3">
                 <component :is="item.icon" class="w-5 h-5" />
               </div>
-              <h4 class="font-bold text-sm text-stone-900 uppercase group-hover:text-brand-teal transition-colors">
+              <h4 class="font-bold text-sm text-stone-900 dark:text-stone-100 uppercase group-hover:text-brand-teal transition-colors">
                 {{ item.title }}
               </h4>
-              <p class="text-xs text-stone-500 font-body mt-1 leading-snug">
+              <p class="text-xs text-stone-500 dark:text-stone-400 font-body mt-1 leading-snug">
                 {{ item.desc }}
               </p>
             </div>
-            <div class="mt-4 pt-2 border-t border-stone-100 flex items-center justify-between text-xs font-bold text-stone-700 uppercase group-hover:text-brand-teal">
+            <div class="mt-4 pt-2 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between text-xs font-bold text-stone-700 dark:text-stone-300 uppercase group-hover:text-brand-teal">
               <span>Buka</span>
               <ChevronRight class="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </div>
@@ -348,12 +348,12 @@ onMounted(() => {
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
         <!-- Active Tasks (Pending Review) -->
-        <Card class="xl:col-span-2 border-2 border-stone-900 shadow-brutal">
-          <CardHeader class="bg-amber-50 border-b-2 border-stone-900 py-4">
+        <Card class="xl:col-span-2 border-2 border-stone-900 dark:border-stone-100 shadow-brutal bg-card">
+          <CardHeader class="bg-amber-50 dark:bg-amber-950/60 border-b-2 border-stone-900 dark:border-stone-100 py-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <ListChecks class="w-5 h-5 text-amber-900" />
-                <CardTitle class="text-base font-bold uppercase tracking-wider text-amber-950">
+                <ListChecks class="w-5 h-5 text-amber-900 dark:text-amber-300" />
+                <CardTitle class="text-base font-bold uppercase tracking-wider text-amber-950 dark:text-amber-200">
                   Tugas Kurasi Karya ({{ tasks.length }})
                 </CardTitle>
               </div>
@@ -376,7 +376,7 @@ onMounted(() => {
             </div>
 
             <template v-else>
-              <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-stone-100 border-b-2 border-stone-900 text-xs font-bold uppercase tracking-wider text-stone-700">
+              <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-stone-100 dark:bg-stone-800 border-b-2 border-stone-900 dark:border-stone-100 text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300">
                 <div class="col-span-4">Karya</div>
                 <div class="col-span-4">Kreator & Tanggal</div>
                 <div class="col-span-2">Status</div>
@@ -386,13 +386,13 @@ onMounted(() => {
               <div 
                 v-for="task in tasks" 
                 :key="task.id" 
-                class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 last:border-0 hover:bg-stone-50 transition-colors"
+                class="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-4 items-center border-b border-stone-200 dark:border-stone-800 last:border-0 hover:bg-stone-50 dark:hover:bg-stone-800/60 transition-colors"
               >
                 <div class="md:col-span-4 flex items-center gap-3">
-                  <div :class="[task.iconBg, task.iconColor]" class="p-2 border-2 border-stone-900 shadow-brutal-xs flex-shrink-0">
+                  <div :class="[task.iconBg, task.iconColor]" class="p-2 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs flex-shrink-0">
                     <component :is="task.icon" class="w-4 h-4" />
                   </div>
-                  <span class="font-bold text-sm text-stone-900 line-clamp-1">{{ task.subject }}</span>
+                  <span class="font-bold text-sm text-stone-900 dark:text-stone-100 line-clamp-1">{{ task.subject }}</span>
                 </div>
                 
                 <div class="md:col-span-4 text-xs text-stone-600">
@@ -483,22 +483,22 @@ onMounted(() => {
         <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" @click="showAnnouncementModal = false"></div>
 
         <!-- Modal Dialog -->
-        <div class="relative w-full max-w-lg bg-brand-cream border-4 border-stone-900 shadow-brutal overflow-hidden z-10">
-          <div class="h-3 bg-gradient-to-r from-brand-red via-brand-orange to-brand-teal w-full border-b-2 border-stone-900"></div>
+        <div class="relative w-full max-w-lg bg-brand-cream dark:bg-stone-900 border-4 border-stone-900 dark:border-stone-100 shadow-brutal overflow-hidden z-10">
+          <div class="h-3 bg-gradient-to-r from-brand-red via-brand-orange to-brand-teal w-full border-b-2 border-stone-900 dark:border-stone-100"></div>
 
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-3">
-                <div class="p-2 bg-brand-orange border-2 border-stone-900 shadow-brutal-xs">
+                <div class="p-2 bg-brand-orange border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs">
                   <Megaphone class="w-5 h-5 text-stone-900" />
                 </div>
-                <h3 class="font-display font-bold text-lg text-stone-900 uppercase">
+                <h3 class="font-display font-bold text-lg text-stone-900 dark:text-stone-100 uppercase">
                   Edit Pengumuman Sistem
                 </h3>
               </div>
               <button 
                 @click="showAnnouncementModal = false"
-                class="p-1 border-2 border-transparent hover:border-stone-900 hover:bg-white transition-all"
+                class="p-1 border-2 border-transparent hover:border-stone-900 dark:hover:border-stone-100 hover:bg-white dark:hover:bg-stone-800 transition-all text-stone-900 dark:text-stone-100"
               >
                 <X class="w-5 h-5" />
               </button>
@@ -507,13 +507,13 @@ onMounted(() => {
             <!-- Form -->
             <div class="space-y-4">
               <!-- Switch status -->
-              <div class="flex items-center justify-between p-3 bg-white border-2 border-stone-900">
-                <span class="text-xs font-bold uppercase text-stone-900">Status Tampil di Web</span>
+              <div class="flex items-center justify-between p-3 bg-white dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-100">
+                <span class="text-xs font-bold uppercase text-stone-900 dark:text-stone-100">Status Tampil di Web</span>
                 <button
                   type="button"
                   @click="announcementConfig.is_active = !announcementConfig.is_active"
-                  :class="announcementConfig.is_active ? 'bg-green-500 text-white' : 'bg-stone-300 text-stone-700'"
-                  class="px-3 py-1 border-2 border-stone-900 text-xs font-bold uppercase transition-all shadow-brutal-xs"
+                  :class="announcementConfig.is_active ? 'bg-green-500 text-white' : 'bg-stone-300 dark:bg-stone-700 text-stone-700 dark:text-stone-300'"
+                  class="px-3 py-1 border-2 border-stone-900 dark:border-stone-100 text-xs font-bold uppercase transition-all shadow-brutal-xs"
                 >
                   {{ announcementConfig.is_active ? '● Aktif' : '○ Non-Aktif' }}
                 </button>
@@ -521,45 +521,45 @@ onMounted(() => {
 
               <!-- Judul -->
               <div>
-                <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Judul Pengumuman</label>
+                <label class="block text-xs font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">Judul Pengumuman</label>
                 <input
                   v-model="announcementConfig.title"
                   type="text"
                   placeholder="Misal: Open Submission Festival Film 2026!"
-                  class="w-full p-2.5 bg-white border-2 border-stone-900 text-sm font-body text-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-teal"
+                  class="w-full p-2.5 bg-white dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-100 text-sm font-body text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-brand-teal"
                 />
               </div>
 
               <!-- Isi Pesan -->
               <div>
-                <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Pesan Pengumuman</label>
+                <label class="block text-xs font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">Pesan Pengumuman</label>
                 <textarea
                   v-model="announcementConfig.content"
                   rows="3"
                   placeholder="Tulis pesan lengkap pengumuman untuk pengunjung website…"
-                  class="w-full p-2.5 bg-white border-2 border-stone-900 text-sm font-body text-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-teal resize-none"
+                  class="w-full p-2.5 bg-white dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-100 text-sm font-body text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-brand-teal resize-none"
                 ></textarea>
               </div>
 
               <!-- Teks Tombol CTA -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Teks Tombol CTA</label>
+                  <label class="block text-xs font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">Teks Tombol CTA</label>
                   <input
                     v-model="announcementConfig.button_text"
                     type="text"
                     placeholder="Misal: Upload Karya"
-                    class="w-full p-2.5 bg-white border-2 border-stone-900 text-sm font-body text-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-teal"
+                    class="w-full p-2.5 bg-white dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-100 text-sm font-body text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-brand-teal"
                   />
                 </div>
 
                 <div>
-                  <label class="block text-xs font-bold uppercase text-stone-700 mb-1">Tautan / URL Tombol</label>
+                  <label class="block text-xs font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">Tautan / URL Tombol</label>
                   <input
                     v-model="announcementConfig.button_url"
                     type="text"
                     placeholder="Misal: /upload"
-                    class="w-full p-2.5 bg-white border-2 border-stone-900 text-sm font-body text-stone-900 focus:outline-none focus:ring-2 focus:ring-brand-teal"
+                    class="w-full p-2.5 bg-white dark:bg-stone-800 border-2 border-stone-900 dark:border-stone-100 text-sm font-body text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-brand-teal"
                   />
                 </div>
               </div>

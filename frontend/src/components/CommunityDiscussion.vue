@@ -54,16 +54,16 @@ onMounted(() => {
       </div>
 
       <!-- Main Banner Card -->
-      <Card class="border-2 border-black shadow-[6px_6px_0_rgba(28,25,23,1)] md:shadow-[8px_8px_0_rgba(28,25,23,1)] bg-white overflow-visible relative group rounded-none">
+      <Card class="border-2 border-black dark:border-stone-100 shadow-brutal bg-white dark:bg-stone-900 overflow-visible relative group rounded-none">
         
         <!-- Funky Sticker -->
-        <div class="absolute -top-4 -right-4 md:-top-6 md:-right-6 w-12 h-12 md:w-16 md:h-16 bg-yellow-400 rounded-full border-2 border-black flex items-center justify-center shadow-[2px_2px_0_rgba(0,0,0,1)] z-20 animate-[spin_8s_linear_infinite]">
-          <Sparkles class="w-6 h-6 md:w-8 md:h-8 text-black" />
+        <div class="absolute -top-4 -right-4 md:-top-6 md:-right-6 w-12 h-12 md:w-16 md:h-16 bg-yellow-400 dark:bg-yellow-500 rounded-full border-2 border-black dark:border-stone-100 flex items-center justify-center shadow-brutal-sm z-20 animate-[spin_8s_linear_infinite]">
+          <Sparkles class="w-6 h-6 md:w-8 md:h-8 text-stone-900" />
         </div>
 
         <div class="bg-gradient-to-br from-brand-orange to-brand-red p-5 md:p-8 text-white flex flex-col md:flex-row gap-5 md:gap-8 items-center md:items-start text-center md:text-left relative z-10 border-b-4 border-brand-teal">
           
-          <div class="w-16 h-16 md:w-20 md:h-20 bg-brand-cream border-2 border-black shadow-[3px_3px_0_rgba(28,25,23,1)] flex items-center justify-center flex-shrink-0 -rotate-3 group-hover:rotate-0 transition-transform duration-300">
+          <div class="w-16 h-16 md:w-20 md:h-20 bg-brand-cream border-2 border-black dark:border-stone-100 shadow-brutal-sm flex items-center justify-center flex-shrink-0 -rotate-3 group-hover:rotate-0 transition-transform duration-300">
             <MessageCircle class="w-8 h-8 md:w-10 md:h-10 text-brand-red" />
           </div>
           
@@ -71,14 +71,14 @@ onMounted(() => {
             <h3 class="text-xl md:text-2xl font-heading font-black leading-tight mb-2 uppercase drop-shadow-[2px_2px_0_rgba(0,0,0,0.6)] tracking-tight">
               {{ discussion.title }}
             </h3>
-            <p v-if="discussion.description" class="text-white font-body bg-black/30 p-2.5 border-l-2 border-yellow-400 font-medium text-xs md:text-sm mb-3 line-clamp-2 md:line-clamp-2 leading-snug">
+            <p v-if="discussion.description" class="text-white font-body bg-stone-950/40 backdrop-blur-md p-3 border-l-4 border-yellow-400 font-medium text-xs md:text-sm mb-3 line-clamp-2 leading-snug rounded-r">
               {{ discussion.description }}
             </p>
             <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-1 text-[9px] md:text-[10px] font-bold">
-              <span class="bg-black text-white px-3 py-1.5 uppercase tracking-widest border border-transparent shadow-[1px_1px_0_rgba(255,255,255,0.2)]">
+              <span class="bg-stone-950/60 text-white px-3 py-1.5 uppercase tracking-widest border border-white/20 font-mono">
                 Oleh {{ discussion.creator?.name || 'Admin' }}
               </span>
-              <span class="bg-white/10 text-white px-3 py-1.5 border border-white/20 uppercase tracking-widest backdrop-blur-sm">
+              <span class="bg-stone-950/60 text-white px-3 py-1.5 border border-white/20 uppercase tracking-widest font-mono">
                 {{ formatTime(discussion.created_at) }}
               </span>
             </div>
@@ -89,7 +89,7 @@ onMounted(() => {
              <Button 
                 @click="router.push('/community')"
                 size="lg"
-                class="bg-yellow-400 text-stone-900 border-2 border-black shadow-[4px_4px_0_rgba(28,25,23,1)] hover:shadow-[1px_1px_0_rgba(28,25,23,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all font-black uppercase tracking-widest text-xs md:text-sm h-12 md:h-14 px-6 md:px-8 rounded-none w-full flex items-center justify-center gap-2 whitespace-nowrap"
+                class="bg-yellow-400 dark:bg-yellow-500 text-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all font-black uppercase tracking-widest text-xs md:text-sm h-12 md:h-14 px-6 md:px-8 rounded-none w-full flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
              >
                 Lihat <br class="hidden md:block"/> Diskusi <ArrowRight class="w-4 h-4 md:w-5 md:h-5"/>
              </Button>

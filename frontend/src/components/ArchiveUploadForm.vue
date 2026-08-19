@@ -155,10 +155,10 @@ const startVideoUpload = async () => {
   if (!selectedVideoFile.value) return
 
   const file = selectedVideoFile.value
-  const limit = 1024 * 1024 * 1024 *2 // 2GB
+  const limit = 1024 * 1024 * 1024 * 4 // 4GB
 
   if (file.size > limit) {
-    emit('error', 'Ukuran video terlalu besar (maksimal 2GB)')
+    emit('error', 'Ukuran video terlalu besar (maksimal 4GB)')
     showVideoModal.value = false
     selectedVideoFile.value = null
     return
@@ -410,7 +410,7 @@ onUnmounted(() => {
                   class="hidden"
                 />
                </div>
-               <p class="text-xs text-stone-500 dark:text-stone-400 italic">Format: MP4 Max 2GB.</p>
+               <p class="text-xs text-stone-500 dark:text-stone-400 italic">Format: MP4 Max 4GB.</p>
             </div>
           </div>
 
@@ -447,7 +447,7 @@ onUnmounted(() => {
                   class="hidden"
                 />
                </div>
-               <p class="text-xs text-stone-500 dark:text-stone-400 italic">Format: MP4, WebM. Max 2GB.</p>
+               <p class="text-xs text-stone-500 dark:text-stone-400 italic">Format: MP4, WebM. Max 4GB.</p>
             </div>
           </div>
             
@@ -484,7 +484,7 @@ onUnmounted(() => {
                     class="hidden"
                   />
                  </div>
-                 <p class="text-xs text-stone-500 dark:text-stone-400 italic">Format: MP4, WebM. Max 2GB.</p>
+                 <p class="text-xs text-stone-500 dark:text-stone-400 italic">Format: MP4, WebM. Max 4GB.</p>
               </div>
             </div>
         </div>

@@ -585,6 +585,17 @@ onUnmounted(() => {
                   </router-link>
                 </DropdownMenuItem>
 
+                <DropdownMenuItem v-if="isModerator || isAdmin" as-child>
+                  <router-link
+                    to="/manage-materi"
+                    class="flex items-center gap-3 px-4 py-1.5 text-xs font-bold text-brand-orange hover:bg-orange-50 dark:hover:bg-stone-800 cursor-pointer"
+                    @click="isDropdownOpen = false"
+                  >
+                    <BookOpen class="w-3.5 h-3.5" />
+                    <span>+ Unggah & Kelola Materi</span>
+                  </router-link>
+                </DropdownMenuItem>
+
                 <DropdownMenuItem v-if="isAdmin || isModerator" as-child>
                   <router-link
                     to="/admin"

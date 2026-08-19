@@ -4,6 +4,23 @@ Semua perubahan penting pada project PF Space didokumentasikan di sini.
 
 ---
 
+## [1.7.0] — 2026-08-19
+
+### ✅ Added
+
+- **Kategori Custom Materi Pembelajaran (`material_categories`)**: Skema tabel database baru, Objection.js model, Fastify CRUD API (`/api/material-categories`), dan halaman Admin Manajemen Kategori (`MaterialCategories.vue`).
+- **Dynamic Grouped View Mode**: Mode tampilan berkelompok per kategori custom pada halaman materi pembelajaran (`LearningMaterials.vue`).
+- **Dynamic Chunking Slider Karya Terbaru**: Pengelompokan karya terbaru menjadi maksimal 10 item per baris slider pada Beranda (`Home.vue`) dengan navigasi Swiper independen (`carouselId`).
+
+### ⚡ Optimized & Enhanced
+
+- **Upload Limit Video 4 GB**: Peningkatan batas maksimal unggah video dari 2 GB menjadi 4 GB pada backend Tus server (`backend/src/lib/tus.js`), client Tus uploader (`uploadFileTus.js`), form unggah arsip (`ArchiveUploadForm.vue`), dan editor feed (`useProductionFeedEditor.js`).
+- **Admin Sidebar Redesign**: Perombakan tampilan sidebar administrasi (`AdminSidebar.vue`) dengan 4 seksi navigasi terorganisir (*UTAMA*, *KELOLA KONTEN*, *SISTEM & MODERASI*, *PENGATURAN*), kontras warna tinggi, dan footer profil mode gelap.
+- **Redesign & Dark Mode Fix Diskusi Komunitas**: Perombakan penuh halaman diskusi publik (`Community.vue`), widget diskusi beranda (`CommunityDiscussion.vue`), dan diskusi admin (`CommunityDiscussions.vue`) dengan penyesuaian latar belakang, kartu balasan, dan kotak deskripsi topik yang kontras & estetis di mode gelap.
+- **Pengaturan Sistem Dark Mode Fix**: Penyesuaian skema warna mode gelap pada halaman Pengaturan Sistem (`Settings.vue`).
+
+---
+
 ## [1.4.0] — 2026-08-06
 
 ### ✅ Added

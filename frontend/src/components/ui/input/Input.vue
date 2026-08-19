@@ -32,9 +32,9 @@ const inputValue = computed({
     :placeholder="placeholder"
     :disabled="disabled"
     :class="cn(
-      'flex h-10 w-full border-2 border-black bg-white px-3 py-2 font-body text-sm shadow-brutal-sm',
+      'flex h-10 w-full border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 px-3 py-2 font-body text-sm shadow-brutal-sm',
       'file:border-0 file:bg-transparent file:text-sm file:font-medium',
-      'placeholder:text-stone-400',
+      'placeholder:text-stone-400 dark:placeholder:text-stone-500',
       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2',
       'disabled:cursor-not-allowed disabled:opacity-50',
       props.class

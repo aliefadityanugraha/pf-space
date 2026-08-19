@@ -47,6 +47,25 @@ const typeColor = {
 
 const fallbackData = () => [
   {
+    id: "v1_7_0",
+    version: "1.7.0",
+    date: "2026-08-19",
+    type: "feature",
+    title: "Sistem Kategori Custom Materi Pembelajaran, Limit Video 4GB, Redesign Komunitas & Slider Bertingkat",
+    description:
+      "Pembaruan arsitektur kategori materi pembelajaran kustom, peningkatan batas pengunggahan video film hingga 4 GB, perombakan penuh UI Diskusi Komunitas & Sidebar Admin, serta slider bertingkat Karya Terbaru.",
+    items: [
+      "Pengembangan sistem Kategori Custom Materi Pembelajaran (material_categories table, Fastify CRUD API /api/material-categories, & Objection.js Model)",
+      "Halaman Admin Manajemen Kategori Materi (MaterialCategories.vue) untuk membuat, mengedit, dan menghapus kategori custom",
+      "Mode Tampilan Berkelompok (Grouped View Mode) dan tab kategori dinamis pada halaman Materi Pembelajaran (LearningMaterials.vue)",
+      "Peningkatan batas maksimal pengunggahan berkas video utama, trailer, dan BTS dari 2 GB menjadi 4 GB (Tus Resumable Protocol & Fastify limit)",
+      "Redesign Sidebar Administrasi (AdminSidebar.vue) dengan 4 kelompok navigasi terorganisir (Utama, Kelola Konten, Sistem & Moderasi, Pengaturan) & penyesuaian kontras",
+      "Redesign halaman Diskusi Komunitas Publik (Community.vue) & Widget Beranda (CommunityDiscussion.vue) dengan gaya Neobrutalist segar dan dukungan penuh Mode Gelap",
+      "Perbaikan kontras warna Mode Gelap pada halaman Diskusi Administrasi (CommunityDiscussions.vue) dan Pengaturan Sistem (Settings.vue)",
+      "Pengelompokan otomatis slider Karya Terbaru di Beranda (Home.vue) menjadi maksimal 10 item per baris slider dengan navigasi Swiper independen (carouselId)",
+    ],
+  },
+  {
     id: "v1_6_0",
     version: "1.6.0",
     date: "2026-08-13",

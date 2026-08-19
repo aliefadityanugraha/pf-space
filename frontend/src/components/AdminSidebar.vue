@@ -17,10 +17,12 @@ import {
   Bell,
   HelpCircle,
   FolderOpen,
+  FolderKanban,
   Vote,
   MessageCircle,
   BookOpen,
   Database,
+  Sparkles,
 } from "lucide-vue-next";
 import { assetUrl } from "@/lib/format";
 
@@ -35,29 +37,50 @@ watch(isCollapsed, (val) => {
   emit("update:collapsed", val);
 });
 
-const allMenuItems = [
-  { name: "Dasbor", icon: LayoutDashboard, path: "/admin" },
-  { name: "Arsip", icon: Film, path: "/admin/archives" },
-  { name: "Kategori", icon: FolderOpen, path: "/admin/categories" },
-  { name: "Manajemen File", icon: Database, path: "/admin/storage" },
-  { name: "Log Audit", icon: Shield, path: "/admin/logs" },
-  { name: "Kontrol Akses", icon: Shield, path: "/admin/rbac" },
-  { name: "Trending", icon: Vote, path: "/admin/trending" },
-  { name: "Diskusi Komunitas", icon: MessageCircle, path: "/admin/community" },
-  { name: "Laporan", icon: FileText, path: "/admin/reports" },
-];
+const menuGroups = computed(() => {
+  const groups = [
+    {
+      title: "UTAMA",
+      items: [
+        { name: "Dasbor", icon: LayoutDashboard, path: "/admin" },
+        { name: "Arsip Film", icon: Film, path: "/admin/archives" },
+      ]
+    },
+    {
+      title: "KELOLA KONTEN",
+      items: [
+        { name: "Kelola Materi", icon: BookOpen, path: "/manage-materi" },
+        { name: "Kategori Materi", icon: FolderKanban, path: "/admin/material-categories" },
+        { name: "Kategori Film", icon: FolderOpen, path: "/admin/categories" },
+        { name: "Manajemen File", icon: Database, path: "/admin/storage" },
+      ]
+    },
+    {
+      title: "SISTEM & MODERASI",
+      items: [
+        { name: "Log Audit", icon: Shield, path: "/admin/logs" },
+        { name: "Kontrol Akses", icon: Shield, path: "/admin/rbac" },
+        { name: "Trending", icon: Vote, path: "/admin/trending" },
+        { name: "Diskusi Komunitas", icon: MessageCircle, path: "/admin/community" },
+        { name: "Laporan", icon: FileText, path: "/admin/reports" },
+      ]
+    }
+  ];
 
-const menuItems = computed(() => {
-  if (isAdmin.value) return allMenuItems;
-  if (isModerator.value) {
-    return allMenuItems.filter(
-      (item) =>
+  if (isModerator.value && !isAdmin.value) {
+    return groups.map(g => ({
+      ...g,
+      items: g.items.filter(item => 
         item.path === "/admin/archives" ||
         item.path === "/admin/community" ||
-        item.path === "/admin/reports",
-    );
+        item.path === "/admin/reports" ||
+        item.path === "/manage-materi" ||
+        item.path === "/admin/material-categories"
+      )
+    })).filter(g => g.items.length > 0);
   }
-  return [];
+
+  return groups;
 });
 
 const bottomMenuItems = [
@@ -68,7 +91,7 @@ const bottomMenuItems = [
 
 const visibleBottomMenuItems = computed(() => {
   if (isAdmin.value) return bottomMenuItems;
-  return []; // Hide notifications, settings, and help for moderators
+  return [];
 });
 
 const isActive = (path) => route.path === path;
@@ -78,48 +101,52 @@ const isActive = (path) => route.path === path;
   <div class="fixed left-0 top-0 h-screen z-50">
     <aside
       :class="[
-        'h-full bg-card text-card-foreground border-r-2 border-border flex flex-col transition-all duration-300 ease-in-out relative',
-        isCollapsed ? 'w-14' : 'w-56',
+        'h-full bg-stone-900 text-stone-100 border-r-2 border-stone-800 dark:border-stone-100 flex flex-col transition-all duration-300 ease-in-out relative shadow-xl',
+        isCollapsed ? 'w-16' : 'w-60',
       ]"
     >
-      <!-- Logo Area -->
+      <!-- Logo / Header Area -->
       <div
-        class="h-16 border-b-2 border-border flex items-center shrink-0 overflow-hidden transition-all duration-300"
-        :class="isCollapsed ? 'justify-center' : 'px-4 gap-2'"
+        class="h-16 border-b-2 border-stone-800 dark:border-stone-100 flex items-center shrink-0 overflow-hidden px-3 bg-stone-950/60"
+        :class="isCollapsed ? 'justify-center' : 'justify-between'"
       >
-        <router-link to="/" class="flex items-center gap-2 shrink-0 group">
+        <router-link to="/" class="flex items-center gap-3 shrink-0 group">
           <div
             :class="[
-              'bg-card border-2 border-border shadow-brutal-xs flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:rotate-3',
-              isCollapsed ? 'w-9 h-9' : 'w-10 h-10',
+              'bg-brand-teal border-2 border-stone-100 shadow-brutal-xs flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:rotate-6',
+              isCollapsed ? 'w-10 h-10' : 'w-9 h-9',
             ]"
           >
             <img
               src="/logo-perfilman.png"
               alt="PF"
-              :class="isCollapsed ? 'w-7 h-7' : 'w-8 h-8'"
-              class="object-contain"
+              class="w-7 h-7 object-contain"
             />
           </div>
           <div
             v-if="!isCollapsed"
-            class="flex flex-col animate-in fade-in slide-in-from-left-4 duration-500"
+            class="flex flex-col animate-in fade-in slide-in-from-left-4 duration-300"
           >
-            <span class="font-display text-lg font-bold leading-none text-foreground"
-              >PF Space</span
-            >
+            <div class="flex items-center gap-1.5">
+              <span class="font-display text-base font-extrabold tracking-tight text-white"
+                >PF Space</span
+              >
+              <span class="px-1.5 py-0.2 bg-brand-orange text-[9px] font-black uppercase tracking-wider text-stone-900 rounded">
+                Admin
+              </span>
+            </div>
             <span
-              class="text-[8px] uppercase font-black text-brand-teal tracking-[0.1em]"
-              >Administrasi</span
+              class="text-[9px] uppercase font-bold text-stone-400 tracking-[0.15em]"
+              >Panel Kontrol</span
             >
           </div>
         </router-link>
       </div>
 
-      <!-- Toggle Button - Neobrutalist floating style -->
+      <!-- Toggle Button - Neobrutalist floating pill -->
       <button
         @click="isCollapsed = !isCollapsed"
-        class="absolute -right-4 top-20 w-8 h-8 bg-card text-card-foreground border-2 border-border flex items-center justify-center shadow-brutal-xs hover:bg-muted transition-all z-20 group cursor-pointer"
+        class="absolute -right-3.5 top-20 w-7 h-7 bg-stone-800 text-stone-100 border-2 border-stone-100 flex items-center justify-center shadow-brutal-xs hover:bg-brand-teal hover:text-white transition-all z-30 rounded-full group cursor-pointer"
         aria-label="Toggle Sidebar"
       >
         <ChevronLeft
@@ -133,80 +160,99 @@ const isActive = (path) => route.path === path;
       </button>
 
       <!-- Navigation Content -->
-      <div class="flex-1 py-4 space-y-1 overflow-y-auto no-scrollbar">
-        <!-- Main Menu -->
-        <router-link
-          v-for="item in menuItems"
-          :key="item.path"
-          :to="item.path"
-          :title="isCollapsed ? item.name : ''"
-          :class="[
-            'flex items-center transition-all py-2 mx-1.5 border-2',
-            isCollapsed ? 'justify-center px-0' : 'px-2.5',
-            isActive(item.path)
-              ? 'bg-brand-teal text-white border-black shadow-brutal-xs translate-x-[1px] translate-y-[1px]'
-              : 'border-transparent text-stone-600 hover:text-black hover:bg-stone-200',
-          ]"
-        >
+      <div class="flex-1 py-4 px-2 space-y-6 overflow-y-auto no-scrollbar">
+        <!-- Grouped Menu Sections -->
+        <div v-for="(group, gIdx) in menuGroups" :key="gIdx" class="space-y-1">
+          <!-- Section Title Header -->
           <div
+            v-if="!isCollapsed"
+            class="px-2 pb-1 text-[10px] font-mono font-bold uppercase tracking-widest text-stone-400 flex items-center gap-2"
+          >
+            <span>{{ group.title }}</span>
+            <span class="flex-1 h-[1px] bg-stone-800"></span>
+          </div>
+
+          <!-- Section Items -->
+          <router-link
+            v-for="item in group.items"
+            :key="item.path"
+            :to="item.path"
+            :title="isCollapsed ? item.name : ''"
             :class="[
-              'flex items-center justify-center shrink-0 transition-all duration-300',
-              isCollapsed ? '' : 'mr-2.5',
+              'flex items-center transition-all py-2 rounded-lg font-body relative group text-xs font-bold uppercase tracking-wider',
+              isCollapsed ? 'justify-center px-0 mx-1' : 'px-3 mx-0.5 gap-3',
+              isActive(item.path)
+                ? 'bg-brand-teal text-white border-2 border-stone-100 shadow-brutal-xs font-extrabold translate-x-[1px] translate-y-[1px]'
+                : 'text-stone-300 hover:text-white hover:bg-stone-800/80 border-2 border-transparent',
             ]"
           >
-            <component :is="item.icon" class="w-5 h-5" />
-          </div>
-          <span
-            v-if="!isCollapsed"
-            class="text-[13px] font-bold uppercase tracking-wide truncate animate-in fade-in slide-in-from-left-2 duration-300 font-body"
-          >
-            {{ item.name }}
-          </span>
-        </router-link>
+            <!-- Left active indicator strip for uncollapsed -->
+            <div
+              v-if="isActive(item.path) && !isCollapsed"
+              class="absolute left-0 top-1.5 bottom-1.5 w-1 bg-white rounded-r"
+            ></div>
 
-        <div class="mx-4 h-[1px] bg-stone-200 my-3" v-if="!isCollapsed"></div>
+            <div
+              :class="[
+                'flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110',
+                isActive(item.path) ? 'text-white' : 'text-stone-400 group-hover:text-stone-100'
+              ]"
+            >
+              <component :is="item.icon" class="w-4 h-4" />
+            </div>
 
-        <!-- Bottom Menu -->
-        <router-link
-          v-for="item in visibleBottomMenuItems"
-          :key="item.path"
-          :to="item.path"
-          :title="isCollapsed ? item.name : ''"
-          :class="[
-            'flex items-center transition-all py-1.5 mx-1.5 border-2',
-            isCollapsed ? 'justify-center px-0' : 'px-2.5',
-            isActive(item.path)
-              ? 'bg-orange-400 text-white border-black shadow-brutal-xs translate-x-[1px] translate-y-[1px]'
-              : 'border-transparent text-stone-500 hover:text-stone-900 hover:bg-stone-200',
-          ]"
-        >
+            <span
+              v-if="!isCollapsed"
+              class="truncate animate-in fade-in slide-in-from-left-2 duration-300"
+            >
+              {{ item.name }}
+            </span>
+          </router-link>
+        </div>
+
+        <!-- Bottom Menu Group -->
+        <div v-if="visibleBottomMenuItems.length > 0" class="pt-2 space-y-1 border-t border-stone-800">
           <div
+            v-if="!isCollapsed"
+            class="px-2 pb-1 text-[10px] font-mono font-bold uppercase tracking-widest text-stone-400 flex items-center gap-2"
+          >
+            <span>PENGATURAN</span>
+            <span class="flex-1 h-[1px] bg-stone-800"></span>
+          </div>
+
+          <router-link
+            v-for="item in visibleBottomMenuItems"
+            :key="item.path"
+            :to="item.path"
+            :title="isCollapsed ? item.name : ''"
             :class="[
-              'flex items-center justify-center shrink-0',
-              isCollapsed ? '' : 'mr-2.5',
+              'flex items-center transition-all py-2 rounded-lg font-body text-xs font-bold uppercase tracking-wider',
+              isCollapsed ? 'justify-center px-0 mx-1' : 'px-3 mx-0.5 gap-3',
+              isActive(item.path)
+                ? 'bg-brand-orange text-stone-900 border-2 border-stone-100 shadow-brutal-xs font-extrabold'
+                : 'text-stone-400 hover:text-stone-100 hover:bg-stone-800/80 border-2 border-transparent',
             ]"
           >
-            <component :is="item.icon" class="w-4 h-4" />
-          </div>
-          <span
-            v-if="!isCollapsed"
-            class="text-[11px] font-bold uppercase tracking-wide truncate font-body"
-          >
-            {{ item.name }}
-          </span>
-        </router-link>
+            <div class="flex items-center justify-center shrink-0">
+              <component :is="item.icon" class="w-4 h-4" />
+            </div>
+            <span v-if="!isCollapsed" class="truncate">
+              {{ item.name }}
+            </span>
+          </router-link>
+        </div>
       </div>
 
-      <!-- User & Footer Area -->
+      <!-- User Profile Footer Area -->
       <div
-        class="p-2 border-t-2 border-black bg-stone-50 transition-all duration-300"
+        class="p-2.5 border-t-2 border-stone-800 dark:border-stone-100 bg-stone-950/80 transition-all duration-300 shrink-0"
       >
         <div
-          :class="['flex items-center gap-2', isCollapsed ? 'flex-col' : '']"
+          :class="['flex items-center gap-2.5', isCollapsed ? 'flex-col' : '']"
         >
           <div
             :class="[
-              'bg-white border-2 border-black shadow-brutal-xs flex items-center justify-center shrink-0 text-sm font-black overflow-hidden group hover:shadow-none transition-all cursor-pointer',
+              'bg-stone-800 border-2 border-stone-100 shadow-brutal-xs flex items-center justify-center shrink-0 font-black overflow-hidden text-stone-100',
               isCollapsed ? 'w-10 h-10' : 'w-10 h-10',
             ]"
           >
@@ -218,31 +264,29 @@ const isActive = (path) => route.path === path;
                 class="w-full h-full object-cover"
               />
             </template>
-            <span v-else class="font-display text-base">{{
+            <span v-else class="font-display text-sm uppercase">{{
               user?.name ? user.name.charAt(0).toUpperCase() : "A"
             }}</span>
           </div>
 
           <div v-if="!isCollapsed" class="flex-1 min-w-0">
-            <p class="text-xs font-black truncate text-stone-900 font-body">
+            <p class="text-xs font-extrabold truncate text-stone-100 font-body leading-snug">
               {{ user?.name || "Administrator" }}
             </p>
-            <p
-              class="text-[8px] font-bold uppercase text-stone-500 tracking-tighter font-body"
-            >
+            <span class="inline-block px-1.5 py-0.5 bg-stone-800 text-[9px] font-mono font-bold uppercase text-brand-teal border border-stone-700 rounded">
               {{ user?.role?.name || "Superuser" }}
-            </p>
+            </span>
           </div>
 
           <button
             @click="logout"
             :class="[
-              'p-2 bg-white border-2 border-black shadow-brutal-xs hover:bg-red-50 hover:text-red-600 hover:shadow-none transition-all flex items-center justify-center',
-              isCollapsed ? 'w-full' : '',
+              'p-2 bg-stone-800 text-stone-300 border-2 border-stone-700 hover:border-stone-100 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center rounded cursor-pointer',
+              isCollapsed ? 'w-full h-9' : 'w-9 h-9',
             ]"
             title="Keluar"
           >
-            <LogOut class="w-3.5 h-3.5" />
+            <LogOut class="w-4 h-4" />
           </button>
         </div>
       </div>

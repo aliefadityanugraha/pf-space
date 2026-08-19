@@ -9,7 +9,7 @@ export class LearningMaterialController {
    * Filterable by owner for management purposes
    */
   async getAll(request, reply) {
-    const { page, limit, owner, status } = request.query;
+    const { page, limit, owner, status, category_id, category_slug } = request.query;
     
     const isAdmin = request.user && request.user.role_id === ROLES.ADMIN;
     const isModerator = request.user && request.user.role_id === ROLES.MODERATOR;
@@ -20,7 +20,9 @@ export class LearningMaterialController {
     const options = { 
       page, 
       limit, 
-      activeOnly 
+      activeOnly,
+      category_id,
+      category_slug
     };
 
     // Filter by owner if requested

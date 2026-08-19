@@ -22,3 +22,4 @@ export * from './filmScene.controller.js';
 export * from './report.controller.js';
 export * from './setting.controller.js';
 export * from './productionFeed.controller.js';
+export * from './materialCategory.controller.js';

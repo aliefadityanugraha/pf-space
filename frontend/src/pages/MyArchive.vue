@@ -62,9 +62,9 @@ const openRejectionModal = (film) => {
 };
 
 const statusColors = {
-  pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
-  published: "bg-green-100 text-green-800 border-green-300",
-  rejected: "bg-red-100 text-red-800 border-red-300",
+  pending: "bg-yellow-100 dark:bg-yellow-950 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800",
+  published: "bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800",
+  rejected: "bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800",
 };
 
 const statusLabels = {
@@ -215,11 +215,11 @@ onMounted(async () => {
           >
             <div>
               <p
-                class="text-xs font-bold uppercase tracking-wider text-stone-600 mb-1"
+                class="text-xs font-bold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1"
               >
                 Status Pengajuan Karya
               </p>
-              <p class="text-sm text-stone-500">
+              <p class="text-sm text-stone-500 dark:text-stone-300">
                 Ringkasan semua karya yang kamu upload berdasarkan status
                 review.
               </p>
@@ -227,7 +227,7 @@ onMounted(async () => {
             <div class="flex flex-wrap gap-2 items-center">
               <Badge
                 variant="outline"
-                class="bg-stone-900 text-white border-stone-900"
+                class="bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-stone-900 dark:border-stone-100"
               >
                 <span class="font-bold mr-1">{{
                   summaryLoading ? "…" : statusSummary.all
@@ -334,7 +334,7 @@ onMounted(async () => {
 
               <div
                 v-if="item.status === 'rejected'"
-                class="p-2 bg-red-50 border border-red-200 text-red-600 text-xs mb-4 rounded"
+                class="p-2 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs mb-4 rounded"
               >
                 <p class="font-semibold mb-1">Karya ditolak admin.</p>
                 <div v-if="item.rejection_reason">
@@ -420,28 +420,28 @@ onMounted(async () => {
         @click="showRejectionModal = false"
       ></div>
       <div
-        class="relative bg-white border-2 border-black shadow-brutal w-full max-w-lg"
+        class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-lg text-stone-900 dark:text-stone-100"
       >
         <div
-          class="flex items-center justify-between px-6 py-4 border-b-2 border-black bg-red-50"
+          class="flex items-center justify-between px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-red-50 dark:bg-red-950/60"
         >
           <div class="flex items-center gap-3">
-            <XCircle class="w-5 h-5 text-red-600" />
-            <h2 class="font-bold text-lg text-red-800">Alasan Penolakan</h2>
+            <XCircle class="w-5 h-5 text-red-600 dark:text-red-400" />
+            <h2 class="font-bold text-lg text-red-800 dark:text-red-300">Alasan Penolakan</h2>
           </div>
           <button
             @click="showRejectionModal = false"
-            class="p-1 hover:bg-red-100 rounded"
+            class="p-1 hover:bg-red-100 dark:hover:bg-red-900/40 rounded text-red-800 dark:text-red-300"
           >
-            <X class="w-5 h-5 text-red-800" />
+            <X class="w-5 h-5" />
           </button>
         </div>
         <div class="p-6 max-h-[70vh] overflow-y-auto">
-          <h3 class="font-bold text-lg mb-2">
+          <h3 class="font-bold text-lg mb-2 text-stone-900 dark:text-stone-100">
             {{ selectedRejectionFilm.judul }}
           </h3>
           <div
-            class="p-4 bg-stone-50 border border-stone-200 rounded text-stone-700 whitespace-pre-wrap text-sm"
+            class="p-4 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded text-stone-700 dark:text-stone-300 whitespace-pre-wrap text-sm"
           >
             {{ selectedRejectionFilm.rejection_reason }}
           </div>

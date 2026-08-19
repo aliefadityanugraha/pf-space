@@ -192,6 +192,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html.dark,
 .dark {
   --background: #1c1917; /* stone-900 */
   --foreground: #fafaf9; /* stone-50 */
@@ -230,19 +231,6 @@ html {
   --shadow-brutal-md-color: 6px 6px 0px 0px rgba(0, 0, 0, 1);
   --shadow-brutal-sm-color: 4px 4px 0px 0px rgba(0, 0, 0, 1);
   --shadow-brutal-xs-color: 2px 2px 0px 0px rgba(0, 0, 0, 1);
-}
-
-/* CSS Custom Color Properties for 100% Synchronized Theme Gradient & Background Transitions */
-@property --background {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #f2eee3;
-}
-
-@property --foreground {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #1c1917;
 }
 
 /* Smooth Global Theme Transition Engine */

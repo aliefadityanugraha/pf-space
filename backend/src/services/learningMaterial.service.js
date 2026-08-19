@@ -19,9 +19,9 @@ export class LearningMaterialService {
    * Get all learning materials with pagination
    * @param {object} options - Pagination options
    */
-  async getAll({ page = 1, limit = 20, activeOnly = true, creator_id = null }) {
+  async getAll({ page = 1, limit = 20, activeOnly = true, creator_id = null, category_id = null, category_slug = null }) {
     let query = LearningMaterial.query()
-      .withGraphFetched('creator')
+      .withGraphFetched('[creator, materialCategory]')
       .orderBy('is_featured', 'desc')
       .orderBy('created_at', 'desc');
 
@@ -31,6 +31,16 @@ export class LearningMaterialService {
 
     if (creator_id) {
       query = query.where('creator_id', creator_id);
+    }
+
+    if (category_id) {
+      query = query.where('material_category_id', category_id);
+    }
+
+    if (category_slug) {
+      query = query.whereExists(
+        LearningMaterial.relatedQuery('materialCategory').where('slug', category_slug)
+      );
     }
 
     const results = await query.page(page - 1, limit);
@@ -53,7 +63,7 @@ export class LearningMaterialService {
   async getById(id) {
     return await LearningMaterial.query()
       .findById(id)
-      .withGraphFetched('creator');
+      .withGraphFetched('[creator, materialCategory]');
   }
 
   /**

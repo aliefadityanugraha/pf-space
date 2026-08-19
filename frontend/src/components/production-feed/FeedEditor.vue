@@ -348,7 +348,7 @@ const coverFailed = ref(false)
                 />
               </label>
             </div>
-            <p class="text-[10px] text-stone-400 dark:text-stone-500 mt-3">Foto &amp; PDF maks 10MB • Video maks 2GB (MP4/WebM). Maks 20 media.</p>
+            <p class="text-[10px] text-stone-400 dark:text-stone-500 mt-3">Foto &amp; PDF maks 10MB • Video maks 4GB (MP4/WebM). Maks 20 media.</p>
           </CardContent>
         </Card>
       </div>

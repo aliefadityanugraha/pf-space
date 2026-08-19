@@ -37,7 +37,7 @@ import {
 const LIMITS = {
   photo: 10 * 1024 * 1024, // 10MB
   pdf: 10 * 1024 * 1024, // 10MB
-  video: 2 * 1024 * 1024 * 1024 // 2GB
+  video: 4 * 1024 * 1024 * 1024 // 4GB
 }
 
 export function useProductionFeedEditor({ mode = 'create' } = {}) {
