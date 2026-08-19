@@ -40,9 +40,9 @@ const typeLabels = {
 };
 
 const typeColor = {
-  feature: "bg-brand-teal/20 text-brand-teal border-brand-teal/30",
-  fix: "bg-brand-red text-white border-black",
-  change: "bg-brand-yellow text-black border-black",
+  feature: "bg-teal-100 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border-teal-300 dark:border-teal-700",
+  fix: "bg-red-100 dark:bg-red-950/80 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700",
+  change: "bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700",
 };
 
 const fallbackData = () => [
@@ -286,13 +286,13 @@ onMounted(fetchChangelog);
       <nav
         class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-2 md:pt-8"
       >
-        <router-link to="/" class="text-brand-teal hover:underline"
+        <router-link to="/" class="text-brand-teal dark:text-teal-400 hover:underline"
           >Beranda</router-link
         >
-        <span class="text-stone-400">/</span>
+        <span class="text-stone-400 dark:text-stone-500">/</span>
         <Badge
           variant="outline"
-          class="bg-orange-100 text-orange-700 border-orange-300"
+          class="bg-orange-100 dark:bg-orange-950/80 text-orange-700 dark:text-orange-300 border-orange-300 dark:border-orange-800 font-mono font-bold"
           >Changelog</Badge
         >
       </nav>
@@ -307,38 +307,38 @@ onMounted(fetchChangelog);
       <div class="mt-8 flex flex-col md:flex-row gap-3 md:gap-4">
         <div class="flex-1 relative">
           <Search
-            class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-500"
+            class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400"
           />
           <Input
             v-model="query"
             placeholder="Cari update…"
-            class="pl-9 bg-white border-2 border-slate-900 shadow-brutal-xs md:shadow-brutal h-10 md:h-11 text-sm md:text-base"
+            class="pl-9 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal-xs md:shadow-brutal h-10 md:h-11 text-sm md:text-base text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500"
           />
         </div>
         <div class="w-full md:w-56 relative">
           <Filter
-            class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-600"
+            class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-600 dark:text-stone-400 z-10"
           />
           <select
             v-model="type"
-            class="w-full h-10 pl-9 pr-3 bg-white border-2 border-slate-900 shadow-brutal-xs md:shadow-brutal text-sm"
+            class="w-full h-10 md:h-11 pl-9 pr-3 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal-xs md:shadow-brutal text-sm text-stone-900 dark:text-stone-100 cursor-pointer"
           >
-            <option value="all">Semua Perubahan</option>
-            <option value="feature">Fitur Baru</option>
-            <option value="fix">Perbaikan Bug</option>
-            <option value="change">Perubahan</option>
+            <option value="all" class="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100">Semua Perubahan</option>
+            <option value="feature" class="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100">Fitur Baru</option>
+            <option value="fix" class="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100">Perbaikan Bug</option>
+            <option value="change" class="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100">Perubahan</option>
           </select>
         </div>
       </div>
 
-      <div class="mt-8 space-y-4">
+      <div class="mt-8 space-y-6">
         <div v-if="loading" class="flex items-center justify-center py-16">
-          <Loader2 class="w-6 h-6 animate-spin text-stone-600" />
+          <Loader2 class="w-8 h-8 animate-spin text-brand-teal dark:text-teal-400" />
         </div>
 
-        <div v-else-if="filtered.length === 0" class="text-center py-16">
-          <History class="w-10 h-10 mx-auto mb-3 text-stone-500" />
-          <p class="text-stone-700 font-medium">
+        <div v-else-if="filtered.length === 0" class="text-center py-16 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal">
+          <History class="w-10 h-10 mx-auto mb-3 text-stone-400 dark:text-stone-500" />
+          <p class="text-stone-700 dark:text-stone-300 font-bold uppercase tracking-wider text-sm">
             Belum ada catatan perubahan yang cocok.
           </p>
         </div>
@@ -347,23 +347,23 @@ onMounted(fetchChangelog);
           v-for="entry in filtered"
           :key="entry.id"
           :id="entry.id"
-          class="border-2 border-black shadow-brutal bg-white"
+          class="border-2 border-black dark:border-stone-100 shadow-brutal bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 transition-colors"
         >
-          <CardContent class="p-4 md:p-7">
+          <CardContent class="p-5 md:p-8">
             <div
               class="flex flex-col md:flex-row md:items-start justify-between gap-4"
             >
-              <div class="space-y-2 md:space-y-1.5 flex-1">
+              <div class="space-y-3 md:space-y-2 flex-1">
                 <div class="flex flex-wrap items-center gap-2">
                   <Badge
                     variant="secondary"
-                    class="bg-stone-900 text-white border-0 text-[10px] md:text-xs"
+                    class="bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-0 text-[10px] md:text-xs font-mono font-bold"
                     >v{{ entry.version || "N/A" }}</Badge
                   >
                   <Badge
                     :class="[
-                      'border text-[10px] md:text-xs',
-                      typeColor[entry.type] || 'bg-stone-100',
+                      'border text-[10px] md:text-xs font-bold',
+                      typeColor[entry.type] || 'bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-stone-300 dark:border-stone-700',
                     ]"
                   >
                     <span class="flex items-center gap-1">
@@ -372,7 +372,7 @@ onMounted(fetchChangelog);
                     </span>
                   </Badge>
                   <span
-                    class="text-[10px] md:text-sm text-stone-500 flex items-center gap-1"
+                    class="text-[10px] md:text-xs text-stone-500 dark:text-stone-400 flex items-center gap-1 font-mono font-bold"
                   >
                     <Calendar class="w-3 h-3 md:w-3.5 md:h-3.5" />
                     {{
@@ -385,12 +385,12 @@ onMounted(fetchChangelog);
                   </span>
                 </div>
                 <h3
-                  class="text-lg md:text-xl font-display font-bold text-stone-900 leading-tight"
+                  class="text-lg md:text-xl font-heading font-black text-stone-900 dark:text-stone-100 leading-tight uppercase tracking-tight"
                 >
                   {{ entry.title }}
                 </h3>
                 <p
-                  class="text-sm md:text-base text-stone-700 leading-relaxed md:leading-normal"
+                  class="text-xs md:text-sm text-stone-700 dark:text-stone-300 leading-relaxed font-body font-medium"
                 >
                   {{ entry.description }}
                 </p>
@@ -398,11 +398,11 @@ onMounted(fetchChangelog);
               <Button
                 size="sm"
                 variant="outline"
-                class="w-full md:w-auto border-slate-900 text-stone-800 hover:bg-stone-100 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
+                class="w-full md:w-auto border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-700 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all cursor-pointer shrink-0"
                 @click="copyLink(entry.id)"
               >
                 <Copy class="w-3.5 h-3.5 mr-1.5" />
-                <span class="font-bold text-xs uppercase tracking-wider"
+                <span class="font-black text-xs uppercase tracking-wider"
                   >Salin Tautan</span
                 >
               </Button>
@@ -410,9 +410,9 @@ onMounted(fetchChangelog);
 
             <ul
               v-if="entry.items && entry.items.length"
-              class="mt-4 list-disc pl-5 space-y-1.5 text-stone-700 text-xs md:text-sm"
+              class="mt-4 pt-4 border-t border-stone-200 dark:border-stone-800 list-disc pl-5 space-y-1.5 text-stone-700 dark:text-stone-300 text-xs md:text-sm font-body font-medium"
             >
-              <li v-for="(it, idx) in entry.items" :key="idx" class="pl-1">
+              <li v-for="(it, idx) in entry.items" :key="idx" class="pl-1 leading-relaxed">
                 {{ it }}
               </li>
             </ul>
