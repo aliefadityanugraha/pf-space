@@ -44,7 +44,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Backend Uploads & Backups
+# Backend Uploads & Backups projects
 backend/uploads/
 backend/backup/
 backend/src/uploads/
