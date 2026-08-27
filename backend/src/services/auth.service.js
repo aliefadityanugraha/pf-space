@@ -50,8 +50,8 @@ export class AuthService {
    * @returns {Promise<User>} Updated user object
    */
   async updateUser(userId, data) {
-    // If updating image, delete old one (only if it's a local file)
-    if (data.image) {
+    // If updating image (either changing it or deleting it), delete old one (only if it's a local file)
+    if (data.hasOwnProperty('image')) {
       const currentUser = await this.getUserById(userId);
       if (currentUser && currentUser.image) {
         // Only delete if it's a local file path (starts with /uploads)

@@ -145,9 +145,24 @@ const imageError = ref(false)
           <p class="font-bold text-sm text-stone-900 dark:text-stone-100">
             {{ item.jabatan }}
           </p>
-          <p class="text-sm text-stone-600 dark:text-stone-400">
-            {{ item.anggota?.join(', ') }}
-          </p>
+          <div class="text-sm text-stone-600 dark:text-stone-400 flex flex-wrap gap-x-1">
+            <span v-for="(member, mIdx) in item.anggota" :key="mIdx">
+              <template v-if="typeof member === 'object' && member !== null">
+                <router-link
+                  v-if="member.user_id"
+                  :to="`/creator/${member.user_id}`"
+                  class="text-brand-teal hover:text-brand-red font-medium hover:underline transition-colors"
+                >
+                  {{ member.name }}
+                </router-link>
+                <span v-else>{{ member.name }}</span>
+              </template>
+              <template v-else>
+                <span>{{ member }}</span>
+              </template>
+              <span v-if="mIdx < item.anggota.length - 1">, </span>
+            </span>
+          </div>
         </div>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">

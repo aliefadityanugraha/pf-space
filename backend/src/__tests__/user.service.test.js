@@ -8,13 +8,28 @@ const {
   mockWhere,
   mockRelatedQuery,
   mockSelect,
-  mockFindById
+  mockUserWithGraphFetched,
+  mockFindById,
+  mockFilmOrderBy,
+  mockFilmWithGraphFetched,
+  mockFilmWhere,
+  mockFilmSelect
 } = vi.hoisted(() => {
   const mockOrderBy = vi.fn();
   const mockWithGraphFetched = vi.fn().mockReturnValue({ orderBy: mockOrderBy });
   const mockWhere = vi.fn().mockReturnValue({ withGraphFetched: mockWithGraphFetched });
-  const mockRelatedQuery = vi.fn().mockReturnValue({ where: mockWhere });
-  const mockSelect = vi.fn();
+  const mockRelatedQuery = vi.fn().mockReturnValue({
+    select: vi.fn().mockReturnValue({ where: mockWhere }),
+    where: mockWhere
+  });
+  const mockUserWithGraphFetched = vi.fn();
+  const mockSelect = vi.fn().mockReturnValue({ withGraphFetched: mockUserWithGraphFetched });
+
+  const mockFilmOrderBy = vi.fn().mockResolvedValue([]);
+  const mockFilmWithGraphFetched = vi.fn().mockReturnValue({ orderBy: mockFilmOrderBy });
+  const mockFilmWhere2 = vi.fn().mockReturnValue({ withGraphFetched: mockFilmWithGraphFetched, whereNotNull: vi.fn().mockReturnValue({ count: vi.fn().mockReturnValue({ first: vi.fn().mockResolvedValue({ total: 0 }) }) }) });
+  const mockFilmWhere = vi.fn().mockReturnValue({ where: mockFilmWhere2, withGraphFetched: mockFilmWithGraphFetched, whereNotNull: vi.fn().mockReturnValue({ count: vi.fn().mockReturnValue({ first: vi.fn().mockResolvedValue({ total: 0 }) }) }) });
+  const mockFilmSelect = vi.fn().mockReturnValue({ where: mockFilmWhere });
 
   return {
     mockOrderBy,
@@ -22,12 +37,33 @@ const {
     mockWhere,
     mockRelatedQuery,
     mockSelect,
-    mockFindById: vi.fn().mockReturnValue({ select: mockSelect })
+    mockUserWithGraphFetched,
+    mockFindById: vi.fn().mockReturnValue({ select: mockSelect }),
+    mockFilmOrderBy,
+    mockFilmWithGraphFetched,
+    mockFilmWhere,
+    mockFilmSelect
   };
 });
 
 vi.mock('../models/index.js', () => ({
-  User: { query: vi.fn(() => ({ findById: mockFindById })) }
+  User: { query: vi.fn(() => ({ findById: mockFindById })) },
+  Film: { 
+    query: vi.fn(() => ({ 
+      select: mockFilmSelect,
+      where: mockFilmWhere
+    })),
+    relatedQuery: vi.fn().mockReturnValue({ count: vi.fn().mockReturnValue({ as: vi.fn() }) })
+  },
+  Discussion: {
+    query: vi.fn(() => ({
+      where: vi.fn().mockReturnValue({
+        count: vi.fn().mockReturnValue({
+          first: vi.fn().mockResolvedValue({ total: 0 })
+        })
+      })
+    }))
+  }
 }));
 
 describe('UserService', () => {
@@ -39,7 +75,7 @@ describe('UserService', () => {
   });
 
   it('should return null if user is not found', async () => {
-    mockSelect.mockResolvedValueOnce(null);
+    mockUserWithGraphFetched.mockResolvedValueOnce(null);
     const result = await userService.getProfileById('invalid-id');
     expect(result).toBeNull();
   });
@@ -52,7 +88,7 @@ describe('UserService', () => {
       createdAt: '2023-01-01',
       $relatedQuery: mockRelatedQuery
     };
-    mockSelect.mockResolvedValueOnce(mockUser);
+    mockUserWithGraphFetched.mockResolvedValueOnce(mockUser);
 
     // Mocked Films
     mockOrderBy.mockResolvedValueOnce([

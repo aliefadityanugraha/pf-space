@@ -454,32 +454,17 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- ── Loading Skeleton Grid ──────────────────────────────────────── -->
-      <div
-        v-else-if="loadingFilms"
-        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5"
-      >
-        <ArchiveSkeleton v-for="n in 12" :key="n" />
+      <!-- Loading Skeleton Grid -->
+      <div v-if="loadingFilms" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+        <ArchiveSkeleton v-for="n in 8" :key="n" />
       </div>
 
-      <!-- ── Empty State ─────────────────────────────────────────────────── -->
-      <div v-else-if="films.length === 0" class="py-8">
+      <!-- Empty State -->
+      <div v-else-if="films.length === 0" class="py-12 flex justify-center">
         <EmptyState
-          :icon="BookOpen"
-          :title="
-            selectedCategoryId && activeCategory
-              ? `Belum ada karya dalam '${activeCategory.nama_kategori}'`
-              : searchQuery
-                ? `Tidak ada hasil untuk '${searchQuery}'`
-                : 'Belum ada karya yang dipublikasikan'
-          "
-          :description="
-            selectedCategoryId
-              ? 'Coba pilih kategori lain atau lihat semua arsip yang tersedia.'
-              : searchQuery
-                ? 'Coba kata kunci yang berbeda atau hapus filter yang aktif.'
-                : 'Jadilah yang pertama mengunggah karya ke arsip PF Space.'
-          "
+          :icon="Film"
+          title="Tidak ada karya ditemukan"
+          description="Coba cari dengan kata kunci lain atau pilih kategori yang berbeda."
           variant="dashed"
         >
           <template #action>
@@ -495,7 +480,7 @@ onMounted(async () => {
         </EmptyState>
       </div>
 
-      <!-- ── Film Grid ───────────────────────────────────────────────────── -->
+      <!-- Film Grid -->
       <template v-else>
         <div
           class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5"
@@ -512,29 +497,9 @@ onMounted(async () => {
             <ArchiveCard
               :archive="film"
               :subtitle="film.creator?.name || ''"
+              :show-status="false"
               class="h-full transition-all duration-200 group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] group-hover:shadow-brutal-lg"
-            >
-              <!-- Category badge overlay -->
-              <template v-if="film.category" #overlay>
-                <div class="absolute top-2 right-2">
-                  <span
-                    class="inline-block px-1.5 py-0.5 bg-stone-900/80 text-white text-[9px] font-black uppercase tracking-wider backdrop-blur-sm border border-white/10"
-                  >
-                    {{ film.category.nama_kategori }}
-                  </span>
-                </div>
-              </template>
-
-              <!-- Year + extra metadata -->
-              <template #extra-content>
-                <p
-                  v-if="film.tahun_karya"
-                  class="text-[10px] text-stone-400 font-mono mt-0.5 leading-none"
-                >
-                  {{ film.tahun_karya }}
-                </p>
-              </template>
-            </ArchiveCard>
+            />
           </router-link>
         </div>
 

@@ -21,6 +21,8 @@ import {
   X,
   Search,
   ArrowRight,
+  ThumbsUp,
+  MessageCircle,
 } from "lucide-vue-next";
 import EmptyState from "@/components/EmptyState.vue";
 import LoadingState from "@/components/LoadingState.vue";
@@ -71,7 +73,7 @@ const statusColors = {
 };
 
 const statusLabels = {
-  pending: "Menunggu Review",
+  pending: "Menunggu",
   published: "Dipublikasi",
   rejected: "Ditolak",
 };
@@ -284,7 +286,7 @@ onMounted(async () => {
       <!-- Loading -->
       <div
         v-if="loading"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
       >
         <ArchiveSkeleton v-for="i in 6" :key="i" variant="landscape" />
       </div>
@@ -315,82 +317,94 @@ onMounted(async () => {
       <ErrorBoundary name="Daftar Karya">
         <div
           v-if="films.length > 0"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
         >
           <ArchiveCard
             v-for="item in films"
             :key="item.film_id"
             :archive="item"
-            variant="landscape"
-            :show-play-overlay="false"
+            :show-play-overlay="item.status !== 'rejected'"
+            @click="router.push(`/archive/${item.slug}`)"
+            class="cursor-pointer h-full border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all bg-white dark:bg-stone-900"
           >
             <template #overlay>
-              <!-- Status Badge -->
-              <Badge
-                variant="outline"
-                :class="['absolute top-2.5 right-2.5 px-2.5 py-1 text-xs shadow-brutal-xs', statusColors[item.status]]"
-              >
-                {{ statusLabels[item.status] }}
+              <!-- Default badges -->
+              <Badge v-if="item.tahun_karya" class="absolute top-2 left-2 bg-stone-950/80 backdrop-blur-sm text-white text-[10px] font-mono font-bold px-2 py-0.5 border border-white/20">
+                {{ item.tahun_karya }}
               </Badge>
-            </template>
+              <Badge v-if="item.category?.nama_kategori" class="absolute top-2 right-2 bg-brand-teal text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 border border-black shadow-brutal-xs">
+                {{ item.category.nama_kategori }}
+              </Badge>
 
-            <template #extra-content>
-              <p class="text-xs text-stone-500 dark:text-stone-400 mb-4 font-mono font-bold">
-                {{ item.tahun_karya || "-" }}
-              </p>
-
+              <!-- Rejection Overlay inside Poster Box -->
               <div
                 v-if="item.status === 'rejected'"
-                class="p-3 bg-rose-50 dark:bg-rose-950/70 border-2 border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs mb-4 rounded-lg font-body"
+                class="absolute inset-x-0 bottom-0 bg-stone-950/95 border-t-2 border-brand-red text-white p-2.5 font-body z-10 flex flex-col gap-1 select-none backdrop-blur-xs"
               >
-                <p class="font-bold mb-1 flex items-center gap-1.5">
-                  <XCircle class="w-4 h-4 text-rose-600 dark:text-rose-400" />
-                  Karya ditolak admin.
-                </p>
-                <div v-if="item.rejection_reason">
-                  <p class="line-clamp-2 text-stone-700 dark:text-stone-300">
-                    Alasan: {{ item.rejection_reason }}
+                <div class="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-rose-400">
+                  <XCircle class="w-3.5 h-3.5 text-brand-red shrink-0" />
+                  <span>Publikasi Ditolak</span>
+                </div>
+                <div v-if="item.rejection_reason" class="text-[10px] sm:text-[11px] leading-snug text-stone-100 font-medium">
+                  <p class="line-clamp-2">
+                    <span class="font-bold text-stone-300">Keterangan:</span> {{ item.rejection_reason }}
                   </p>
                   <button
-                    v-if="item.rejection_reason.length > 60"
+                    v-if="item.rejection_reason.length > 50"
                     @click.stop="openRejectionModal(item)"
-                    class="text-rose-700 dark:text-rose-300 font-bold underline mt-1.5 hover:text-rose-900 dark:hover:text-rose-100 cursor-pointer block"
+                    class="text-[10px] font-bold text-rose-300 underline mt-0.5 hover:text-white cursor-pointer block text-left"
                   >
-                    Lihat Alasan Lengkap
+                    Lihat Selengkapnya &rarr;
                   </button>
                 </div>
-                <p v-else class="text-stone-600 dark:text-stone-400">
-                  Silakan periksa kembali kualitas konten, format file, dan
-                  kelengkapan data lalu submit ulang.
-                </p>
               </div>
             </template>
 
+            <template #extra-content>
+              <!-- Loves, Comments, and Status Footer Row -->
+              <div class="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-dashed border-stone-300 dark:border-stone-600">
+                <div class="flex items-center gap-2.5">
+                  <span class="flex items-center gap-1 text-[10px] sm:text-xs text-stone-700 dark:text-stone-300 font-bold font-mono">
+                    <ThumbsUp class="w-3.5 h-3.5 text-brand-red fill-current" />
+                    {{ item.vote_count || 0 }}
+                  </span>
+                  <span class="flex items-center gap-1 text-[10px] sm:text-xs text-stone-700 dark:text-stone-300 font-bold font-mono">
+                    <MessageCircle class="w-3.5 h-3.5 text-brand-orange" />
+                    {{ item.comment_count || 0 }}
+                  </span>
+                </div>
+                <Badge
+                  :class="[
+                    'text-[9px] sm:text-[10px] px-2 py-0.5 rounded-none border border-black shadow-brutal-xs font-bold uppercase tracking-wider w-fit shrink-0 flex items-center gap-1',
+                    statusColors[item.status],
+                  ]"
+                >
+                  <Clock v-if="item.status === 'pending'" class="w-3 h-3 shrink-0" />
+                  <CheckCircle v-else-if="item.status === 'published'" class="w-3 h-3 shrink-0 text-white" />
+                  <XCircle v-else-if="item.status === 'rejected'" class="w-3 h-3 shrink-0 text-white" />
+                  <span>{{ statusLabels[item.status] }}</span>
+                </Badge>
+              </div>
+            </template>
+
+            <!-- Actions Row (CRUD buttons) -->
             <template #actions>
               <Button
                 size="sm"
                 variant="outline"
-                class="flex-1 gap-1.5 font-bold text-xs uppercase border-2 border-stone-800 dark:border-stone-700 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-brutal-xs cursor-pointer"
-                @click="router.push(`/archive/${item.slug}`)"
+                class="flex-1 gap-1.5 font-bold text-xs uppercase border-2 border-stone-800 dark:border-stone-100 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] cursor-pointer"
+                @click.stop="router.push(`/edit-archive/${item.slug}`)"
               >
-                <Eye class="w-3.5 h-3.5" /> Lihat
+                <Pencil class="w-3.5 h-3.5 text-brand-teal dark:text-teal-400" /> Edit
               </Button>
               <Button
                 size="sm"
                 variant="outline"
-                class="flex-1 gap-1.5 font-bold text-xs uppercase border-2 border-stone-800 dark:border-stone-700 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-brutal-xs cursor-pointer"
-                @click="router.push(`/edit-archive/${item.slug}`)"
-              >
-                <Pencil class="w-3.5 h-3.5" /> Edit
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                class="gap-1.5 font-bold text-xs uppercase border-2 border-rose-400 dark:border-rose-800 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/80 text-rose-700 dark:text-rose-300 shadow-brutal-xs cursor-pointer px-3"
-                @click="confirmDelete(item)"
+                class="gap-1.5 font-bold text-xs uppercase border-2 border-rose-500 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/80 text-rose-700 dark:text-rose-300 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] cursor-pointer px-3"
+                @click.stop="confirmDelete(item)"
                 title="Hapus Karya"
               >
-                <Trash2 class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                <Trash2 class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" /> Hapus
               </Button>
             </template>
           </ArchiveCard>

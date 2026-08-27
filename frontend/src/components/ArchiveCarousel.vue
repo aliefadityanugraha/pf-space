@@ -102,35 +102,23 @@ const goToDetail = (slug) => {
           spaceBetween: 20,
         },
       }"
-      class="pb-2 !px-1"
+      class="!px-1.5"
     >
       <!-- Loading State -->
       <template v-if="loading">
-        <SwiperSlide v-for="i in 5" :key="i">
+        <SwiperSlide v-for="i in 5" :key="i" class="pb-4 pt-2">
           <ArchiveSkeleton />
         </SwiperSlide>
       </template>
 
       <!-- Data State -->
       <template v-else>
-        <SwiperSlide v-for="item in items" :key="item.film_id" class="h-auto">
+        <SwiperSlide v-for="item in items" :key="item.film_id" class="h-auto pb-4 pt-2">
           <ArchiveCard 
             :archive="item"
             @click="goToDetail(item.slug)"
             class="cursor-pointer h-full border-2 border-stone-800 dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all bg-card text-card-foreground"
-          >
-            <template #overlay>
-              <Badge v-if="item.tahun_karya" class="absolute top-2 left-2 bg-stone-950/80 backdrop-blur-sm text-white text-[10px] font-mono font-bold px-2 py-0.5 border border-white/20">
-                {{ item.tahun_karya }}
-              </Badge>
-              <Badge v-if="item.category?.nama_kategori" class="absolute top-2 right-2 bg-brand-teal text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 border border-black shadow-brutal-xs">
-                {{ item.category.nama_kategori }}
-              </Badge>
-            </template>
-            <template #subtitle-icon>
-              <User class="w-3.5 h-3.5 text-stone-400 shrink-0" />
-            </template>
-          </ArchiveCard>
+          />
         </SwiperSlide>
       </template>
     </Swiper>

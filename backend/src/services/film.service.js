@@ -33,8 +33,22 @@ export class FilmService {
           jabatan: typeof c.jabatan === "string" ? c.jabatan.trim() : "",
           anggota: Array.isArray(c.anggota)
             ? c.anggota
-                .filter((a) => typeof a === "string" && a.trim())
-                .map((a) => a.trim())
+                .map((a) => {
+                  if (a && typeof a === "object") {
+                    if (typeof a.name === "string" && a.name.trim()) {
+                      return {
+                        name: a.name.trim(),
+                        user_id: typeof a.user_id === "string" && a.user_id.trim() ? a.user_id.trim() : null
+                      };
+                    }
+                    return null;
+                  }
+                  if (typeof a === "string" && a.trim()) {
+                    return { name: a.trim(), user_id: null };
+                  }
+                  return null;
+                })
+                .filter(Boolean)
             : [],
         }))
         .filter((c) => c.jabatan);
@@ -81,6 +95,11 @@ export class FilmService {
     } = options;
 
     const query = Film.query()
+      .select([
+        'films.*',
+        Film.relatedQuery('votes').count().as('vote_count'),
+        Film.relatedQuery('discussions').count().as('comment_count')
+      ])
       .withGraphFetched("[creator(selectBasic), category]")
       .modifiers(BaseModel.defaultModifiers);
 
@@ -621,6 +640,11 @@ export class FilmService {
    */
   async getLatest(limit = 10) {
     return Film.query()
+      .select([
+        'films.*',
+        Film.relatedQuery('votes').count().as('vote_count'),
+        Film.relatedQuery('discussions').count().as('comment_count')
+      ])
       .where("status", FILM_STATUS.PUBLISHED)
       .withGraphFetched("[creator(selectBasic), category]")
       .modifiers(BaseModel.defaultModifiers)
