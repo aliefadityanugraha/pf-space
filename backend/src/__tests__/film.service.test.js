@@ -38,7 +38,7 @@ describe('FilmService', () => {
       const result = filmService.normalizeData(input);
 
       expect(result.crew).toEqual([
-        { jabatan: 'Sutradara', anggota: ['Ali', 'Budi'] },
+        { jabatan: 'Sutradara', anggota: [ { name: 'Ali', user_id: null }, { name: 'Budi', user_id: null } ] },
         { jabatan: 'Produser', anggota: [] }
       ]);
     });

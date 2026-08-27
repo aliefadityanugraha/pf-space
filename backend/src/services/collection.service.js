@@ -73,8 +73,17 @@ export class CollectionService {
 
     const query = Collection.query()
       .where('user_id', userId)
-      .withGraphFetched('film.[creator(selectBasic), category]')
-      .modifiers(BaseModel.defaultModifiers)
+      .withGraphFetched('film(selectStats).[creator(selectBasic), category]')
+      .modifiers({
+        ...BaseModel.defaultModifiers,
+        selectStats(builder) {
+          builder.select([
+            'films.*',
+            Film.relatedQuery('votes').count().as('vote_count'),
+            Film.relatedQuery('discussions').count().as('comment_count')
+          ]);
+        }
+      })
       .orderBy('created_at', 'desc');
 
     const [collections, countResult] = await Promise.all([

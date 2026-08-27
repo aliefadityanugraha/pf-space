@@ -313,6 +313,15 @@ onMounted(fetchKaryas)
                 <Badge :class="statusColors[Karya.status]">
                   {{ statusLabels[Karya.status] }}
                 </Badge>
+                <Badge v-if="Karya.status === 'pending' && Karya.original_status === 'published'" class="bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-200 border-blue-300 dark:border-blue-800 w-fit text-[9px] font-bold">
+                  Edit Publik
+                </Badge>
+                <Badge v-if="Karya.status === 'pending' && Karya.original_status === 'rejected'" class="bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-800 w-fit text-[9px] font-bold">
+                  Revisi Ditolak
+                </Badge>
+                <Badge v-if="Karya.status === 'pending' && !Karya.original_status" class="bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-300 border-stone-300 dark:border-stone-700 w-fit text-[9px] font-bold">
+                  Karya Baru
+                </Badge>
                 <Badge v-if="Karya.is_banner_active" class="bg-blue-100 text-blue-800 border-blue-300 w-fit">
                   <Sparkles class="w-3 h-3 mr-1" />
                   Banner
@@ -442,9 +451,20 @@ onMounted(fetchKaryas)
             <div class="flex-1">
               <h3 class="font-bold text-xl">{{ selectedKarya.judul }}</h3>
               <p class="text-stone-600 mt-1">{{ selectedKarya.tahun_karya }}</p>
-              <Badge :class="statusColors[selectedKarya.status]" class="mt-2">
-                {{ statusLabels[selectedKarya.status] }}
-              </Badge>
+              <div class="flex flex-wrap gap-1.5 mt-2">
+                <Badge :class="statusColors[selectedKarya.status]">
+                  {{ statusLabels[selectedKarya.status] }}
+                </Badge>
+                <Badge v-if="selectedKarya.status === 'pending' && selectedKarya.original_status === 'published'" class="bg-blue-100 text-blue-800 border-blue-300 text-[10px]">
+                  Jenis: Pembaruan Karya Publik
+                </Badge>
+                <Badge v-if="selectedKarya.status === 'pending' && selectedKarya.original_status === 'rejected'" class="bg-amber-100 text-amber-800 border-amber-300 text-[10px]">
+                  Jenis: Revisi Karya Ditolak
+                </Badge>
+                <Badge v-if="selectedKarya.status === 'pending' && !selectedKarya.original_status" class="bg-stone-100 text-stone-850 border-stone-300 text-[10px]">
+                  Jenis: Karya Baru
+                </Badge>
+              </div>
               <p class="text-sm text-stone-600 mt-2">
                 <span class="font-medium">Creator:</span> {{ selectedKarya.creator?.name }}
               </p>
@@ -482,7 +502,11 @@ onMounted(fetchKaryas)
             <div class="grid grid-cols-2 gap-2">
               <div v-for="(item, idx) in selectedKarya.crew" :key="idx" class="text-sm">
                 <span class="font-medium">{{ item.jabatan }}:</span>
-                <span class="text-stone-600"> {{ item.anggota?.join(', ') }}</span>
+                <span class="text-stone-600 ml-1">
+                  {{ 
+                    item.anggota?.map(m => typeof m === 'object' && m !== null ? m.name : m).join(', ') 
+                  }}
+                </span>
               </div>
             </div>
           </div>
@@ -516,12 +540,31 @@ onMounted(fetchKaryas)
         </div>
         <div class="p-6">
           <p class="text-stone-600 dark:text-stone-300 mb-6">
-            {{ confirmAction.type === 'approve' 
-              ? `Approve dan publikasikan karya "${confirmAction.karya?.judul}"?`
-              : confirmAction.type === 'reject'
-              ? `Tolak karya "${confirmAction.karya?.judul}"?`
-              : `Hapus karya "${confirmAction.karya?.judul}"? Aksi ini tidak dapat dibatalkan.`
-            }}
+            <span v-if="confirmAction.type === 'approve'">
+              <span v-if="confirmAction.karya?.original_status === 'published'">
+                Setujui dan publikasikan perubahan (edit) untuk karya "{{ confirmAction.karya?.judul }}"?
+              </span>
+              <span v-else-if="confirmAction.karya?.original_status === 'rejected'">
+                Setujui dan publikasikan revisi karya "{{ confirmAction.karya?.judul }}" yang sebelumnya ditolak?
+              </span>
+              <span v-else>
+                Setujui dan publikasikan karya baru "{{ confirmAction.karya?.judul }}"?
+              </span>
+            </span>
+            <span v-else-if="confirmAction.type === 'reject'">
+              <span v-if="confirmAction.karya?.original_status === 'published'">
+                Tolak perubahan (edit) untuk karya "{{ confirmAction.karya?.judul }}"?
+              </span>
+              <span v-else-if="confirmAction.karya?.original_status === 'rejected'">
+                Tolak revisi karya "{{ confirmAction.karya?.judul }}"?
+              </span>
+              <span v-else>
+                Tolak karya baru "{{ confirmAction.karya?.judul }}"?
+              </span>
+            </span>
+            <span v-else>
+              Hapus karya "{{ confirmAction.karya?.judul }}"? Aksi ini tidak dapat dibatalkan.
+            </span>
           </p>
           <div v-if="confirmAction.type === 'reject'" class="mb-6">
             <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">

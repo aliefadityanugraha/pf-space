@@ -12,6 +12,7 @@
   --color-brand-orange: #fdba74;
   --color-brand-cream: #f2eee3;
   --color-brand-yellow: #facc15;
+  --color-stone-850: #221f1d;
 
   /* Semantic Theme Tokens (shadcn mapping for Tailwind CSS v4) */
   --color-background: var(--background);

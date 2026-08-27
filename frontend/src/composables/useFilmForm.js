@@ -37,7 +37,20 @@ export function useFilmForm() {
         .map(c => ({
           jabatan: c.jabatan.trim(),
           anggota: Array.isArray(c.anggota) 
-            ? c.anggota.filter(a => a && typeof a === 'string' && a.trim()) 
+            ? c.anggota
+                .map(a => {
+                  if (typeof a === 'object' && a !== null) {
+                    if (a.name && typeof a.name === 'string' && a.name.trim()) {
+                      return { name: a.name.trim(), user_id: a.user_id || null };
+                    }
+                    return null;
+                  }
+                  if (typeof a === 'string' && a.trim()) {
+                    return { name: a.trim(), user_id: null };
+                  }
+                  return null;
+                })
+                .filter(Boolean)
             : []
         }))
 

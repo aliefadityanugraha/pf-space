@@ -190,10 +190,20 @@ export class FilmController {
 
     const updateData = filmService.normalizeData(request.body);
 
-    // Reset to pending if creator updates (needs re-approval)
-    if (request.user.role_id !== ROLES.ADMIN && (film.status === FILM_STATUS.PUBLISHED || film.status === FILM_STATUS.REJECTED)) {
-      updateData.status = FILM_STATUS.PENDING;
-      updateData.rejection_reason = null;
+    // Reset to pending if creator (owner) updates their own film, or if a non-admin updates,
+    // and the update changes actual content/metadata (not just banner configuration).
+    const isMetadataUpdate = 
+      request.body.judul !== undefined || 
+      request.body.sinopsis !== undefined || 
+      request.body.crew !== undefined ||
+      request.body.link_video_utama !== undefined;
+
+    if (isMetadataUpdate && (film.status === FILM_STATUS.PUBLISHED || film.status === FILM_STATUS.REJECTED)) {
+      if (request.user.role_id !== ROLES.ADMIN || film.user_id === request.user.id) {
+        updateData.status = FILM_STATUS.PENDING;
+        updateData.original_status = film.status; // Preserve the original status
+        updateData.rejection_reason = null;
+      }
     }
 
     const updated = await filmService.update(id, updateData);
@@ -370,13 +380,15 @@ export class FilmController {
    * @param {import('fastify').FastifyReply} reply
    */
   async getMyFilms(request, reply) {
-    const { page, limit, status } = request.query;
+    const { page, limit, status, sortBy, sortOrder } = request.query;
 
     const result = await filmService.getAll({
       page: page ? parseInt(page) : 1,
       limit: limit ? parseInt(limit) : 10,
       user_id: request.user.id,
-      status: status || null
+      status: status || null,
+      sortBy: sortBy || "created_at",
+      sortOrder: sortOrder || "desc"
     });
 
     return ApiResponse.success(
@@ -426,7 +438,7 @@ export class FilmController {
       throw new NotFoundError('Film tidak ditemukan');
     }
 
-    const updated = await filmService.updateStatus(id, FILM_STATUS.PUBLISHED, { rejection_reason: null });
+    const updated = await filmService.updateStatus(id, FILM_STATUS.PUBLISHED, { rejection_reason: null, original_status: null });
     
     // Notify Creator
     await notificationService.create({
@@ -465,7 +477,8 @@ export class FilmController {
     }
 
     const updated = await filmService.updateStatus(id, FILM_STATUS.REJECTED, {
-      rejection_reason: request.body.rejection_reason
+      rejection_reason: request.body.rejection_reason,
+      original_status: null
     });
 
     // Notify Creator

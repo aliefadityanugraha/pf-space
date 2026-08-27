@@ -96,7 +96,7 @@ export class AuthController {
    * @param {import('fastify').FastifyReply} reply
    */
   async updateUser(request, reply) {
-    let name, bio, website, location, instagram, linkedin;
+    let name, bio, website, location, instagram, linkedin, image;
     let imagePath;
 
     if (request.isMultipart && request.isMultipart()) {
@@ -115,7 +115,7 @@ export class AuthController {
         }
       }
     } else if (request.body) {
-      ({ name, bio, website, location, instagram, linkedin } = request.body);
+      ({ name, bio, website, location, instagram, linkedin, image } = request.body);
     }
 
     const updateData = {};
@@ -147,6 +147,8 @@ export class AuthController {
     if (imagePath) {
       // Store relative path only, frontend will handle full URL construction
       updateData.image = imagePath;
+    } else if (image === null) {
+      updateData.image = null;
     }
 
     const user = await authService.updateUser(request.user.id, updateData);

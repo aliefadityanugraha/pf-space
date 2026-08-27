@@ -53,6 +53,11 @@ const showVideoModal = ref(false)
 const activeVideoField = ref('') // 'link_video_utama' or 'link_trailer'
 const selectedVideoFile = ref(null)
 
+// Autocomplete state for user tagging
+const activeSearchIndex = ref(null)
+const searchResults = ref([])
+const searchLoading = ref(false)
+
 // Form data
 const form = ref({
   judul: '',
@@ -68,7 +73,7 @@ const form = ref({
   file_naskah: '',
   file_storyboard: '',
   file_rab: '',
-  crew: [{ jabatan: '', anggota: [''] }]
+  crew: [{ jabatan: '', anggota: [{ name: '', user_id: null }] }]
 })
 
 // Initialize form when initialData changes or on mount
@@ -80,12 +85,20 @@ watch(() => props.initialData, (newData) => {
         // Handle crew specifically if needed, otherwise direct assignment works for most
         if (key === 'crew') {
           if (Array.isArray(newData[key]) && newData[key].length > 0) {
-            form.value.crew = JSON.parse(JSON.stringify(newData[key]))
+            form.value.crew = newData[key].map(g => ({
+              jabatan: g.jabatan || '',
+              anggota: Array.isArray(g.anggota) ? g.anggota.map(m => {
+                if (typeof m === 'object' && m !== null) {
+                  return { name: m.name || '', user_id: m.user_id || null }
+                }
+                return { name: String(m), user_id: null }
+              }) : [{ name: '', user_id: null }]
+            }))
           } else if (!props.isEdit) {
             // Keep default crew for new entries if not provided
           } else {
             // For edit mode, if crew is empty from server, ensure at least one empty row
-            form.value.crew = [{ jabatan: '', anggota: [''] }]
+            form.value.crew = [{ jabatan: '', anggota: [{ name: '', user_id: null }] }]
           }
         } else {
           form.value[key] = newData[key]
@@ -200,9 +213,52 @@ const fetchCategories = async () => {
   }
 }
 
+// Autocomplete search functions
+const searchContributors = async (crewIdx, memberIdx, query) => {
+  if (!query || query.trim().length < 2) {
+    searchResults.value = []
+    return
+  }
+  
+  activeSearchIndex.value = `${crewIdx}-${memberIdx}`
+  searchLoading.value = true
+  try {
+    const res = await api.get('/api/users/search', { params: { q: query } })
+    searchResults.value = res.data || []
+  } catch (err) {
+    console.error('Failed to search users:', err)
+  } finally {
+    searchLoading.value = false
+  }
+}
+
+const selectUser = (crewIdx, memberIdx, user) => {
+  form.value.crew[crewIdx].anggota[memberIdx] = {
+    name: user.name,
+    user_id: user.id
+  }
+  searchResults.value = []
+  activeSearchIndex.value = null
+}
+
+const onMemberNameInput = (crewIdx, memberIdx) => {
+  if (form.value.crew[crewIdx]?.anggota[memberIdx]) {
+    form.value.crew[crewIdx].anggota[memberIdx].user_id = null
+    const name = form.value.crew[crewIdx].anggota[memberIdx].name
+    searchContributors(crewIdx, memberIdx, name)
+  }
+}
+
+const closeDropdown = () => {
+  setTimeout(() => {
+    activeSearchIndex.value = null
+    searchResults.value = []
+  }, 200)
+}
+
 // Crew management
 const addCrew = () => {
-  form.value.crew.push({ jabatan: '', anggota: [''] })
+  form.value.crew.push({ jabatan: '', anggota: [{ name: '', user_id: null }] })
 }
 
 const removeCrew = (index) => {
@@ -210,7 +266,7 @@ const removeCrew = (index) => {
 }
 
 const addCrewMember = (crewIndex) => {
-  form.value.crew[crewIndex].anggota.push('')
+  form.value.crew[crewIndex].anggota.push({ name: '', user_id: null })
 }
 
 const removeCrewMember = (crewIndex, memberIndex) => {
@@ -230,7 +286,15 @@ const restoreDraft = () => {
       if (draft[key] !== undefined && draft[key] !== null) {
         if (key === 'crew') {
           if (Array.isArray(draft[key])) {
-            form.value.crew = JSON.parse(JSON.stringify(draft[key]))
+            form.value.crew = draft[key].map(g => ({
+              jabatan: g.jabatan || '',
+              anggota: Array.isArray(g.anggota) ? g.anggota.map(m => {
+                if (typeof m === 'object' && m !== null) {
+                  return { name: m.name || '', user_id: m.user_id || null }
+                }
+                return { name: String(m), user_id: null }
+              }) : [{ name: '', user_id: null }]
+            }))
           }
         } else {
           form.value[key] = draft[key]
@@ -674,13 +738,52 @@ onUnmounted(() => {
             </div>
 
             <div class="space-y-2 ml-4">
-              <div v-for="(member, memberIdx) in crew.anggota" :key="memberIdx" class="flex items-center gap-2">
+              <div v-for="(member, memberIdx) in crew.anggota" :key="memberIdx" class="relative flex items-center gap-2">
                 <span class="text-xs font-mono text-stone-500 dark:text-stone-400 w-4">{{ memberIdx + 1 }}.</span>
-                <Input 
-                  v-model="crew.anggota[memberIdx]" 
-                  placeholder="Nama anggota"
-                  class="flex-1 border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs"
-                />
+                <div class="flex-1 relative">
+                  <Input 
+                    v-model="member.name" 
+                    placeholder="Nama anggota"
+                    class="w-full border-2 border-black dark:border-stone-700 bg-white dark:bg-stone-850 text-stone-900 dark:text-stone-100 shadow-brutal-xs pr-16"
+                    @focus="activeSearchIndex = `${crewIdx}-${memberIdx}`; searchContributors(crewIdx, memberIdx, member.name)"
+                    @input="onMemberNameInput(crewIdx, memberIdx)"
+                    @blur="closeDropdown"
+                  />
+                  <!-- Autocomplete suggestions -->
+                  <div 
+                    v-if="activeSearchIndex === `${crewIdx}-${memberIdx}` && (searchLoading || searchResults.length > 0)"
+                    class="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-100 z-50 shadow-brutal max-h-48 overflow-y-auto"
+                  >
+                    <div v-if="searchLoading" class="p-2 text-xs text-stone-500 dark:text-stone-400 italic">
+                      Mencari...
+                    </div>
+                    <div v-else class="divide-y divide-stone-100 dark:divide-stone-700">
+                      <button
+                        v-for="u in searchResults"
+                        :key="u.id"
+                        type="button"
+                        @mousedown="selectUser(crewIdx, memberIdx, u)"
+                        class="w-full text-left p-2 hover:bg-brand-teal hover:text-white dark:hover:bg-brand-teal text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors"
+                      >
+                        <div class="w-6 h-6 rounded-full border border-black dark:border-stone-700 overflow-hidden bg-brand-yellow shrink-0">
+                          <img v-if="u.image" :src="assetUrl(u.image)" class="w-full h-full object-cover" />
+                          <div v-else class="w-full h-full flex items-center justify-center text-[10px] text-black">
+                            {{ u.name.charAt(0) }}
+                          </div>
+                        </div>
+                        <span class="truncate">{{ u.name }}</span>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Tagged badge indicator -->
+                  <span 
+                    v-if="member.user_id" 
+                    class="absolute right-3 top-1/2 -translate-y-1/2 bg-brand-teal text-white text-[8px] font-black uppercase px-1.5 py-0.5 border border-black rounded shadow-[1px_1px_0px_#000] pointer-events-none"
+                    title="User Terdaftar"
+                  >
+                    Tagged
+                  </span>
+                </div>
                 <Button 
                   type="button" 
                   variant="ghost" 

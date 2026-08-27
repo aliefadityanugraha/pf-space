@@ -24,6 +24,28 @@ export class UserController {
 
     return ApiResponse.success(reply, profile);
   }
+
+  /**
+   * Search users by name for autocomplete tagging
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async searchUsers(request, reply) {
+    const { q } = request.query;
+    const users = await userService.searchUsers(q);
+    return ApiResponse.success(reply, users);
+  }
+
+  /**
+   * Fetch contributions for a specific user ID
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getContributions(request, reply) {
+    const { id } = request.params;
+    const contributions = await userService.getContributionsByUserId(id);
+    return ApiResponse.success(reply, contributions);
+  }
 }
 
 export const userController = new UserController();

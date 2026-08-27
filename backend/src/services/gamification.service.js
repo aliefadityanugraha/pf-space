@@ -18,7 +18,7 @@ export class GamificationService {
         name: 'Pioneer',
         description: 'Telah mengunggah karya pertama.',
         icon: 'Award',
-        color: 'bg-blue-100 text-blue-600',
+        color: 'bg-blue-100 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300',
         check: async (stats) => stats.totalFilms >= 1
       },
       {
@@ -26,7 +26,7 @@ export class GamificationService {
         name: 'Script Master',
         description: 'Memiliki minimal 3 karya dengan naskah lengkap.',
         icon: 'FileText',
-        color: 'bg-orange-100 text-orange-600',
+        color: 'bg-orange-100 text-orange-700 dark:bg-orange-950/70 dark:text-orange-300',
         check: async (stats, userId) => {
           const count = await Film.query()
             .where('user_id', userId)
@@ -42,7 +42,7 @@ export class GamificationService {
         name: 'Community Star',
         description: 'Mendapatkan lebih dari 50 apresiasi (votes) total.',
         icon: 'Star',
-        color: 'bg-yellow-100 text-yellow-600',
+        color: 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300',
         check: async (stats) => stats.totalVotes >= 50
       },
       {
@@ -50,7 +50,7 @@ export class GamificationService {
         name: 'Active Debater',
         description: 'Berpartisipasi aktif dalam diskusi (10+ komentar/balasan).',
         icon: 'MessageSquare',
-        color: 'bg-green-100 text-green-600',
+        color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300',
         check: async (stats, userId) => {
           // stats.totalComments from getUserStats is count of comments *on his films*
           // For active debater, we want comments *made by him*
@@ -66,7 +66,7 @@ export class GamificationService {
         name: 'Visionary',
         description: 'Telah mengunggah lebih dari 5 karya yang dipublikasi.',
         icon: 'Camera',
-        color: 'bg-purple-100 text-purple-600',
+        color: 'bg-purple-100 text-purple-700 dark:bg-purple-950/70 dark:text-purple-300',
         check: async (stats) => stats.published >= 5
       }
     ];

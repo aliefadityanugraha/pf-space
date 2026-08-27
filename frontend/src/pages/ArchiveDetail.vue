@@ -591,13 +591,13 @@ onUnmounted(() => {
               </p>
               <p
                 v-if="film.status === 'rejected' && film.rejection_reason"
-                class="text-xs text-stone-400 mt-1 italic font-medium"
+                class="text-xs text-stone-200 mt-1 font-medium bg-red-950/40 p-2 border border-red-800/60"
               >
-                Catatan curator: "{{ film.rejection_reason }}"
+                <span class="font-bold text-red-400">Catatan kurator:</span> "{{ film.rejection_reason }}"
               </p>
               <p
                 v-else-if="film.status === 'pending'"
-                class="text-[9px] md:text-xs text-stone-500 mt-0.5"
+                class="text-[10px] md:text-xs text-stone-300 mt-0.5"
               >
                 Karya Anda sedang dalam antrean review oleh moderator. Hanya
                 Anda yang dapat melihat halaman ini.
