@@ -30,7 +30,7 @@ export function useAuth() {
   async function init() {
     if (initialized.value) return;
     if (initPromise) return initPromise;
-    
+
     initPromise = (async () => {
       loading.value = true;
       try {
@@ -45,7 +45,7 @@ export function useAuth() {
         initialized.value = true;
       }
     })();
-    
+
     return initPromise;
   }
 
@@ -63,7 +63,7 @@ export function useAuth() {
       const res = await authApi.getProfile();
       user.value = normalizeUser(res.data);
       try {
-        await api.post('/api/notifications', { type: 'system', title: 'Login Berhasil', message: `Selamat datang kembali, ${user.value.name}!` });
+        await api.post('/api/notifications', { type: 'system', title: 'Login Berhasil', message: `Selamat Datang Kembali, ${user.value.name}!` });
         useNotifications().fetchNotifications();
       } catch (err) {
         console.warn('Gagal membuat notifikasi', err);
@@ -140,11 +140,11 @@ export function useAuth() {
         const cookie = cookies[i];
         const eqPos = cookie.indexOf("=");
         const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
-        
+
         // Clear for current path, root path, and domains
         const paths = ['/', window.location.pathname];
         const domains = [null, domain, `.${domain}`, `.${baseDomain}`];
-        
+
         paths.forEach(p => {
           domains.forEach(d => {
             let cookieString = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${p}`;
@@ -181,13 +181,13 @@ export function useAuth() {
     user: readonly(user),
     loading: readonly(loading),
     initialized: readonly(initialized),
-    
+
     // Computed
     isLoggedIn,
     isAdmin,
     isModerator,
     isCreator,
-    
+
     // Actions
     init,
     login,

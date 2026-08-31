@@ -48,7 +48,7 @@ export class BaseModel extends Model {
   static get defaultModifiers() {
     return {
       selectBasic(builder) {
-        builder.select('id', 'name', 'image');
+        builder.select('id', 'name', 'image', 'email');
       },
       selectFilm(builder) {
         builder.select('film_id', 'judul');

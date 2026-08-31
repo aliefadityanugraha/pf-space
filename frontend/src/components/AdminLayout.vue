@@ -15,7 +15,7 @@ const sidebarCollapsed = ref(false)
         sidebarCollapsed ? 'ml-16' : 'ml-60'
       ]"
     >
-      <main id="main-content" class="flex-1 flex flex-col">
+      <main id="main-content" class="flex-1 flex flex-col w-full">
         <router-view v-slot="{ Component, route }">
           <Suspense>
             <component :is="Component" :key="route.fullPath" />

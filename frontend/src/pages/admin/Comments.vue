@@ -118,13 +118,13 @@ onMounted(async () => {
 
 <template>
   <div class="p-4 md:p-8">
-    <!-- Breadcrumb -->
+    <!-- Breadcrumbs Navigation -->
     <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <router-link to="/" class="text-brand-teal hover:underline font-bold">Beranda</router-link>
       <span class="text-stone-400">/</span>
-      <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+      <router-link to="/admin" class="text-stone-600 dark:text-stone-300 hover:underline font-bold">Administrasi</router-link>
       <span class="text-stone-400">/</span>
-      <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Komentar</Badge>
+      <Badge variant="outline" class="bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-2 border-black dark:border-stone-100 font-bold">Komentar</Badge>
     </nav>
 
     <!-- Header -->
@@ -137,16 +137,23 @@ onMounted(async () => {
 
     <!-- Filters -->
     <Card class="mb-6">
-      <CardContent class="p-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Search -->
+      <CardContent class="p-3.5 space-y-3">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <!-- Search (Matching Archives.vue) -->
           <div class="relative">
             <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <Input 
               v-model="searchQuery"
               placeholder="Cari komentar..."
-              class="pl-10"
+              class="pl-9 pr-8 text-xs h-9 bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 border-2 border-black dark:border-stone-100 shadow-brutal-xs font-mono focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-1"
             />
+            <button 
+              v-if="searchQuery" 
+              @click="searchQuery = ''"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-red-500 transition-colors"
+            >
+              <X class="w-3.5 h-3.5" />
+            </button>
           </div>
 
           <!-- Film Filter -->
@@ -154,7 +161,7 @@ onMounted(async () => {
             <Film class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <select 
               v-model="selectedFilmId"
-              class="w-full pl-10 pr-4 py-2 border-2 border-stone-800 dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-0 font-body"
+              class="w-full pl-9 pr-4 text-xs h-9 bg-white dark:bg-stone-800 border-2 border-black dark:border-stone-100 shadow-brutal-xs font-mono font-bold text-stone-800 dark:text-stone-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-1 focus:outline-none"
             >
               <option value="">Semua Karya</option>
               <option v-for="film in films" :key="film.film_id" :value="film.film_id">
@@ -164,15 +171,15 @@ onMounted(async () => {
           </div>
 
           <!-- Clear Filters -->
-          <Button 
+          <button 
             v-if="selectedFilmId || searchQuery"
-            variant="outline" 
+            type="button"
             @click="selectedFilmId = ''; searchQuery = ''"
-            class="gap-2"
+            class="inline-flex items-center justify-center gap-1.5 h-9 px-3 text-xs font-mono font-bold border-2 border-black dark:border-stone-100 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 shadow-brutal-xs cursor-pointer"
           >
-            <X class="w-4 h-4" />
-            Reset Filter
-          </Button>
+            <X class="w-3.5 h-3.5" />
+            <span>Reset Filter</span>
+          </button>
         </div>
       </CardContent>
     </Card>

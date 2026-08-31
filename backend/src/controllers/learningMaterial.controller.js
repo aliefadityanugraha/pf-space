@@ -2,6 +2,7 @@ import { learningMaterialService } from '../services/index.js';
 import { ApiResponse } from '../lib/response.js';
 import { ROLES } from '../config/constants.js';
 import { NotFoundError, AuthorizationError } from '../lib/errors.js';
+import { recordAuditLog } from '../lib/audit.js';
 
 export class LearningMaterialController {
   /**
@@ -64,6 +65,15 @@ export class LearningMaterialController {
       creator_id: request.user.id
     });
 
+    await recordAuditLog({
+      userId: request.user?.id,
+      action: 'CREATE_MATERIAL',
+      targetType: 'material',
+      targetId: material.id,
+      details: { title: material.title, type: material.type },
+      ipAddress: request.ip
+    });
+
     return ApiResponse.success(reply, material, 'Materi berhasil dibuat', 201);
   }
 
@@ -87,6 +97,16 @@ export class LearningMaterialController {
     }
 
     const updated = await learningMaterialService.update(id, request.body);
+
+    await recordAuditLog({
+      userId: request.user?.id,
+      action: 'UPDATE_MATERIAL',
+      targetType: 'material',
+      targetId: id,
+      details: { title: updated.title, type: updated.type },
+      ipAddress: request.ip
+    });
+
     return ApiResponse.success(reply, updated, 'Materi berhasil diperbarui');
   }
 
@@ -110,6 +130,16 @@ export class LearningMaterialController {
     }
 
     await learningMaterialService.delete(id);
+
+    await recordAuditLog({
+      userId: request.user?.id,
+      action: 'DELETE_MATERIAL',
+      targetType: 'material',
+      targetId: id,
+      details: { title: material.title },
+      ipAddress: request.ip
+    });
+
     return ApiResponse.success(reply, null, 'Materi berhasil dihapus');
   }
 
@@ -133,6 +163,16 @@ export class LearningMaterialController {
     }
 
     const updated = await learningMaterialService.toggleStatus(id);
+
+    await recordAuditLog({
+      userId: request.user?.id,
+      action: 'TOGGLE_MATERIAL_STATUS',
+      targetType: 'material',
+      targetId: id,
+      details: { title: material.title, is_active: updated.is_active },
+      ipAddress: request.ip
+    });
+
     return ApiResponse.success(reply, updated, `Materi ${updated.is_active ? 'diaktifkan' : 'dinonaktifkan'}`);
   }
 }

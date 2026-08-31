@@ -46,6 +46,16 @@ export class UserController {
     const contributions = await userService.getContributionsByUserId(id);
     return ApiResponse.success(reply, contributions);
   }
+
+  /**
+   * Fetch top active curators and count for auth showcase
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async getTopCurators(request, reply) {
+    const data = await userService.getTopCurators();
+    return ApiResponse.success(reply, data);
+  }
 }
 
 export const userController = new UserController();

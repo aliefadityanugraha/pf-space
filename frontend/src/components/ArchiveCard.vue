@@ -74,7 +74,7 @@ const aspectClass = computed(() => {
 })
 
 const computeImage = () => {
-  const raw = props.imageSrc || props.archive?.poster_url || props.archive?.gambar_poster || props.archive?.thumbnail_url
+  const raw = props.imageSrc || props.archive?.gambar_poster || props.archive?.poster_url || props.archive?.poster_image || props.archive?.image || props.archive?.thumbnail_url || props.archive?.cover_url
   if (!raw) return ''
   return assetUrl(raw)
 }
@@ -85,7 +85,7 @@ const currentImageSrc = computed(() => {
 })
 
 watch(
-  () => [props.imageSrc, props.archive?.poster_url, props.archive?.gambar_poster, props.archive?.thumbnail_url],
+  () => [props.imageSrc, props.archive?.gambar_poster, props.archive?.poster_url, props.archive?.poster_image, props.archive?.image, props.archive?.thumbnail_url, props.archive?.cover_url],
   () => {
     imageError.value = false
   }
@@ -313,7 +313,7 @@ const handleMouseLeave = () => {
       </slot>
       
       <!-- Footer/Actions Slot -->
-      <div v-if="$slots.actions" class="mt-4 pt-4 border-t-2 border-border flex gap-2">
+      <div v-if="$slots.actions" class="mt-2.5 pt-2.5 sm:mt-3 sm:pt-3 border-t-2 border-border flex gap-1.5 sm:gap-2">
         <slot name="actions"></slot>
       </div>
     </CardContent>

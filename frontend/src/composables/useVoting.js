@@ -11,7 +11,7 @@ export function useVoting() {
   const isLoading = ref(false)
   const { isLoggedIn } = useAuth()
 
-  const fetchFilms = async (forceRefresh = false) => {
+  const fetchFilms = async (forceRefresh = false, period = 'all') => {
     // If we've already fetched and don't need a force refresh, use cached singleton state
     if (initialized.value && !forceRefresh) {
       return
@@ -34,8 +34,8 @@ export function useVoting() {
         categories.value = [{ id: 'all', name: 'Semua Karya' }]
       }
 
-      // 2. Fetch Films (Trending/All) — limit to 30 for faster initial load
-      const filmsRes = await api.get('/api/votes/trending?period=all&limit=30')
+      // 2. Fetch Films (Trending/All or Selected Period) — limit to 50 for comprehensive leaderboard
+      const filmsRes = await api.get(`/api/votes/trending?period=${period}&limit=50`)
       let filmData = []
       if (filmsRes.success) {
         filmData = filmsRes.data
@@ -56,15 +56,25 @@ export function useVoting() {
 
       // 4. Merge Data
       films.value = filmData.map(f => ({
+        ...f,
         id: f.film_id,
+        film_id: f.film_id,
         slug: f.slug,
         title: f.judul,
+        judul: f.judul,
         year: f.tahun_karya,
+        tahun_karya: f.tahun_karya,
         director: f.creator?.name || f.creator?.username || 'Unknown',
+        creator: f.creator,
         votes: parseInt(f.vote_count || 0),
         category: f.category?.category_id,
         categoryName: f.category?.nama_kategori || 'Uncategorized',
-        image: f.gambar_poster || '/images/placeholder-poster.png', // Replaced external placeholder with internal
+        gambar_poster: f.gambar_poster,
+        poster_url: f.gambar_poster,
+        poster_image: f.gambar_poster,
+        image: f.gambar_poster,
+        created_at: f.created_at,
+        semester: f.semester,
         hasVoted: myVotes.includes(f.film_id)
       }))
 

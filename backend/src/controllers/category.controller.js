@@ -6,6 +6,7 @@
 
 import { categoryService } from '../services/index.js';
 import { ApiResponse } from '../lib/response.js';
+import { recordAuditLog } from '../lib/audit.js';
 
 export class CategoryController {
   /**
@@ -42,6 +43,15 @@ export class CategoryController {
   async create(request, reply) {
     const category = await categoryService.create(request.body);
 
+    await recordAuditLog({
+      userId: request.user?.id,
+      action: 'CREATE_CATEGORY',
+      targetType: 'category',
+      targetId: category.category_id,
+      details: { name: category.nama_kategori, description: category.deskripsi },
+      ipAddress: request.ip
+    });
+
     return ApiResponse.success(reply, category, 'Kategori berhasil dibuat', 201);
   }
 
@@ -60,6 +70,15 @@ export class CategoryController {
 
     const category = await categoryService.update(id, request.body);
 
+    await recordAuditLog({
+      userId: request.user?.id,
+      action: 'UPDATE_CATEGORY',
+      targetType: 'category',
+      targetId: id,
+      details: { previous: { name: existing.nama_kategori }, updated: { name: category.nama_kategori } },
+      ipAddress: request.ip
+    });
+
     return ApiResponse.success(reply, category, 'Kategori berhasil diperbarui');
   }
 
@@ -77,6 +96,16 @@ export class CategoryController {
     }
 
     await categoryService.delete(id);
+
+    await recordAuditLog({
+      userId: request.user?.id,
+      action: 'DELETE_CATEGORY',
+      targetType: 'category',
+      targetId: id,
+      details: { name: existing.nama_kategori },
+      ipAddress: request.ip
+    });
+
     return ApiResponse.success(reply, null, 'Kategori berhasil dihapus');
   }
 

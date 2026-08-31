@@ -364,22 +364,22 @@ onMounted(() => {
 <template>
   <PageLayout>
     <div class="w-full max-w-7xl mx-auto px-4 md:px-8">
-      <!-- Breadcrumb -->
+      <!-- Breadcrumbs Navigation -->
       <nav
         class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-4"
       >
-        <router-link to="/" class="text-brand-teal hover:underline"
+        <router-link to="/" class="text-brand-teal hover:underline font-bold"
           >Beranda</router-link
         >
         <span class="text-stone-400">/</span>
-        <router-link to="/admin" class="text-stone-600 hover:underline"
+        <router-link to="/admin" class="text-stone-600 dark:text-stone-300 hover:underline font-bold"
           >Administrasi</router-link
         >
         <span class="text-stone-400">/</span>
         <Badge
           variant="outline"
-          class="bg-orange-100 text-orange-700 border-orange-300"
-          >Materi</Badge
+          class="bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-2 border-black dark:border-stone-100 font-bold"
+          >Kelola Materi</Badge
         >
       </nav>
 
@@ -387,7 +387,7 @@ onMounted(() => {
       <PageHeader
         title="Kelola Materi"
         description="Kelola materi pembelajaran untuk publik (PDF & Video)."
-        icon-color="bg-brand-red"
+        icon-color="bg-brand-teal"
       >
         <template #actions>
           <div class="flex flex-wrap gap-2">
@@ -402,9 +402,9 @@ onMounted(() => {
             </router-link>
             <Button
               @click="openModal()"
-              class="gap-2 border-2 border-black shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+              class="gap-2 bg-brand-teal hover:bg-teal-600 active:bg-teal-700 text-white font-bold border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
             >
-              <Plus class="w-4 h-4" />
+              <Plus class="w-4 h-4 text-white stroke-[2.5]" />
               Tambah Materi
             </Button>
           </div>

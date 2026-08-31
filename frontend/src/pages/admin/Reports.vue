@@ -14,6 +14,7 @@ import { useToast } from '@/composables/useToast'
 import PageHeader from '@/components/PageHeader.vue'
 import { formatDate } from '@/lib/format'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import AdminPosterImage from '@/components/AdminPosterImage.vue'
 
 const { showToast } = useToast()
 
@@ -167,13 +168,13 @@ onMounted(fetchReports)
 
 <template>
   <div class="p-4 md:p-8">
-    <!-- Breadcrumb -->
+    <!-- Breadcrumbs Navigation -->
     <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <router-link to="/" class="text-brand-teal hover:underline font-bold">Beranda</router-link>
       <span class="text-stone-400">/</span>
-      <router-link to="/admin" class="text-stone-600 dark:text-stone-300 hover:underline">Administrasi</router-link>
+      <router-link to="/admin" class="text-stone-600 dark:text-stone-300 hover:underline font-bold">Administrasi</router-link>
       <span class="text-stone-400">/</span>
-      <Badge variant="outline" class="bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-700 font-bold">Laporan</Badge>
+      <Badge variant="outline" class="bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-2 border-black dark:border-stone-100 font-bold">Laporan Konten</Badge>
     </nav>
 
     <!-- Header -->
@@ -355,8 +356,13 @@ onMounted(fetchReports)
                 <ShieldAlert class="w-5 h-5 text-red-600 dark:text-red-400" />
                 <h2 class="font-bold text-lg uppercase tracking-tight">Detail Laporan #{{ selectedReport?.report_id }}</h2>
               </div>
-              <button @click="showProcessModal = false" class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors">
-                <X class="w-6 h-6" />
+              <button 
+                type="button"
+                @click="showProcessModal = false" 
+                class="p-1 border-2 border-transparent hover:border-black dark:hover:border-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 transition-colors cursor-pointer"
+                title="Tutup Modal"
+              >
+                <X class="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
@@ -413,9 +419,11 @@ onMounted(fetchReports)
                   <div v-else>
                     <!-- Film Preview -->
                     <div v-if="selectedReport?.target_type === 'film'" class="flex gap-4">
-                      <div class="w-20 aspect-[3/4] bg-stone-300 dark:bg-stone-800 border border-black dark:border-stone-100 shrink-0 relative overflow-hidden">
-                        <img v-if="targetData.gambar_poster" :src="targetData.gambar_poster" class="w-full h-full object-cover">
-                      </div>
+                      <AdminPosterImage 
+                        :src="targetData.gambar_poster" 
+                        :alt="targetData.judul"
+                        className="w-20 aspect-[3/4]"
+                      />
                       <div class="flex-1 min-w-0">
                         <h5 class="font-black uppercase tracking-tight text-sm truncate text-stone-900 dark:text-stone-100">{{ targetData.judul }}</h5>
                         <p class="text-xs text-stone-600 dark:text-stone-300 mt-1 line-clamp-2 italic">"{{ targetData.sinopsis }}"</p>
