@@ -23,8 +23,24 @@ export const REDIS_HOST = process.env.REDIS_HOST || '127.0.0.1';
 export const REDIS_PORT = parseInt(process.env.REDIS_PORT || '6379', 10);
 export const REDIS_PASSWORD = process.env.REDIS_PASSWORD || undefined;
 
-export const FFMPEG_PATH = process.env.FFMPEG_PATH || null;
-export const FFPROBE_PATH = process.env.FFPROBE_PATH || null;
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+let defaultFfmpegPath = null;
+let defaultFfprobePath = null;
+
+try {
+  const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
+  defaultFfmpegPath = ffmpegInstaller?.path || ffmpegInstaller?.default?.path || null;
+} catch {}
+
+try {
+  const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
+  defaultFfprobePath = ffprobeInstaller?.path || ffprobeInstaller?.default?.path || null;
+} catch {}
+
+export const FFMPEG_PATH = process.env.FFMPEG_PATH || defaultFfmpegPath || 'ffmpeg';
+export const FFPROBE_PATH = process.env.FFPROBE_PATH || defaultFfprobePath || 'ffprobe';
 
 export const QUEUE_NAME = 'video-transcoding';
 export const JOB_NAME = 'transcode-hls-job';

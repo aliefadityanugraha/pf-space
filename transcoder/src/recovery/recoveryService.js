@@ -47,7 +47,7 @@ function initDb() {
  */
 export async function executeSafeRecovery(options = {}) {
   const audit = await reconcileTranscodeState(options);
-  const dbInstance = initDb();
+  const dbInstance = (!options.filmsMock && !options.readOnly) ? initDb() : null;
 
   const results = {
     zombiesRecovered: 0,
