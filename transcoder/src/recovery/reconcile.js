@@ -46,14 +46,16 @@ function initDb() {
  * @returns {Promise<object>} Reconciliation audit summary report
  */
 export async function reconcileTranscodeState(options = {}) {
-  const dbInstance = initDb();
   let films = options.filmsMock || [];
 
-  if (!options.filmsMock && dbInstance) {
-    try {
-      films = await dbInstance('films').select('film_id', 'judul', 'transcode_status', 'transcode_progress', 'hls_manifest_url', 'link_video_utama');
-    } catch (err) {
-      console.warn('[Reconcile] DB query failed, using empty set:', err.message);
+  if (!options.filmsMock) {
+    const dbInstance = initDb();
+    if (dbInstance) {
+      try {
+        films = await dbInstance('films').select('film_id', 'judul', 'transcode_status', 'transcode_progress', 'hls_manifest_url', 'link_video_utama');
+      } catch (err) {
+        console.warn('[Reconcile] DB query failed, using empty set:', err.message);
+      }
     }
   }
 

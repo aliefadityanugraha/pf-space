@@ -24,6 +24,7 @@ export function cancelFfmpegProcess(filmId) {
   const ffProc = activeFfmpegProcesses.get(key);
   if (ffProc) {
     console.log(`[FFmpeg] Cancelling running FFmpeg process for filmId=${filmId} (PID: ${ffProc.pid})...`);
+    ffProc._cancelledByUser = true;
     try {
       ffProc.kill('SIGTERM');
       setTimeout(() => {
@@ -49,6 +50,7 @@ export function cancelAllFfmpegProcesses() {
   console.log(`[FFmpeg] Terminating all active FFmpeg processes (${activeFfmpegProcesses.size} active)...`);
   for (const [filmId, ffProc] of activeFfmpegProcesses.entries()) {
     try {
+      ffProc._cancelledByUser = true;
       ffProc.kill('SIGKILL');
     } catch {}
   }
@@ -180,8 +182,8 @@ export function transcodeRendition({
       clearTimeout(timer);
       if (processKey) activeFfmpegProcesses.delete(processKey);
 
-      if (isCancelled || signal === 'SIGTERM' || signal === 'SIGKILL') {
-        return reject(new Error(`FFmpeg process was cancelled (signal: ${signal || 'SIGKILL'})`));
+      if (isCancelled || ffProc._cancelledByUser || signal === 'SIGTERM' || signal === 'SIGKILL' || stderrLog.includes('received signal')) {
+        return reject(new Error(`FFmpeg process was cancelled (signal: ${signal || 'SIGTERM'})`));
       }
 
       if (code === 0) {
