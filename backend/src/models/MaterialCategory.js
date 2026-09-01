@@ -25,7 +25,7 @@ export class MaterialCategory extends BaseModel {
         slug: { type: 'string', minLength: 1, maxLength: 100 },
         deskripsi: { type: ['string', 'null'] },
         icon: { type: ['string', 'null'], maxLength: 50 },
-        urutan: { type: 'integer' }
+        urutan: { type: ['integer', 'string', 'null'] }
       }
     };
   }

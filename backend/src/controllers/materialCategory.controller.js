@@ -5,6 +5,7 @@
  */
 
 import { materialCategoryService } from '../services/index.js';
+import { recordAuditLog } from '../lib/audit.js';
 
 export class MaterialCategoryController {
   async getAll(request, reply) {
@@ -51,6 +52,16 @@ export class MaterialCategoryController {
   async create(request, reply) {
     try {
       const category = await materialCategoryService.create(request.body);
+
+      await recordAuditLog({
+        userId: request.user?.id,
+        action: 'CREATE_MATERIAL_CATEGORY',
+        targetType: 'category',
+        targetId: category.id || category.category_id,
+        details: { name: category.name || category.nama_kategori },
+        ipAddress: request.ip
+      });
+
       return reply.status(201).send({
         success: true,
         message: 'Kategori materi berhasil dibuat',
@@ -83,6 +94,15 @@ export class MaterialCategoryController {
         });
       }
 
+      await recordAuditLog({
+        userId: request.user?.id,
+        action: 'UPDATE_MATERIAL_CATEGORY',
+        targetType: 'category',
+        targetId: id,
+        details: { name: category.name || category.nama_kategori },
+        ipAddress: request.ip
+      });
+
       return reply.send({
         success: true,
         message: 'Kategori materi berhasil diperbarui',
@@ -108,6 +128,15 @@ export class MaterialCategoryController {
           message: 'Kategori materi tidak ditemukan'
         });
       }
+
+      await recordAuditLog({
+        userId: request.user?.id,
+        action: 'DELETE_MATERIAL_CATEGORY',
+        targetType: 'category',
+        targetId: id,
+        details: { categoryId: id },
+        ipAddress: request.ip
+      });
 
       return reply.send({
         success: true,

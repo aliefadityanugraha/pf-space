@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { api } from "@/lib/api";
 
@@ -7,7 +7,6 @@ import PageLayout from "@/components/PageLayout.vue";
 import PageHeader from "@/components/PageHeader.vue";
 import ArchiveCard from "@/components/ArchiveCard.vue";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Film,
@@ -20,7 +19,9 @@ import {
   XCircle,
   X,
   Search,
-  ArrowRight,
+  Filter,
+  LayoutGrid,
+  Grid3X3,
   ThumbsUp,
   MessageCircle,
 } from "lucide-vue-next";
@@ -40,8 +41,10 @@ useHead({
 const router = useRouter();
 const films = ref([]);
 const loading = ref(true);
-const pagination = ref({ page: 1, limit: 10, total: 0, totalPages: 0 });
+const pagination = ref({ page: 1, limit: 12, total: 0, totalPages: 0 });
 const statusFilter = ref("all");
+const searchQuery = ref("");
+const posterSize = ref("normal"); // 'normal' (besar/standar) | 'compact' (sedikit lebih kecil)
 const statusSummary = ref({
   all: 0,
   pending: 0,
@@ -65,17 +68,34 @@ const openRejectionModal = (film) => {
 
 const statusColors = {
   pending:
-    "bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border-2 border-amber-300 dark:border-amber-700 font-bold",
+    "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500 font-bold",
   published:
-    "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border-2 border-emerald-300 dark:border-emerald-700 font-bold",
+    "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500 font-bold",
   rejected:
-    "bg-rose-100 dark:bg-rose-950/80 text-rose-900 dark:text-rose-300 border-2 border-rose-300 dark:border-rose-700 font-bold",
+    "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500 font-bold",
 };
 
 const statusLabels = {
   pending: "Menunggu",
   published: "Dipublikasi",
   rejected: "Ditolak",
+};
+
+// Poster grid layout class based on size toggle
+const gridClass = computed(() => {
+  if (posterSize.value === "compact") {
+    return "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4";
+  }
+  return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
+});
+
+let searchTimeout = null;
+const onSearchInput = () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    pagination.value.page = 1;
+    fetchFilms();
+  }, 300);
 };
 
 const fetchFilms = async () => {
@@ -87,9 +107,26 @@ const fetchFilms = async () => {
     if (statusFilter.value !== "all") {
       params.append("status", statusFilter.value);
     }
+    if (searchQuery.value.trim()) {
+      params.append("search", searchQuery.value.trim());
+    }
 
     const res = await api.get(`/api/films/my-films?${params}`);
-    films.value = res.data;
+    let data = res.data || [];
+
+    // Fallback client-side filter if backend didn't apply search param
+    if (searchQuery.value.trim() && !res.pagination?.filteredByBackend) {
+      const q = searchQuery.value.trim().toLowerCase();
+      data = data.filter(
+        (f) =>
+          (f.judul && f.judul.toLowerCase().includes(q)) ||
+          (f.deskripsi && f.deskripsi.toLowerCase().includes(q)) ||
+          (f.category?.nama_kategori &&
+            f.category.nama_kategori.toLowerCase().includes(q))
+      );
+    }
+
+    films.value = data;
     if (res.pagination) {
       pagination.value = { ...pagination.value, ...res.pagination };
     }
@@ -119,7 +156,7 @@ const fetchStatusSummary = async () => {
           total:
             res.pagination?.total ||
             (Array.isArray(res.data) ? res.data.length : 0),
-        })),
+        }))
     );
     const results = await Promise.all(requests);
     const nextSummary = {
@@ -134,7 +171,6 @@ const fetchStatusSummary = async () => {
     statusSummary.value = nextSummary;
   } catch (err) {
     console.error("Failed to fetch film status summary:", err);
-    showToast("Gagal memuat ringkasan status film", "error");
   } finally {
     summaryLoading.value = false;
   }
@@ -150,9 +186,9 @@ const executeDelete = async () => {
   deleting.value = true;
   try {
     await api.delete(`/api/films/${filmToDelete.value.film_id}`);
-    showToast("Film berhasil dihapus");
+    showToast("Film berhasil dihapus", "success");
     showConfirm.value = false;
-    await fetchFilms();
+    await Promise.all([fetchFilms(), fetchStatusSummary()]);
   } catch (err) {
     showToast(err.message || "Gagal menghapus film", "error");
   } finally {
@@ -182,113 +218,241 @@ onMounted(async () => {
 <template>
   <PageLayout>
     <main class="max-w-7xl mx-auto px-4 md:px-8 pb-16">
-      <!-- Breadcrumb -->
+      <!-- Breadcrumbs Navigation (Matching Screenshot 1) -->
       <nav
-        class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-2 md:pt-8"
+        class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-2 md:pt-6"
       >
-        <router-link to="/" class="text-brand-teal hover:underline"
-          >Beranda</router-link
-        >
+        <router-link to="/" class="text-brand-teal hover:underline font-bold">
+          BERANDA
+        </router-link>
         <span class="text-stone-400">/</span>
         <Badge
           variant="outline"
-          class="bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-300 border-2 border-orange-300 dark:border-orange-700 font-bold"
-          >Karya Saya</Badge
+          class="bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-2 border-black dark:border-stone-100 font-bold uppercase tracking-wider"
         >
+          KARYA SAYA
+        </Badge>
       </nav>
 
-      <!-- Header -->
+      <!-- Page Header -->
       <PageHeader
         title="Karya Saya"
-        description="Kelola semua karya yang sudah kamu upload."
+        description="Kelola, pantau status kurasi, dan publikasi semua karya yang sudah kamu upload."
+        icon-color="bg-brand-teal"
       >
         <template #actions>
           <Button
             @click="router.push('/upload')"
-            class="gap-2 shadow-brutal-sm h-10 md:h-12 font-bold uppercase tracking-wider text-xs px-6 cursor-pointer"
+            class="gap-2 bg-brand-teal hover:bg-teal-600 active:bg-teal-700 text-white border-2 border-black dark:border-stone-100 shadow-brutal hover:shadow-brutal-xs hover:translate-x-[1px] hover:translate-y-[1px] transition-all h-10 md:h-11 font-bold uppercase tracking-wider text-xs px-5 cursor-pointer"
           >
-            <Plus class="w-4 h-4" />
+            <Plus class="w-4 h-4 stroke-[2.5]" />
             Upload Karya Baru
           </Button>
         </template>
       </PageHeader>
 
-      <ErrorBoundary name="Ringkasan Status">
-        <Card class="mb-6 border-2 border-stone-800 dark:border-stone-700 shadow-brutal bg-card text-card-foreground">
-          <CardContent
-            class="p-4 sm:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+      <!-- Unified Single-Row Toolbar (Sejajar: Filter Status di Kiri, Ukuran Poster & Pencarian di Kanan) -->
+      <div
+        class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-6"
+      >
+        <!-- Kiri: Filter Tombol Status (Border Jelas & Rapi) -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <!-- Semua (Active: Background Putih dengan shadow-brutal-xs) -->
+          <button
+            type="button"
+            @click="changeFilter('all')"
+            class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-bold border-2 transition-all cursor-pointer shadow-brutal-xs hover:translate-x-[-1px] hover:translate-y-[-1px]"
+            :class="
+              statusFilter === 'all'
+                ? 'bg-white text-stone-950 border-black dark:border-white font-black'
+                : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:border-black dark:hover:border-stone-400'
+            "
           >
-            <div>
-              <p
-                class="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1"
-              >
-                Status Pengajuan Karya
-              </p>
-              <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
-                Ringkasan semua karya yang kamu upload berdasarkan status review.
-              </p>
-            </div>
-            <div class="flex flex-wrap gap-2 items-center">
-              <Badge
-                variant="outline"
-                class="px-2.5 py-1 text-xs font-bold bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-2 border-stone-900 dark:border-stone-100 shadow-brutal-xs"
-              >
-                <span class="font-bold mr-1">{{
-                  summaryLoading ? "…" : statusSummary.all
-                }}</span>
-                Total
-              </Badge>
-              <Badge variant="outline" :class="['px-2.5 py-1 text-xs shadow-brutal-xs', statusColors.pending]">
-                <span class="font-bold mr-1">{{
-                  summaryLoading ? "…" : statusSummary.pending
-                }}</span>
-                Menunggu
-              </Badge>
-              <Badge variant="outline" :class="['px-2.5 py-1 text-xs shadow-brutal-xs', statusColors.published]">
-                <span class="font-bold mr-1">{{
-                  summaryLoading ? "…" : statusSummary.published
-                }}</span>
-                Dipublikasi
-              </Badge>
-              <Badge variant="outline" :class="['px-2.5 py-1 text-xs shadow-brutal-xs', statusColors.rejected]">
-                <span class="font-bold mr-1">{{
-                  summaryLoading ? "…" : statusSummary.rejected
-                }}</span>
-                Ditolak
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      </ErrorBoundary>
+            <Filter
+              class="w-3.5 h-3.5 stroke-[2.5]"
+              :class="
+                statusFilter === 'all'
+                  ? 'text-stone-950'
+                  : 'text-stone-500 dark:text-stone-400'
+              "
+            />
+            <span>Semua</span>
+            <span
+              class="px-1.5 py-0.2 text-[10px] font-mono font-bold border"
+              :class="
+                statusFilter === 'all'
+                  ? 'bg-stone-200 text-stone-950 border-stone-400'
+                  : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-300 dark:border-stone-600'
+              "
+            >
+              {{ summaryLoading ? "…" : statusSummary.all }}
+            </span>
+          </button>
 
-      <!-- Status Filter -->
-      <div class="flex gap-2 mb-6 flex-wrap">
-        <Button
-          v-for="status in ['all', 'pending', 'published', 'rejected']"
-          :key="status"
-          size="sm"
-          @click="changeFilter(status)"
-          class="gap-2 font-bold text-xs uppercase tracking-wider shadow-brutal-xs transition-all cursor-pointer"
-          :class="
-            statusFilter === status
-              ? 'bg-brand-teal text-white border-2 border-stone-900 dark:border-stone-100 font-black'
-              : 'bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-2 border-stone-800 dark:border-stone-700 hover:bg-stone-200 dark:hover:bg-stone-700 hover:text-stone-900 dark:hover:text-white'
-          "
+          <!-- Menunggu Review -->
+          <button
+            type="button"
+            @click="changeFilter('pending')"
+            class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-bold border-2 transition-all cursor-pointer shadow-brutal-xs hover:translate-x-[-1px] hover:translate-y-[-1px]"
+            :class="
+              statusFilter === 'pending'
+                ? 'bg-yellow-400 text-stone-950 border-black dark:border-white font-black'
+                : 'bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 border-stone-300 dark:border-stone-700 hover:border-yellow-500'
+            "
+          >
+            <Clock
+              class="w-3.5 h-3.5 stroke-[2.5]"
+              :class="
+                statusFilter === 'pending'
+                  ? 'text-stone-950 stroke-[3]'
+                  : 'text-yellow-500'
+              "
+            />
+            <span>Menunggu Review</span>
+            <span
+              class="px-1.5 py-0.2 text-[10px] font-mono font-bold border"
+              :class="
+                statusFilter === 'pending'
+                  ? 'bg-stone-950 text-yellow-300 border-black'
+                  : 'bg-yellow-50 dark:bg-amber-950/80 text-yellow-700 dark:text-yellow-400 border-yellow-300 dark:border-amber-600/90'
+              "
+            >
+              {{ summaryLoading ? "…" : statusSummary.pending }}
+            </span>
+          </button>
+
+          <!-- Dipublikasi -->
+          <button
+            type="button"
+            @click="changeFilter('published')"
+            class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-bold border-2 transition-all cursor-pointer shadow-brutal-xs hover:translate-x-[-1px] hover:translate-y-[-1px]"
+            :class="
+              statusFilter === 'published'
+                ? 'bg-brand-teal text-white border-black dark:border-white font-black'
+                : 'bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 border-stone-300 dark:border-stone-700 hover:border-brand-teal'
+            "
+          >
+            <CheckCircle
+              class="w-3.5 h-3.5 stroke-[2.5]"
+              :class="
+                statusFilter === 'published'
+                  ? 'text-white'
+                  : 'text-emerald-500 dark:text-emerald-400'
+              "
+            />
+            <span>Dipublikasi</span>
+            <span
+              class="px-1.5 py-0.2 text-[10px] font-mono font-bold border"
+              :class="
+                statusFilter === 'published'
+                  ? 'bg-white/20 text-white border-white'
+                  : 'bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 border-teal-300 dark:border-teal-700'
+              "
+            >
+              {{ summaryLoading ? "…" : statusSummary.published }}
+            </span>
+          </button>
+
+          <!-- Ditolak -->
+          <button
+            type="button"
+            @click="changeFilter('rejected')"
+            class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-bold border-2 transition-all cursor-pointer shadow-brutal-xs hover:translate-x-[-1px] hover:translate-y-[-1px]"
+            :class="
+              statusFilter === 'rejected'
+                ? 'bg-brand-red text-white border-black dark:border-white font-black'
+                : 'bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 border-stone-300 dark:border-stone-700 hover:border-brand-red'
+            "
+          >
+            <XCircle
+              class="w-3.5 h-3.5 stroke-[2.5]"
+              :class="
+                statusFilter === 'rejected'
+                  ? 'text-white'
+                  : 'text-rose-500'
+              "
+            />
+            <span>Ditolak</span>
+            <span
+              class="px-1.5 py-0.2 text-[10px] font-mono font-bold border"
+              :class="
+                statusFilter === 'rejected'
+                  ? 'bg-white/20 text-white border-white'
+                  : 'bg-red-50 dark:bg-red-950/80 text-red-700 dark:text-red-300 border-red-300 dark:border-red-700'
+              "
+            >
+              {{ summaryLoading ? "…" : statusSummary.rejected }}
+            </span>
+          </button>
+        </div>
+
+        <!-- Kanan: Tombol Besar/Kecil Poster (Sebelah Kiri Pencarian) & Pencarian (Mepet Kanan) -->
+        <div
+          class="flex items-center gap-2.5 flex-wrap sm:flex-nowrap justify-between sm:justify-end shrink-0"
         >
-          <Clock v-if="status === 'pending'" class="w-4 h-4 text-amber-500" />
-          <CheckCircle v-else-if="status === 'published'" class="w-4 h-4 text-emerald-500" />
-          <XCircle v-else-if="status === 'rejected'" class="w-4 h-4 text-rose-500" />
-          <Film v-else class="w-4 h-4 text-brand-teal" />
-          {{ status === "all" ? "Semua" : statusLabels[status] }}
-        </Button>
+          <!-- Tombol Ukuran Poster: Besar/Normal & Agak Kecil (Matching Screenshot 1 red box) -->
+          <div
+            class="flex items-center border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 shadow-brutal-xs shrink-0"
+            title="Atur Ukuran Poster"
+          >
+            <button
+              type="button"
+              @click="posterSize = 'normal'"
+              class="p-2 border-r-2 border-black dark:border-stone-100 transition-colors cursor-pointer"
+              :class="
+                posterSize === 'normal'
+                  ? 'bg-brand-teal text-white'
+                  : 'text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
+              "
+              title="Poster Standar / Besar"
+            >
+              <LayoutGrid class="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              @click="posterSize = 'compact'"
+              class="p-2 transition-colors cursor-pointer"
+              :class="
+                posterSize === 'compact'
+                  ? 'bg-brand-teal text-white'
+                  : 'text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
+              "
+              title="Poster Sedikit Lebih Kecil"
+            >
+              <Grid3X3 class="w-4 h-4" />
+            </button>
+          </div>
+
+          <!-- Input Pencarian (Mepet Kanan) -->
+          <div class="relative w-full sm:w-64 md:w-72">
+            <Search
+              class="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2"
+            />
+            <input
+              v-model="searchQuery"
+              @input="onSearchInput"
+              type="text"
+              placeholder="Cari judul film, sutradara, kreator..."
+              class="w-full pl-9 pr-8 text-xs h-9 bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 border-2 border-black dark:border-stone-100 shadow-brutal-xs font-mono focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-1 focus:outline-none"
+            />
+            <button
+              v-if="searchQuery"
+              @click="
+                searchQuery = '';
+                fetchFilms();
+              "
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-red-500 transition-colors cursor-pointer"
+              title="Hapus Pencarian"
+            >
+              <X class="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- Loading -->
-      <div
-        v-if="loading"
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-      >
-        <ArchiveSkeleton v-for="i in 6" :key="i" variant="landscape" />
+      <!-- Loading Skeletons -->
+      <div v-if="loading" :class="gridClass">
+        <ArchiveSkeleton v-for="i in 8" :key="i" variant="landscape" />
       </div>
 
       <!-- Empty State -->
@@ -296,29 +460,35 @@ onMounted(async () => {
         v-else-if="films.length === 0"
         :icon="Film"
         :title="
-          statusFilter === 'all'
+          searchQuery
+            ? 'Karya tidak ditemukan'
+            : statusFilter === 'all'
             ? 'Belum ada karya'
             : `Belum ada karya dengan status ${statusLabels[statusFilter]}`
         "
         :description="
-          statusFilter === 'all'
+          searchQuery
+            ? `Tidak ada karya yang cocok dengan kata kunci '${searchQuery}'.`
+            : statusFilter === 'all'
             ? 'Mulai upload karya pertamamu sekarang!'
             : 'Coba pilih status lain atau upload karya baru.'
         "
-        actionLabel="Upload Karya"
-        @action="router.push('/upload')"
+        :actionLabel="searchQuery ? 'Reset Pencarian' : 'Upload Karya'"
+        @action="
+          searchQuery
+            ? ((searchQuery = ''), fetchFilms())
+            : router.push('/upload')
+        "
       >
         <template #action-icon>
-          <Plus class="w-4 h-4" />
+          <X v-if="searchQuery" class="w-4 h-4" />
+          <Plus v-else class="w-4 h-4" />
         </template>
       </EmptyState>
 
-      <!-- Films Grid -->
-      <ErrorBoundary name="Daftar Karya">
-        <div
-          v-if="films.length > 0"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-        >
+      <!-- Grid Poster View (Disesuaikan dengan Toggle Ukuran Poster) -->
+      <ErrorBoundary v-else name="Daftar Karya">
+        <div :class="gridClass">
           <ArchiveCard
             v-for="item in films"
             :key="item.film_id"
@@ -329,10 +499,16 @@ onMounted(async () => {
           >
             <template #overlay>
               <!-- Default badges -->
-              <Badge v-if="item.tahun_karya" class="absolute top-2 left-2 bg-stone-950/80 backdrop-blur-sm text-white text-[10px] font-mono font-bold px-2 py-0.5 border border-white/20">
+              <Badge
+                v-if="item.tahun_karya"
+                class="absolute top-2 left-2 bg-stone-950/80 backdrop-blur-sm text-white text-[10px] font-mono font-bold px-2 py-0.5 border border-white/20"
+              >
                 {{ item.tahun_karya }}
               </Badge>
-              <Badge v-if="item.category?.nama_kategori" class="absolute top-2 right-2 bg-brand-teal text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 border border-black shadow-brutal-xs">
+              <Badge
+                v-if="item.category?.nama_kategori"
+                class="absolute top-2 right-2 bg-brand-teal text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 border border-black shadow-brutal-xs"
+              >
                 {{ item.category.nama_kategori }}
               </Badge>
 
@@ -341,13 +517,19 @@ onMounted(async () => {
                 v-if="item.status === 'rejected'"
                 class="absolute inset-x-0 bottom-0 bg-stone-950/95 border-t-2 border-brand-red text-white p-2.5 font-body z-10 flex flex-col gap-1 select-none backdrop-blur-xs"
               >
-                <div class="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-rose-400">
+                <div
+                  class="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-rose-400"
+                >
                   <XCircle class="w-3.5 h-3.5 text-brand-red shrink-0" />
                   <span>Publikasi Ditolak</span>
                 </div>
-                <div v-if="item.rejection_reason" class="text-[10px] sm:text-[11px] leading-snug text-stone-100 font-medium">
+                <div
+                  v-if="item.rejection_reason"
+                  class="text-[10px] sm:text-[11px] leading-snug text-stone-100 font-medium"
+                >
                   <p class="line-clamp-2">
-                    <span class="font-bold text-stone-300">Keterangan:</span> {{ item.rejection_reason }}
+                    <span class="font-bold text-stone-300">Keterangan:</span>
+                    {{ item.rejection_reason }}
                   </p>
                   <button
                     v-if="item.rejection_reason.length > 50"
@@ -362,28 +544,45 @@ onMounted(async () => {
 
             <template #extra-content>
               <!-- Loves, Comments, and Status Footer Row -->
-              <div class="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-dashed border-stone-300 dark:border-stone-600">
-                <div class="flex items-center gap-2.5">
-                  <span class="flex items-center gap-1 text-[10px] sm:text-xs text-stone-700 dark:text-stone-300 font-bold font-mono">
-                    <ThumbsUp class="w-3.5 h-3.5 text-brand-red fill-current" />
+              <div
+                class="flex items-center justify-between gap-1 mt-2 pt-2 border-t border-dashed border-stone-300 dark:border-stone-700 min-w-0"
+              >
+                <div class="flex items-center gap-2 shrink-0">
+                  <span
+                    class="flex items-center gap-1 text-[10px] sm:text-xs text-stone-700 dark:text-stone-300 font-bold font-mono"
+                  >
+                    <ThumbsUp
+                      class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand-red fill-current"
+                    />
                     {{ item.vote_count || 0 }}
                   </span>
-                  <span class="flex items-center gap-1 text-[10px] sm:text-xs text-stone-700 dark:text-stone-300 font-bold font-mono">
-                    <MessageCircle class="w-3.5 h-3.5 text-brand-orange" />
+                  <span
+                    class="flex items-center gap-1 text-[10px] sm:text-xs text-stone-700 dark:text-stone-300 font-bold font-mono"
+                  >
+                    <MessageCircle class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand-orange" />
                     {{ item.comment_count || 0 }}
                   </span>
                 </div>
-                <Badge
+                <span
                   :class="[
-                    'text-[9px] sm:text-[10px] px-2 py-0.5 rounded-none border border-black shadow-brutal-xs font-bold uppercase tracking-wider w-fit shrink-0 flex items-center gap-1',
+                    'text-[9px] px-1.5 py-0.5 border shadow-brutal-xs font-bold uppercase tracking-wider shrink-0 flex items-center gap-1 whitespace-nowrap',
                     statusColors[item.status],
                   ]"
                 >
-                  <Clock v-if="item.status === 'pending'" class="w-3 h-3 shrink-0" />
-                  <CheckCircle v-else-if="item.status === 'published'" class="w-3 h-3 shrink-0 text-white" />
-                  <XCircle v-else-if="item.status === 'rejected'" class="w-3 h-3 shrink-0 text-white" />
+                  <Clock
+                    v-if="item.status === 'pending'"
+                    class="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 stroke-[2.5]"
+                  />
+                  <CheckCircle
+                    v-else-if="item.status === 'published'"
+                    class="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 stroke-[2.5]"
+                  />
+                  <XCircle
+                    v-else-if="item.status === 'rejected'"
+                    class="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 stroke-[2.5]"
+                  />
                   <span>{{ statusLabels[item.status] }}</span>
-                </Badge>
+                </span>
               </div>
             </template>
 
@@ -392,29 +591,37 @@ onMounted(async () => {
               <Button
                 size="sm"
                 variant="outline"
-                class="flex-1 gap-1.5 font-bold text-xs uppercase border-2 border-stone-800 dark:border-stone-100 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] cursor-pointer"
+                class="flex-1 gap-1 h-7 sm:h-8 px-1.5 sm:px-2 font-bold text-[10px] sm:text-xs uppercase border-2 border-stone-800 dark:border-stone-100 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] cursor-pointer"
                 @click.stop="router.push(`/edit-archive/${item.slug}`)"
               >
-                <Pencil class="w-3.5 h-3.5 text-brand-teal dark:text-teal-400" /> Edit
+                <Pencil
+                  class="w-3 h-3 text-brand-teal dark:text-teal-400 shrink-0"
+                />
+                <span>Edit</span>
               </Button>
               <Button
                 size="sm"
                 variant="outline"
-                class="gap-1.5 font-bold text-xs uppercase border-2 border-rose-500 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/80 text-rose-700 dark:text-rose-300 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] cursor-pointer px-3"
+                class="flex-1 gap-1 h-7 sm:h-8 px-1.5 sm:px-2 font-bold text-[10px] sm:text-xs uppercase border-2 border-rose-500 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/80 text-rose-700 dark:text-rose-300 shadow-brutal-xs hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] cursor-pointer"
                 @click.stop="confirmDelete(item)"
                 title="Hapus Karya"
               >
-                <Trash2 class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" /> Hapus
+                <Trash2
+                  class="w-3 h-3 text-rose-600 dark:text-rose-400 shrink-0"
+                />
+                <span>Hapus</span>
               </Button>
             </template>
           </ArchiveCard>
         </div>
       </ErrorBoundary>
 
-      <!-- Pagination -->
+      <!-- Pagination (Theme-matching Neo-Brutalist Pagination) -->
       <Pagination
         :page="pagination.page"
         :total-pages="pagination.totalPages"
+        :total="pagination.total"
+        :limit="pagination.limit"
         @change="changePage"
       />
     </main>
@@ -452,7 +659,9 @@ onMounted(async () => {
         >
           <div class="flex items-center gap-3">
             <XCircle class="w-5 h-5 text-red-600 dark:text-red-400" />
-            <h2 class="font-bold text-lg text-red-800 dark:text-red-300">Alasan Penolakan</h2>
+            <h2 class="font-bold text-lg text-red-800 dark:text-red-300">
+              Alasan Penolakan
+            </h2>
           </div>
           <button
             @click="showRejectionModal = false"
@@ -478,3 +687,5 @@ onMounted(async () => {
     </div>
   </PageLayout>
 </template>
+
+

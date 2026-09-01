@@ -65,6 +65,7 @@ const routes = [
     name: "CreateArchive",
     component: () => import("../pages/CreateArchive.vue"),
     meta: { requiresAuth: true, requiresCreator: true },
+    alias: ["/archive/upload"],
   },
   {
     path: "/my-archive",

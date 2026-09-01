@@ -2,10 +2,12 @@
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { api } from "@/lib/api";
-import Navbar from "@/components/Navbar.vue";
-import Footer from "@/components/Footer.vue";
+import PageLayout from "@/components/PageLayout.vue";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, AlertTriangle, Loader2 } from "lucide-vue-next";
+import { 
+  ArrowLeft, AlertTriangle, Loader2,
+  Film, Image as ImageIcon, ShieldCheck, FileText, ChevronDown, ChevronUp 
+} from "lucide-vue-next";
 import PageHeader from "@/components/PageHeader.vue";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/composables/useToast";
@@ -31,6 +33,7 @@ const loading = ref(true);
 const originalStatus = ref("");
 const filmId = ref(null);
 const initialData = ref(null);
+const showPanduan = ref(true);
 
 const { showToast } = useToast();
 const { loading: saving, error: formError, submitFilm } = useFilmForm();
@@ -94,33 +97,35 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-brand-cream">
-    <Navbar />
-
-    <main class="w-full max-w-7xl mx-auto px-4 md:px-8 pt-24 pb-16">
+  <PageLayout>
+    <main class="max-w-7xl mx-auto px-4 md:px-8 pb-16">
       <!-- Breadcrumb -->
       <nav
-        class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-4"
+        class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4 pt-2 md:pt-6"
       >
-        <router-link to="/" class="text-brand-teal hover:underline"
-          >Beranda</router-link
-        >
+        <router-link to="/" class="text-brand-teal hover:underline font-bold">
+          BERANDA
+        </router-link>
         <span class="text-stone-400">/</span>
-        <router-link to="/my-archive" class="text-stone-600 hover:underline"
-          >Karya Saya</router-link
+        <router-link
+          to="/my-archive"
+          class="text-brand-teal hover:underline font-bold"
         >
+          KARYA SAYA
+        </router-link>
         <span class="text-stone-400">/</span>
         <Badge
           variant="outline"
-          class="bg-orange-100 text-orange-700 border-orange-300"
-          >Edit</Badge
+          class="bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-2 border-black dark:border-stone-100 font-bold uppercase tracking-wider"
         >
+          EDIT KARYA
+        </Badge>
       </nav>
 
       <!-- Header -->
       <PageHeader
         title="Edit Karya"
-        description="Perubahan pada karya yang sudah dipublikasi memerlukan review ulang."
+        description="Perubahan pada karya yang sudah dipublikasi memerlukan review ulang oleh kurator."
         icon-color="bg-brand-red"
       >
         <template #actions>
@@ -128,9 +133,9 @@ onMounted(() => {
             variant="outline"
             size="sm"
             @click="handleCancel"
-            class="hidden md:flex gap-2"
+            class="hidden md:flex items-center gap-2 border-2 border-black dark:border-stone-100 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-brutal-xs hover:shadow-none font-bold uppercase tracking-wider text-xs px-4 h-10 cursor-pointer"
           >
-            <ArrowLeft class="w-4 h-4" /> Batal
+            <ArrowLeft class="w-4 h-4 stroke-[2.5]" /> Batal
           </Button>
         </template>
       </PageHeader>
@@ -141,62 +146,101 @@ onMounted(() => {
       </div>
 
       <template v-else>
+        <!-- Warning Alert if published or rejected -->
         <div
           v-if="originalStatus === 'published' || originalStatus === 'rejected'"
-          class="mb-6 p-4 bg-yellow-50 border-2 border-yellow-300 flex items-start gap-3"
+          class="mb-6 p-4 bg-amber-500/10 dark:bg-amber-950/30 border-2 border-black dark:border-stone-100 shadow-brutal-xs flex items-start gap-3"
         >
-          <AlertTriangle class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+          <AlertTriangle class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
           <div class="min-w-0">
-            <p class="font-bold text-yellow-800">Perhatian</p>
-            <p class="text-sm text-yellow-700">
-              Karya ini sudah
-              {{ originalStatus === "published" ? "dipublikasi" : "ditolak" }}.
-              Jika kamu menyimpan perubahan, status akan berubah menjadi
-              "Menunggu Review" dan karya tidak akan tampil di beranda sampai
-              disetujui kembali.
+            <p class="font-bold text-stone-900 dark:text-stone-100 text-sm">Perhatian Status Karya</p>
+            <p class="text-xs text-stone-700 dark:text-stone-300 mt-0.5 leading-relaxed">
+              Karya ini saat ini berstatus {{ originalStatus === "published" ? "dipublikasikan" : "ditolak" }}.
+              Jika Anda menyimpan perubahan, status akan diperbarui menjadi "Menunggu Review" hingga disetujui kembali oleh kurator.
             </p>
           </div>
         </div>
 
+        <!-- Info Box Panduan Kurasi (Compact & High-Contrast Neo-Brutalist Callout) -->
         <div
-          class="mb-6 p-4 bg-stone-50 border-2 border-stone-300 rounded-lg flex gap-3"
+          class="mb-6 bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal-xs overflow-hidden transition-all"
         >
-          <div class="mt-1 shrink-0">
-            <AlertTriangle class="w-5 h-5 text-amber-600" />
+          <div 
+            class="p-3 sm:px-4 sm:py-3 flex items-center justify-between gap-3 cursor-pointer select-none bg-amber-100/90 dark:bg-stone-850 border-b-2 border-black dark:border-stone-700"
+            @click="showPanduan = !showPanduan"
+          >
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div
+                class="w-7 h-7 bg-amber-400 border-2 border-black text-stone-950 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#000]"
+              >
+                <AlertTriangle class="w-3.5 h-3.5 stroke-[2.5]" />
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-bold text-xs sm:text-sm text-stone-900 dark:text-stone-100 flex items-center gap-2 truncate">
+                  <span>Panduan Kurasi Saat Merevisi Karya</span>
+                </h3>
+                <p class="text-[11px] text-stone-600 dark:text-stone-300 mt-0.5 truncate">
+                  Pastikan seluruh poin revisi telah diperbaiki sesuai catatan kurator sebelum submit kembali.
+                </p>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              class="text-stone-700 dark:text-stone-300 hover:text-black dark:hover:text-white p-1 shrink-0 cursor-pointer"
+              :title="showPanduan ? 'Sembunyikan Panduan' : 'Buka Panduan'"
+            >
+              <ChevronUp v-if="showPanduan" class="w-4 h-4 stroke-[2.5]" />
+              <ChevronDown v-else class="w-4 h-4 stroke-[2.5]" />
+            </button>
           </div>
-          <div class="min-w-0">
-            <p class="font-semibold text-stone-900 mb-2">
-              Panduan kurasi saat merevisi karya
-            </p>
-            <ul class="list-disc pl-5 text-sm text-stone-700 space-y-1">
-              <li>
-                Perbaiki catatan penolakan admin terkait audio, visual, atau
-                durasi bila ada.
-              </li>
-              <li>
-                Pastikan link video utama dan trailer masih aktif dan dapat
-                diputar tanpa batasan.
-              </li>
-              <li>
-                Perbarui sinopsis, tahun produksi, dan data kru jika terjadi
-                perubahan signifikan.
-              </li>
-              <li>
-                Gunakan poster yang jelas, tidak blur, dan merepresentasikan
-                tema karya.
-              </li>
-              <li>
-                Pastikan seluruh materi tidak melanggar hak cipta dan etika
-                kampus.
-              </li>
-            </ul>
+
+          <div v-show="showPanduan" class="p-3 sm:p-4 bg-stone-50/50 dark:bg-stone-900/60 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            <div class="p-3 bg-white dark:bg-stone-800/80 border-2 border-black dark:border-stone-700 shadow-brutal-xs space-y-1">
+              <div class="flex items-center gap-1.5 text-teal-700 dark:text-teal-400 font-bold text-xs font-mono uppercase">
+                <Film class="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>1. File Video Aktif</span>
+              </div>
+              <p class="text-[11px] text-stone-700 dark:text-stone-300 leading-snug">
+                Pastikan file video utama dan trailer dapat diputar lancar tanpa kendala format.
+              </p>
+            </div>
+
+            <div class="p-3 bg-white dark:bg-stone-800/80 border-2 border-black dark:border-stone-700 shadow-brutal-xs space-y-1">
+              <div class="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 font-bold text-xs font-mono uppercase">
+                <ImageIcon class="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>2. Poster & Banner</span>
+              </div>
+              <p class="text-[11px] text-stone-700 dark:text-stone-300 leading-snug">
+                Gunakan poster yang tajam, tidak blur, dan merepresentasikan pesan karya secara akurat.
+              </p>
+            </div>
+
+            <div class="p-3 bg-white dark:bg-stone-800/80 border-2 border-black dark:border-stone-700 shadow-brutal-xs space-y-1">
+              <div class="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-bold text-xs font-mono uppercase">
+                <ShieldCheck class="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>3. Orisinalitas</span>
+              </div>
+              <p class="text-[11px] text-stone-700 dark:text-stone-300 leading-snug">
+                Pastikan materi revisi tidak melanggar hak kekayaan intelektual pihak lain.
+              </p>
+            </div>
+
+            <div class="p-3 bg-white dark:bg-stone-800/80 border-2 border-black dark:border-stone-700 shadow-brutal-xs space-y-1">
+              <div class="flex items-center gap-1.5 text-rose-700 dark:text-rose-400 font-bold text-xs font-mono uppercase">
+                <FileText class="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>4. Data Sinopsis & Kru</span>
+              </div>
+              <p class="text-[11px] text-stone-700 dark:text-stone-300 leading-snug">
+                Perbarui deskripsi sinopsis, tahun karya, atau anggota tim bila ada perubahan.
+              </p>
+            </div>
           </div>
         </div>
 
         <!-- Error Message -->
         <div
           v-if="formError"
-          class="mb-6 p-4 bg-red-50 border-2 border-red-200 text-red-600"
+          class="mb-6 p-4 bg-red-50 dark:bg-red-950/50 border-2 border-red-500 text-red-600 dark:text-red-300 font-medium shadow-brutal-xs"
         >
           {{ formError }}
         </div>
@@ -211,7 +255,5 @@ onMounted(() => {
         />
       </template>
     </main>
-
-    <Footer />
-  </div>
+  </PageLayout>
 </template>

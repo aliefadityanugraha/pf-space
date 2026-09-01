@@ -83,12 +83,31 @@ export class AdminController {
     try {
       const page = parseInt(request.query.page) || 1;
       const limit = parseInt(request.query.limit) || 20;
+      const { action, target_type, search } = request.query;
 
-      const logs = await AuditLog.query()
+      let query = AuditLog.query()
         .withGraphFetched('user(selectBasic)')
         .modifiers(AuditLog.defaultModifiers)
-        .orderBy('created_at', 'desc')
-        .page(page - 1, limit);
+        .orderBy('created_at', 'desc');
+
+      if (action) {
+        query = query.where('action', action);
+      }
+      if (target_type) {
+        query = query.where('target_type', target_type);
+      }
+      if (search) {
+        const s = `%${search}%`;
+        query = query.where((builder) => {
+          builder
+            .where('details', 'like', s)
+            .orWhere('ip_address', 'like', s)
+            .orWhere('target_id', 'like', s)
+            .orWhere('action', 'like', s);
+        });
+      }
+
+      const logs = await query.page(page - 1, limit);
 
       return ApiResponse.success(reply, logs.results, 'Audit logs retrieved', 200, {
         total: logs.total,

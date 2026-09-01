@@ -142,11 +142,11 @@ onUnmounted(() => {
         <div class="relative z-50">
           <Search
             v-if="!isSearching"
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors z-10 text-stone-500 dark:text-stone-400"
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors z-10 text-stone-500 dark:text-stone-400"
           />
           <Loader2
             v-else
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-teal animate-spin z-10"
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500 animate-spin z-10"
           />
 
           <Input
@@ -154,34 +154,23 @@ onUnmounted(() => {
             v-model="searchQuery"
             type="text"
             placeholder="Cari di arsip…"
-            class="h-11 pl-12 pr-40 border-2 shadow-brutal focus-visible:ring-0 transition-all duration-300 bg-white dark:bg-stone-900 hover:bg-orange-50/50 dark:hover:bg-stone-800 focus:bg-white dark:focus:bg-stone-900 border-black dark:border-stone-100 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:border-black dark:focus:border-stone-100 cursor-pointer"
+            class="h-9.5 md:h-10 pl-10 pr-10 border-2 border-stone-900 dark:border-stone-700 bg-white dark:bg-[#1c1a18] hover:border-stone-950 dark:hover:border-stone-500 shadow-[2px_2px_0px_#000] text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs md:text-sm font-body cursor-pointer transition-all rounded-none focus-visible:ring-0 focus-visible:border-stone-900 dark:focus-visible:border-stone-500"
             @click="showCommandPalette = true"
             @focus="showResults = searchQuery.length > 0"
           />
 
-          <!-- Keyboard Shortcut Hint -->
           <div
-            class="absolute right-12 top-1/2 -translate-y-1/2 pointer-events-none hidden lg:flex gap-1"
-          >
-            <kbd
-              class="pointer-events-none inline-flex h-5 items-center gap-1 rounded border border-stone-200 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 px-1.5 font-mono text-[10px] font-medium text-stone-500 dark:text-stone-400"
-            >
-              <span class="text-xs">⌘</span>K
-            </kbd>
-          </div>
-
-          <div
-            class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2"
+            v-if="searchQuery"
+            class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center"
           >
             <button
-              v-if="searchQuery"
               @click="
                 searchQuery = '';
                 showResults = false;
               "
-              class="p-2 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+              class="p-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
             >
-              <X class="w-4 h-4" />
+              <X class="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

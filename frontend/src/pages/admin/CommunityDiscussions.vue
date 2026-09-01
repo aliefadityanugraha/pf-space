@@ -18,6 +18,7 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
+  X,
   AlertTriangle,
   User as UserIcon
 } from 'lucide-vue-next'
@@ -213,13 +214,13 @@ onMounted(() => {
 
 <template>
   <div class="p-4 md:p-8">
-    <!-- Breadcrumb -->
+    <!-- Breadcrumbs Navigation -->
     <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <router-link to="/" class="text-brand-teal hover:underline font-bold">Beranda</router-link>
       <span class="text-stone-400">/</span>
-      <router-link to="/admin" class="text-stone-600 hover:underline">Administrasi</router-link>
+      <router-link to="/admin" class="text-stone-600 dark:text-stone-300 hover:underline font-bold">Administrasi</router-link>
       <span class="text-stone-400">/</span>
-      <Badge variant="outline" class="bg-orange-100 text-orange-700 border-orange-300">Komunitas</Badge>
+      <Badge variant="outline" class="bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-2 border-black dark:border-stone-100 font-bold">Diskusi Komunitas</Badge>
     </nav>
 
     <!-- Header -->
@@ -253,8 +254,13 @@ onMounted(() => {
       <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-2xl mx-4 text-stone-900 dark:text-stone-100">
         <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-stone-100 dark:bg-stone-800">
           <h2 class="font-bold text-lg font-display uppercase tracking-tight">{{ editingId ? 'Edit Diskusi' : 'Buat Diskusi Baru' }}</h2>
-          <button @click="closeForm" class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors">
-            <XCircle class="w-5 h-5" />
+          <button 
+            type="button"
+            @click="closeForm" 
+            class="p-1 border-2 border-transparent hover:border-black dark:hover:border-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 transition-colors cursor-pointer"
+            title="Tutup Modal"
+          >
+            <X class="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
         <form @submit.prevent="saveDiscussion" class="p-6 space-y-4">
@@ -384,9 +390,19 @@ onMounted(() => {
     <div v-if="showConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showConfirm = false"></div>
       <div class="relative bg-white dark:bg-stone-900 border-2 border-black dark:border-stone-100 shadow-brutal w-full max-w-sm mx-4 text-stone-900 dark:text-stone-100 overflow-hidden animate-in fade-in duration-200">
-        <div class="flex items-center gap-3 px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-red-50 dark:bg-red-950/60">
-          <AlertTriangle class="w-5 h-5 text-red-600 dark:text-red-400" />
-          <h2 class="font-bold text-lg text-red-800 dark:text-red-300">{{ confirmData.title }}</h2>
+        <div class="flex items-center justify-between px-6 py-4 border-b-2 border-black dark:border-stone-100 bg-red-50 dark:bg-red-950/60">
+          <div class="flex items-center gap-3">
+            <AlertTriangle class="w-5 h-5 text-red-600 dark:text-red-400" />
+            <h2 class="font-bold text-lg text-red-800 dark:text-red-300">{{ confirmData.title }}</h2>
+          </div>
+          <button 
+            type="button"
+            @click="showConfirm = false" 
+            class="p-1 border-2 border-transparent hover:border-black dark:hover:border-stone-100 hover:bg-red-200 dark:hover:bg-red-900/60 text-red-900 dark:text-red-100 transition-colors cursor-pointer"
+            title="Tutup Modal"
+          >
+            <X class="w-4 h-4 stroke-[2.5]" />
+          </button>
         </div>
         <div class="p-6">
           <p class="text-stone-600 dark:text-stone-300 mb-6 text-sm">{{ confirmData.message }}</p>
@@ -413,8 +429,13 @@ onMounted(() => {
             <h2 class="font-bold text-lg font-display uppercase tracking-tight">Balasan Diskusi</h2>
             <p class="text-xs text-stone-600 dark:text-stone-300 mt-1">{{ selectedDiscussion?.title }}</p>
           </div>
-          <button @click="closeRepliesModal" class="p-1 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors">
-            <XCircle class="w-5 h-5" />
+          <button 
+            type="button"
+            @click="closeRepliesModal" 
+            class="p-1 border-2 border-transparent hover:border-black dark:hover:border-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 transition-colors cursor-pointer"
+            title="Tutup Modal"
+          >
+            <X class="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
         

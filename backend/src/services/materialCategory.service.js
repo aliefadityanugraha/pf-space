@@ -38,6 +38,10 @@ export class MaterialCategoryService {
    * Create a material category
    */
   async create(data) {
+    if (data.urutan !== undefined && data.urutan !== null) {
+      data.urutan = parseInt(data.urutan, 10) || 0;
+    }
+
     // Generate slug if not provided
     if (!data.slug && data.nama_kategori) {
       data.slug = data.nama_kategori
@@ -53,6 +57,10 @@ export class MaterialCategoryService {
    * Update a material category
    */
   async update(id, data) {
+    if (data.urutan !== undefined && data.urutan !== null) {
+      data.urutan = parseInt(data.urutan, 10) || 0;
+    }
+
     if (data.nama_kategori && !data.slug) {
       data.slug = data.nama_kategori
         .toLowerCase()

@@ -127,6 +127,71 @@ export class UserService {
       return json;
     });
   }
+
+  /**
+   * Get top active curators/creators/admins and total registered user count
+   * @returns {Promise<{ curators: Array, totalCurators: number }>}
+   */
+  async getTopCurators() {
+    try {
+      const totalCuratorsResult = await User.query().count('id as count').first();
+      const totalCurators = parseInt(totalCuratorsResult?.count || 0, 10);
+
+      const curators = await User.query()
+        .select([
+          'users.id',
+          'users.name',
+          'users.image',
+          'users.role_id',
+          'users.createdAt',
+          User.relatedQuery('films')
+            .count()
+            .where('status', FILM_STATUS.PUBLISHED)
+            .as('film_count'),
+          User.relatedQuery('discussions')
+            .count()
+            .as('discussion_count'),
+          User.relatedQuery('votes')
+            .count()
+            .as('vote_count')
+        ])
+        .withGraphFetched('role')
+        .orderBy('film_count', 'desc')
+        .orderBy('discussion_count', 'desc')
+        .orderBy('vote_count', 'desc')
+        .orderBy('users.createdAt', 'desc')
+        .limit(10);
+
+      return {
+        totalCurators,
+        curators: curators.map(c => {
+          const filmCount = parseInt(c.film_count || 0, 10);
+          const discussionCount = parseInt(c.discussion_count || 0, 10);
+          const voteCount = parseInt(c.vote_count || 0, 10);
+          const roleName = c.role?.role_name || (c.role_id === 4 ? 'Admin' : c.role_id === 2 ? 'Kreator' : 'Member');
+
+          return {
+            id: c.id,
+            name: c.name,
+            image: c.image,
+            role_name: roleName,
+            film_count: filmCount,
+            discussion_count: discussionCount,
+            vote_count: voteCount,
+            activity_label: filmCount > 0 
+              ? `${filmCount} Film` 
+              : discussionCount > 0 
+                ? `${discussionCount} Diskusi` 
+                : `${roleName}`
+          };
+        })
+      };
+    } catch (err) {
+      console.error('[getTopCurators error]', err);
+      return { totalCurators: 0, curators: [] };
+    }
+  }
 }
 
 export const userService = new UserService();
+

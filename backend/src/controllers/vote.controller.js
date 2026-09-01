@@ -118,18 +118,39 @@ export class VoteController {
   }
 
   /**
-   * Public: Fetch films sorted by popularity within a given timeframe (week/month/all)
+   * Administrative: Remove votes for a specific film
+   * @param {import('fastify').FastifyRequest} request
+   * @param {import('fastify').FastifyReply} reply
+   */
+  async resetFilmVotes(request, reply) {
+    const { filmId } = request.params;
+    try {
+      await voteService.resetFilmVotes(filmId);
+      return ApiResponse.success(reply, null, 'Suara untuk film ini berhasil direset');
+    } catch (error) {
+      request.log.error(error);
+      return ApiResponse.error(reply, 'Gagal mereset suara film');
+    }
+  }
+
+  /**
+   * Public: Fetch films sorted by popularity within a given timeframe (week/month/all) and optional filters
    * @param {import('fastify').FastifyRequest} request
    * @param {import('fastify').FastifyReply} reply
    */
   async getTrending(request, reply) {
-    const { period = 'week', limit = 10 } = request.query;
+    const { period = 'week', limit = 10, year, category_id } = request.query;
 
     if (!['week', 'month', 'all'].includes(period)) {
       return ApiResponse.badRequest(reply, 'Periode tidak valid. Gunakan: week, month, atau all');
     }
 
-    const films = await voteService.getTrending(period, parseInt(limit));
+    const options = {};
+    if (year) options.year = year;
+    if (category_id) options.category_id = category_id;
+
+    const parsedLimit = (limit === 'all' || !limit || isNaN(parseInt(limit))) ? 10000 : Math.max(1, parseInt(limit));
+    const films = await voteService.getTrending(period, parsedLimit, options);
     return ApiResponse.success(reply, films);
   }
 

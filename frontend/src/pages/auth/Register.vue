@@ -66,130 +66,139 @@ const handleGoogleLogin = () => {
   <AuthCard
     split
     title="Gabung PF Space"
-    subtitle="Buat profil kuratormu dan mulai berkontribusi dalam pengarsipan film sekolah."
+    subtitle="Buat profil kuratormu dan mulai berkontribusi dalam pengarsipan film."
   >
     <!-- Form -->
-    <form @submit.prevent="handleSubmit" class="space-y-5">
+    <form @submit.prevent="handleSubmit" class="space-y-3">
       <!-- Error Message -->
       <div
         v-if="error"
-        class="p-3 bg-red-500/20 border border-red-500/50 rounded text-red-400 text-sm"
+        class="p-2.5 bg-red-500/15 border border-red-500/40 text-red-600 dark:text-red-400 text-xs font-medium"
       >
         {{ error }}
       </div>
 
       <!-- Full Name -->
       <div>
-        <label class="block text-white font-body mb-2">Nama Lengkap</label>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1">
+          Nama Lengkap
+        </label>
         <div class="relative">
           <User
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400"
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400"
           />
           <Input
             v-model="fullName"
             type="text"
             placeholder="Masukkan nama lengkap..."
-            class="pl-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
+            class="h-9.5 pl-10 bg-white dark:bg-stone-900/90 border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-none transition-colors"
+            required
           />
         </div>
       </div>
 
       <!-- Email -->
       <div>
-        <label class="block text-white font-body mb-2">Email</label>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1">
+          Email
+        </label>
         <div class="relative">
           <Mail
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400"
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400"
           />
           <Input
             v-model="email"
             type="email"
             placeholder="Masukkan email..."
-            class="pl-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
+            class="h-9.5 pl-10 bg-white dark:bg-stone-900/90 border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-none transition-colors"
+            required
           />
         </div>
       </div>
 
-      <!-- Password -->
-      <div>
-        <label class="block text-white font-body mb-2">Kata Sandi</label>
-        <div class="relative">
-          <Lock
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400"
-          />
-          <Input
-            v-model="password"
-            :type="showPassword ? 'text' : 'password'"
-            placeholder="Buat kata sandi..."
-            class="pl-12 pr-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
-          />
-          <button
-            type="button"
-            @click="showPassword = !showPassword"
-            class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-300"
-          >
-            <Eye v-if="!showPassword" class="w-5 h-5" />
-            <EyeOff v-else class="w-5 h-5" />
-          </button>
+      <!-- Password & Confirm Password (Grid on desktop) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <!-- Password -->
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1">
+            Kata Sandi
+          </label>
+          <div class="relative">
+            <Lock
+              class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400"
+            />
+            <Input
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="Buat sandi..."
+              class="h-9.5 pl-8.5 pr-8 bg-white dark:bg-stone-900/90 border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-none transition-colors"
+              required
+            />
+            <button
+              type="button"
+              @click="showPassword = !showPassword"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors p-0.5"
+            >
+              <Eye v-if="!showPassword" class="w-3.5 h-3.5" />
+              <EyeOff v-else class="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- Confirm Password -->
-      <div>
-        <label class="block text-white font-body mb-2"
-          >Konfirmasi Kata Sandi</label
-        >
-        <div class="relative">
-          <Lock
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400"
-          />
-          <Input
-            v-model="confirmPassword"
-            :type="showConfirmPassword ? 'text' : 'password'"
-            placeholder="Konfirmasi kata sandi..."
-            class="pl-12 pr-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
-          />
-          <button
-            type="button"
-            @click="showConfirmPassword = !showConfirmPassword"
-            class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-300"
-          >
-            <Eye v-if="!showConfirmPassword" class="w-5 h-5" />
-            <EyeOff v-else class="w-5 h-5" />
-          </button>
+        <!-- Confirm Password -->
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1">
+            Konfirmasi
+          </label>
+          <div class="relative">
+            <Lock
+              class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400"
+            />
+            <Input
+              v-model="confirmPassword"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              placeholder="Ulangi sandi..."
+              class="h-9.5 pl-8.5 pr-8 bg-white dark:bg-stone-900/90 border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-none transition-colors"
+              required
+            />
+            <button
+              type="button"
+              @click="showConfirmPassword = !showConfirmPassword"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors p-0.5"
+            >
+              <Eye v-if="!showConfirmPassword" class="w-3.5 h-3.5" />
+              <EyeOff v-else class="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Terms -->
-      <label class="flex items-start gap-3 cursor-pointer">
+      <label class="flex items-start gap-2 cursor-pointer select-none pt-0.5">
         <input
           type="checkbox"
           v-model="agreeTerms"
-          class="w-5 h-5 mt-0.5 border-2 border-stone-600 bg-transparent rounded"
+          class="w-4 h-4 mt-0.5 border border-stone-400 dark:border-stone-600 bg-stone-100 dark:bg-stone-900 rounded-none accent-red-600 cursor-pointer"
+          required
         />
-        <span class="text-sm text-stone-400 font-body">
+        <span class="text-xs text-stone-600 dark:text-stone-400 font-body leading-tight">
           Saya setuju dengan
-          <router-link to="/terms" class="text-amber-500 hover:text-amber-400"
-            >Syarat & Ketentuan</router-link
-          >
+          <router-link to="/terms" class="text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 underline underline-offset-2">Syarat & Ketentuan</router-link>
           dan
-          <router-link to="/privacy" class="text-amber-500 hover:text-amber-400"
-            >Kebijakan Privasi</router-link
-          >
+          <router-link to="/privacy" class="text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 underline underline-offset-2">Privasi</router-link>
         </span>
       </label>
 
       <!-- Submit Button -->
       <Button
         variant="destructive"
-        class="w-full shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all h-12 text-sm font-bold uppercase tracking-wider"
-        size="lg"
+        class="w-full bg-red-600 hover:bg-red-500 text-white font-bold uppercase tracking-wider text-xs shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all h-10 rounded-none"
         :disabled="loading"
       >
         <span v-if="loading">Memproses...</span>
         <template v-else>
           Daftar Sekarang
-          <UserPlus class="w-5 h-5 ml-2" />
+          <UserPlus class="w-4 h-4 ml-1.5" />
         </template>
       </Button>
 
@@ -197,11 +206,10 @@ const handleGoogleLogin = () => {
       <Button
         type="button"
         variant="outline"
-        class="w-full bg-stone-900 border-stone-700 text-white hover:bg-stone-800"
-        size="lg"
+        class="w-full bg-white hover:bg-stone-100 border-stone-300 text-stone-800 dark:bg-[#161413] dark:hover:bg-stone-800 dark:border-stone-700 dark:text-white text-xs font-semibold h-10 rounded-none transition-colors"
         @click="handleGoogleLogin"
       >
-        <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24">
           <path
             fill="currentColor"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -224,14 +232,14 @@ const handleGoogleLogin = () => {
     </form>
 
     <template #footer>
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p class="text-stone-400 font-body text-sm">
+      <div class="flex items-center justify-between gap-3">
+        <p class="text-stone-600 dark:text-stone-400 font-body text-xs">
           Sudah memiliki akun kurator?
         </p>
         <router-link to="/auth/login">
           <Button
             variant="outline"
-            class="bg-transparent border-2 border-stone-700 text-white hover:bg-stone-700 font-bold px-6"
+            class="bg-transparent border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 hover:border-stone-400 dark:hover:border-stone-600 font-bold text-xs px-3.5 h-8 rounded-none transition-colors"
           >
             Masuk Sekarang
           </Button>

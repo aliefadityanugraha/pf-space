@@ -104,12 +104,23 @@ export class VoteService {
   }
 
   /**
-   * Get films sorted by vote count within a specific time period
+   * Admin only: Reset votes for a specific film (deletes vote records for that film)
+   * @param {number|string} filmId - Film ID to reset votes for
+   * @returns {Promise<number>} Number of deleted rows
+   */
+  async resetFilmVotes(filmId) {
+    const filmIdInt = parseInt(filmId);
+    return Vote.query().delete().where({ film_id: filmIdInt });
+  }
+
+  /**
+   * Get films sorted by vote count within a specific time period and optional filters
    * @param {string} [period='week'] - Period ('week', 'month', 'all')
    * @param {number} [limit=10] - Number of trending films to fetch
+   * @param {object} [options={}] - Additional filters (year, category_id)
    * @returns {Promise<Film[]>} Array of film objects with vote_count attached
    */
-  async getTrending(period = 'week', limit = 10) {
+  async getTrending(period = 'week', limit = 10, options = {}) {
     let dateFilter;
     const now = Date.now();
 
@@ -133,7 +144,17 @@ export class VoteService {
           this.andOn('votes.created_at', '>=', knex.raw('?', [dateFilter]));
         }
       })
-      .where('films.status', FILM_STATUS.PUBLISHED)
+      .where('films.status', FILM_STATUS.PUBLISHED);
+
+    if (options.year && options.year !== 'all') {
+      query.where('films.tahun_karya', options.year);
+    }
+
+    if (options.category_id && options.category_id !== 'all') {
+      query.where('films.category_id', options.category_id);
+    }
+
+    query
       .groupBy('films.film_id')
       .orderBy('vote_count', 'desc')
       .limit(limit);

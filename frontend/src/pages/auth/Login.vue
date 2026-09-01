@@ -55,74 +55,80 @@ const handleGoogleLogin = () => {
 <template>
   <AuthCard
     split
-    title="Selamat datang kembali"
+    title="Selamat Datang Kembali"
     subtitle="Masuk untuk mengelola arsip dan memberikan apresiasi pada karya terbaik."
   >
     <!-- Form -->
-    <form @submit.prevent="handleSubmit" class="space-y-6">
+    <form @submit.prevent="handleSubmit" class="space-y-4">
       <!-- Error Message -->
       <div
         v-if="error"
-        class="p-3 bg-red-500/20 border border-red-500/50 rounded text-red-400 text-sm"
+        class="p-2.5 bg-red-500/15 border border-red-500/40 text-red-600 dark:text-red-400 text-xs font-medium"
       >
         {{ error }}
       </div>
 
       <!-- Email -->
       <div>
-        <label class="block text-white font-body mb-2">Email</label>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1.5">
+          Email
+        </label>
         <div class="relative">
           <Mail
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400"
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400"
           />
           <Input
             v-model="email"
             type="email"
             placeholder="Masukkan email kamu..."
-            class="pl-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
+            class="h-10.5 pl-10 bg-white dark:bg-stone-900/90 border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-none transition-colors"
+            required
           />
         </div>
       </div>
 
       <!-- Password -->
       <div>
-        <label class="block text-white font-body mb-2">Password</label>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1.5">
+          Password
+        </label>
         <div class="relative">
           <Lock
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400"
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400"
           />
           <Input
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
             placeholder="••••••••••••"
-            class="pl-12 pr-12 bg-stone-800 border-stone-700 text-white placeholder:text-stone-500"
+            class="h-10.5 pl-10 pr-10 bg-white dark:bg-stone-900/90 border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-none transition-colors"
+            required
           />
           <button
             type="button"
             @click="togglePassword"
-            class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-300"
+            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors p-1"
           >
-            <Eye v-if="!showPassword" class="w-5 h-5" />
-            <EyeOff v-else class="w-5 h-5" />
+            <Eye v-if="!showPassword" class="w-4 h-4" />
+            <EyeOff v-else class="w-4 h-4" />
           </button>
         </div>
       </div>
 
       <!-- Remember & Forgot -->
-      <div class="flex items-center justify-between">
-        <label class="flex items-center gap-3 cursor-pointer">
+      <div class="flex items-center justify-between pt-0.5">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
           <input
             type="checkbox"
             v-model="rememberMe"
-            class="w-5 h-5 border-2 border-stone-600 bg-transparent rounded"
+            class="w-4 h-4 border border-stone-400 dark:border-stone-600 bg-stone-100 dark:bg-stone-900 rounded-none accent-red-600 cursor-pointer"
           />
-          <span class="text-sm text-stone-400 font-body"
-            >Tetap masuk di perangkat ini</span
-          >
+          <span class="text-xs text-stone-600 dark:text-stone-400 font-body hover:text-stone-900 dark:hover:text-stone-300 transition-colors">
+            Tetap masuk di perangkat ini
+          </span>
         </label>
         <router-link
           to="/auth/forgot"
-          class="text-sm text-amber-500 font-body hover:text-amber-400"
+          class="text-xs text-amber-600 dark:text-amber-400 font-medium hover:text-amber-500 dark:hover:text-amber-300 transition-colors"
         >
           Lupa kode akses?
         </router-link>
@@ -131,14 +137,13 @@ const handleGoogleLogin = () => {
       <!-- Submit Button -->
       <Button
         variant="destructive"
-        class="w-full shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all h-12 text-sm font-bold uppercase tracking-wider"
-        size="lg"
+        class="w-full bg-red-600 hover:bg-red-500 text-white font-bold uppercase tracking-wider text-xs shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all h-10.5 rounded-none"
         :disabled="loading"
       >
         <span v-if="loading">Mengautentikasi...</span>
         <template v-else>
           Masuk ke Portal
-          <LogIn class="w-5 h-5 ml-2" />
+          <LogIn class="w-4 h-4 ml-1.5" />
         </template>
       </Button>
 
@@ -146,11 +151,10 @@ const handleGoogleLogin = () => {
       <Button
         type="button"
         variant="outline"
-        class="w-full bg-stone-900 border-stone-700 text-white hover:bg-stone-800"
-        size="lg"
+        class="w-full bg-white hover:bg-stone-100 border-stone-300 text-stone-800 dark:bg-[#161413] dark:hover:bg-stone-800 dark:border-stone-700 dark:text-white text-xs font-semibold h-10.5 rounded-none transition-colors"
         @click="handleGoogleLogin"
       >
-        <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24">
           <path
             fill="currentColor"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -173,14 +177,14 @@ const handleGoogleLogin = () => {
     </form>
 
     <template #footer>
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p class="text-stone-400 font-body text-sm">
+      <div class="flex items-center justify-between gap-3">
+        <p class="text-stone-600 dark:text-stone-400 font-body text-xs">
           Belum memiliki akun kurator?
         </p>
         <router-link to="/auth/register">
           <Button
             variant="outline"
-            class="bg-transparent border-2 border-stone-700 text-white hover:bg-stone-700 font-bold px-6"
+            class="bg-transparent border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 hover:border-stone-400 dark:hover:border-stone-600 font-bold text-xs px-3.5 h-8.5 rounded-none transition-colors"
           >
             Daftar Sekarang
           </Button>

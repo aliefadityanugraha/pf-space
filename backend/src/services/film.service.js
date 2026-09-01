@@ -193,7 +193,7 @@ export class FilmService {
    * @returns {Promise<number>} Number of rows updated
    */
   async incrementViews(id) {
-    return Film.query().findById(id).increment("views", 1);
+    return Film.query().where("film_id", id).where("status", "published").increment("views", 1);
   }
 
   /**

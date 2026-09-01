@@ -8,13 +8,13 @@ import { Badge } from '@/components/ui/badge'
 
 <template>
   <div class="p-4 md:p-8">
-    <!-- Breadcrumb -->
+    <!-- Breadcrumbs Navigation -->
     <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider mb-4">
-      <router-link to="/" class="text-brand-teal hover:underline">Beranda</router-link>
+      <router-link to="/" class="text-brand-teal hover:underline font-bold">Beranda</router-link>
       <span class="text-stone-400">/</span>
-      <router-link to="/admin" class="text-stone-600 dark:text-stone-300 hover:underline">Administrasi</router-link>
+      <router-link to="/admin" class="text-stone-600 dark:text-stone-300 hover:underline font-bold">Administrasi</router-link>
       <span class="text-stone-400">/</span>
-      <Badge variant="outline" class="bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-300 border-2 border-orange-300 dark:border-orange-700 font-bold">Bantuan</Badge>
+      <Badge variant="outline" class="bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-2 border-black dark:border-stone-100 font-bold">Bantuan</Badge>
     </nav>
 
     <!-- Header -->

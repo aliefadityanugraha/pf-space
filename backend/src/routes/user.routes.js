@@ -14,6 +14,9 @@ export default async function userRoutes(fastify) {
   // Search users for autocomplete
   fastify.get('/search', userController.searchUsers.bind(userController));
 
+  // Top active curators showcase (must be registered before /:id)
+  fastify.get('/top-curators', userController.getTopCurators.bind(userController));
+
   // Get contributions for a specific user ID
   fastify.get('/:id/contributions', userController.getContributions.bind(userController));
 

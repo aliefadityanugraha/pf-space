@@ -461,7 +461,7 @@ const fetchFilm = async () => {
 };
 
 const incrementViews = async () => {
-  if (!filmSlug.value) return;
+  if (!filmSlug.value || (film.value && film.value.status !== 'published')) return;
   try {
     await api.post(`/api/films/${filmSlug.value}/views`);
   } catch (err) {

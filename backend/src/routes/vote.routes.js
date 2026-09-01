@@ -40,6 +40,11 @@ export default async function voteRoutes(fastify) {
     preHandler: authenticate
   }, voteController.toggleVote.bind(voteController));
 
+  // Administrative: Clear votes for a specific film
+  fastify.delete('/film/:filmId/reset', {
+    preHandler: requireAdmin
+  }, voteController.resetFilmVotes.bind(voteController));
+
   // Administrative: Clear all vote records from system (both DELETE and POST supported)
   fastify.delete('/reset', {
     preHandler: requireAdmin
