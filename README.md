@@ -9,6 +9,7 @@ Untuk apresiasi, dokumentasi, dan pembelajaran karya sinematik pelajar.
 [![CI](https://github.com/aliefadityanugraha/pf-space/actions/workflows/node.js.yml/badge.svg)](https://github.com/aliefadityanugraha/pf-space/actions/workflows/node.js.yml)
 ![Vue](https://img.shields.io/badge/Vue-3.5-42b883?logo=vue.js)
 ![Fastify](https://img.shields.io/badge/Fastify-5-000000?logo=fastify)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Tailwind-4-06b6d4?logo=tailwindcss)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
@@ -24,7 +25,7 @@ PF Space adalah platform web arsip film yang dibangun untuk siswa sekolah meneng
 
 | Kategori                | Fitur                                                                        |
 | ----------------------- | ---------------------------------------------------------------------------- |
-| 🎬 **Manajemen Karya**  | Upload film (video + dokumen), HLS multi-resolution transcoding (720p/360p), review workflow |
+| 🎬 **Manajemen Karya**  | Upload film (video + dokumen), HLS multi-resolution transcoding (1080p/720p/480p/360p), review workflow |
 | 📺 **HLS Streaming**    | Adaptif HLS streaming via Plyr player dengan dropdown kualitas resolusi dinamis               |
 | 📚 **Mode Studi**       | Split-screen: tonton film sambil baca naskah, storyboard, atau RAB           |
 | 🎯 **Evaluasi**         | Penilaian kurator (Naskah, Sinematografi, Editing, Produksi) dengan feedback |
@@ -43,16 +44,17 @@ PF Space adalah platform web arsip film yang dibangun untuk siswa sekolah meneng
 
 <div align="center">
 
-| Layer          | Technology                                                   |
-| -------------- | ------------------------------------------------------------ |
-| **Frontend**   | Vue 3.5 · Vite 7 · Tailwind CSS 4 · Plyr HLS · Lucide Icons  |
-| **Backend**    | Fastify 5 · Node.js 20+ · MySQL · Knex.js · Objection.js     |
-| **Transcoder** | Worker Process · BullMQ · Redis · FFmpeg                     |
-| **Auth**       | Better Auth (Email/Password + Google OAuth)                  |
-| **Upload**     | Tus.io (Resumable, hingga 4GB) + HLS Segmenter              |
-| **AI**         | Groq · OpenAI · Gemini (pluggable)                           |
-| **Validation** | Zod (centralized schema)                                     |
-| **CI/CD**      | GitHub Actions · Vitest (174 tests pass)                     |
+| Layer          | Technology                                                         |
+| -------------- | ------------------------------------------------------------------ |
+| **Frontend**   | Vue 3.5 · Vite 7 · Tailwind CSS 4 · Plyr HLS · Lucide Icons        |
+| **Backend**    | Fastify 5 · Node.js 20+ · MySQL 8 · Knex.js · Objection.js         |
+| **Transcoder** | Standalone Worker Process · BullMQ · Redis 7 · FFmpeg              |
+| **Auth**       | Better Auth (Email/Password + Google OAuth)                        |
+| **Upload**     | Tus.io (Resumable, hingga 4GB) + HLS Segmenter                     |
+| **AI**         | Groq · OpenAI · Gemini (pluggable)                                 |
+| **DevOps**     | Docker & Docker Compose · Nginx Reverse Proxy · PM2 (non-container)|
+| **Validation** | Zod (centralized schema)                                           |
+| **CI/CD**      | GitHub Actions · Vitest (unit & integration tests)                 |
 
 </div>
 
@@ -60,91 +62,129 @@ PF Space adalah platform web arsip film yang dibangun untuk siswa sekolah meneng
 
 ```
 pf-space/
-├── backend/                    # API Server (Fastify + Mysql + Tus)
+├── docker-compose.yaml         # Orkestrasi 5 container: db, redis, backend, transcoder, frontend
+├── .env.example                # Template konfigurasi environment (Docker & manual)
+├── .dockerignore               # Optimasi build context Docker
+├── ecosystem.config.cjs        # Konfigurasi PM2 process manager (opsi deployment non-container)
+│
+├── backend/                    # API Server (Fastify + MySQL + Tus + Better Auth)
+│   ├── Dockerfile              # Dockerfile Node 20 Alpine untuk Backend
+│   ├── docker-entrypoint.sh    # Script auto-migrasi Knex & auto-seed admin
 │   ├── src/
-│   │   ├── controllers/        # Request handlers (Admin, Films, Users, Feed)
+│   │   ├── controllers/        # Request handlers (Admin, Films, Users, Feed, dsb.)
 │   │   ├── services/           # Business logic & Transcode Audit
-│   │   ├── models/             # Database models (Film, TranscodeOperation, etc.)
-│   │   ├── routes/             # API routes
-│   │   ├── lib/                # Utilities & BullMQ Queue producer
-│   │   └── database/           # Migrations & seeds
-│   ├── scripts/                # Utility scripts (batch-retranscode.js)
-│   └── uploads/                # Video MP4 & HLS (.m3u8) directory
+│   │   ├── models/             # Database models (Film, TranscodeOperation, dsb.)
+│   │   ├── routes/             # API routes & static uploads
+│   │   ├── lib/                # Utilities, BullMQ Producer, Auth
+│   │   └── database/           # Knex migrations & seeds
+│   ├── scripts/                # Utility scripts (batch-retranscode, make-admin)
+│   └── uploads/                # Direktori video MP4 & HLS (.m3u8)
 │
 ├── transcoder/                 # Standalone Transcoder Worker (BullMQ + FFmpeg)
-│   ├── src/
-│   │   ├── worker.js           # Main Queue Worker process
-│   │   └── ffmpeg.js           # Multi-rendition HLS encoding engine
+│   ├── Dockerfile              # Dockerfile dengan FFmpeg & Node 20
+│   └── src/
+│       ├── worker.js           # Worker consumer antrean video
+│       ├── ffmpeg.js           # Multi-rendition HLS encoding engine
+│       └── renditions.js       # Preset resolusi video adaptif
 │
-├── frontend/                   # SPA Client (Vue 3 + Vite + Tailwind)
-│   ├── src/
-│   │   ├── components/         # UI components & TranscodeStatus / VideoPlayer
-│   │   ├── pages/              # Page views (WorkerMonitor, Archives, etc.)
-│   │   └── composables/        # Shared composables
-│   └── public/                 # Static assets
+├── frontend/                   # Client SPA (Vue 3 + Vite + Tailwind)
+│   ├── Dockerfile              # Multi-stage build (Vite build + Nginx Alpine)
+│   ├── nginx.conf              # Nginx reverse proxy (/api/, /uploads/) + SPA routing
+│   └── src/
+│       ├── components/         # UI components, VideoPlayer, TranscodeStatus
+│       ├── pages/              # Halaman web (Dashboard, Archives, Feed, dsb.)
+│       └── composables/        # State & shared composables (useAuth, dsb.)
 │
-├── deploy/                     # Deployment configs (Nginx, aaPanel, Cloudflare)
-└── ecosystem.config.cjs        # PM2 process manager configuration
+├── deploy/                     # Deployment scripts untuk VPS / aaPanel (non-container)
+│   ├── deploy.sh               # Script deployment otomatis
+│   ├── pf-space.nginx.conf     # Template Nginx reverse proxy sistem
+│   └── DEPLOYMENT_GUIDE.md     # Panduan deployment production manual
 │
-├── deploy/                     # Deployment configs
-│   ├── deploy.sh               # One-command deploy script
-│   ├── pf-space.nginx.conf     # Nginx config template
-│   └── DEPLOYMENT_GUIDE.md     # Step-by-step guide
-│
-└── docs/                       # Documentation
-    ├── API_REFERENCE.md        # API endpoint docs
-    ├── DATABASE.md             # Schema & relations
-    ├── UPLOAD_SYSTEM.md        # Tus.io upload system
-    ├── DEVELOPMENT.md          # Dev setup guide
-    ├── TESTING_GUIDE.md        # Test coverage docs
-    └── ROADMAP.md              # Future features
+└── docs/                       # Dokumentasi Teknis
+    ├── API_REFERENCE.md        # Dokumentasi endpoint API
+    ├── DATABASE.md             # Skema & relasi database
+    ├── UPLOAD_SYSTEM.md        # Sistem resumable upload Tus.io
+    ├── DEVELOPMENT.md          # Panduan local development
+    ├── TESTING_GUIDE.md        # Panduan penulisan & eksekusi pengujian
+    └── ROADMAP.md              # Rencana pengembangan fitur
 ```
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Opsi 1: Menjalankan dengan Docker (Direkomendasikan)
 
-- Node.js 22+
+Metode tercepat untuk menjalankan seluruh ekosistem PF Space (MySQL 8, Redis 7, Backend, Transcoder FFmpeg, dan Frontend Nginx) dengan satu perintah:
+
+1. **Clone repository dan siapkan environment:**
+   ```bash
+   cp .env.example .env
+   ```
+   *(Opsional: sesuaikan password database atau credential AI di `.env` jika diperlukan)*
+
+2. **Jalankan seluruh service:**
+   ```bash
+   docker compose up -d
+   ```
+   *Docker Compose akan otomatis menginisialisasi database, menjalankan seluruh migrasi Knex (35 tabel), dan melakukan seeding akun admin & data sampel film.*
+
+3. **Akses aplikasi:**
+   - **Frontend & App:** [http://localhost](http://localhost) (port 80)
+   - **Backend API & Healthcheck:** [http://localhost:3001/api/health](http://localhost:3001/api/health)
+   - **Akun Default Admin:**
+     - **Email:** `admin@pfspace.com`
+     - **Password:** `admin123`
+
+---
+
+### Opsi 2: Menjalankan Manual (Local Development)
+
+#### Prerequisites
+- Node.js 20+
 - MySQL 8+
-- npm or pnpm
+- Redis Server
+- FFmpeg & FFprobe (terpasang di path sistem)
 
-### Backend
-
+#### 1. Setup Backend
 ```bash
 cd backend
 npm install
-cp .env.example .env      # isi DB_NAME, DB_USER, DB_PASS, BETTER_AUTH_SECRET
-npm run migrate
-npm run seed
-npm run dev                # http://localhost:3000
+cp .env.example .env          # Sesuaikan DB_NAME, DB_USER, DB_PASSWORD, BETTER_AUTH_SECRET
+npm run migrate               # Jalankan migrasi database
+npm run seed                  # Seed admin dan data sampel
+npm run dev                   # Berjalan di http://localhost:3001
 ```
 
-### Frontend
+#### 2. Setup Transcoder Worker
+```bash
+cd transcoder
+npm install
+npm start                     # Menghubungkan ke Redis dan MySQL
+```
 
+#### 3. Setup Frontend
 ```bash
 cd frontend
 npm install
-npm run dev                # http://localhost:5173
+npm run dev                   # Berjalan di http://localhost:5173
 ```
 
-### Set Admin Pertama
-
+#### 4. Menjadikan User Sebagai Admin (Opsional)
 ```bash
 cd backend
-node scripts/make-admin.js email@example.com
+node scripts/make-admin.js email_kamu@example.com
 ```
 
 ## 🧪 Testing
 
 ```bash
-# Backend (185 tests)
+# Backend tests
 cd backend && npm test
 
-# Frontend (84 tests)
+# Frontend tests
 cd frontend && npm test
 
-# Semua test via CI
-gh run list                # lihat status GitHub Actions
+# Transcoder tests
+cd transcoder && npm test
 ```
 
 ## 📚 Dokumentasi
@@ -168,23 +208,6 @@ gh run list                # lihat status GitHub Actions
 - **CSP Headers**: Content Security Policy untuk mencegah injection
 - **Self-Edit Prevention**: User tidak bisa mengubah role diri sendiri
 - **Last Admin Protection**: Admin terakhir tidak bisa diturunkan rolenya
-
-## 📈 Status
-
-- [x] Backend API — Fastify + MySQL
-- [x] Frontend UI — Vue 3 + Brutal Design
-- [x] Authentication — Better Auth (Email + Google OAuth)
-- [x] Film Evaluation — Kurator feedback & notifikasi
-- [x] Study Mode — Video player + dokumen split-screen
-- [x] Production Feed — Pemantauan aktivitas produksi
-- [x] Media Handling — Tus.io resumable upload (4GB)
-- [x] Community Forum — Threaded discussions
-- [x] AI Chat — Context-aware film assistant
-- [x] Learning Materials — Curated resource management
-- [x] Content Reports — Moderation queue
-- [x] SEO — Dynamic sitemap.xml & robots.txt
-- [x] CI/CD — GitHub Actions (21 backend + 16 frontend test files)
-- [x] Security Audit — 18 fixes (S1-S12, R1-R8)
 
 ## 📄 License
 
