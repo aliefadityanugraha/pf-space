@@ -1,0 +1,16 @@
+node_modules
+.git
+.gitignore
+*.log
+dist
+coverage
+backup
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/node_modules
+backend/coverage
+backend/backup
+frontend/node_modules
+frontend/dist
+transcoder/node_modules
+.env
